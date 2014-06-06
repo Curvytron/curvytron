@@ -1,0 +1,30 @@
+{
+    "camelcase": true,
+    "curly"    : true,
+    "eqeqeq"   : true,
+    "es3"      : true,
+    "forin"    : true,
+    "freeze"   : true,
+    "immed"    : true,
+    "indent"   : 4,
+    "latedef"  : true,
+    "newcap"   : true,
+    "noarg"    : true,
+    "noempty"  : true,
+    "nonbsp"   : true,
+    "quotmark" : "single",
+    "undef"    : true,
+    "unused"   : true,
+    "trailing" : true,
+    "predef"   : [
+        "window",
+        "document",
+        "setInterval",
+        "setTimeout",
+        "confirm",
+        "CustomEvent",
+        "Event",
+        "console",
+        "navigator"
+    ]
+}

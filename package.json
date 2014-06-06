@@ -1,0 +1,33 @@
+{
+  "name": "curvitron",
+  "version": "0.0.1",
+  "description": "A web multiplayer Tron game like with curves",
+  "keywords": [
+    "tron",
+    "game",
+    "indie",
+    "html5",
+    "devops"
+  ],
+  "homepage": "https://github.com/Gameo/curvytron",
+  "license": "MIT",
+  "contributors": [
+    {
+      "name": "Johan Dufour",
+      "email": "johan.dufour@gmail.com",
+      "homepage": "https://github.com/lutangar"
+    },
+    {
+      "name": "Thomas JARRAND",
+      "email": "thomas.jarrand@gmail.com",
+      "homepage": "http://thomas-jarrand.com"
+    }
+  ],
+  "devDependencies": {
+    "gulp": "^3.7.*",
+    "gulp-concat": "^2.2.*",
+    "gulp-header": "^1.0.*",
+    "gulp-jshint": "^1.6.*",
+    "gulp-uglify": "^0.3.*"
+  }
+}

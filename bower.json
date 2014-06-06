@@ -1,0 +1,36 @@
+{
+  "name": "curvitron",
+  "version": "0.0.1",
+  "description": "A web multiplayer Tron game like with curves",
+  "keywords": [
+    "tron",
+    "game",
+    "indie",
+    "html5",
+    "devops"
+  ],
+  "homepage": "https://github.com/Gameo/curvytron",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Johan Dufour",
+      "email": "johan.dufour@gmail.com",
+      "homepage": "https://github.com/lutangar"
+    },
+    {
+      "name": "Thomas JARRAND",
+      "email": "thomas.jarrand@gmail.com",
+      "homepage": "http://thomas-jarrand.com"
+    }
+  ],
+  "main": "dist/curvitron.min.js",
+  "dependencies": {
+    "tom32i-event-emitter.js": "~0.0.*",
+    "tom32i-option-resolver.js": "~0.0.*"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ]
+}
