@@ -45,7 +45,7 @@ gulp.task('full', function() {
 
 gulp.task('min', function(){
     gulp.src(vendors.concat([srcDir + '**/*.js']))
-        .pipe(concat(meta.name + '.min.js'))
+        .pipe(concat(meta.name + '.js'))
         .pipe(uglify())
         .pipe(header(banner, meta))
         .pipe(gulp.dest(jsDir));
