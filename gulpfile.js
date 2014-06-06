@@ -15,7 +15,7 @@ var srcDir = './src/',
       '/*!',
       ' * <%= name %> <%= version %>',
       ' * <%= homepage %>',
-      ' * <%= licence %>',
+      ' * <%= license %>',
       ' */\n\n'
     ].join('\n');
 
@@ -27,7 +27,7 @@ gulp.task('jshint', function() {
 
 gulp.task('full', function() {
     gulp.src(vendors.concat([srcDir + '**/*.js']))
-        .pipe(concat(meta.name))
+        .pipe(concat(meta.name + '.js'))
         .pipe(uglify())
         .pipe(header(banner, meta))
         .pipe(gulp.dest(distDir));
@@ -35,7 +35,7 @@ gulp.task('full', function() {
 
 gulp.task('min', function(){
     gulp.src(vendors.concat([srcDir + '**/*.js']))
-        .pipe(concat(meta.name.replace('.js', '.min.js')))
+        .pipe(concat(meta.name + '.min.js'))
         .pipe(uglify())
         .pipe(header(banner, meta))
         .pipe(gulp.dest(distDir));
