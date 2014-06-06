@@ -1,5 +1,5 @@
 {
-  "name": "curvitron",
+  "name": "curvytron",
   "version": "0.0.1",
   "description": "A web multiplayer Tron game like with curves",
   "keywords": [
@@ -23,7 +23,7 @@
       "homepage": "http://thomas-jarrand.com"
     }
   ],
-  "main": "dist/curvitron.min.js",
+  "main": "dist/curvytron.min.js",
   "dependencies": {
     "almond": "~0.2.*",
     "paper": "~0.9.*",
