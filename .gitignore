@@ -1,0 +1,6 @@
+work/*
+vendor/*
+sources/config/config.yml
+bin/pgloader*
+composer.phar
+.idea/*
