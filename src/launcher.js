@@ -8,6 +8,8 @@ function onload ()
 
         loaded = true;
 
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
         new Game();
     }
 }
