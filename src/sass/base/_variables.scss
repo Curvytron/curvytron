@@ -1,0 +1,265 @@
+///////////////////////////
+/// BASE
+///////////////////////////
+$font-lato: "Raleway", "Helvetica Neue", "Helvetica";
+$background-color: #f6f7f3;
+$base-font-family: $font-lato;
+$base-font-size: 16px;
+$base-line-height: $base-font-size * 1.75; // 26px
+$text-color: #75858C;
+$link-color: $text-color;
+$link-hover-color: darken($text-color, 25%);
+$container-max-width: 1000px;
+$base-margin: 20px;
+$bold-font-weight: bold;
+
+$color-primary: #346b9a !default;
+$color-success: #60a760 !default;
+$color-info: #56abc4 !default;
+$color-warning: #de9c3f !default;
+$color-danger: #ca5e5b !default;
+
+
+///////////////////////////
+/// HEADINGS
+///////////////////////////
+$headings-font-family: $font-lato;
+$headings-font-weight: 300;
+$headings-line-height: 1.4;
+$headings-color: $text-color;
+$headings-small-color: lighter($text-color, 30%);
+$headings-margin: $base-margin;
+
+$font-size-h1: 40px;
+$font-size-h2: 30px;
+$font-size-h3: 26px;
+$font-size-h4: 20px;
+$font-size-h5: 16px;
+$font-size-h6: 14px;
+
+
+///////////////////////////
+/// GRID
+///////////////////////////
+$grid-columns: 12;
+$grid-gutter-width: 30px;
+
+
+///////////////////////////
+/// MEDIA QUERIES
+///////////////////////////
+$screen-xs:                  480px;
+$screen-xs-min:              $screen-xs;
+$screen-phone:               $screen-xs-min;
+
+$screen-sm:                  768px;
+$screen-sm-min:              $screen-sm;
+$screen-tablet:              $screen-sm-min;
+
+$screen-md:                  900px;
+$screen-md-min:              $screen-md;
+$screen-desktop:             $screen-md-min;
+
+$screen-lg:                  1024px;
+$screen-lg-min:              $screen-lg;
+$screen-lg-desktop:          $screen-lg-min;
+
+$screen-xs-max:              ($screen-sm-min - 1);
+$screen-sm-max:              ($screen-md-min - 1);
+$screen-md-max:              ($screen-lg-min - 1);
+
+$container-tablet:            ((720px + $grid-gutter-width));
+$container-desktop:           ((940px + $grid-gutter-width));
+$container-lg-desktop:        ((1140px + $grid-gutter-width));
+
+
+///////////////////////////
+/// HEADER
+///////////////////////////
+$header-background: #bb2924;
+$header-color: #FFF;
+
+
+///////////////////////////
+/// FOOTER
+///////////////////////////
+$footer-background: lighten(#75858C, 30%);
+$footer-color: darken($footer-background, 20%);
+
+
+///////////////////////////
+/// FORMS
+///////////////////////////
+$legend-color: $text-color;
+$legend-border-color: $text-color;
+
+$font-size-small: $base-font-size * 0.75;
+$font-size-large: $base-font-size * 1.5;
+
+$line-height-small: $base-line-height * 0.75;
+$line-height-large: $base-line-height * 1.5;
+
+$padding-base-vertical: 6px !default;
+$padding-base-horizontal: 12px !default;
+
+$padding-large-vertical: 10px !default;
+$padding-large-horizontal: 16px !default;
+
+$padding-small-vertical: 5px !default;
+$padding-small-horizontal: 10px !default;
+
+$padding-xs-vertical: 1px !default;
+$padding-xs-horizontal: 5px !default;
+
+
+$border-radius-base: 4px !default;
+$border-radius-large: 6px !default;
+$border-radius-small: 3px !default;
+
+$input-height-base: ceil($base-line-height + ($padding-base-vertical * 2) + 2) !default;
+$input-height-small: ceil($base-line-height*0.75 + ($padding-small-vertical * 2) + 2) !default;
+$input-height-large: ceil($base-line-height*1.5 + ($padding-large-vertical * 2) + 2) !default;
+
+$input-color: $text-color;
+$input-color-placeholder: lighter($text-color, 40%);
+$input-bg: #FFF;
+$input-border: darken(#e9eae7, 10%);
+$input-border-focus: darken($input-border, 15%);
+$input-border-radius: $border-radius-base;
+$input-bg-disabled: #EEE;
+
+$state-success-text:             #FFF !default;
+$state-success-bg:               $color-success !default;
+$state-success-border:           darken(adjust-hue($state-success-bg, -10), 5%) !default;
+
+$state-info-text:                #FFF !default;
+$state-info-bg:                  $color-info !default;
+$state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !default;
+
+$state-warning-text:             #FFF !default;
+$state-warning-bg:               $color-warning !default;
+$state-warning-border:           darken($state-warning-bg, 5%) !default;
+
+$state-danger-text:              #FFF !default;
+$state-danger-bg:                $color-danger !default;
+$state-danger-border:            darken(adjust-hue($state-danger-bg, -10), 5%) !default;
+
+
+///////////////////////////
+/// BUTTONS
+///////////////////////////
+$btn-default-color:              $text-color !default;
+$btn-default-bg:                 #fff !default;
+$btn-default-border:             darken(#e9eae7, 10%) !default;
+$btn-font-family:                $base-font-family;
+
+$btn-primary-color:              #fff !default;
+$btn-primary-bg:                 $color-primary !default;
+$btn-primary-border:             darken($btn-primary-bg, 5%) !default;
+
+$btn-success-color:              #fff !default;
+$btn-success-bg:                 $color-success !default;
+$btn-success-border:             darken($btn-success-bg, 5%) !default;
+
+$btn-info-color:                 #fff !default;
+$btn-info-bg:                    $color-info !default;
+$btn-info-border:                darken($btn-info-bg, 5%) !default;
+
+$btn-warning-color:              #fff !default;
+$btn-warning-bg:                 $color-warning !default;
+$btn-warning-border:             darken($btn-warning-bg, 5%) !default;
+
+$btn-danger-color:               #fff !default;
+$btn-danger-bg:                  $color-danger !default;
+$btn-danger-border:              darken($btn-danger-bg, 5%) !default;
+
+$btn-link-disabled-color:        #CCC !default;
+
+$caret-width-base:               4px !default;
+$caret-width-large:              5px !default;
+
+
+///////////////////////////
+/// TABLES
+///////////////////////////
+$table-cell-padding:            8px !default;
+$table-condensed-cell-padding:  5px !default;
+
+$table-bg:                      transparent !default;
+$table-bg-accent:               #e9eae7 !default;
+$table-bg-hover:                darken($table-bg-accent, 5%) !default;
+$table-bg-active:               $table-bg-hover !default;
+
+$table-border-color:            $table-bg-hover !default;
+
+
+///////////////////////////
+/// ALERTS
+///////////////////////////
+$alert-padding:               15px 25px !default;
+$alert-border-radius:         $border-radius-base !default;
+$alert-font-weight:           300 !default;
+$alert-link-font-weight:      normal !default;
+
+$alert-success-bg:            $state-success-bg !default;
+$alert-success-text:          $state-success-text !default;
+$alert-success-border:        $state-success-border !default;
+
+$alert-info-bg:               $state-info-bg !default;
+$alert-info-text:             $state-info-text !default;
+$alert-info-border:           $state-info-border !default;
+
+$alert-warning-bg:            $state-warning-bg !default;
+$alert-warning-text:          $state-warning-text !default;
+$alert-warning-border:        $state-warning-border !default;
+
+$alert-danger-bg:             $state-danger-bg !default;
+$alert-danger-text:           $state-danger-text !default;
+$alert-danger-border:         $state-danger-border !default;
+
+
+///////////////////////////
+/// NAVS
+///////////////////////////
+$nav-link-padding:                          10px 15px !default;
+$nav-link-hover-bg:                         #e9eae7 !default;
+$nav-disabled-link-color:                   lighten($text-color, 35%) !default;
+$nav-open-link-hover-color:                 #fff !default;
+$nav-tabs-border-color:                     darken(#e9eae7, 10%) !default;
+$nav-tabs-link-hover-border-color:          transparent !default;
+$nav-tabs-active-link-hover-bg:             $background-color !default;
+$nav-tabs-active-link-hover-color:          lighten($text-color, 20%) !default;
+$nav-tabs-active-link-hover-border-color:   darken($nav-tabs-border-color, 5%) !default;
+$tab-content-padding: 10px 0;
+
+
+///////////////////////////
+/// TOOLTIPS
+///////////////////////////
+$zindex-tooltip: 1070 !default;
+$tooltip-max-width: 200px !default;
+$tooltip-color: #fff !default;
+$tooltip-bg: #000 !default;
+$tooltip-opacity: 80 !default;
+$tooltip-arrow-width: 5px !default;
+$tooltip-arrow-color: $tooltip-bg !default;
+
+
+///////////////////////////
+/// INPUT GROUPS
+///////////////////////////
+$input-group-addon-bg: #EEE !default;
+$input-group-addon-border-color: $input-border !default;
+
+
+///////////////////////////
+/// FANCYBOX
+///////////////////////////
+$fancybox-background: rgba(0,0,0,0.7) !default;
+$fancybox-shadow: 0 10px 25px rgba(0,0,0,0.5);
+
+
+///////////////////////////
+/// MISC
+///////////////////////////
+$hr-border:                     #DDD;

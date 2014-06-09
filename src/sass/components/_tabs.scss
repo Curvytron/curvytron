@@ -1,0 +1,90 @@
+.nav-tabs {
+  margin-bottom: 0;
+  padding-left: 0;
+  list-style: none;
+  border-bottom: 1px solid $nav-tabs-border-color;
+  @include clearfix();
+
+  > li {
+    float: left;
+    margin-bottom: -1px;
+
+    > a {
+      position: relative;
+      display: block;
+      padding: $nav-link-padding;
+      margin-right: 2px;
+      line-height: $base-line-height;
+      border: 1px solid transparent;
+      border-radius: $border-radius-base $border-radius-base 0 0;
+      text-decoration: none;
+      color: $link-color;
+      &:hover,
+      &:focus {
+        text-decoration: none;
+        background-color: $nav-link-hover-bg;
+      }
+      &:hover {
+        border-color: $nav-tabs-link-hover-border-color $nav-tabs-link-hover-border-color $nav-tabs-border-color;
+      }
+    }
+
+    &.disabled > a {
+      color: $nav-disabled-link-color;
+
+      &:hover,
+      &:focus {
+        color: $nav-disabled-link-color;
+        text-decoration: none;
+        background-color: transparent;
+        cursor: not-allowed;
+        border-color: transparent;
+      }
+    }
+
+    &.active > a {
+      &,
+      &:hover,
+      &:focus {
+        color: $nav-tabs-active-link-hover-color;
+        background-color: $nav-tabs-active-link-hover-bg;
+        border: 1px solid $nav-tabs-active-link-hover-border-color;
+        border-bottom-color: transparent;
+        cursor: default;
+      }
+    }
+  }
+
+  &.nav-justified {
+    width: 100%;
+
+    > li {
+      float: left;
+
+      > a {
+        text-align: center;
+      }
+    }
+
+    @media (min-width: $screen-sm-min) {
+      > li {
+        display: table-cell;
+        width: 1%;
+        float: none;
+        > a {
+          margin-bottom: -1px;
+        }
+      }
+    }
+  }
+}
+
+.tab-content {
+  > .tab-pane {
+    display: none;
+    padding: $tab-content-padding;
+  }
+  > .active {
+    display: block;
+  }
+}

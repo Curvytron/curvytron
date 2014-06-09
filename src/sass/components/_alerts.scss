@@ -1,0 +1,49 @@
+.alert {
+  padding: $alert-padding;
+  margin-bottom: $base-margin;
+  border: 1px solid transparent;
+  border-radius: $alert-border-radius;
+  font-weight: $alert-font-weight;
+
+  h4 {
+    margin-top: 0;
+    color: inherit;
+  }
+
+  > p,
+  > ul {
+    margin-bottom: 0;
+  }
+
+  > p + p {
+    margin-top: 5px;
+  }
+
+  a {
+    font-weight: $alert-link-font-weight;
+  }
+}
+
+.alert-dismissable {
+  padding-right: ($alert-padding + 20);
+
+  .close {
+    position: relative;
+    top: -2px;
+    right: -21px;
+    color: inherit;
+  }
+}
+
+.alert-success {
+  @include alert-variant($alert-success-bg, $alert-success-border, $alert-success-text);
+}
+.alert-info {
+  @include alert-variant($alert-info-bg, $alert-info-border, $alert-info-text);
+}
+.alert-warning {
+  @include alert-variant($alert-warning-bg, $alert-warning-border, $alert-warning-text);
+}
+.alert-danger {
+  @include alert-variant($alert-danger-bg, $alert-danger-border, $alert-danger-text);
+}

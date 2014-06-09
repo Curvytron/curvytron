@@ -1,14 +1,38 @@
 <!DOCTYPE html>
-<html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
     <head>
+        <title>Curvytron</title>
+        <meta name="description" content="">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>curvytron</title>
-        <meta name="description" content="curvytron">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="css/main.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+        <meta name="format-detection" content="telephone=no">
+        <link href='http://fonts.googleapis.com/css?family=Raleway:400,700,300' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="css/style.min.css">
     </head>
     <body>
+        <!--[if lt IE 8]>
+            <div id="browsehappy">
+                <div id="browsehappy-inner">
+                    Vous utilisez un navigateur internet trop vieux.<br/>Merci de le <a href="http://browsehappy.com/">mettre à jour</a> afin d'améliorer votre navigation.
+                </div>
+            </div>
+        <![endif]-->
+        <header>Curvytron</header>
+
+        <section id="main"></section>
+
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 no-padding-bottom text-center">A web multiplayer Tron game like with curves</div>
+                </div>
+            </div>
+        </footer>
+
         <script src="socket.io/socket.io.js"></script>
         <script src="js/dependencies.js"></script>
         <script src="js/curvytron.js"></script>

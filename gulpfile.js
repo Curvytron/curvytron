@@ -1,12 +1,20 @@
-var gulp   = require('gulp'),
-    concat = require('gulp-concat'),
-    uglify = require('gulp-uglify'),
-    header = require('gulp-header'),
-    jshint = require('gulp-jshint'),
-    meta   = require('./package.json');
+var gulp      = require('gulp'),
+    concat    = require('gulp-concat'),
+    uglify    = require('gulp-uglify'),
+    header    = require('gulp-header'),
+    jshint    = require('gulp-jshint'),
+    sass      = require('gulp-sass'),
+    rename    = require('gulp-rename'),
+    plumber   = require('gulp-plumber'),
+    gutil     = require('gulp-util'),
+    minifyCSS = require('gulp-minify-css'),
+    meta      = require('./package.json');
 
-var cssDir = './web/css/',
-    expose = [
+var srcDir  = './src/',
+    jsDir   = './web/js/',
+    cssDir  = './web/css/',
+    sassDir = './web/sass/',
+    expose  = [
         './bower_components/almond/almond.js',
         './bower_components/paper/dist/paper-full.min.js',
         './bower_components/angular/angular.min.js'
@@ -22,6 +30,12 @@ var cssDir = './web/css/',
       ' * <%= license %>',
       ' */\n\n'
     ].join('\n');
+
+var onError = function (err) {
+  gutil.beep();
+  console.log(err.toString());
+  this.emit('end');
+};
 
 gulp.task('jshint', function() {
     gulp.src('src/**/*.js')
@@ -56,9 +70,27 @@ gulp.task('server', function() {
         .pipe(gulp.dest(recipes.server.path));
 });
 
-gulp.task('watch', ['dev'], function () {
-    gulp.watch('src/**/*.js', ['dev']);
+gulp.task('sass-full', function() {
+  gulp.src(sassDir + 'style.scss')
+    .pipe(plumber({ errorHandler: onError }))
+    .pipe(sass())
+    .pipe(rename('style.css'))
+    .pipe(gulp.dest(cssDir));
 });
 
-gulp.task('default', ['jshint', 'server', 'front-expose', 'front-min']);
-gulp.task('dev', ['jshint', 'server', 'front-full']);
+gulp.task('sass-min', function() {
+  gulp.src(sassDir + 'style.scss')
+    .pipe(plumber({ errorHandler: onError }))
+    .pipe(sass())
+    .pipe(minifyCSS())
+    .pipe(rename('style.css'))
+    .pipe(gulp.dest(cssDir));
+});
+
+gulp.task('watch', ['dev'], function () {
+    gulp.watch('src/**/*.js', ['dev']);
+    gulp.watch('src/**/*.scss', ['sass-full']);
+});
+
+gulp.task('default', ['jshint', 'server', 'front-expose', 'front-min', 'sass-min']);
+gulp.task('dev', ['jshint', 'server', 'front-full', 'sass-full']);

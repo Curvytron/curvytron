@@ -1,0 +1,54 @@
+.selector-wrapper {
+  position: relative;
+  border: none;
+  display: inline-block;
+  cursor: pointer;
+  overflow: hidden;
+  background-color: $input-bg;
+  border: 1px solid $input-border;
+  border-radius: $input-border-radius;
+  width: auto;
+  vertical-align: middle;
+
+  span {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    background-color: $input-bg;
+    color: $input-color;
+    padding: 0 $padding-base-horizontal;
+    font-size: $base-font-size;
+    line-height: $input-height-base;
+    font-family: $base-font-family;
+    position: relative;
+    vertical-align: middle;
+  }
+
+  i {
+    line-height: $input-height-base;
+    height: $input-height-base;
+    width: auto;
+    text-align: center;
+    float: right;
+    display: inline-block;
+    padding: 0 8px;
+    background-color: rgba(0,0,0,0.05);
+    border-left: 1px solid $input-border;
+    vertical-align: middle;
+    color: $input-color;
+  }
+
+  select {
+    top: 0; right: 0; bottom: 0; left: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    border: none;
+    background: #FFF;
+    cursor: pointer;
+    font-size: 12px;
+  }
+}
