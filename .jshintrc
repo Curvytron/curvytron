@@ -13,7 +13,7 @@
     "noempty"  : true,
     "nonbsp"   : true,
     "quotmark" : "single",
-    "undef"    : true,
+    "undef"    : false,
     "unused"   : true,
     "trailing" : true,
     "predef"   : [

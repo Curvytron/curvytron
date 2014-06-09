@@ -29,5 +29,8 @@
     "gulp-header": "^1.0.*",
     "gulp-jshint": "^1.6.*",
     "gulp-uglify": "^0.3.*"
+  },
+  "dependencies": {
+    "socket.io": "^1.0.4"
   }
 }

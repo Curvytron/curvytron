@@ -6,16 +6,20 @@ var gulp   = require('gulp'),
     meta   = require('./package.json');
 
 var srcDir = './src/',
-    jsDir = './web/js/',
+    frontDir = './web/js/',
+    serverDir = './bin/',
     cssDir = './web/css/',
     expose = [
         './bower_components/almond/almond.js',
         './bower_components/paper/dist/paper-full.min.js',
     ],
-    vendors = [
+    frontVendors = [
         './bower_components/tom32i-event-emitter.js/dist/event-emitter.min.js',
         './bower_components/tom32i-option-resolver.js/dist/option-resolver.min.js'
-    ]
+    ],
+    serverVendors = [
+        './bower_components/tom32i-option-resolver.js/dist/option-resolver.min.js'
+    ],
     banner = [
       '/*!',
       ' * <%= name %> <%= version %>',
@@ -30,30 +34,45 @@ gulp.task('jshint', function() {
         .pipe(jshint.reporter());
 });
 
-gulp.task('expose', function() {
+gulp.task('front-expose', function() {
     gulp.src(expose)
         .pipe(concat('dependencies.js'))
-        .pipe(gulp.dest(jsDir));
+        .pipe(gulp.dest(frontDir));
 });
 
-gulp.task('full', function() {
-    gulp.src(vendors.concat([srcDir + '**/*.js']))
+gulp.task('front-full', function() {
+    gulp.src(frontVendors.concat([
+            srcDir + 'shared/**/*.js',
+            srcDir + 'client/**/*.js'
+        ]))
         .pipe(concat(meta.name + '.js'))
         .pipe(header(banner, meta))
-        .pipe(gulp.dest(jsDir));
+        .pipe(gulp.dest(frontDir));
 });
 
-gulp.task('min', function(){
-    gulp.src(vendors.concat([srcDir + '**/*.js']))
+gulp.task('front-min', function(){
+    gulp.src(frontVendors.concat([
+            srcDir + 'shared/**/*.js',
+            srcDir + 'client/**/*.js'
+        ]))
         .pipe(concat(meta.name + '.js'))
         .pipe(uglify())
         .pipe(header(banner, meta))
-        .pipe(gulp.dest(jsDir));
+        .pipe(gulp.dest(frontDir));
+});
+
+gulp.task('server', function() {
+    gulp.src(serverVendors.concat([
+            srcDir + 'shared/**/*.js',
+            srcDir + 'server/**/*.js'
+        ]))
+        .pipe(concat(meta.name + '.js'))
+        .pipe(gulp.dest(serverDir));
 });
 
 gulp.task('watch', ['dev'], function () {
     gulp.watch(srcDir + '**/*.js', ['dev']);
 });
 
-gulp.task('default', ['jshint', 'expose', 'min']);
-gulp.task('dev', ['jshint', 'full']);
+gulp.task('default', ['jshint', 'server', 'front-expose', 'front-min']);
+gulp.task('dev', ['jshint', 'server', 'front-full']);

@@ -32,10 +32,8 @@ Trail.prototype.precision     = 10;
 
 /**
  * Update
- *
- * @param {Number} step
  */
-Trail.prototype.update = function(step)
+Trail.prototype.update = function()
 {
     this.head = this.head.add(this.velocities);
 
