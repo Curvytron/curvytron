@@ -8,11 +8,11 @@ function Player(color)
     EventEmitter.call(this);
 
     this.color = color || 'red';
-    this.trail = new Trail();
+    this.input = new PlayerInput();
+    this.trail = new Trail(this.color);
 }
 
 Player.prototype = Object.create(EventEmitter.prototype);
-Player.prototype.constructor = Player;
 
 /**
  * Update
@@ -21,5 +21,9 @@ Player.prototype.constructor = Player;
  */
 Player.prototype.update = function(step)
 {
+    if (this.input.key) {
+        this.trail.addAngle(0.1 * (this.input.key == '37' ? -1 : 1));
+    }
+
     this.trail.update(step);
 };
