@@ -4,4 +4,260 @@
  * MIT
  */
 
-function EventEmitter(){this._eventElement=document.createElement("div")}function OptionResolver(t){this.allowExtra="undefined"!=typeof t&&t,this.defaults={},this.types={},this.optional=[],this.required=[]}function onload(){loaded||(window.removeEventListener("load",onload),loaded=!0,window.requestAnimationFrame=window.requestAnimationFrame||window.mozRequestAnimationFrame||window.webkitRequestAnimationFrame||window.msRequestAnimationFrame,new Game)}function Game(){this.canvas=document.createElement("canvas"),this.rendered=(new Date).getTime(),this.frame=null,this.players=[],this.loop=this.loop.bind(this),this.canvas.setAttribute("resize",!0),document.body.appendChild(this.canvas),paper.setup(this.canvas),this.addPlayer(new Player("red")),this.start()}function Player(t){this.color=t||"red",this.head=new paper.Point(0,0),this.lastPosition=this.head.clone(),this.trail=new paper.Path,this.angle=.5,this.velocities=[],this.key=!1,this.updateVelocities(),this.trail.strokeColor=this.color,this.trail.strokeWidth=this.radius,this.trail.strokeCap="round",this.trail.strokeJoin="round",this.trail.fullySelected=!0;var e=this;window.addEventListener("keydown",function(t){e.key=t.keyCode}),window.addEventListener("keyup",function(){e.key=!1})}EventEmitter.prototype.emit=function(t,e){this._eventElement.dispatchEvent(new CustomEvent(t,{detail:e}))},EventEmitter.prototype.addEventListener=function(t,e){this._eventElement.addEventListener(t,e,!1)},EventEmitter.prototype.removeEventListener=function(t,e){this._eventElement.removeEventListener(t,e,!1)},EventEmitter.prototype.on=EventEmitter.prototype.addEventListener,EventEmitter.prototype.off=EventEmitter.prototype.removeEventListener,OptionResolver.prototype.setDefaults=function(t){for(var e in t)t.hasOwnProperty(e)&&(this.defaults[e]=t[e]);return this},OptionResolver.prototype.setTypes=function(t){for(var e in t)t.hasOwnProperty(e)&&(this.types[e]=t[e]);return this},OptionResolver.prototype.setOptional=function(t){return this.allowExtra?void 0:(this.addToArray(this.optionals,t),this)},OptionResolver.prototype.setRequired=function(t){return this.addToArray(this.required,t),this},OptionResolver.prototype.resolve=function(t){var e={};for(var i in this.defaults)this.defaults.hasOwnProperty(i)&&(e[i]=this.getValue(t,i));for(var o=this.required.length-1;o>=0;o--)if(i=this.required[o],"undefined"==typeof e[i])throw'Option "'+i+'" is required.';return e},OptionResolver.prototype.getValue=function(t,e){var i=null;if(!this.optionExists(e))throw'Unkown option "'+e+'".';return"undefined"!=typeof t[e]?i=t[e]:"undefined"!=typeof this.defaults[e]&&(i=this.defaults[e]),this.checkType(e,i),i},OptionResolver.prototype.checkType=function(t,e){var i="undefined"!=typeof this.types[t]?this.types[t]:!1,o=typeof e;if(i&&o!==i&&("string"===i&&(e=String(e)),"boolean"===i&&(e=Boolean(e)),"number"===i&&(e=Number(e)),o=typeof e,i!==o))throw'Wrong type for option "'+t+'". Expected '+this.types[t]+" but got "+typeof e},OptionResolver.prototype.optionExists=function(t){return this.allowExtra?!0:"undefined"!=typeof this.defaults[t]||this.optional.indexOf(t)>=0||this.required.indexOf(t)>=0},OptionResolver.prototype.addToArray=function(t,e){for(var i,o=e.length-1;o>=0;o--)i=e[o],t.indexOf(i)>=0&&t.push(i)};var loaded=!1;window.addEventListener("load",onload),Game.prototype.draw=function(){paper.view.draw()},Game.prototype.update=function(t){for(var e=this.players.length-1;e>=0;e--)this.players[e].update(t)},Game.prototype.addPlayer=function(t){this.players.push(t)},Game.prototype.start=function(){this.frame||this.loop()},Game.prototype.stop=function(){this.frame&&(window.cancelAnimationFrame(this.frame),this.frame=null)},Game.prototype.loop=function(){this.frame=window.requestAnimationFrame(this.loop);var t=(new Date).getTime(),e=t-this.rendered;this.rendered=t,this.draw(),this.update(e)},Player.prototype.velocity=5,Player.prototype.radius=10,Player.prototype.precision=10,Player.prototype.update=function(){this.key&&this.setAngle(this.angle+.1*("37"==this.key?-1:1)),this.head=this.head.add(this.velocities),this.lastPosition.getDistance(this.head)>this.precision&&(this.lastPosition=this.head.clone(),this.trail.moveTo(this.head),this.trail.lineTo(this.head))},Player.prototype.setAngle=function(t){this.angle=t,this.updateVelocities()},Player.prototype.updateVelocities=function(){this.velocities=[Math.cos(this.angle)*this.velocity,Math.sin(this.angle)*this.velocity]};
+function EventEmitter(){this._eventElement=document.createElement("div")}EventEmitter.prototype.emit=function(t,e){this._eventElement.dispatchEvent(new CustomEvent(t,{detail:e}))},EventEmitter.prototype.addEventListener=function(t,e){this._eventElement.addEventListener(t,e,!1)},EventEmitter.prototype.removeEventListener=function(t,e){this._eventElement.removeEventListener(t,e,!1)},EventEmitter.prototype.on=EventEmitter.prototype.addEventListener,EventEmitter.prototype.off=EventEmitter.prototype.removeEventListener;
+/*!
+ * option-resolver.js 0.0.2
+ * https://github.com/Tom32i/option-resolver.js
+ * Copyright 2014 Thomas JARRAND
+ */
+
+function OptionResolver(t){this.allowExtra="undefined"!=typeof t&&t,this.defaults={},this.types={},this.optional=[],this.required=[]}OptionResolver.prototype.setDefaults=function(t){for(var e in t)t.hasOwnProperty(e)&&(this.defaults[e]=t[e]);return this},OptionResolver.prototype.setTypes=function(t){for(var e in t)t.hasOwnProperty(e)&&(this.types[e]=t[e]);return this},OptionResolver.prototype.setOptional=function(t){return this.allowExtra?void 0:(this.addToArray(this.optionals,t),this)},OptionResolver.prototype.setRequired=function(t){return this.addToArray(this.required,t),this},OptionResolver.prototype.resolve=function(t){var e={};for(var o in this.defaults)this.defaults.hasOwnProperty(o)&&(e[o]=this.getValue(t,o));for(var i=this.required.length-1;i>=0;i--)if(o=this.required[i],"undefined"==typeof e[o])throw'Option "'+o+'" is required.';return e},OptionResolver.prototype.getValue=function(t,e){var o=null;if(!this.optionExists(e))throw'Unkown option "'+e+'".';return"undefined"!=typeof t[e]?o=t[e]:"undefined"!=typeof this.defaults[e]&&(o=this.defaults[e]),this.checkType(e,o),o},OptionResolver.prototype.checkType=function(t,e){var o="undefined"!=typeof this.types[t]?this.types[t]:!1,i=typeof e;if(o&&i!==o&&("string"===o&&(e=String(e)),"boolean"===o&&(e=Boolean(e)),"number"===o&&(e=Number(e)),i=typeof e,o!==i))throw'Wrong type for option "'+t+'". Expected '+this.types[t]+" but got "+typeof e},OptionResolver.prototype.optionExists=function(t){return this.allowExtra?!0:"undefined"!=typeof this.defaults[t]||this.optional.indexOf(t)>=0||this.required.indexOf(t)>=0},OptionResolver.prototype.addToArray=function(t,e){for(var o,i=e.length-1;i>=0;i--)o=e[i],t.indexOf(o)>=0&&t.push(o)};
+var loaded = false;
+
+function onload ()
+{
+    if (!loaded) {
+
+        window.removeEventListener('load', onload);
+
+        loaded = true;
+
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+        new Game();
+    }
+}
+
+window.addEventListener('load', onload);
+/**
+ * Game
+ */
+function Game()
+{
+    this.canvas   = document.createElement('canvas');
+    this.rendered = new Date().getTime();
+    this.frame    = null;
+    this.players  = [];
+
+    this.loop = this.loop.bind(this);
+
+    this.canvas.setAttribute('resize', true);
+    document.body.appendChild(this.canvas);
+    paper.setup(this.canvas);
+
+    this.addPlayer(new Player('red'));
+
+    this.start();
+
+    setTimeout(this.stop.bind(this), 5000);
+}
+
+/**
+ * Draw
+ *
+ * @param {Number} step
+ */
+Game.prototype.draw = function()
+{
+    paper.view.draw();
+};
+
+/**
+ * Update
+ *
+ * @param {Number} step
+ */
+Game.prototype.update = function(step)
+{
+    for (var i = this.players.length - 1; i >= 0; i--) {
+        this.players[i].update(step);
+    }
+};
+
+/**
+ * Add a player to the game
+ *
+ * @param {Player} player
+ */
+Game.prototype.addPlayer = function(player)
+{
+    this.players.push(player);
+};
+
+/**
+ * Start loop
+ */
+Game.prototype.start = function()
+{
+    if (!this.frame) {
+        this.loop();
+    }
+};
+
+/**
+ * Stop loop
+ */
+Game.prototype.stop = function()
+{
+    if (this.frame) {
+        window.cancelAnimationFrame(this.frame);
+        this.frame = null;
+    }
+};
+
+/**
+ * Animation loop
+ */
+Game.prototype.loop = function()
+{
+    this.frame = window.requestAnimationFrame(this.loop);
+
+    var now = new Date().getTime(),
+        step = now - this.rendered;
+
+    this.rendered = now;
+
+    this.draw();
+    this.update(step);
+};
+/**
+ * Player
+ *
+ * @param {String} color
+ */
+function Player(color)
+{
+    EventEmitter.call(this);
+
+    this.color = color || 'red';
+    this.input = new PlayerInput();
+    this.trail = new Trail(this.color);
+}
+
+Player.prototype = Object.create(EventEmitter.prototype);
+
+/**
+ * Update
+ *
+ * @param {Number} step
+ */
+Player.prototype.update = function(step)
+{
+    if (this.input.key) {
+        this.trail.addAngle(0.1 * (this.input.key == '37' ? -1 : 1));
+    }
+
+    this.trail.update(step);
+};
+function PlayerInput()
+{
+    this.key = false;
+
+    this.onKeyDown = this.onKeyDown.bind(this);
+    this.onKeyUp   = this.onKeyUp.bind(this);
+
+    window.addEventListener('keydown', this.onKeyDown);
+    window.addEventListener('keyup', this.onKeyUp);
+}
+
+/**
+ * On Key Down
+ *
+ * @param {Event} e
+ */
+PlayerInput.prototype.onKeyDown = function(e)
+{
+    this.key = e.keyCode;
+};
+
+/**
+ * On Key Down
+ *
+ * @param {Event} e
+ */
+PlayerInput.prototype.onKeyUp = function(e)
+{
+    this.key = false;
+};
+/**
+ * Trail
+ * @constructor
+ */
+function Trail(color)
+{
+    paper.Path.call(this);
+    console.log(this);
+
+    this.color         = color;
+
+    this.head          = new paper.Point(0, 0);
+    this.lastPosition  = this.head.clone();
+
+    this.angle         = 0.5;
+    this.velocities    = [];
+
+    this.strokeColor   = this.color;
+    this.strokeWidth   = this.radius;
+    this.strokeCap     = 'round';
+    this.strokeJoin    = 'round';
+    this.fullySelected = true;
+
+    this.updateVelocities();
+}
+
+Trail.prototype = Object.create(paper.Path.prototype);
+
+Trail.prototype.velocity      = 5;
+Trail.prototype.radius        = 10;
+Trail.prototype.precision     = 10;
+
+/**
+ * Update
+ *
+ * @param {Number} step
+ */
+Trail.prototype.update = function(step)
+{
+    this.head = this.head.add(this.velocities);
+
+    if (this.lastPosition.getDistance(this.head) > this.precision) {
+        this.lastPosition = this.head.clone();
+        this.moveTo(this.head);
+        /*this.add(this.head.add(this.velocities));
+         this.smooth();*/
+        this.lineTo(this.head);
+    }
+};
+
+/**
+ * Set angle
+ *
+ * @param {Float} angle
+ */
+Trail.prototype.setAngle = function(angle)
+{
+    this.angle = angle;
+
+    this.updateVelocities();
+};
+
+/**
+ * Add angle
+ *
+ * @param {Float} angle
+ */
+Trail.prototype.addAngle = function(angle)
+{
+    this.setAngle(this.angle + angle);
+};
+
+/**
+ * Update velocities
+ */
+Trail.prototype.updateVelocities = function()
+{
+    this.velocities = [
+        Math.cos(this.angle) * this.velocity,
+        Math.sin(this.angle) * this.velocity
+    ];
+};

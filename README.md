@@ -1,4 +1,4 @@
 curvytron
 =========
 
-A web multiplayer Tron game likew with curves
+A web multiplayer Tron game like with curves

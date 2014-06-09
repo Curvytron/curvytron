@@ -18,7 +18,7 @@ function Game()
 
     this.start();
 
-    //setTimeout(this.stop.bind(this), 5000);
+    setTimeout(this.stop.bind(this), 5000);
 }
 
 /**
