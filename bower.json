@@ -26,7 +26,7 @@
   "main": "dist/curvytron.min.js",
   "dependencies": {
     "almond": "~0.2.*",
-    "paper": "~0.9.*",
+    "paper": "~0.9.18",
     "tom32i-event-emitter.js": "~0.0.*",
     "tom32i-option-resolver.js": "~0.0.*",
     "html5-boilerplate": "~4.3.0",

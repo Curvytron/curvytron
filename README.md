@@ -11,7 +11,6 @@ A web multiplayer Tron game like with curves
 
 __Sample Vhost config:__
 
-
     <VirtualHost *:80>
         ServerAdmin thomas.jarrand@gmail.comm
         ServerName curvytron.dev

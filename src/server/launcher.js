@@ -1,1 +1,3 @@
-module.exports = new Server({port: 3000});
+module.exports = new Server({
+    port: 8080
+});
