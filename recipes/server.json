@@ -1,0 +1,11 @@
+{
+    "name": "curvytron.js",
+    "path": "bin/",
+    "files": [
+        "bower_components/tom32i-option-resolver.js/dist/option-resolver.min.js",
+        "src/shared/**/*.js",
+        "src/server/core/*.js",
+        "src/server/model/*.js",
+        "src/server/*.js"
+    ]
+}

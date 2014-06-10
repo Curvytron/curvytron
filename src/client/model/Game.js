@@ -1,11 +1,9 @@
-console.log(BaseGame);
-
 /**
  * Game
  */
 function Game()
 {
-    BaseGame.prototype.call(this);
+    BaseGame.call(this);
 
     this.canvas = document.createElement('canvas');
 
@@ -40,7 +38,7 @@ Game.prototype.stop = function()
 /**
  * Get new frame
  */
-BaseGame.prototype.newFrame = function()
+Game.prototype.newFrame = function()
 {
     this.frame = window.requestAnimationFrame(this.loop);
 };
@@ -50,8 +48,8 @@ BaseGame.prototype.newFrame = function()
  *
  * @param {Number} step
  */
-BaseGame.prototype.onFrame = function(step)
+Game.prototype.onFrame = function(step)
 {
-    BaseGame.prototype.onFrame.call(step);
+    BaseGame.prototype.onFrame.call(this, step);
     this.draw(step);
 };

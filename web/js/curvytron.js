@@ -103,31 +103,12 @@ BaseGame.prototype.onFrame = function(step)
 {
     this.update();
 };
-var loaded = false;
-
-function onload ()
-{
-    if (!loaded) {
-
-        window.removeEventListener('load', onload);
-
-        loaded = true;
-
-        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-
-        new Game();
-    }
-}
-
-window.addEventListener('load', onload);
-console.log(BaseGame);
-
 /**
  * Game
  */
 function Game()
 {
-    BaseGame.prototype.call(this);
+    BaseGame.call(this);
 
     this.canvas = document.createElement('canvas');
 
@@ -162,7 +143,7 @@ Game.prototype.stop = function()
 /**
  * Get new frame
  */
-BaseGame.prototype.newFrame = function()
+Game.prototype.newFrame = function()
 {
     this.frame = window.requestAnimationFrame(this.loop);
 };
@@ -172,9 +153,9 @@ BaseGame.prototype.newFrame = function()
  *
  * @param {Number} step
  */
-BaseGame.prototype.onFrame = function(step)
+Game.prototype.onFrame = function(step)
 {
-    BaseGame.prototype.onFrame.call(step);
+    BaseGame.prototype.onFrame.call(this, step);
     this.draw(step);
 };
 /**
@@ -314,3 +295,20 @@ Trail.prototype.updateVelocities = function()
         Math.sin(this.angle) * this.velocity
     ];
 };
+var loaded = false;
+
+function onload ()
+{
+    if (!loaded) {
+
+        window.removeEventListener('load', onload);
+
+        loaded = true;
+
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
+        new Game();
+    }
+}
+
+window.addEventListener('load', onload);

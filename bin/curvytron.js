@@ -96,7 +96,6 @@ BaseGame.prototype.onFrame = function(step)
 {
     this.update();
 };
-module.exports = new Server({port: 3000});
 /**
  * Server
  */
@@ -125,3 +124,4 @@ function Game()
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
+module.exports = new Server({port: 3000});
