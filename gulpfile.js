@@ -18,7 +18,8 @@ var gulp      = require('gulp'),
         expose     = [
             './bower_components/almond/almond.js',
             './bower_components/paper/dist/paper-full.min.js',
-            './bower_components/angular/angular.min.js'
+            './bower_components/angular/angular.min.js',
+            './bower_components/angular-route/angular-route.min.js',
         ],
         recipes    = {
             server: require('./recipes/server.json'),
@@ -97,6 +98,9 @@ gulp.task('angular', function() {
 
     gulp.src(angularDir + 'fixtures/*.json')
         .pipe(gulp.dest(jsDir + 'fixtures'));
+
+    gulp.src(angularDir + 'partials/**/*')
+        .pipe(gulp.dest(jsDir + 'partials'));
 });
 
 gulp.task('watch', ['dev'], function () {

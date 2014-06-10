@@ -43,6 +43,9 @@ header {
   padding: 100px 40px;
   margin: 0 0 30px 0;
   @include animation(headerRainbow 20s infinite);
+  a, a:visited {
+    color: $header-color;
+  }
 }
 
 @-webkit-keyframes headerRainbow {

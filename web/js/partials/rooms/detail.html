@@ -1,0 +1,31 @@
+<section ng-controller="RoomCtrl">
+    <div id="rooms" class="container">
+        <h1>
+            <span class="pull-right">
+                <ng-pluralize count="room.players.length "
+                                                 when="{'0': 'No player',
+                                                     'one': '1 player',
+                                                     'other': '{} players'}">
+            </span>
+            {{ room.name }}
+        </h1>
+        <table class="table table-hover table-hover v-align-middle">
+            <thead>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>Name</th>
+                    <th>Color</th>
+                    <th>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="player in room.players">
+                    <td width="80"><img src="{{ player.avatar }}" alt="" width="80" class="rounded" /></td>
+                    <td>{{ player.name }}</td>
+                    <td><span class="color-preview" style="background-color: {{ player.color }};"></span> {{ player.color }}</td>
+                    <td>{{ player.points }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>

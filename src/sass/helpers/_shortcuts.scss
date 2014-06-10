@@ -58,3 +58,7 @@ hr {
   overflow: hidden;
   @include transition(height .35s ease);
 }
+
+.rounded {
+  @include border-radius(50%);
+}

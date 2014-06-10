@@ -1,11 +1,7 @@
-#rooms {
-    h1 {
-        a.btn-default {
-            &:hover {
-                background: $text-color;
-                color: $background-color;
-            }
-        }
+a.btn-default {
+    &:hover {
+        background: $text-color;
+        color: $background-color;
     }
 }
 li.player-row {
@@ -17,4 +13,14 @@ li.player-row {
         display: inline-block;
         margin: 3px 3px 3px 0;
     }
+}
+
+.color-preview {
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    margin-right: 5px;
+    background: red;
+    @extend .rounded;
+    vertical-align: middle;
 }

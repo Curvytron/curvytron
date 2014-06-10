@@ -1150,6 +1150,11 @@ hr {
   -o-transition: height 0.35s ease;
   transition: height 0.35s ease; }
 
+.rounded, .color-preview {
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%; }
+
 .container {
   margin-right: auto;
   margin-left: auto;
@@ -2308,6 +2313,8 @@ header {
   -webkit-animation: headerRainbow 20s infinite;
   -o-animation: headerRainbow 20s infinite;
   animation: headerRainbow 20s infinite; }
+  header a, header a:visited {
+    color: #FFF; }
 
 @-webkit-keyframes headerRainbow {
   0% {
@@ -3476,7 +3483,7 @@ a, a:visited {
 a:hover {
   text-decoration: underline; }
 
-#rooms h1 a.btn-default:hover {
+a.btn-default:hover {
   background: #75858C;
   color: #f6f7f3; }
 
@@ -3488,6 +3495,14 @@ li.player-row {
     vertical-align: middle;
     display: inline-block;
     margin: 3px 3px 3px 0; }
+
+.color-preview {
+  width: 30px;
+  height: 30px;
+  display: inline-block;
+  margin-right: 5px;
+  background: red;
+  vertical-align: middle; }
 
 @media (max-width: 767px) { }
 
