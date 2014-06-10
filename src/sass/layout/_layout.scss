@@ -34,7 +34,7 @@ body {
 header {
   background: $header-background;
   color: $header-color;
-  font-family: $font-lato;
+  font-family: $base-font-family;
   font-weight: 300;
   text-transform: uppercase;
   text-align: center;
@@ -42,7 +42,42 @@ header {
   line-height: 60px;
   padding: 100px 40px;
   margin: 0 0 30px 0;
+  @include animation(headerRainbow 20s infinite);
 }
+
+@-webkit-keyframes headerRainbow {
+  0%   { background-color: $header-background; }
+  20%  { background-color: #16a085; }
+  40%  { background-color: #2C3E50; }
+  60%  { background-color: #95A5A6; }
+  80%  { background-color: #913D88; }
+  100% { background-color: $header-background; }
+}
+@-moz-keyframes headerRainbow {
+  0%   { background-color: $header-background; }
+  20%  { background-color: #16a085; }
+  40%  { background-color: #2C3E50; }
+  60%  { background-color: #95A5A6; }
+  80%  { background-color: #913D88; }
+  100% { background-color: $header-background; }
+}
+@-o-keyframes headerRainbow {
+  0%   { background-color: $header-background; }
+  20%  { background-color: #16a085; }
+  40%  { background-color: #2C3E50; }
+  60%  { background-color: #95A5A6; }
+  80%  { background-color: #913D88; }
+  100% { background-color: $header-background; }
+}
+@keyframes headerRainbow {
+  0%   { background-color: $header-background; }
+  20%  { background-color: #16a085; }
+  40%  { background-color: #2C3E50; }
+  60%  { background-color: #95A5A6; }
+  80%  { background-color: #913D88; }
+  100% { background-color: $header-background; }
+}
+
 
 footer {
   background: $footer-background;

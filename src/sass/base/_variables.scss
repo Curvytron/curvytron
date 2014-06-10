@@ -1,9 +1,9 @@
 ///////////////////////////
 /// BASE
 ///////////////////////////
-$font-lato: "Raleway", "Helvetica Neue", "Helvetica";
+$font-raleway: "Raleway", "Helvetica Neue", "Helvetica";
 $background-color: #f6f7f3;
-$base-font-family: $font-lato;
+$base-font-family: $font-raleway;
 $base-font-size: 16px;
 $base-line-height: $base-font-size * 1.75; // 26px
 $text-color: #75858C;
@@ -23,7 +23,7 @@ $color-danger: #ca5e5b !default;
 ///////////////////////////
 /// HEADINGS
 ///////////////////////////
-$headings-font-family: $font-lato;
+$headings-font-family: $font-raleway;
 $headings-font-weight: 300;
 $headings-line-height: 1.4;
 $headings-color: $text-color;
@@ -102,7 +102,7 @@ $line-height-large: $base-line-height * 1.5;
 $padding-base-vertical: 6px !default;
 $padding-base-horizontal: 12px !default;
 
-$padding-large-vertical: 10px !default;
+$padding-large-vertical: 7px !default;
 $padding-large-horizontal: 16px !default;
 
 $padding-small-vertical: 5px !default;
@@ -149,7 +149,7 @@ $state-danger-border:            darken(adjust-hue($state-danger-bg, -10), 5%) !
 /// BUTTONS
 ///////////////////////////
 $btn-default-color:              $text-color !default;
-$btn-default-bg:                 #fff !default;
+$btn-default-bg:                 $background-color !default;
 $btn-default-border:             darken(#e9eae7, 10%) !default;
 $btn-font-family:                $base-font-family;
 

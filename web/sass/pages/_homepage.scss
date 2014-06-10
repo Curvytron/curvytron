@@ -1,0 +1,10 @@
+#rooms {
+    h1 {
+        a.btn-default {
+            border: 2px solid $text-color;
+            &:hover {
+                background: rgba(0,0,0,0.1);
+            }
+        }
+    }
+}
