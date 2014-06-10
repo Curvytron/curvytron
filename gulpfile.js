@@ -10,26 +10,27 @@ var gulp      = require('gulp'),
     minifyCSS = require('gulp-minify-css'),
     meta      = require('./package.json');
 
-var srcDir  = './src/',
-    jsDir   = './web/js/',
-    cssDir  = './web/css/',
-    sassDir = './web/sass/',
-    expose  = [
-        './bower_components/almond/almond.js',
-        './bower_components/paper/dist/paper-full.min.js',
-        './bower_components/angular/angular.min.js'
-    ],
-    recipes = {
-        server: require('./recipes/server.json'),
-        client: require('./recipes/client.json')
-    },
-    banner = [
-      '/*!',
-      ' * <%= name %> <%= version %>',
-      ' * <%= homepage %>',
-      ' * <%= license %>',
-      ' */\n\n'
-    ].join('\n');
+    var srcDir     = './src/',
+        jsDir      = './web/js/',
+        cssDir     = './web/css/',
+        sassDir    = './src/sass/',
+        angularDir = './src/angular/',
+        expose     = [
+            './bower_components/almond/almond.js',
+            './bower_components/paper/dist/paper-full.min.js',
+            './bower_components/angular/angular.min.js'
+        ],
+        recipes    = {
+            server: require('./recipes/server.json'),
+            client: require('./recipes/client.json')
+        },
+        banner     = [
+          '/*!',
+          ' * <%= name %> <%= version %>',
+          ' * <%= homepage %>',
+          ' * <%= license %>',
+          ' */\n\n'
+        ].join('\n');
 
 var onError = function (err) {
   gutil.beep();
@@ -87,10 +88,22 @@ gulp.task('sass-min', function() {
     .pipe(gulp.dest(cssDir));
 });
 
+gulp.task('angular', function() {
+    gulp.src(angularDir + '**/*.js')
+        .pipe(concat(angularDir + '**/*.js'))
+        .pipe(header(banner, meta))
+        .pipe(rename('angular.js'))
+        .pipe(gulp.dest(jsDir));
+
+    gulp.src(angularDir + 'fixtures/*.json')
+        .pipe(gulp.dest(jsDir + 'fixtures'));
+});
+
 gulp.task('watch', ['dev'], function () {
-    gulp.watch('src/**/*.js', ['dev']);
+    gulp.watch(['src/**/*.js', "!src/angular/**/*.js"], ['dev']);
+    gulp.watch('src/angular/**/*', ['angular']);
     gulp.watch('src/**/*.scss', ['sass-full']);
 });
 
-gulp.task('default', ['jshint', 'server', 'front-expose', 'front-min', 'sass-min']);
-gulp.task('dev', ['jshint', 'server', 'front-full', 'sass-full']);
+gulp.task('default', ['jshint', 'server', 'front-expose', 'front-min', 'sass-min', 'angular']);
+gulp.task('dev', ['jshint', 'server', 'front-full', 'sass-full', 'angular']);

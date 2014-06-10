@@ -1,0 +1,35 @@
+[
+    {
+        "id": "ma-room-1",
+        "name": "Ma room 1",
+        "players": [
+            {
+                "name": "Riley Morris",
+                "avatar": "http://api.randomuser.me/portraits/women/23.jpg"
+            },
+            {
+                "name": "Tim Young",
+                "avatar": "http://api.randomuser.me/portraits/men/91.jpg"
+            },
+            {
+                "name": "Tammy Hernandez",
+                "avatar": "http://api.randomuser.me/portraits/women/63.jpg"
+            }
+        ]
+    },
+    {
+        "id": "ma-room-2",
+        "name": "Ma room 2",
+        "players": [
+            {
+                "name": "Riley Morris",
+                "avatar": "http://api.randomuser.me/portraits/women/23.jpg"
+            }
+        ]
+    },
+    {
+        "id": "ma-room-3",
+        "name": "Ma room 3",
+        "players": []
+    }
+]

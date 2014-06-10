@@ -150,7 +150,7 @@ $state-danger-border:            darken(adjust-hue($state-danger-bg, -10), 5%) !
 ///////////////////////////
 $btn-default-color:              $text-color !default;
 $btn-default-bg:                 $background-color !default;
-$btn-default-border:             darken(#e9eae7, 10%) !default;
+$btn-default-border:             $text-color !default;
 $btn-font-family:                $base-font-family;
 
 $btn-primary-color:              #fff !default;

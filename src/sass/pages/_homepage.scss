@@ -1,0 +1,20 @@
+#rooms {
+    h1 {
+        a.btn-default {
+            &:hover {
+                background: $text-color;
+                color: $background-color;
+            }
+        }
+    }
+}
+li.player-row {
+    vertical-align: middle;
+    img {
+        width: 40px;
+        border-radius: 50%;
+        vertical-align: middle;
+        display: inline-block;
+        margin: 3px 3px 3px 0;
+    }
+}
