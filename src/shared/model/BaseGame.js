@@ -4,13 +4,7 @@
 function BaseGame()
 {
     this.frame   = null;
-    this.players = [];
-
-    this.addPlayer(new Player('red'));
-
-    this.start();
-
-    setTimeout(this.stop.bind(this), 5000);
+    this.players = null;
 }
 
 /**
@@ -20,8 +14,8 @@ function BaseGame()
  */
 BaseGame.prototype.update = function(step)
 {
-    for (var i = this.players.length - 1; i >= 0; i--) {
-        this.players[i].update(step);
+    for (var i = this.players.ids.length - 1; i >= 0; i--) {
+        this.players.items[i].update(step);
     }
 };
 
@@ -32,7 +26,17 @@ BaseGame.prototype.update = function(step)
  */
 BaseGame.prototype.addPlayer = function(player)
 {
-    this.players.push(player);
+    return this.players.add(player);
+};
+
+/**
+ * Remove a player from the game
+ *
+ * @param {Player} player
+ */
+BaseGame.prototype.removePlayer = function(player)
+{
+    return this.players.remove(player);
 };
 
 /**

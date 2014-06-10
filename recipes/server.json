@@ -2,10 +2,10 @@
     "name": "curvytron.js",
     "path": "bin/",
     "files": [
+        "src/server/dependencies.js",
         "bower_components/tom32i-option-resolver.js/dist/option-resolver.min.js",
         "src/shared/**/*.js",
-        "src/server/core/*.js",
-        "src/server/model/*.js",
-        "src/server/*.js"
+        "src/server/*/**/*.js",
+        "src/server/launcher.js"
     ]
 }

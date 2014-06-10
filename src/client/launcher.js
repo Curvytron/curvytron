@@ -10,7 +10,7 @@ function onload ()
 
         window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
-        new Game();
+        new Core({port: 8080});
     }
 }
 

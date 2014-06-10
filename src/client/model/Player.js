@@ -1,18 +1,17 @@
 /**
  * Player
  *
+ * @param {String} name
  * @param {String} color
  */
-function Player(color)
+function Player(name, color)
 {
-    EventEmitter.call(this);
+    BasePlayer.call(this, name, color);
 
-    this.color = color || 'red';
     this.input = new PlayerInput();
-    this.trail = new Trail(this.color);
 }
 
-Player.prototype = Object.create(EventEmitter.prototype);
+Player.prototype = Object.create(BasePlayer.prototype);
 
 /**
  * Update
@@ -23,5 +22,5 @@ Player.prototype.update = function()
         this.trail.addAngle(0.1 * (this.input.key == '37' ? -1 : 1));
     }
 
-    this.trail.update();
+    BasePlayer.prototype.update.call(this);
 };

@@ -3,7 +3,7 @@
  */
 function Game()
 {
-    BaseGame.prototype.call(this);
+    BaseGame.call(this);
 
     this.loop = this.loop.bind(this);
 }
