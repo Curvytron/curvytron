@@ -29,3 +29,7 @@ __Sample Vhost config:__
                     Allow from all
             </Directory>
     </VirtualHost>
+
+## Launch server:
+
+    node bin/curvytron.js
