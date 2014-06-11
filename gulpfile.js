@@ -14,7 +14,6 @@ var gulp      = require('gulp'),
         jsDir      = './web/js/',
         cssDir     = './web/css/',
         sassDir    = './src/sass/',
-        angularDir = './src/angular/',
         expose     = [
             './bower_components/almond/almond.js',
             './bower_components/paper/dist/paper-full.min.js',
@@ -56,6 +55,12 @@ gulp.task('front-full', function() {
         .pipe(concat(recipes.client.name))
         .pipe(header(banner, meta))
         .pipe(gulp.dest(recipes.client.path));
+
+    gulp.src('src/client/fixtures/*.json')
+        .pipe(gulp.dest(jsDir + 'fixtures'));
+
+    gulp.src('src/client/partials/**/*')
+        .pipe(gulp.dest(jsDir + 'partials'));
 });
 
 gulp.task('front-min', function(){
@@ -64,6 +69,12 @@ gulp.task('front-min', function(){
         .pipe(uglify())
         .pipe(header(banner, meta))
         .pipe(gulp.dest(recipes.client.path));
+
+    gulp.src('src/client/fixtures/*.json')
+        .pipe(gulp.dest(jsDir + 'fixtures'));
+
+    gulp.src('src/client/partials/**/*')
+        .pipe(gulp.dest(jsDir + 'partials'));
 });
 
 gulp.task('server', function() {
@@ -89,25 +100,10 @@ gulp.task('sass-min', function() {
     .pipe(gulp.dest(cssDir));
 });
 
-gulp.task('angular', function() {
-    gulp.src(angularDir + '**/*.js')
-        .pipe(concat(angularDir + '**/*.js'))
-        .pipe(header(banner, meta))
-        .pipe(rename('angular.js'))
-        .pipe(gulp.dest(jsDir));
-
-    gulp.src(angularDir + 'fixtures/*.json')
-        .pipe(gulp.dest(jsDir + 'fixtures'));
-
-    gulp.src(angularDir + 'partials/**/*')
-        .pipe(gulp.dest(jsDir + 'partials'));
-});
-
-gulp.task('watch', ['dev'], function () {
-    gulp.watch(['src/**/*.js', "!src/angular/**/*.js"], ['dev']);
-    gulp.watch('src/angular/**/*', ['angular']);
+gulp.task('watch', ['dev', 'sass-full'], function () {
+    gulp.watch('src/**/*.js', ['dev']);
     gulp.watch('src/**/*.scss', ['sass-full']);
 });
 
-gulp.task('default', ['jshint', 'server', 'front-expose', 'front-min', 'sass-min', 'angular']);
-gulp.task('dev', ['jshint', 'server', 'front-full', 'sass-full', 'angular']);
+gulp.task('default', ['jshint', 'server', 'front-expose', 'front-min', 'sass-min']);
+gulp.task('dev', ['jshint', 'server', 'front-full', 'sass-full']);

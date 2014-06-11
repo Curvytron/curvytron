@@ -547,54 +547,18 @@ BaseTrail.prototype.getDistance = function(from, to)
     return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
 };
 /**
- * Lobby Repository
- */
-function LobbyRepository(socket)
-{
-    this.socket  = socket;
-    this.lobbies = new Collection([], 'name');
-}
-
-/**
- * Create a lobby
- *
- * @param {String} first_argument
- *
- * @return {Lobby}
- */
-LobbyRepository.prototype.create = function(name)
-{
-    var lobby = new Lobby(name);
-
-    if (this.lobbies.add(lobby)) {
-        this.socket.emit('lobby:new', lobby.name);
-
-        return lobby;
-    }
-};
-
-/**
- * Get by name
- *
- * @param {String} name
- *
- * @return {Lobby}
- */
-LobbyRepository.prototype.get = function(name)
-{
-    return this.lobbies.getById(name);
-};
-/**
  * Server
  */
 function Server(config)
 {
-    this.config          = config;
-    this.app             = express();
-    this.server          = http.Server(this.app);
-    this.io              = io(this.server);
-    this.clients         = new Collection();
-    this.lobbyController = new LobbyController(this.io);
+    this.config       = config;
+    this.app          = express();
+    this.server       = http.Server(this.app);
+    this.io           = io(this.server);
+    this.clients      = new Collection();
+    this.repositories = {
+        lobby: new LobbyRepository(this.io)
+    };
 
     this.onSocketConnection    = this.onSocketConnection.bind(this);
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
@@ -606,7 +570,7 @@ function Server(config)
       console.log('listening on *:' + config.port);
     });
 
-    SocketClient.prototype.lobbyController = this.lobbyController;
+    SocketClient.prototype.repositories = this.repositories;
 }
 
 /**
@@ -621,6 +585,8 @@ Server.prototype.onSocketConnection = function(socket)
     socket.on('disconnect', this.onSocketDisconnection);
 
     this.clients.add(new SocketClient(socket));
+
+    socket.emit('lobby:new', {name: "elao"});
 };
 
 /**
@@ -684,7 +650,7 @@ SocketClient.prototype.detachEvents = function()
 SocketClient.prototype.onNewLobby = function(name)
 {
     console.log("onNewLobby", name);
-    this.lobbyController.create(name);
+    this.repositories.lobby.create(name);
 };
 
 /**
@@ -694,10 +660,10 @@ SocketClient.prototype.onNewLobby = function(name)
  */
 SocketClient.prototype.onJoinLobby = function(data)
 {
-    var lobby = this.lobbyController.get(data.lobby);
+    /*var lobby = this.lobbyController.get(data.lobby)
+        player = new Player(this, data.player);
 
-    var player = new Player(this, this.socket.id),
-        lobby = this.lobbyController.get;
+    lobby.addPlayer(player);*/
 };
 /**
  * Game
@@ -743,6 +709,44 @@ function Trail(color)
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
+/**
+ * Lobby Repository
+ */
+function LobbyRepository(socket)
+{
+    this.socket  = socket;
+    this.lobbies = new Collection([], 'name');
+}
+
+/**
+ * Create a lobby
+ *
+ * @param {String} first_argument
+ *
+ * @return {Lobby}
+ */
+LobbyRepository.prototype.create = function(name)
+{
+    var lobby = new Lobby(name);
+
+    if (this.lobbies.add(lobby)) {
+        this.socket.emit('lobby:new', lobby.name);
+
+        return lobby;
+    }
+};
+
+/**
+ * Get by name
+ *
+ * @param {String} name
+ *
+ * @return {Lobby}
+ */
+LobbyRepository.prototype.get = function(name)
+{
+    return this.lobbies.getById(name);
+};
 module.exports = new Server({
     port: 8080
 });

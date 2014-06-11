@@ -1,16 +1,14 @@
 /**
- * Core
- *
- * @param {Object} config
+ * SocketClient
  */
-function Core(config)
+function SocketClient()
 {
     this.io = io();
 
     this.onSocketConnection    = this.onSocketConnection.bind(this);
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
 
-    this.socket.on('open', this.onSocketConnection);
+    this.io.on('open', this.onSocketConnection);
 }
 
 /**
@@ -18,11 +16,11 @@ function Core(config)
  *
  * @param {Socket} socket
  */
-Core.prototype.onSocketConnection = function(data)
+SocketClient.prototype.onSocketConnection = function(data)
 {
     console.log('Connected', data);
 
-    this.attachEvents();
+    //this.attachEvents();
 };
 
 /**
@@ -30,7 +28,7 @@ Core.prototype.onSocketConnection = function(data)
  *
  * @param {Socket} socket
  */
-Core.prototype.onSocketDisconnection = function(e)
+SocketClient.prototype.onSocketDisconnection = function(e)
 {
     console.log('Disconnect', e);
 };

@@ -37,6 +37,8 @@ Server.prototype.onSocketConnection = function(socket)
     socket.on('disconnect', this.onSocketDisconnection);
 
     this.clients.add(new SocketClient(socket));
+
+    socket.emit('lobby:new', {name: "elao"});
 };
 
 /**

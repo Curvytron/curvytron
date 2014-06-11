@@ -549,19 +549,39 @@ BaseTrail.prototype.getDistance = function(from, to)
 {
     return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
 };
+function LobbyController($scope, LobbyRepository, $routeParams)
+{
+    this.$scope     = $scope;
+    this.repository = LobbyRepository;
+
+    this.loadRooms = this.loadRooms.bind(this);
+
+    this.repository.on('lobby:new', this.loadRooms);
+
+    this.loadRooms();
+}
+
 /**
- * Core
+ * Rooms action
  *
- * @param {Object} config
+ * @return {Array}
  */
-function Core(config)
+LobbyController.prototype.loadRooms = function(e)
+{
+    console.log("loadRooms", e);
+    this.$scope.rooms = this.repository.getAll();
+};
+/**
+ * SocketClient
+ */
+function SocketClient()
 {
     this.io = io();
 
     this.onSocketConnection    = this.onSocketConnection.bind(this);
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
 
-    this.socket.on('open', this.onSocketConnection);
+    this.io.on('open', this.onSocketConnection);
 }
 
 /**
@@ -569,11 +589,11 @@ function Core(config)
  *
  * @param {Socket} socket
  */
-Core.prototype.onSocketConnection = function(data)
+SocketClient.prototype.onSocketConnection = function(data)
 {
     console.log('Connected', data);
 
-    this.attachEvents();
+    //this.attachEvents();
 };
 
 /**
@@ -581,7 +601,7 @@ Core.prototype.onSocketConnection = function(data)
  *
  * @param {Socket} socket
  */
-Core.prototype.onSocketDisconnection = function(e)
+SocketClient.prototype.onSocketDisconnection = function(e)
 {
     console.log('Disconnect', e);
 };
@@ -736,20 +756,110 @@ Trail.prototype.addPoint = function(point)
     /*this.add(this.head.add(this.velocities));
      this.smooth();*/
 };
-var loaded = false;
-
-function onload ()
+/**
+ * LobbyRepository
+ *
+ * @param {Object} config
+ */
+function LobbyRepository(SocketClient)
 {
-    if (!loaded) {
+    EventEmitter.call(this);
 
-        window.removeEventListener('load', onload);
+    this.client     = SocketClient;
+    this.lobbies    = new Collection([], 'name');
 
-        loaded = true;
+    this.onNewLobby = this.onNewLobby.bind(this);
 
-        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-
-        new Core({port: 8080});
-    }
+    this.client.io.on('lobby:new', this.onNewLobby);
 }
 
-window.addEventListener('load', onload);
+LobbyRepository.prototype = Object.create(EventEmitter.prototype);
+
+/**
+ * Get all
+ *
+ * @return {Array}
+ */
+LobbyRepository.prototype.getAll = function()
+{
+    return this.lobbies.items;
+};
+
+// EVENTS:
+
+/**
+ * On new lobby
+ *
+ * @param {Object} data
+ *
+ * @return {Boolean}
+ */
+LobbyRepository.prototype.onNewLobby = function(data)
+{
+    console.log("onNewLobby");
+
+    var lobby = new Lobby(data.name);
+
+    if(this.lobbies.add(lobby)) {
+        this.emit('lobby:new', lobby);
+        console.log('lobby:new', lobby);
+    }
+};
+var curvytronApp = angular.module('curvytronApp', ['ngRoute']);
+
+console.log("curvytronApp created");
+
+curvytronApp.service('SocketClient', SocketClient);
+curvytronApp.service('LobbyRepository', ['SocketClient', LobbyRepository]);
+//curvytronApp.service('LobbyController', ['LobbyRepository', LobbyController]);
+//curvytronApp.controller('LobbyController', ['$scope', 'LobbyRepository', LobbyController]);
+
+curvytronApp.controller('LobbyController', ['$scope', 'LobbyRepository', function ($scope, LobbyRepository)
+{
+    $scope.rooms = LobbyRepository.getAll();
+
+    LobbyRepository.on('lobby:new', function(e)
+    {
+        console.log("loadRooms", e);
+        $scope.rooms = LobbyRepository.getAll();
+    });
+
+    /*if ($routeParams.roomId) {
+        $scope.room = this.repository.get($routeParams.roomId);
+    }*/
+}]);
+
+/*curvytronApp.controller('LobbyController', function($scope, LobbyRepository)
+{
+    $scope.rooms = $LobbyRepository.getAll();
+    /*
+    $http.get('js/fixtures/rooms.json').success(function(data)
+    {
+        $scope.rooms = data;
+
+        if ($routeParams.roomId) {
+            angular.forEach($scope.rooms, function(obj, id) {
+                if (obj.id === $routeParams.roomId) {
+
+                }
+            });
+        }
+    });*/
+/*});
+*/
+
+curvytronApp.config(['$routeProvider', function($routeProvider) {
+    $routeProvider
+        .when('/lobbies', {
+            templateUrl: 'js/partials/rooms/list.html',
+            controller: 'LobbyController'
+        })
+        .when('/lobbies/:roomId', {
+            templateUrl: 'js/partials/rooms/detail.html',
+            controller: 'LobbyController'
+        })
+        .otherwise({
+            redirectTo: '/lobbies'
+        });
+}]);
+
