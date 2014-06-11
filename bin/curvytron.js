@@ -429,6 +429,19 @@ BasePlayer.prototype.update = function()
 {
     this.trail.update();
 };
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BasePlayer.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        color: this.color
+    };
+};
 /**
  * Base Room
  */
@@ -457,6 +470,19 @@ BaseRoom.prototype.addPlayer = function(player)
 BaseRoom.prototype.removePlayer = function(player)
 {
     return this.players.remove(player);
+};
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BaseRoom.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        players: this.players.map(function () { this.serialize(); }).items
+    };
 };
 /**
  * BaseTrail
@@ -650,7 +676,6 @@ SocketClient.prototype.detachEvents = function()
  */
 SocketClient.prototype.onCreateRoom = function(data)
 {
-    console.log("onCreateRoom", data);
     this.repositories.room.create(data.name);
 };
 
@@ -666,76 +691,6 @@ SocketClient.prototype.onJoinRoom = function(data)
 
     room.addPlayer(player);*/
 };
-/**
- * Game
- */
-function Game()
-{
-    BaseGame.call(this);
-
-    this.loop = this.loop.bind(this);
-}
-
-Game.prototype = Object.create(BaseGame.prototype);
-/**
- * Player
- *
- * @param {SocketClient} client
- * @param {String} name
- * @param {String} color
- */
-function Player(client, name, color)
-{
-    BasePlayer.call(this, name, color);
-
-    this.client = client;
-}
-
-Player.prototype = Object.create(BasePlayer.prototype);
-
-/**
- * Serialize
- *
- * @return {Object}
- */
-Player.prototype.serialize = function()
-{
-    return {
-        name: this.name,
-        color: this.color
-    };
-};
-/**
- * Room
- */
-function Room(name)
-{
-    BaseRoom.call(this, name);
-}
-
-Room.prototype = Object.create(BaseRoom.prototype);
-
-/**
- * Serialize
- *
- * @return {Object}
- */
-Room.prototype.serialize = function()
-{
-    return {
-        name: this.name,
-        players: this.players.map(function () { this.serialize(); }).items
-    };
-};
-/**
- * Trail
- */
-function Trail(color)
-{
-    BaseTrail.call(this, color);
-}
-
-Trail.prototype = Object.create(BaseTrail.prototype);
 /**
  * Room Repository
  */
@@ -784,7 +739,6 @@ RoomRepository.prototype.emitNewRoom = function(room, client)
     var socket = (typeof(client) !== 'undefined' ? client : this.socket)
 
     socket.emit('room:new', room.serialize());
-    console.log('room:new', room.serialize());
 };
 
 /**
@@ -798,6 +752,50 @@ RoomRepository.prototype.get = function(name)
 {
     return this.rooms.getById(name);
 };
+/**
+ * Game
+ */
+function Game()
+{
+    BaseGame.call(this);
+
+    this.loop = this.loop.bind(this);
+}
+
+Game.prototype = Object.create(BaseGame.prototype);
+/**
+ * Player
+ *
+ * @param {SocketClient} client
+ * @param {String} name
+ * @param {String} color
+ */
+function Player(client, name, color)
+{
+    BasePlayer.call(this, name, color);
+
+    this.client = client;
+}
+
+Player.prototype = Object.create(BasePlayer.prototype);
+/**
+ * Room
+ */
+function Room(name)
+{
+    BaseRoom.call(this, name);
+}
+
+Room.prototype = Object.create(BaseRoom.prototype);
+/**
+ * Trail
+ */
+function Trail(color)
+{
+    BaseTrail.call(this, color);
+}
+
+Trail.prototype = Object.create(BaseTrail.prototype);
 module.exports = new Server({
     port: 8080
 });

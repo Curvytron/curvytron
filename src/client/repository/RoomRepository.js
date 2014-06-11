@@ -24,7 +24,7 @@ RoomRepository.prototype = Object.create(EventEmitter.prototype);
  */
 RoomRepository.prototype.all = function()
 {
-    return this.rooms.items;
+    return this.rooms;
 };
 
 /**

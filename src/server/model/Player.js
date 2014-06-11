@@ -13,16 +13,3 @@ function Player(client, name, color)
 }
 
 Player.prototype = Object.create(BasePlayer.prototype);
-
-/**
- * Serialize
- *
- * @return {Object}
- */
-Player.prototype.serialize = function()
-{
-    return {
-        name: this.name,
-        color: this.color
-    };
-};

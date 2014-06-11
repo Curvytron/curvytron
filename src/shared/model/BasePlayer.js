@@ -23,3 +23,16 @@ BasePlayer.prototype.update = function()
 {
     this.trail.update();
 };
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BasePlayer.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        color: this.color
+    };
+};

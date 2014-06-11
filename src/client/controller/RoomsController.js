@@ -21,7 +21,9 @@ function RoomsController($scope, RoomRepository)
  */
 RoomsController.prototype.loadRooms = function(e)
 {
-    this.$scope.rooms = this.repository.all();
+    this.$scope.rooms = this.repository.all().map(function () {
+        return this.serialize();
+    }).items;
 
     if (typeof(e) !== 'undefined') {
         this.$scope.$apply();

@@ -44,7 +44,6 @@ SocketClient.prototype.detachEvents = function()
  */
 SocketClient.prototype.onCreateRoom = function(data)
 {
-    console.log("onCreateRoom", data);
     this.repositories.room.create(data.name);
 };
 

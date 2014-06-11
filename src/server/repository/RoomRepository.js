@@ -46,7 +46,6 @@ RoomRepository.prototype.emitNewRoom = function(room, client)
     var socket = (typeof(client) !== 'undefined' ? client : this.socket)
 
     socket.emit('room:new', room.serialize());
-    console.log('room:new', room.serialize());
 };
 
 /**

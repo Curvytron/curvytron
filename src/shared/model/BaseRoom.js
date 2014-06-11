@@ -27,3 +27,16 @@ BaseRoom.prototype.removePlayer = function(player)
 {
     return this.players.remove(player);
 };
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BaseRoom.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        players: this.players.map(function () { this.serialize(); }).items
+    };
+};

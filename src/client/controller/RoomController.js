@@ -13,5 +13,5 @@ function RoomController($scope, $routeParams, RoomRepository)
  */
 RoomController.prototype.loadRoom = function(name)
 {
-    this.$scope.room = this.repository.get(name);
+    this.$scope.room = this.repository.get(name).serialize();
 };
