@@ -1,4 +1,4 @@
-a.btn-default {
+.btn-default {
     &:hover {
         background: $text-color;
         color: $background-color;
@@ -23,4 +23,21 @@ li.player-row {
     background: red;
     @extend .rounded;
     vertical-align: middle;
+}
+
+.top-right-form {
+    float: right;
+    max-width: 400px;
+    .form-control {
+        border: 2px solid $text-color !important;
+    }
+    .btn-default {
+        &:hover {
+            background: $text-color;
+            color: $background-color;
+        }
+    }
+    .input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group {
+        margin-left: -2px;
+    }
 }

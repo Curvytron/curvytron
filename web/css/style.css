@@ -1996,7 +1996,7 @@ select[multiple], select[size] {
   line-height: 28px;
   color: #75858C;
   font-family: "Raleway", "Helvetica Neue", "Helvetica";
-  background-color: #FFF;
+  background-color: #f6f7f3;
   background-image: none;
   border: 1px solid #d0d2cc;
   border-radius: 4px;
@@ -2730,7 +2730,7 @@ input[type="submit"].btn-block, input[type="reset"].btn-block, input[type="butto
   display: inline-block;
   cursor: pointer;
   overflow: hidden;
-  background-color: #FFF;
+  background-color: #f6f7f3;
   border: 1px solid #d0d2cc;
   border-radius: 4px;
   width: auto;
@@ -2741,7 +2741,7 @@ input[type="submit"].btn-block, input[type="reset"].btn-block, input[type="butto
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
-    background-color: #FFF;
+    background-color: #f6f7f3;
     color: #75858C;
     padding: 0 12px;
     font-size: 16px;
@@ -2787,7 +2787,7 @@ input[type="submit"].btn-block, input[type="reset"].btn-block, input[type="butto
   line-height: 28px;
   color: #75858C;
   font-family: "Raleway", "Helvetica Neue", "Helvetica";
-  background-color: #FFF;
+  background-color: #f6f7f3;
   background-image: none;
   border: 1px solid #d0d2cc;
   border-radius: 4px;
@@ -3483,7 +3483,7 @@ a, a:visited {
 a:hover {
   text-decoration: underline; }
 
-a.btn-default:hover {
+.btn-default:hover {
   background: #75858C;
   color: #f6f7f3; }
 
@@ -3503,6 +3503,17 @@ li.player-row {
   margin-right: 5px;
   background: red;
   vertical-align: middle; }
+
+.top-right-form {
+  float: right;
+  max-width: 400px; }
+  .top-right-form .form-control {
+    border: 2px solid #75858C !important; }
+  .top-right-form .btn-default:hover {
+    background: #75858C;
+    color: #f6f7f3; }
+  .top-right-form .input-group-btn:last-child > .btn, .top-right-form .input-group-btn:last-child > .btn-group {
+    margin-left: -2px; }
 
 @media (max-width: 767px) { }
 
