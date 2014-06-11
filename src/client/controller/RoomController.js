@@ -6,8 +6,9 @@ function RoomController($scope, $routeParams, RoomRepository)
 
     this.loadRoom(this.roomName);
 
-    this.createUser  = this.createUser.bind(this);
-
+    this.createUser = this.createUser.bind(this);
+    this.loadRoom = this.loadRoom.bind(this);
+    
     this.repository.on('room:join:' + this.roomName, this.loadRoom);
 
     this.$scope.submit = this.createUser;
@@ -31,7 +32,15 @@ RoomController.prototype.loadRoom = function(name)
 RoomController.prototype.createUser = function(e)
 {
     if (this.$scope.username) {
-        // this.repository.create(this.$scope.username);
-        this.$scope.username = null;
+        var $scope = this.$scope;
+
+        this.repository.join($scope.room.name, $scope.username, function (success) {
+            if (success) {
+                $scope.username = null;
+                $scope.$apply();
+            } else {
+                console.log('Error');
+            }
+        });
     }
 };
