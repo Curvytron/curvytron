@@ -40,7 +40,7 @@ RoomRepository.prototype.get = function(name)
 };
 
 /**
- * Get all
+ * Create
  *
  * @return {Array}
  * @param {Function} callback
@@ -51,7 +51,7 @@ RoomRepository.prototype.create = function(name, callback)
 };
 
 /**
- * Get all
+ * Join
  *
  * @return {Array}
  * @param {Function} callback
@@ -59,6 +59,17 @@ RoomRepository.prototype.create = function(name, callback)
 RoomRepository.prototype.join = function(room, player, callback)
 {
     return this.client.io.emit('room:join', {room: room, player: player}, callback);
+};
+
+/**
+ * Set color
+ *
+ * @return {Array}
+ * @param {Function} callback
+ */
+RoomRepository.prototype.setColor = function(room, color, callback)
+{
+    return this.client.io.emit('room:color', {room: room, color: color}, callback);
 };
 
 // EVENTS:
