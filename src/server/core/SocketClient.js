@@ -113,10 +113,12 @@ SocketClient.prototype.onJoinRoom = function(data, callback)
  *
  * @param {Object} data
  */
-SocketClient.prototype.onReadyRoom = function(data)
+SocketClient.prototype.onReadyRoom = function(data, callback)
 {
     this.player.ready = data.ready;
     this.room.checkStart();
+
+    callback(true);
 
     this.broadcastRoom('room:ready', {ready: this.player.ready});
 };
@@ -126,9 +128,11 @@ SocketClient.prototype.onReadyRoom = function(data)
  *
  * @param {Object} data
  */
-SocketClient.prototype.onColorRoom = function(data)
+SocketClient.prototype.onColorRoom = function(data, callback)
 {
     this.player.color = data.color;
+
+    callback(true);
 
     this.broadcastRoom('room:color', {ready: this.player.color});
 };

@@ -315,13 +315,12 @@ Collection.prototype.getLast = function()
  * @param {Player} name
  * @param {String} color
  */
-function BaseAvatar(player, color)
+function BaseAvatar(player)
 {
     EventEmitter.call(this);
 
     this.player = player;
-    this.color  = typeof(color) !== 'undefined' ? color : 'red';
-    this.trail  = new Trail(this.color);
+    this.trail  = new Trail(this.player.color);
 }
 
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
@@ -336,10 +335,11 @@ BaseAvatar.prototype.update = function()
 /**
  * BaseGame
  */
-function BaseGame()
+function BaseGame(room)
 {
+    this.room    = room;
     this.frame   = null;
-    this.players = new Collection([], 'name');
+    this.avatars = this.room.players.map(function () { new Avatar(this); });
 }
 
 /**
@@ -349,29 +349,19 @@ function BaseGame()
  */
 BaseGame.prototype.update = function(step)
 {
-    for (var i = this.players.ids.length - 1; i >= 0; i--) {
-        this.players.items[i].update(step);
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        this.avatars.items[i].update(step);
     }
 };
 
 /**
- * Add a player to the game
+ * Remove a avatar from the game
  *
- * @param {Player} player
+ * @param {Avatar} avatar
  */
-BaseGame.prototype.addPlayer = function(player)
+BaseGame.prototype.removeAvatar = function(avatar)
 {
-    return this.players.add(player);
-};
-
-/**
- * Remove a player from the game
- *
- * @param {Player} player
- */
-BaseGame.prototype.removePlayer = function(player)
-{
-    return this.players.remove(player);
+    return this.avatars.remove(avatar);
 };
 
 /**
@@ -491,6 +481,26 @@ BaseRoom.prototype.removePlayer = function(player)
 };
 
 /**
+ * Check ready
+ */
+BaseRoom.prototype.checkReady = function()
+{
+    if (this.players.filter(function () { return !this.ready; }).isEmpty()) {
+        this.startGame();
+    }
+};
+
+/**
+ * Start Game
+ */
+BaseRoom.prototype.startGame = function()
+{
+    if (!this.game) {
+        this.game = new Game(this);
+    }
+};
+
+/**
  * Serialize
  *
  * @return {Object}
@@ -499,7 +509,8 @@ BaseRoom.prototype.serialize = function()
 {
     return {
         name: this.name,
-        players: this.players.map(function () { return this.serialize(); }).items
+        players: this.players.map(function () { return this.serialize(); }).items,
+        game: this.game ? true : false
     };
 };
 /**
@@ -763,10 +774,12 @@ SocketClient.prototype.onJoinRoom = function(data, callback)
  *
  * @param {Object} data
  */
-SocketClient.prototype.onReadyRoom = function(data)
+SocketClient.prototype.onReadyRoom = function(data, callback)
 {
     this.player.ready = data.ready;
     this.room.checkStart();
+
+    callback(true);
 
     this.broadcastRoom('room:ready', {ready: this.player.ready});
 };
@@ -776,9 +789,11 @@ SocketClient.prototype.onReadyRoom = function(data)
  *
  * @param {Object} data
  */
-SocketClient.prototype.onColorRoom = function(data)
+SocketClient.prototype.onColorRoom = function(data, callback)
 {
     this.player.color = data.color;
+
+    callback(true);
 
     this.broadcastRoom('room:color', {ready: this.player.color});
 };

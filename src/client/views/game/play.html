@@ -1,0 +1,12 @@
+<section ng-controller="GameController">
+    <aside class="sidebar">
+        <ul>
+            <li ng-repeat="player in game.players">
+                <img src="#" alt="" width="80" class="rounded" />
+                <p style="color: {{ player.color }};">{{ player.name }}</p>
+                <p>{{ player.points }}</p>
+            </li>
+        </ul>
+    </aside>
+    <canvas id="game" class="game"></canvas>
+</section>

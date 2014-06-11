@@ -29,6 +29,26 @@ BaseRoom.prototype.removePlayer = function(player)
 };
 
 /**
+ * Check ready
+ */
+BaseRoom.prototype.checkReady = function()
+{
+    if (this.players.filter(function () { return !this.ready; }).isEmpty()) {
+        this.startGame();
+    }
+};
+
+/**
+ * Start Game
+ */
+BaseRoom.prototype.startGame = function()
+{
+    if (!this.game) {
+        this.game = new Game(this);
+    }
+};
+
+/**
  * Serialize
  *
  * @return {Object}
@@ -37,6 +57,7 @@ BaseRoom.prototype.serialize = function()
 {
     return {
         name: this.name,
-        players: this.players.map(function () { return this.serialize(); }).items
+        players: this.players.map(function () { return this.serialize(); }).items,
+        game: this.game ? true : false
     };
 };

@@ -1,10 +1,11 @@
 /**
  * BaseGame
  */
-function BaseGame()
+function BaseGame(room)
 {
+    this.room    = room;
     this.frame   = null;
-    this.players = new Collection([], 'name');
+    this.avatars = this.room.players.map(function () { new Avatar(this); });
 }
 
 /**
@@ -14,29 +15,19 @@ function BaseGame()
  */
 BaseGame.prototype.update = function(step)
 {
-    for (var i = this.players.ids.length - 1; i >= 0; i--) {
-        this.players.items[i].update(step);
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        this.avatars.items[i].update(step);
     }
 };
 
 /**
- * Add a player to the game
+ * Remove a avatar from the game
  *
- * @param {Player} player
+ * @param {Avatar} avatar
  */
-BaseGame.prototype.addPlayer = function(player)
+BaseGame.prototype.removeAvatar = function(avatar)
 {
-    return this.players.add(player);
-};
-
-/**
- * Remove a player from the game
- *
- * @param {Player} player
- */
-BaseGame.prototype.removePlayer = function(player)
-{
-    return this.players.remove(player);
+    return this.avatars.remove(avatar);
 };
 
 /**

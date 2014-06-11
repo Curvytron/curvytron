@@ -4,13 +4,12 @@
  * @param {Player} name
  * @param {String} color
  */
-function BaseAvatar(player, color)
+function BaseAvatar(player)
 {
     EventEmitter.call(this);
 
     this.player = player;
-    this.color  = typeof(color) !== 'undefined' ? color : 'red';
-    this.trail  = new Trail(this.color);
+    this.trail  = new Trail(this.player.color);
 }
 
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
