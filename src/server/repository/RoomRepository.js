@@ -1,9 +1,8 @@
 /**
  * Room Repository
  */
-function RoomRepository(socket)
+function RoomRepository()
 {
-    this.socket  = socket;
     this.rooms = new Collection([], 'name');
 }
 
@@ -16,38 +15,10 @@ function RoomRepository(socket)
  */
 RoomRepository.prototype.create = function(name)
 {
-    var room = new Room(name),
-        result = this.rooms.add(room);
+    var room = new Room(name);
 
-    if (result) {
-        this.emitNewRoom(room);
-    }
-
-    return result;
+    return this.rooms.add(room) ? room : null;
 }
-
-/**
- * List rooms
- */
-RoomRepository.prototype.listRooms = function(client)
-{
-    for (var i = this.rooms.ids.length - 1; i >= 0; i--) {
-        this.emitNewRoom(this.rooms.items[i], client);
-    }
-};
-
-/**
- * emitNewRoom
- *
- * @param {Room} room
- * @param {Socket} client
- */
-RoomRepository.prototype.emitNewRoom = function(room, client)
-{
-    var socket = (typeof(client) !== 'undefined' ? client : this.socket)
-
-    socket.emit('room:new', room.serialize());
-};
 
 /**
  * Get by name
@@ -59,4 +30,14 @@ RoomRepository.prototype.emitNewRoom = function(room, client)
 RoomRepository.prototype.get = function(name)
 {
     return this.rooms.getById(name);
+};
+
+/**
+ * Get all
+ *
+ * @return {Array}
+ */
+RoomRepository.prototype.all = function()
+{
+    return this.rooms.items;
 };

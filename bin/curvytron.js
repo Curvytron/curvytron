@@ -457,7 +457,6 @@ function BaseRoom(name)
 {
     this.name    = name;
     this.players = new Collection([], 'name');
-    this.game    = null;
 }
 
 /**
@@ -481,23 +480,13 @@ BaseRoom.prototype.removePlayer = function(player)
 };
 
 /**
- * Check ready
+ * Is ready
+ *
+ * @return {Boolean}
  */
-BaseRoom.prototype.checkReady = function()
+BaseRoom.prototype.isReady = function()
 {
-    if (this.players.filter(function () { return !this.ready; }).isEmpty()) {
-        this.startGame();
-    }
-};
-
-/**
- * Start Game
- */
-BaseRoom.prototype.startGame = function()
-{
-    if (!this.game) {
-        this.game = new Game(this);
-    }
+    return this.players.filter(function () { return !this.ready; }).isEmpty();
 };
 
 /**
@@ -603,6 +592,53 @@ BaseTrail.prototype.getDistance = function(from, to)
     return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
 };
 /**
+ * Room Controller
+ */
+function RoomController(socket, repository)
+{
+    this.socket     = socket;
+    this.repository = repository;
+}
+
+/**
+ * Create a room
+ *
+ * @param {String} name
+ *
+ * @return {Room}
+ */
+RoomController.prototype.create = function(name)
+{
+    var room = this.repository.create(name);
+
+    if (room) {
+        this.emitNewRoom(room);
+    }
+}
+
+/**
+ * List rooms
+ */
+RoomController.prototype.listRooms = function(client)
+{
+    for (var i = this.repository.rooms.ids.length - 1; i >= 0; i--) {
+        this.emitNewRoom(this.repository.rooms.items[i], client);
+    }
+};
+
+/**
+ * emitNewRoom
+ *
+ * @param {Room} room
+ * @param {Socket} client
+ */
+RoomController.prototype.emitNewRoom = function(room, client)
+{
+    var socket = (typeof(client) !== 'undefined' ? client : this.socket)
+
+    socket.emit('room:new', room.serialize());
+};
+/**
  * Server
  */
 function Server(config)
@@ -612,8 +648,13 @@ function Server(config)
     this.server       = http.Server(this.app);
     this.io           = io(this.server);
     this.clients      = new Collection();
+
     this.repositories = {
-        room: new RoomRepository(this.io)
+        room: new RoomRepository()
+    };
+
+    this.controllers = {
+        room: new RoomController(this.io, this.repositories.room)
     };
 
     this.onSocketConnection    = this.onSocketConnection.bind(this);
@@ -627,6 +668,7 @@ function Server(config)
     });
 
     SocketClient.prototype.repositories = this.repositories;
+    SocketClient.prototype.controllers  = this.controllers;
 }
 
 /**
@@ -680,7 +722,7 @@ function SocketClient(socket)
 
     this.socket.emit('open');
 
-    this.repositories.room.listRooms(this.socket);
+    this.controllers.room.listRooms(this.socket);
 }
 
 /**
@@ -721,8 +763,8 @@ SocketClient.prototype.broadcastRoom = function(event, data)
         data.room = this.room.name;
     }
 
-    this.socket/*.in(this.room.name)*/.emit(event, data);
-    this.socket/*.in(this.room.name)*/.broadcast.emit(event, data);
+    this.socket.emit(event, data);
+    this.socket.broadcast.emit(event, data);
 };
 
 /**
@@ -733,7 +775,7 @@ SocketClient.prototype.broadcastRoom = function(event, data)
  */
 SocketClient.prototype.onCreateRoom = function(data, callback)
 {
-    callback(this.repositories.room.create(data.name));
+    callback(this.controllers.room.create(data.name));
 };
 
 /**
@@ -762,7 +804,7 @@ SocketClient.prototype.onJoinRoom = function(data, callback)
         result = room.addPlayer(this.player);
     }
 
-    callback(result ? this.player.name : false);
+    callback({result: result, name: this.player.name});
 
     if (result) {
         this.broadcastRoom('room:join', {player: this.player.serialize()});
@@ -777,11 +819,12 @@ SocketClient.prototype.onJoinRoom = function(data, callback)
 SocketClient.prototype.onReadyRoom = function(data, callback)
 {
     this.player.ready = !this.player.ready;
-    //this.room.checkStart();
 
-    callback(true);
+    callback({success: true, ready: this.player.ready});
 
     this.broadcastRoom('room:player:update', {ready: this.player.ready});
+
+    //this.room.checkReady();
 };
 
 /**
@@ -793,7 +836,7 @@ SocketClient.prototype.onColorRoom = function(data, callback)
 {
     this.player.color = data.color;
 
-    callback(true);
+    callback({success: true, color: this.player.color});
 
     this.broadcastRoom('room:player:update', {color: this.player.color});
 };
@@ -864,9 +907,8 @@ Trail.prototype = Object.create(BaseTrail.prototype);
 /**
  * Room Repository
  */
-function RoomRepository(socket)
+function RoomRepository()
 {
-    this.socket  = socket;
     this.rooms = new Collection([], 'name');
 }
 
@@ -879,38 +921,10 @@ function RoomRepository(socket)
  */
 RoomRepository.prototype.create = function(name)
 {
-    var room = new Room(name),
-        result = this.rooms.add(room);
+    var room = new Room(name);
 
-    if (result) {
-        this.emitNewRoom(room);
-    }
-
-    return result;
+    return this.rooms.add(room) ? room : null;
 }
-
-/**
- * List rooms
- */
-RoomRepository.prototype.listRooms = function(client)
-{
-    for (var i = this.rooms.ids.length - 1; i >= 0; i--) {
-        this.emitNewRoom(this.rooms.items[i], client);
-    }
-};
-
-/**
- * emitNewRoom
- *
- * @param {Room} room
- * @param {Socket} client
- */
-RoomRepository.prototype.emitNewRoom = function(room, client)
-{
-    var socket = (typeof(client) !== 'undefined' ? client : this.socket)
-
-    socket.emit('room:new', room.serialize());
-};
 
 /**
  * Get by name
@@ -922,6 +936,16 @@ RoomRepository.prototype.emitNewRoom = function(room, client)
 RoomRepository.prototype.get = function(name)
 {
     return this.rooms.getById(name);
+};
+
+/**
+ * Get all
+ *
+ * @return {Array}
+ */
+RoomRepository.prototype.all = function()
+{
+    return this.rooms.items;
 };
 module.exports = new Server({
     port: 8080

@@ -19,7 +19,7 @@ function SocketClient(socket)
 
     this.socket.emit('open');
 
-    this.repositories.room.listRooms(this.socket);
+    this.controllers.room.listRooms(this.socket);
 }
 
 /**
@@ -60,8 +60,8 @@ SocketClient.prototype.broadcastRoom = function(event, data)
         data.room = this.room.name;
     }
 
-    this.socket/*.in(this.room.name)*/.emit(event, data);
-    this.socket/*.in(this.room.name)*/.broadcast.emit(event, data);
+    this.socket.emit(event, data);
+    this.socket.broadcast.emit(event, data);
 };
 
 /**
@@ -72,7 +72,7 @@ SocketClient.prototype.broadcastRoom = function(event, data)
  */
 SocketClient.prototype.onCreateRoom = function(data, callback)
 {
-    callback(this.repositories.room.create(data.name));
+    callback(this.controllers.room.create(data.name));
 };
 
 /**
@@ -101,7 +101,7 @@ SocketClient.prototype.onJoinRoom = function(data, callback)
         result = room.addPlayer(this.player);
     }
 
-    callback(result ? this.player.name : false);
+    callback({result: result, name: this.player.name});
 
     if (result) {
         this.broadcastRoom('room:join', {player: this.player.serialize()});
@@ -116,11 +116,12 @@ SocketClient.prototype.onJoinRoom = function(data, callback)
 SocketClient.prototype.onReadyRoom = function(data, callback)
 {
     this.player.ready = !this.player.ready;
-    //this.room.checkStart();
 
-    callback(true);
+    callback({success: true, ready: this.player.ready});
 
     this.broadcastRoom('room:player:update', {ready: this.player.ready});
+
+    //this.room.checkReady();
 };
 
 /**
@@ -132,7 +133,7 @@ SocketClient.prototype.onColorRoom = function(data, callback)
 {
     this.player.color = data.color;
 
-    callback(true);
+    callback({success: true, color: this.player.color});
 
     this.broadcastRoom('room:player:update', {color: this.player.color});
 };

@@ -65,7 +65,7 @@ RoomController.prototype.setColor = function(e)
     var controller = this;
 
     this.repository.setColor(this.roomName, this.$scope.color, function (result) {
-        if (result) {
+        if (result.success) {
             controller.loadRoom(true);
         } else {
             console.log('Error');
@@ -83,7 +83,7 @@ RoomController.prototype.setReady = function(e)
     var controller = this;
 
     this.repository.setReady(this.roomName, function (result) {
-        if (result) {
+        if (result.success) {
             controller.loadRoom(true);
         } else {
             console.log('Error');

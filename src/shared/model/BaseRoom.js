@@ -5,7 +5,6 @@ function BaseRoom(name)
 {
     this.name    = name;
     this.players = new Collection([], 'name');
-    this.game    = null;
 }
 
 /**
@@ -29,23 +28,13 @@ BaseRoom.prototype.removePlayer = function(player)
 };
 
 /**
- * Check ready
+ * Is ready
+ *
+ * @return {Boolean}
  */
-BaseRoom.prototype.checkReady = function()
+BaseRoom.prototype.isReady = function()
 {
-    if (this.players.filter(function () { return !this.ready; }).isEmpty()) {
-        this.startGame();
-    }
-};
-
-/**
- * Start Game
- */
-BaseRoom.prototype.startGame = function()
-{
-    if (!this.game) {
-        this.game = new Game(this);
-    }
+    return this.players.filter(function () { return !this.ready; }).isEmpty();
 };
 
 /**

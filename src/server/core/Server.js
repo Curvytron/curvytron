@@ -8,8 +8,13 @@ function Server(config)
     this.server       = http.Server(this.app);
     this.io           = io(this.server);
     this.clients      = new Collection();
+
     this.repositories = {
-        room: new RoomRepository(this.io)
+        room: new RoomRepository()
+    };
+
+    this.controllers = {
+        room: new RoomController(this.io, this.repositories.room)
     };
 
     this.onSocketConnection    = this.onSocketConnection.bind(this);
@@ -23,6 +28,7 @@ function Server(config)
     });
 
     SocketClient.prototype.repositories = this.repositories;
+    SocketClient.prototype.controllers  = this.controllers;
 }
 
 /**
