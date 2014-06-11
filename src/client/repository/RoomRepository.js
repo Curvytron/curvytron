@@ -48,6 +48,17 @@ RoomRepository.prototype.create = function(name, callback)
     return this.client.io.emit('room:create', {name: name}, callback);
 };
 
+/**
+ * Get all
+ *
+ * @return {Array}
+ * @param {Function} callback
+ */
+RoomRepository.prototype.join = function(room, player, callback)
+{
+    return this.client.io.emit('room:join', {room: room, player: player}, callback);
+};
+
 // EVENTS:
 
 /**
