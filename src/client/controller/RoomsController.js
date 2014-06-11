@@ -38,7 +38,15 @@ RoomsController.prototype.loadRooms = function(e)
 RoomsController.prototype.createRoom = function(e)
 {
     if (this.$scope.name) {
-        this.repository.create(this.$scope.name);
-        this.$scope.name = null;
+        var $scope = this.$scope;
+
+        this.repository.create(this.$scope.name, function (success) {
+            if (success) {
+                $scope.name = null;
+                $scope.$apply();
+            } else {
+                console.log('Error');
+            }
+        });
     }
 };

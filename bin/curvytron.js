@@ -673,23 +673,25 @@ SocketClient.prototype.detachEvents = function()
  * On new room
  *
  * @param {String} name
+ * @param {Function} callback
  */
-SocketClient.prototype.onCreateRoom = function(data)
+SocketClient.prototype.onCreateRoom = function(data, callback)
 {
-    this.repositories.room.create(data.name);
+    callback(this.repositories.room.create(data.name));
 };
 
 /**
  * On join room
  *
  * @param {Object} data
+ * @param {Function} callback
  */
-SocketClient.prototype.onJoinRoom = function(data)
+SocketClient.prototype.onJoinRoom = function(data, callback)
 {
-    /*var room = this.roomController.get(data.room)
+    var room = this.roomRepositories.get(data.room)
         player = new Player(this, data.player);
 
-    room.addPlayer(player);*/
+    callback(room.addPlayer(player));
 };
 /**
  * Game
@@ -753,13 +755,14 @@ function RoomRepository(socket)
  */
 RoomRepository.prototype.create = function(name)
 {
-    var room = new Room(name);
+    var room = new Room(name),
+        result = this.rooms.add(room);
 
-    if (this.rooms.add(room)) {
+    if (result) {
         this.emitNewRoom(room);
-
-        return room;
     }
+
+    return result;
 }
 
 /**

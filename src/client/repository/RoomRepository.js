@@ -41,10 +41,11 @@ RoomRepository.prototype.get = function(name)
  * Get all
  *
  * @return {Array}
+ * @param {Function} callback
  */
-RoomRepository.prototype.create = function(name)
+RoomRepository.prototype.create = function(name, callback)
 {
-    return this.client.io.emit('room:create', {name: name});
+    return this.client.io.emit('room:create', {name: name}, callback);
 };
 
 // EVENTS:

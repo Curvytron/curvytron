@@ -16,13 +16,14 @@ function RoomRepository(socket)
  */
 RoomRepository.prototype.create = function(name)
 {
-    var room = new Room(name);
+    var room = new Room(name),
+        result = this.rooms.add(room);
 
-    if (this.rooms.add(room)) {
+    if (result) {
         this.emitNewRoom(room);
-
-        return room;
     }
+
+    return result;
 }
 
 /**
