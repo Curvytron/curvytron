@@ -1,9 +1,13 @@
 <section ng-controller="RoomsController">
     <div id="rooms" class="container">
         <h1>
-            <form ng-submit="submit()" class="pull-right">
-                <input type="text" ng-model="name" name="name" />
-                <input type="submit" id="submit" class="btn btn-lg btn-default" value="Create" />
+            <form ng-submit="submit()" class="top-right-form">
+                <div class="input-group input-group-lg">
+                    <input type="text" ng-model="name" class="form-control" name="name" />
+                    <span class="input-group-btn">
+                        <input type="submit" id="submit" class="btn btn-lg btn-default" value="Create" />
+                    </span>
+                </div>
             </form>
             {{ rooms.length }} actives rooms
         </h1>

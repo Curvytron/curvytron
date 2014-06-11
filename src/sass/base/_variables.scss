@@ -122,7 +122,7 @@ $input-height-large: ceil($base-line-height*1.5 + ($padding-large-vertical * 2) 
 
 $input-color: $text-color;
 $input-color-placeholder: lighter($text-color, 40%);
-$input-bg: #FFF;
+$input-bg: $background-color;
 $input-border: darken(#e9eae7, 10%);
 $input-border-focus: darken($input-border, 15%);
 $input-border-radius: $border-radius-base;
