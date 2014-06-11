@@ -9,7 +9,7 @@ function Server(config)
     this.io           = io(this.server);
     this.clients      = new Collection();
     this.repositories = {
-        lobby: new LobbyRepository(this.io)
+        room: new RoomRepository(this.io)
     };
 
     this.onSocketConnection    = this.onSocketConnection.bind(this);
@@ -37,10 +37,6 @@ Server.prototype.onSocketConnection = function(socket)
     socket.on('disconnect', this.onSocketDisconnection);
 
     this.clients.add(new SocketClient(socket));
-
-    setTimeout(function () {
-        socket.emit('lobby:new', {name: "elao"});
-    }, 1000)
 };
 
 /**

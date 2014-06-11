@@ -59,8 +59,8 @@ gulp.task('front-full', function() {
     gulp.src('src/client/fixtures/*.json')
         .pipe(gulp.dest(jsDir + 'fixtures'));
 
-    gulp.src('src/client/partials/**/*')
-        .pipe(gulp.dest(jsDir + 'partials'));
+    gulp.src('src/client/views/**/*')
+        .pipe(gulp.dest(jsDir + 'views'));
 });
 
 gulp.task('front-min', function(){
@@ -73,8 +73,8 @@ gulp.task('front-min', function(){
     gulp.src('src/client/fixtures/*.json')
         .pipe(gulp.dest(jsDir + 'fixtures'));
 
-    gulp.src('src/client/partials/**/*')
-        .pipe(gulp.dest(jsDir + 'partials'));
+    gulp.src('src/client/views/**/*')
+        .pipe(gulp.dest(jsDir + 'views'));
 });
 
 gulp.task('server', function() {

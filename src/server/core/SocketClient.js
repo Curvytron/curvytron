@@ -9,8 +9,8 @@ function SocketClient(socket)
     this.socket = socket;
     this.player = new Player(this, this.id);
 
-    this.onJoinLobby = this.onJoinLobby.bind(this);
-    this.onNewLobby  = this.onNewLobby.bind(this);
+    this.onJoinRoom = this.onJoinRoom.bind(this);
+    this.onCreateRoom  = this.onCreateRoom.bind(this);
 
     this.attachEvents();
 
@@ -22,8 +22,8 @@ function SocketClient(socket)
  */
 SocketClient.prototype.attachEvents = function()
 {
-    this.socket.on('lobby:new', this.onNewLobby);
-    this.socket.on('lobby:join', this.onJoinLobby);
+    this.socket.on('room:create', this.onCreateRoom);
+    this.socket.on('room:join', this.onJoinRoom);
 };
 
 /**
@@ -31,30 +31,30 @@ SocketClient.prototype.attachEvents = function()
  */
 SocketClient.prototype.detachEvents = function()
 {
-    this.socket.off('lobby:new', this.onNewLobby);
-    this.socket.off('lobby:join', this.onJoinLobby);
+    this.socket.off('room:create', this.onCreateRoom);
+    this.socket.off('room:join', this.onJoinRoom);
 };
 
 /**
- * On new lobby
+ * On new room
  *
  * @param {String} name
  */
-SocketClient.prototype.onNewLobby = function(name)
+SocketClient.prototype.onCreateRoom = function(name)
 {
-    console.log("onNewLobby", name);
-    this.repositories.lobby.create(name);
+    console.log("onCreateRoom", name);
+    this.repositories.room.create(name);
 };
 
 /**
- * On join lobby
+ * On join room
  *
  * @param {Object} data
  */
-SocketClient.prototype.onJoinLobby = function(data)
+SocketClient.prototype.onJoinRoom = function(data)
 {
-    /*var lobby = this.lobbyController.get(data.lobby)
+    /*var room = this.roomController.get(data.room)
         player = new Player(this, data.player);
 
-    lobby.addPlayer(player);*/
+    room.addPlayer(player);*/
 };

@@ -405,35 +405,6 @@ BaseGame.prototype.onFrame = function(step)
     this.update();
 };
 /**
- * Base Lobby
- */
-function BaseLobby(name)
-{
-    this.name    = name;
-    this.players = new Collection([], 'name');
-    this.game    = null;
-}
-
-/**
- * Add player
- *
- * @param {Player} player
- */
-BaseLobby.prototype.addPlayer = function(player)
-{
-    return this.players.add(player);
-};
-
-/**
- * Remove player
- *
- * @param {Player} player
- */
-BaseLobby.prototype.removePlayer = function(player)
-{
-    return this.players.remove(player);
-};
-/**
  * BasePlayer
  *
  * @param {String} name
@@ -457,6 +428,35 @@ BasePlayer.prototype = Object.create(EventEmitter.prototype);
 BasePlayer.prototype.update = function()
 {
     this.trail.update();
+};
+/**
+ * Base Room
+ */
+function BaseRoom(name)
+{
+    this.name    = name;
+    this.players = new Collection([], 'name');
+    this.game    = null;
+}
+
+/**
+ * Add player
+ *
+ * @param {Player} player
+ */
+BaseRoom.prototype.addPlayer = function(player)
+{
+    return this.players.add(player);
+};
+
+/**
+ * Remove player
+ *
+ * @param {Player} player
+ */
+BaseRoom.prototype.removePlayer = function(player)
+{
+    return this.players.remove(player);
 };
 /**
  * BaseTrail
@@ -558,7 +558,7 @@ function Server(config)
     this.io           = io(this.server);
     this.clients      = new Collection();
     this.repositories = {
-        lobby: new LobbyRepository(this.io)
+        room: new RoomRepository(this.io)
     };
 
     this.onSocketConnection    = this.onSocketConnection.bind(this);
@@ -586,10 +586,6 @@ Server.prototype.onSocketConnection = function(socket)
     socket.on('disconnect', this.onSocketDisconnection);
 
     this.clients.add(new SocketClient(socket));
-
-    setTimeout(function () {
-        socket.emit('lobby:new', {name: "elao"});
-    }, 1000)
 };
 
 /**
@@ -619,8 +615,8 @@ function SocketClient(socket)
     this.socket = socket;
     this.player = new Player(this, this.id);
 
-    this.onJoinLobby = this.onJoinLobby.bind(this);
-    this.onNewLobby  = this.onNewLobby.bind(this);
+    this.onJoinRoom = this.onJoinRoom.bind(this);
+    this.onCreateRoom  = this.onCreateRoom.bind(this);
 
     this.attachEvents();
 
@@ -632,8 +628,8 @@ function SocketClient(socket)
  */
 SocketClient.prototype.attachEvents = function()
 {
-    this.socket.on('lobby:new', this.onNewLobby);
-    this.socket.on('lobby:join', this.onJoinLobby);
+    this.socket.on('room:create', this.onCreateRoom);
+    this.socket.on('room:join', this.onJoinRoom);
 };
 
 /**
@@ -641,32 +637,32 @@ SocketClient.prototype.attachEvents = function()
  */
 SocketClient.prototype.detachEvents = function()
 {
-    this.socket.off('lobby:new', this.onNewLobby);
-    this.socket.off('lobby:join', this.onJoinLobby);
+    this.socket.off('room:create', this.onCreateRoom);
+    this.socket.off('room:join', this.onJoinRoom);
 };
 
 /**
- * On new lobby
+ * On new room
  *
  * @param {String} name
  */
-SocketClient.prototype.onNewLobby = function(name)
+SocketClient.prototype.onCreateRoom = function(name)
 {
-    console.log("onNewLobby", name);
-    this.repositories.lobby.create(name);
+    console.log("onCreateRoom", name);
+    this.repositories.room.create(name);
 };
 
 /**
- * On join lobby
+ * On join room
  *
  * @param {Object} data
  */
-SocketClient.prototype.onJoinLobby = function(data)
+SocketClient.prototype.onJoinRoom = function(data)
 {
-    /*var lobby = this.lobbyController.get(data.lobby)
+    /*var room = this.roomController.get(data.room)
         player = new Player(this, data.player);
 
-    lobby.addPlayer(player);*/
+    room.addPlayer(player);*/
 };
 /**
  * Game
@@ -679,15 +675,6 @@ function Game()
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
-/**
- * Lobby
- */
-function Lobby(name)
-{
-    BaseLobby.call(this, name);
-}
-
-Lobby.prototype = Object.create(BaseLobby.prototype);
 /**
  * Player
  *
@@ -704,6 +691,15 @@ function Player(client, name, color)
 
 Player.prototype = Object.create(BasePlayer.prototype);
 /**
+ * Room
+ */
+function Room(name)
+{
+    BaseRoom.call(this, name);
+}
+
+Room.prototype = Object.create(BaseRoom.prototype);
+/**
  * Trail
  */
 function Trail(color)
@@ -713,29 +709,29 @@ function Trail(color)
 
 Trail.prototype = Object.create(BaseTrail.prototype);
 /**
- * Lobby Repository
+ * Room Repository
  */
-function LobbyRepository(socket)
+function RoomRepository(socket)
 {
     this.socket  = socket;
-    this.lobbies = new Collection([], 'name');
+    this.rooms = new Collection([], 'name');
 }
 
 /**
- * Create a lobby
+ * Create a room
  *
  * @param {String} first_argument
  *
- * @return {Lobby}
+ * @return {Room}
  */
-LobbyRepository.prototype.create = function(name)
+RoomRepository.prototype.create = function(name)
 {
-    var lobby = new Lobby(name);
+    var room = new Room(name);
 
-    if (this.lobbies.add(lobby)) {
-        this.socket.emit('lobby:new', lobby.name);
+    if (this.rooms.add(room)) {
+        this.socket.emit('room:new', room.name);
 
-        return lobby;
+        return room;
     }
 };
 
@@ -744,11 +740,11 @@ LobbyRepository.prototype.create = function(name)
  *
  * @param {String} name
  *
- * @return {Lobby}
+ * @return {Room}
  */
-LobbyRepository.prototype.get = function(name)
+RoomRepository.prototype.get = function(name)
 {
-    return this.lobbies.getById(name);
+    return this.rooms.getById(name);
 };
 module.exports = new Server({
     port: 8080

@@ -1,13 +1,13 @@
-<section ng-controller="LobbyController">
-    <div id="lobbys" class="container">
+<section ng-controller="RoomController">
+    <div id="rooms" class="container">
         <h1>
             <span class="pull-right">
-                <ng-pluralize count="lobby.players.length "
+                <ng-pluralize count="room.players.length "
                                                  when="{'0': 'No player',
                                                      'one': '1 player',
                                                      'other': '{} players'}">
             </span>
-            {{ lobby.name }}
+            {{ room.name }}
         </h1>
         <table class="table table-hover table-hover v-align-middle">
             <thead>
@@ -19,7 +19,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="player in lobby.players">
+                <tr ng-repeat="player in room.players">
                     <td width="80"><img src="#" alt="" width="80" class="rounded" /></td>
                     <td>{{ player.name }}</td>
                     <td><span class="color-preview" style="background-color: {{ player.color }};"></span> {{ player.color }}</td>

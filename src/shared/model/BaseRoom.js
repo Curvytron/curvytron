@@ -1,7 +1,7 @@
 /**
- * Base Lobby
+ * Base Room
  */
-function BaseLobby(name)
+function BaseRoom(name)
 {
     this.name    = name;
     this.players = new Collection([], 'name');
@@ -13,7 +13,7 @@ function BaseLobby(name)
  *
  * @param {Player} player
  */
-BaseLobby.prototype.addPlayer = function(player)
+BaseRoom.prototype.addPlayer = function(player)
 {
     return this.players.add(player);
 };
@@ -23,7 +23,7 @@ BaseLobby.prototype.addPlayer = function(player)
  *
  * @param {Player} player
  */
-BaseLobby.prototype.removePlayer = function(player)
+BaseRoom.prototype.removePlayer = function(player)
 {
     return this.players.remove(player);
 };
