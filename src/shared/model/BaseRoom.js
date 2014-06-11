@@ -37,6 +37,6 @@ BaseRoom.prototype.serialize = function()
 {
     return {
         name: this.name,
-        players: this.players.map(function () { this.serialize(); }).items
+        players: this.players.map(function () { return this.serialize(); }).items
     };
 };

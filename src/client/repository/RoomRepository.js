@@ -92,9 +92,10 @@ RoomRepository.prototype.onNewRoom = function(data)
  */
 RoomRepository.prototype.onJoinRoom = function(data)
 {
-    var room = this.rooms.getById(data.room);
+    var room = this.rooms.getById(data.room),
+        player = new Player(data.player.name, data.player.color);
 
-    if (room && room.addPlayer(new Player(data.player.name, data.player.color))) {
+    if (room && room.addPlayer(player)) {
         this.emit('room:join:' + room.name, room);
     }
 };

@@ -56,5 +56,14 @@ SocketClient.prototype.onCreateRoom = function(data, callback)
  */
 SocketClient.prototype.onJoinRoom = function(data, callback)
 {
-    callback(this.repositories.room.join(data.room, data.player));
+    var room = this.repositories.room.get(data.room),
+        player = new Player(this, data.player),
+        result = room && room.addPlayer(player);
+
+    callback(result);
+
+    if (result) {
+        this.socket.emit('room:join', {room: room.name, player: player.serialize()});
+        this.socket.broadcast.emit('room:join', {room: room.name, player: player.serialize()});
+    }
 };

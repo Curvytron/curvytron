@@ -310,6 +310,30 @@ Collection.prototype.getLast = function()
     return this.items.length > 0 ? this.items[this.items.length - 1] : null;
 };
 /**
+ * Base Avatar
+ *
+ * @param {Player} name
+ * @param {String} color
+ */
+function BaseAvatar(player, color)
+{
+    EventEmitter.call(this);
+
+    this.player = player;
+    this.color  = typeof(color) !== 'undefined' ? color : 'red';
+    this.trail  = new Trail(this.color);
+}
+
+BaseAvatar.prototype = Object.create(EventEmitter.prototype);
+
+/**
+ * Update
+ */
+BaseAvatar.prototype.update = function()
+{
+    this.trail.update();
+};
+/**
  * BaseGame
  */
 function BaseGame()
@@ -417,18 +441,9 @@ function BasePlayer(name, color)
     this.name   = name;
     this.color  = typeof(color) !== 'undefined' ? color : 'red';
     this.avatar = 'test.png';
-    this.trail  = new Trail(this.color);
 }
 
 BasePlayer.prototype = Object.create(EventEmitter.prototype);
-
-/**
- * Update
- */
-BasePlayer.prototype.update = function()
-{
-    this.trail.update();
-};
 
 /**
  * Serialize
@@ -481,7 +496,7 @@ BaseRoom.prototype.serialize = function()
 {
     return {
         name: this.name,
-        players: this.players.map(function () { this.serialize(); }).items
+        players: this.players.map(function () { return this.serialize(); }).items
     };
 };
 /**
@@ -688,7 +703,16 @@ SocketClient.prototype.onCreateRoom = function(data, callback)
  */
 SocketClient.prototype.onJoinRoom = function(data, callback)
 {
-    callback(this.repositories.room.join(data.room, data.player));
+    var room = this.repositories.room.get(data.room),
+        player = new Player(this, data.player),
+        result = room && room.addPlayer(player);
+
+    callback(result);
+
+    if (result) {
+        this.socket.emit('room:join', {room: room.name, player: player.serialize()});
+        this.socket.broadcast.emit('room:join', {room: room.name, player: player.serialize()});
+    }
 };
 /**
  * Game
@@ -783,27 +807,6 @@ RoomRepository.prototype.create = function(name)
 }
 
 /**
- * Join a room as a player
- *
- * @param {String} room
- * @param {String} player
- *
- * @return {Room}
- */
-RoomRepository.prototype.join = function(room, player)
-{
-    var room = this.rooms.getById(room),
-        player = new Player(this, data.player),
-        result = room && room.addPlayer(player);
-
-    if (result) {
-        this.emitjoinRoom(room, player);
-    }
-
-    return result;
-}
-
-/**
  * List rooms
  */
 RoomRepository.prototype.listRooms = function(client)
@@ -824,19 +827,6 @@ RoomRepository.prototype.emitNewRoom = function(room, client)
     var socket = (typeof(client) !== 'undefined' ? client : this.socket)
 
     socket.emit('room:new', room.serialize());
-};
-
-/**
- * emitJoinRoom
- *
- * @param {Room} room
- * @param {Socket} client
- */
-RoomRepository.prototype.emitJoinRoom = function(room, player, client)
-{
-    var socket = (typeof(client) !== 'undefined' ? client : this.socket)
-
-    socket.emit('room:join', {room: room.name, player: player.serialize()});
 };
 
 /**
