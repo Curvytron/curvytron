@@ -692,6 +692,50 @@ SocketClient.prototype.onJoinRoom = function(data)
     room.addPlayer(player);*/
 };
 /**
+ * Game
+ */
+function Game()
+{
+    BaseGame.call(this);
+
+    this.loop = this.loop.bind(this);
+}
+
+Game.prototype = Object.create(BaseGame.prototype);
+/**
+ * Player
+ *
+ * @param {SocketClient} client
+ * @param {String} name
+ * @param {String} color
+ */
+function Player(client, name, color)
+{
+    BasePlayer.call(this, name, color);
+
+    this.client = client;
+}
+
+Player.prototype = Object.create(BasePlayer.prototype);
+/**
+ * Room
+ */
+function Room(name)
+{
+    BaseRoom.call(this, name);
+}
+
+Room.prototype = Object.create(BaseRoom.prototype);
+/**
+ * Trail
+ */
+function Trail(color)
+{
+    BaseTrail.call(this, color);
+}
+
+Trail.prototype = Object.create(BaseTrail.prototype);
+/**
  * Room Repository
  */
 function RoomRepository(socket)
@@ -752,50 +796,6 @@ RoomRepository.prototype.get = function(name)
 {
     return this.rooms.getById(name);
 };
-/**
- * Game
- */
-function Game()
-{
-    BaseGame.call(this);
-
-    this.loop = this.loop.bind(this);
-}
-
-Game.prototype = Object.create(BaseGame.prototype);
-/**
- * Player
- *
- * @param {SocketClient} client
- * @param {String} name
- * @param {String} color
- */
-function Player(client, name, color)
-{
-    BasePlayer.call(this, name, color);
-
-    this.client = client;
-}
-
-Player.prototype = Object.create(BasePlayer.prototype);
-/**
- * Room
- */
-function Room(name)
-{
-    BaseRoom.call(this, name);
-}
-
-Room.prototype = Object.create(BaseRoom.prototype);
-/**
- * Trail
- */
-function Trail(color)
-{
-    BaseTrail.call(this, color);
-}
-
-Trail.prototype = Object.create(BaseTrail.prototype);
 module.exports = new Server({
     port: 8080
 });
