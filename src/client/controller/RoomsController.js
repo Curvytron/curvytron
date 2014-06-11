@@ -8,6 +8,8 @@ function RoomsController($scope, RoomRepository)
 
     this.repository.on('room:new', this.loadRooms);
     this.repository.on('room:close', this.loadRooms);
+    this.repository.on('room:join', this.loadRooms);
+    this.repository.on('room:player:update', this.loadRooms);
 
     this.$scope.submit = this.createRoom;
 

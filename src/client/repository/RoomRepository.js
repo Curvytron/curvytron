@@ -10,11 +10,13 @@ function RoomRepository(SocketClient, PlayerRepository)
     this.client = SocketClient;
     this.rooms  = new Collection([], 'name');
 
-    this.onNewRoom = this.onNewRoom.bind(this);
-    this.onJoinRoom = this.onJoinRoom.bind(this);
+    this.onNewRoom      = this.onNewRoom.bind(this);
+    this.onJoinRoom     = this.onJoinRoom.bind(this);
+    this.onPlayerUpdate = this.onPlayerUpdate.bind(this);
 
     this.client.io.on('room:new', this.onNewRoom);
     this.client.io.on('room:join', this.onJoinRoom);
+    this.client.io.on('room:player:update', this.onPlayerUpdate);
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
@@ -96,6 +98,45 @@ RoomRepository.prototype.onJoinRoom = function(data)
         player = new Player(data.player.name, data.player.color);
 
     if (room && room.addPlayer(player)) {
+        this.emit('room:join', room);
         this.emit('room:join:' + room.name, room);
     }
+};
+
+/**
+ * On join room
+ *
+ * @param {Object} data
+ *
+ * @return {Boolean}
+ */
+RoomRepository.prototype.onPlayerUpdate = function(data)
+{
+    var room = this.rooms.getById(data.room),
+        player = room ? room.players.findById(data.player) : null;
+
+    if (player && this.updatePlayer(player, data)) {
+        this.emit('room:player:update', room);
+        this.emit('room:player:update:' + room.name, room);
+    }
+};
+
+/**
+ * Update player
+ *
+ * @param {Player} player
+ * @param {Object} data
+ */
+RoomRepository.prototype.updatePlayer = function(player, data)
+{
+    var changed = false;
+
+    for (var property in data) {
+        if (data.hasOwnProperty(property)) {
+            player[property] = data[property];
+            changed = true;
+        }
+    }
+
+    return changed;
 };

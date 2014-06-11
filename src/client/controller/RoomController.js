@@ -8,6 +8,7 @@ function RoomController($scope, $routeParams, RoomRepository)
     this.loadRoom   = this.loadRoom.bind(this);
 
     this.repository.on('room:join:' + this.roomName, this.loadRoom);
+    this.repository.on('room:player:update:' + this.roomName, this.loadRoom);
 
     this.$scope.submit = this.createUser;
 
