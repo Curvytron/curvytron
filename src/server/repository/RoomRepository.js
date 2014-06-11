@@ -10,7 +10,7 @@ function RoomRepository(socket)
 /**
  * Create a room
  *
- * @param {String} first_argument
+ * @param {String} name
  *
  * @return {Room}
  */
@@ -21,6 +21,27 @@ RoomRepository.prototype.create = function(name)
 
     if (result) {
         this.emitNewRoom(room);
+    }
+
+    return result;
+}
+
+/**
+ * Join a room as a player
+ *
+ * @param {String} room
+ * @param {String} player
+ *
+ * @return {Room}
+ */
+RoomRepository.prototype.join = function(room, player)
+{
+    var room = this.rooms.getById(room),
+        player = new Player(this, data.player),
+        result = room && room.addPlayer(player);
+
+    if (result) {
+        this.emitjoinRoom(room, player);
     }
 
     return result;
@@ -47,6 +68,19 @@ RoomRepository.prototype.emitNewRoom = function(room, client)
     var socket = (typeof(client) !== 'undefined' ? client : this.socket)
 
     socket.emit('room:new', room.serialize());
+};
+
+/**
+ * emitJoinRoom
+ *
+ * @param {Room} room
+ * @param {Socket} client
+ */
+RoomRepository.prototype.emitJoinRoom = function(room, player, client)
+{
+    var socket = (typeof(client) !== 'undefined' ? client : this.socket)
+
+    socket.emit('room:join', {room: room.name, player: player.serialize()});
 };
 
 /**

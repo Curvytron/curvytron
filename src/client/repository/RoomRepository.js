@@ -11,8 +11,10 @@ function RoomRepository(SocketClient, PlayerRepository)
     this.rooms  = new Collection([], 'name');
 
     this.onNewRoom = this.onNewRoom.bind(this);
+    this.onJoinRoom = this.onJoinRoom.bind(this);
 
     this.client.io.on('room:new', this.onNewRoom);
+    this.client.io.on('room:join', this.onJoinRoom);
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
@@ -72,27 +74,27 @@ RoomRepository.prototype.onNewRoom = function(data)
 {
     var room = new Room(data.name);
 
+    for (var i = data.players.length - 1; i >= 0; i--) {
+        room.addPlayer(new Player(data.players[i].name, data.players[i].color));
+    }
+
     if(this.rooms.add(room)) {
         this.emit('room:new', room);
     }
 };
 
 /**
- * On new room
+ * On join room
  *
  * @param {Object} data
  *
  * @return {Boolean}
  */
-RoomRepository.prototype.onCloseRoom = function(data)
+RoomRepository.prototype.onJoinRoom = function(data)
 {
-    var room = this.rooms.getById(data.name);
+    var room = this.rooms.getById(data.room);
 
-    for (var i = data.players.length - 1; i >= 0; i--) {
-        room.addPlayer(new Player(data.players[i].name, data.players[i].color));
-    }
-
-    if(this.rooms.remove(room)) {
-        this.emit('room:close', room);
+    if (room && room.addPlayer(new Player(data.player.name, data.player.color))) {
+        this.emit('room:join:' + room.name, room);
     }
 };

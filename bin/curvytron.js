@@ -688,10 +688,7 @@ SocketClient.prototype.onCreateRoom = function(data, callback)
  */
 SocketClient.prototype.onJoinRoom = function(data, callback)
 {
-    var room = this.roomRepositories.get(data.room)
-        player = new Player(this, data.player);
-
-    callback(room.addPlayer(player));
+    callback(this.repositories.room.join(data.room, data.player));
 };
 /**
  * Game
@@ -722,12 +719,32 @@ Player.prototype = Object.create(BasePlayer.prototype);
 /**
  * Room
  */
-function Room(name)
+function Room(name, client)
 {
     BaseRoom.call(this, name);
 }
 
 Room.prototype = Object.create(BaseRoom.prototype);
+
+/**
+ * Add player
+ *
+ * @param {Player} player
+ */
+BaseRoom.prototype.addPlayer = function(player)
+{
+    return this.players.add(player);
+};
+
+/**
+ * Remove player
+ *
+ * @param {Player} player
+ */
+BaseRoom.prototype.removePlayer = function(player)
+{
+    return this.players.remove(player);
+};
 /**
  * Trail
  */
@@ -749,7 +766,7 @@ function RoomRepository(socket)
 /**
  * Create a room
  *
- * @param {String} first_argument
+ * @param {String} name
  *
  * @return {Room}
  */
@@ -760,6 +777,27 @@ RoomRepository.prototype.create = function(name)
 
     if (result) {
         this.emitNewRoom(room);
+    }
+
+    return result;
+}
+
+/**
+ * Join a room as a player
+ *
+ * @param {String} room
+ * @param {String} player
+ *
+ * @return {Room}
+ */
+RoomRepository.prototype.join = function(room, player)
+{
+    var room = this.rooms.getById(room),
+        player = new Player(this, data.player),
+        result = room && room.addPlayer(player);
+
+    if (result) {
+        this.emitjoinRoom(room, player);
     }
 
     return result;
@@ -786,6 +824,19 @@ RoomRepository.prototype.emitNewRoom = function(room, client)
     var socket = (typeof(client) !== 'undefined' ? client : this.socket)
 
     socket.emit('room:new', room.serialize());
+};
+
+/**
+ * emitJoinRoom
+ *
+ * @param {Room} room
+ * @param {Socket} client
+ */
+RoomRepository.prototype.emitJoinRoom = function(room, player, client)
+{
+    var socket = (typeof(client) !== 'undefined' ? client : this.socket)
+
+    socket.emit('room:join', {room: room.name, player: player.serialize()});
 };
 
 /**

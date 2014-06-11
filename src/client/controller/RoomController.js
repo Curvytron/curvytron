@@ -2,10 +2,13 @@ function RoomController($scope, $routeParams, RoomRepository)
 {
     this.$scope     = $scope;
     this.repository = RoomRepository;
+    this.roomName   = $routeParams.name;
 
-    this.loadRoom($routeParams.name);
+    this.loadRoom(this.roomName);
 
-    this.createUser = this.createUser.bind(this);
+    this.createUser  = this.createUser.bind(this);
+
+    this.repository.on('room:join:' + this.roomName, this.loadRoom);
 
     this.$scope.submit = this.createUser;
 }
