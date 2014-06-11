@@ -1,58 +1,25 @@
-var curvytronApp = angular.module('curvytronApp', ['ngRoute']);
-
-console.log("curvytronApp created");
+var curvytronApp = angular.module('curvytronApp', ['ngRoute', 'curvytronControllers']),
+    curvytronControllers = angular.module('curvytronControllers', []);
 
 curvytronApp.service('SocketClient', SocketClient);
 curvytronApp.service('LobbyRepository', ['SocketClient', LobbyRepository]);
 //curvytronApp.service('LobbyController', ['LobbyRepository', LobbyController]);
-//curvytronApp.controller('LobbyController', ['$scope', 'LobbyRepository', LobbyController]);
+curvytronApp.controller('LobbiesController', ['$scope', 'LobbyRepository', LobbiesController]);
+curvytronApp.controller('LobbyController', ['$scope', '$routeParams', 'LobbyRepository', LobbyController]);
 
-curvytronApp.controller('LobbyController', ['$scope', 'LobbyRepository', function ($scope, LobbyRepository)
-{
-    $scope.rooms = LobbyRepository.getAll();
-
-    LobbyRepository.on('lobby:new', function(e)
-    {
-        console.log("loadRooms", e);
-        $scope.rooms = LobbyRepository.getAll();
-    });
-
-    /*if ($routeParams.roomId) {
-        $scope.room = this.repository.get($routeParams.roomId);
-    }*/
-}]);
-
-/*curvytronApp.controller('LobbyController', function($scope, LobbyRepository)
-{
-    $scope.rooms = $LobbyRepository.getAll();
-    /*
-    $http.get('js/fixtures/rooms.json').success(function(data)
-    {
-        $scope.rooms = data;
-
-        if ($routeParams.roomId) {
-            angular.forEach($scope.rooms, function(obj, id) {
-                if (obj.id === $routeParams.roomId) {
-
-                }
-            });
-        }
-    });*/
-/*});
-*/
-
-curvytronApp.config(['$routeProvider', function($routeProvider) {
+curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+    //$locationProvider.html5Mode(true);
     $routeProvider
-        .when('/lobbies', {
+        .when('/', {
             templateUrl: 'js/partials/rooms/list.html',
-            controller: 'LobbyController'
+            controller: 'LobbiesController'
         })
-        .when('/lobbies/:roomId', {
+        .when('/lobby/:name', {
             templateUrl: 'js/partials/rooms/detail.html',
             controller: 'LobbyController'
         })
         .otherwise({
-            redirectTo: '/lobbies'
+            redirectTo: '/'
         });
 }]);
 

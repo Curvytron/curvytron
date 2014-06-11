@@ -1,22 +1,17 @@
-function LobbyController($scope, LobbyRepository, $routeParams)
+function LobbyController($scope, $routeParams, LobbyRepository)
 {
     this.$scope     = $scope;
     this.repository = LobbyRepository;
 
-    this.loadRooms = this.loadRooms.bind(this);
-
-    this.repository.on('lobby:new', this.loadRooms);
-
-    this.loadRooms();
+    this.loadLobby($routeParams.name);
 }
 
 /**
- * Rooms action
+ * Lobbies action
  *
  * @return {Array}
  */
-LobbyController.prototype.loadRooms = function(e)
+LobbyController.prototype.loadLobby = function(name)
 {
-    console.log("loadRooms", e);
-    this.$scope.rooms = this.repository.getAll();
+    this.$scope.lobby = this.repository.get(name);
 };

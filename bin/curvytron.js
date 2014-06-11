@@ -443,9 +443,10 @@ function BasePlayer(name, color)
 {
     EventEmitter.call(this);
 
-    this.name  = name;
-    this.color = color || 'red';
-    this.trail = new Trail(this.color);
+    this.name   = name;
+    this.color  = color || 'red';
+    this.avatar = 'test.png';
+    this.trail  = new Trail(this.color);
 }
 
 BasePlayer.prototype = Object.create(EventEmitter.prototype);
@@ -586,7 +587,9 @@ Server.prototype.onSocketConnection = function(socket)
 
     this.clients.add(new SocketClient(socket));
 
-    socket.emit('lobby:new', {name: "elao"});
+    setTimeout(function () {
+        socket.emit('lobby:new', {name: "elao"});
+    }, 1000)
 };
 
 /**

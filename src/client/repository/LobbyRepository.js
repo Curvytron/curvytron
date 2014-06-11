@@ -22,9 +22,19 @@ LobbyRepository.prototype = Object.create(EventEmitter.prototype);
  *
  * @return {Array}
  */
-LobbyRepository.prototype.getAll = function()
+LobbyRepository.prototype.all = function()
 {
     return this.lobbies.items;
+};
+
+/**
+ * Get all
+ *
+ * @return {Array}
+ */
+LobbyRepository.prototype.get = function(name)
+{
+    return this.lobbies.getById(name);
 };
 
 // EVENTS:
@@ -38,12 +48,9 @@ LobbyRepository.prototype.getAll = function()
  */
 LobbyRepository.prototype.onNewLobby = function(data)
 {
-    console.log("onNewLobby");
-
     var lobby = new Lobby(data.name);
 
     if(this.lobbies.add(lobby)) {
         this.emit('lobby:new', lobby);
-        console.log('lobby:new', lobby);
     }
 };

@@ -38,7 +38,9 @@ Server.prototype.onSocketConnection = function(socket)
 
     this.clients.add(new SocketClient(socket));
 
-    socket.emit('lobby:new', {name: "elao"});
+    setTimeout(function () {
+        socket.emit('lobby:new', {name: "elao"});
+    }, 1000)
 };
 
 /**

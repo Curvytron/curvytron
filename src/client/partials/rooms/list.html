@@ -1,25 +1,25 @@
-<section ng-controller="LobbyController">
-    <div id="rooms" class="container">
-        <h1><a href="#" class="btn btn-lg btn-default pull-right">Create</a> {{ rooms.length }} actives rooms</h1>
+<section ng-controller="LobbiesController">
+    <div id="lobbies" class="container">
+        <h1><a href="#" class="btn btn-lg btn-default pull-right">Create</a> {{ lobbies.length }} actives lobbies</h1>
         <table class="table table-striped table-hover mt30 v-align-middle">
             <tbody>
-                <tr ng-repeat="room in rooms">
-                    <td><h3><a href="#/room/{{ room.id }}">{{ room.name }}</a></h3></td>
+                <tr ng-repeat="lobby in lobbies">
+                    <td><h3><a href="#/lobby/{{ lobby.name }}">{{ lobby.name }}</a></h3></td>
                     <td>
                         <h4>
-                            <ng-pluralize count="room.players.length "
+                            <ng-pluralize count="lobby.players.length "
                                              when="{'0': 'No player',
                                                  'one': '1 player',
                                                  'other': '{} players'}">
                         </h4>
                         <ul class="no-bullet">
-                            <li class="player-row" ng-repeat="player in room.players">
-                                <img src="{{ player.avatar }}" alt="" class="rounded" /> {{ player.name }}
+                            <li class="player-row" ng-repeat="player in lobby.players">
+                                <img src="#" alt="" class="rounded" /> {{ player.name }}
                             </li>
                         </ul>
                     </td>
                     <td class="text-right ">
-                        <a href="#/room/{{ room.id }}" class="btn btn-default">ENTER</a>
+                        <a href="#/lobby/{{ lobby.name }}" class="btn btn-default">ENTER</a>
                     </td>
                 </tr>
             </tbody>
