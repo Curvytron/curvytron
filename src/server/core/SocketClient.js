@@ -9,12 +9,14 @@ function SocketClient(socket)
     this.socket = socket;
     this.player = new Player(this, this.id);
 
-    this.onJoinRoom = this.onJoinRoom.bind(this);
-    this.onCreateRoom  = this.onCreateRoom.bind(this);
+    this.onJoinRoom   = this.onJoinRoom.bind(this);
+    this.onCreateRoom = this.onCreateRoom.bind(this);
 
     this.attachEvents();
 
     this.socket.emit('open');
+
+    this.repositories.room.listRooms(this.socket);
 }
 
 /**
@@ -40,10 +42,10 @@ SocketClient.prototype.detachEvents = function()
  *
  * @param {String} name
  */
-SocketClient.prototype.onCreateRoom = function(name)
+SocketClient.prototype.onCreateRoom = function(data)
 {
-    console.log("onCreateRoom", name);
-    this.repositories.room.create(name);
+    console.log("onCreateRoom", data);
+    this.repositories.room.create(data.name);
 };
 
 /**

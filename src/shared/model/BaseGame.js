@@ -4,7 +4,7 @@
 function BaseGame()
 {
     this.frame   = null;
-    this.players = null;
+    this.players = new Collection([], 'name');
 }
 
 /**

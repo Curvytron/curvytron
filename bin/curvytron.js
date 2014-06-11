@@ -315,7 +315,7 @@ Collection.prototype.getLast = function()
 function BaseGame()
 {
     this.frame   = null;
-    this.players = null;
+    this.players = new Collection([], 'name');
 }
 
 /**
@@ -415,7 +415,7 @@ function BasePlayer(name, color)
     EventEmitter.call(this);
 
     this.name   = name;
-    this.color  = color || 'red';
+    this.color  = typeof(color) !== 'undefined' ? color : 'red';
     this.avatar = 'test.png';
     this.trail  = new Trail(this.color);
 }
@@ -615,12 +615,14 @@ function SocketClient(socket)
     this.socket = socket;
     this.player = new Player(this, this.id);
 
-    this.onJoinRoom = this.onJoinRoom.bind(this);
-    this.onCreateRoom  = this.onCreateRoom.bind(this);
+    this.onJoinRoom   = this.onJoinRoom.bind(this);
+    this.onCreateRoom = this.onCreateRoom.bind(this);
 
     this.attachEvents();
 
     this.socket.emit('open');
+
+    this.repositories.room.listRooms(this.socket);
 }
 
 /**
@@ -646,10 +648,10 @@ SocketClient.prototype.detachEvents = function()
  *
  * @param {String} name
  */
-SocketClient.prototype.onCreateRoom = function(name)
+SocketClient.prototype.onCreateRoom = function(data)
 {
-    console.log("onCreateRoom", name);
-    this.repositories.room.create(name);
+    console.log("onCreateRoom", data);
+    this.repositories.room.create(data.name);
 };
 
 /**
@@ -690,6 +692,19 @@ function Player(client, name, color)
 }
 
 Player.prototype = Object.create(BasePlayer.prototype);
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+Player.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        color: this.color
+    };
+};
 /**
  * Room
  */
@@ -699,6 +714,19 @@ function Room(name)
 }
 
 Room.prototype = Object.create(BaseRoom.prototype);
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+Room.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        players: this.players.map(function () { this.serialize(); }).items
+    };
+};
 /**
  * Trail
  */
@@ -729,10 +757,34 @@ RoomRepository.prototype.create = function(name)
     var room = new Room(name);
 
     if (this.rooms.add(room)) {
-        this.socket.emit('room:new', room.name);
+        this.emitNewRoom(room);
 
         return room;
     }
+}
+
+/**
+ * List rooms
+ */
+RoomRepository.prototype.listRooms = function(client)
+{
+    for (var i = this.rooms.ids.length - 1; i >= 0; i--) {
+        this.emitNewRoom(this.rooms.items[i], client);
+    }
+};
+
+/**
+ * emitNewRoom
+ *
+ * @param {Room} room
+ * @param {Socket} client
+ */
+RoomRepository.prototype.emitNewRoom = function(room, client)
+{
+    var socket = (typeof(client) !== 'undefined' ? client : this.socket)
+
+    socket.emit('room:new', room.serialize());
+    console.log('room:new', room.serialize());
 };
 
 /**

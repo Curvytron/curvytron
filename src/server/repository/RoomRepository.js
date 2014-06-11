@@ -19,10 +19,34 @@ RoomRepository.prototype.create = function(name)
     var room = new Room(name);
 
     if (this.rooms.add(room)) {
-        this.socket.emit('room:new', room.name);
+        this.emitNewRoom(room);
 
         return room;
     }
+}
+
+/**
+ * List rooms
+ */
+RoomRepository.prototype.listRooms = function(client)
+{
+    for (var i = this.rooms.ids.length - 1; i >= 0; i--) {
+        this.emitNewRoom(this.rooms.items[i], client);
+    }
+};
+
+/**
+ * emitNewRoom
+ *
+ * @param {Room} room
+ * @param {Socket} client
+ */
+RoomRepository.prototype.emitNewRoom = function(room, client)
+{
+    var socket = (typeof(client) !== 'undefined' ? client : this.socket)
+
+    socket.emit('room:new', room.serialize());
+    console.log('room:new', room.serialize());
 };
 
 /**

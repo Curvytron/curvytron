@@ -3,12 +3,12 @@
  *
  * @param {Object} config
  */
-function RoomRepository(SocketClient)
+function RoomRepository(SocketClient, PlayerRepository)
 {
     EventEmitter.call(this);
 
-    this.client     = SocketClient;
-    this.rooms    = new Collection([], 'name');
+    this.client = SocketClient;
+    this.rooms  = new Collection([], 'name');
 
     this.onNewRoom = this.onNewRoom.bind(this);
 
@@ -75,6 +75,10 @@ RoomRepository.prototype.onNewRoom = function(data)
 RoomRepository.prototype.onCloseRoom = function(data)
 {
     var room = this.rooms.getById(data.name);
+
+    for (var i = data.players.length - 1; i >= 0; i--) {
+        room.addPlayer(new Player(data.players[i].name, data.players[i].color));
+    }
 
     if(this.rooms.remove(room)) {
         this.emit('room:close', room);

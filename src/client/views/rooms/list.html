@@ -18,9 +18,9 @@
                                                  'one': '1 player',
                                                  'other': '{} players'}">
                         </h4>
-                        <ul class="no-bullet">
+                        <ul class="no-bullet inline">
                             <li class="player-row" ng-repeat="player in room.players">
-                                <img src="#" alt="" class="rounded" /> {{ player.name }}
+                                <img src="#" alt="" class="rounded" style="background-color: {{ player.color }};" /> {{ player.name }}
                             </li>
                         </ul>
                     </td>

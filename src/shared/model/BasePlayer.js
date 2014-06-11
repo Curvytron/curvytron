@@ -9,7 +9,7 @@ function BasePlayer(name, color)
     EventEmitter.call(this);
 
     this.name   = name;
-    this.color  = color || 'red';
+    this.color  = typeof(color) !== 'undefined' ? color : 'red';
     this.avatar = 'test.png';
     this.trail  = new Trail(this.color);
 }
