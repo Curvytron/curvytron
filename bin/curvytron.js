@@ -717,6 +717,10 @@ SocketClient.prototype.broadcastRoom = function(event, data)
         data.player = this.player.name;
     }
 
+    if (typeof(data.room) === 'undefined') {
+        data.room = this.room.name;
+    }
+
     this.socket/*.in(this.room.name)*/.emit(event, data);
     this.socket/*.in(this.room.name)*/.broadcast.emit(event, data);
 };
@@ -761,11 +765,7 @@ SocketClient.prototype.onJoinRoom = function(data, callback)
     callback(result ? this.player.name : false);
 
     if (result) {
-        var eventName = 'room:join',
-            eventData = {room: this.room.name, player: this.player.serialize()};
-
-        this.socket.emit(eventName, eventData);
-        this.socket.broadcast.emit(eventName, eventData);
+        this.broadcastRoom('room:join', {player: this.player.serialize()});
     }
 };
 
@@ -776,12 +776,12 @@ SocketClient.prototype.onJoinRoom = function(data, callback)
  */
 SocketClient.prototype.onReadyRoom = function(data, callback)
 {
-    this.player.ready = data.ready;
-    this.room.checkStart();
+    this.player.ready = !this.player.ready;
+    //this.room.checkStart();
 
     callback(true);
 
-    this.broadcastRoom('room:ready', {ready: this.player.ready});
+    this.broadcastRoom('room:player:update', {ready: this.player.ready});
 };
 
 /**
@@ -795,7 +795,7 @@ SocketClient.prototype.onColorRoom = function(data, callback)
 
     callback(true);
 
-    this.broadcastRoom('room:color', {ready: this.player.color});
+    this.broadcastRoom('room:player:update', {color: this.player.color});
 };
 /**
  * Game

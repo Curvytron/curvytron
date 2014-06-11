@@ -19,7 +19,6 @@ function SocketClient()
 SocketClient.prototype.onSocketConnection = function(data)
 {
     console.log('Connected', data);
-    console.log(this.io);
 
     //this.attachEvents();
 };

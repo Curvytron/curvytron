@@ -16,6 +16,7 @@ function RoomRepository(SocketClient, PlayerRepository)
 
     this.client.io.on('room:new', this.onNewRoom);
     this.client.io.on('room:join', this.onJoinRoom);
+    this.client.io.on('room:leave', this.onJoinRoom);
     this.client.io.on('room:player:update', this.onPlayerUpdate);
 }
 
@@ -42,7 +43,7 @@ RoomRepository.prototype.get = function(name)
 };
 
 /**
- * Get all
+ * Create
  *
  * @return {Array}
  * @param {Function} callback
@@ -53,7 +54,7 @@ RoomRepository.prototype.create = function(name, callback)
 };
 
 /**
- * Get all
+ * Join
  *
  * @return {Array}
  * @param {Function} callback
@@ -61,6 +62,31 @@ RoomRepository.prototype.create = function(name, callback)
 RoomRepository.prototype.join = function(room, player, callback)
 {
     return this.client.io.emit('room:join', {room: room, player: player}, callback);
+};
+
+/**
+ * Set color
+ *
+ * @return {Array}
+ * @param {Function} callback
+ */
+RoomRepository.prototype.setColor = function(room, color, callback)
+{
+    return this.client.io.emit('room:color', {room: room, color: color}, callback);
+};
+
+/**
+ * Set ready
+ *
+ * @param {Room} room
+ * @param {Boolean} ready
+ * @param {Function} callback
+ *
+ * @return {Array}
+ */
+RoomRepository.prototype.setReady = function(room, callback)
+{
+    return this.client.io.emit('room:ready', {room: room}, callback);
 };
 
 // EVENTS:
@@ -113,7 +139,7 @@ RoomRepository.prototype.onJoinRoom = function(data)
 RoomRepository.prototype.onPlayerUpdate = function(data)
 {
     var room = this.rooms.getById(data.room),
-        player = room ? room.players.findById(data.player) : null;
+        player = room ? room.players.getById(data.player) : null;
 
     if (player && this.updatePlayer(player, data)) {
         this.emit('room:player:update', room);

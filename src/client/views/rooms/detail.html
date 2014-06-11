@@ -1,19 +1,28 @@
 <section ng-controller="RoomController">
     <div id="rooms" class="container">
         <h1>
-            <form ng-submit="submit()" class="top-right-form">
+            <form ng-submit="submit()" class="top-right-form" ng-hide="hasUsername">
                 <div class="input-group input-group-lg">
-                    <input type="text" ng-model="username" class="form-control" name="username" />
+                    <input type="text" ng-model="username" class="form-control" name="username" placeholder="Username" />
                     <span class="input-group-btn">
                         <input type="submit" id="submit" class="btn btn-lg btn-default" value="Go !" />
                     </span>
                 </div>
             </form>
+            <div class="top-right-form" ng-show="hasUsername">
+                <div class="input-group input-group-lg">
+                    <input type="text" ng-model="color" ng-change="setColor()" class="form-control" name="color" placeholder="#CCCCCC" />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-lg btn-default" ng-model="ready" ng-click="setReady()">Ready?</button>
+                    </span>
+                </div>
+            </div>
             {{ room.name }}
         </h1>
         <table class="table table-hover table-hover v-align-middle">
             <thead>
                 <tr>
+                    <th>ready</th>
                     <th>&nbsp;</th>
                     <th>Name</th>
                     <th>Color</th>
@@ -22,6 +31,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="player in room.players">
+                    <td>{{ player.ready }}</td>
                     <td width="80"><img src="#" alt="" width="80" class="rounded" /></td>
                     <td>{{ player.name }}</td>
                     <td><span class="color-preview" style="background-color: {{ player.color }};"></span> {{ player.color }}</td>
