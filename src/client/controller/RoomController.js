@@ -38,8 +38,8 @@ RoomController.prototype.createUser = function(e)
     if (this.$scope.username) {
         var $scope = this.$scope;
 
-        this.repository.join(this.roomName, $scope.username, function (success) {
-            if (success) {
+        this.repository.join(this.roomName, $scope.username, function (player) {
+            if (player) {
                 $scope.username = null;
                 $scope.$apply();
             } else {
