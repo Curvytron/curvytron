@@ -2590,7 +2590,7 @@ body {
 
 .container {
   width: 100%;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto; }
 
 #browsehappy {
@@ -3134,7 +3134,7 @@ th {
   width: 100%;
   margin-bottom: 20px; }
   .table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > th, .table > tbody > tr > td, .table > tfoot > tr > th, .table > tfoot > tr > td {
-    padding: 8px;
+    padding: 8px 12px;
     line-height: 28px;
     vertical-align: top;
     border-top: 1px solid #ddded9; }
