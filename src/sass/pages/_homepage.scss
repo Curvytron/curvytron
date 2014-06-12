@@ -62,6 +62,16 @@ li.player-row {
             @include opacity(50);
         }
     }
+    tr {
+        cursor: pointer;
+        &:hover {
+            .room-enter {
+                padding-right: 0;
+                padding-left: 5px;
+                @include opacity(50);
+            }
+        }
+    }
 }
 
 .player-ready {
