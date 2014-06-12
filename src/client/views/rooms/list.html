@@ -3,15 +3,15 @@
         <h1>
             <form ng-submit="submit()" class="top-right-form">
                 <div class="input-group input-group-lg">
-                    <input type="text" ng-model="name" class="form-control" name="name" />
+                    <input type="text" ng-model="name" class="form-control" name="name" placeholder="Create room" />
                     <span class="input-group-btn">
-                        <input type="submit" id="submit" class="btn btn-lg btn-default" value="Create" />
+                        <button type="submit" id="submit" class="btn btn-lg btn-default"><i class="icon-plus"></i></button>
                     </span>
                 </div>
             </form>
             {{ rooms.length }} actives rooms
         </h1>
-        <table class="table table-striped table-hover mt30 v-align-middle">
+        <table id="rooms" class="table table-striped table-hover v-align-middle">
             <tbody>
                 <tr ng-repeat="room in rooms">
                     <td><h3><a href="#/room/{{ room.name }}">{{ room.name }}</a></h3></td>
@@ -29,7 +29,7 @@
                         </ul>
                     </td>
                     <td class="text-right ">
-                        <a href="#/room/{{ room.name }}" class="btn btn-default">ENTER</a>
+                        <a href="#/room/{{ room.name }}" class="room-enter"><i class="icon-angle-right"></i></a>
                     </td>
                 </tr>
             </tbody>

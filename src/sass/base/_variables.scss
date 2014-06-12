@@ -9,7 +9,7 @@ $base-line-height: $base-font-size * 1.75; // 26px
 $text-color: #75858C;
 $link-color: $text-color;
 $link-hover-color: darken($text-color, 25%);
-$container-max-width: 1000px;
+$container-max-width: 1200px;
 $base-margin: 20px;
 $bold-font-weight: bold;
 
@@ -182,7 +182,7 @@ $caret-width-large:              5px !default;
 ///////////////////////////
 /// TABLES
 ///////////////////////////
-$table-cell-padding:            8px !default;
+$table-cell-padding:            8px 12px !default;
 $table-condensed-cell-padding:  5px !default;
 
 $table-bg:                      transparent !default;

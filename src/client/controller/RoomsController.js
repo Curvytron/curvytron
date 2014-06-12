@@ -51,6 +51,7 @@ RoomsController.prototype.createRoom = function(e)
             if (success) {
                 $scope.name = null;
                 $scope.$apply();
+                window.location = "/#/room/" + $scope.name;
             } else {
                 console.log('Error');
             }
