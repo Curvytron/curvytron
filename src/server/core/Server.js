@@ -10,7 +10,7 @@ function Server(config)
     this.clients      = new Collection();
 
     this.repositories = {
-        room: new RoomRepository()
+        room: new RoomRepository(this.io)
     };
 
     this.controllers = {
@@ -26,9 +26,6 @@ function Server(config)
     this.server.listen(config.port, function() {
       console.log('listening on *:' + config.port);
     });
-
-    SocketClient.prototype.repositories = this.repositories;
-    SocketClient.prototype.controllers  = this.controllers;
 }
 
 /**
@@ -40,9 +37,14 @@ Server.prototype.onSocketConnection = function(socket)
 {
     console.log('Client connected', socket.id);
 
-    socket.on('disconnect', this.onSocketDisconnection);
+    var server = this;
 
-    this.clients.add(new SocketClient(socket));
+    socket.on('disconnect', function () { server.onSocketDisconnection(client); });
+
+    var client = new SocketClient(socket);
+
+    this.controllers.room.attach(client);
+    this.clients.add(client);
 };
 
 /**
@@ -50,14 +52,9 @@ Server.prototype.onSocketConnection = function(socket)
  *
  * @param {Socket} socket
  */
-Server.prototype.onSocketDisconnection = function(socket)
+Server.prototype.onSocketDisconnection = function(client)
 {
     console.log('Client disconnect');
-
-    var client = this.clients.getById(socket.id);
-
-    if (client) {
-        client.detachEvents();
-        this.clients.remove(client);
-    }
+    this.controllers.room.detach(client);
+    this.clients.remove(client);
 };

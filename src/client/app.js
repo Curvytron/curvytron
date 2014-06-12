@@ -4,8 +4,8 @@ var curvytronApp = angular.module('curvytronApp', ['ngRoute', 'curvytronControll
 curvytronApp.service('SocketClient', SocketClient);
 curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);
 
-curvytronApp.controller('RoomsController', ['$scope', 'RoomRepository', RoomsController]);
-curvytronApp.controller('RoomController', ['$scope', '$routeParams', 'RoomRepository', RoomController]);
+curvytronApp.controller('RoomsController', ['$scope', 'RoomRepository', 'SocketClient', RoomsController]);
+curvytronApp.controller('RoomController', ['$scope', '$routeParams', 'RoomRepository', 'SocketClient', RoomController]);
 curvytronApp.controller('GameController', ['$scope', '$routeParams', 'RoomRepository', GameController]);
 
 curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {

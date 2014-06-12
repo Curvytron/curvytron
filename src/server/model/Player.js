@@ -1,3 +1,6 @@
+Player.prototype = Object.create(BasePlayer.prototype);
+Player.prototype.constructor = Player;
+
 /**
  * Player
  *
@@ -11,5 +14,3 @@ function Player(client, name, color, mail)
 
     this.client = client;
 }
-
-Player.prototype = Object.create(BasePlayer.prototype);

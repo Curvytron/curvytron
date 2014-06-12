@@ -426,15 +426,41 @@ BaseGame.prototype.onFrame = function(step)
  */
 function BasePlayer(name, color, mail)
 {
-    EventEmitter.call(this);
-
     this.name   = name;
     this.color  = typeof(color) !== 'undefined' ? color : 'red';
     this.mail   = mail;
     this.ready  = false;
 }
 
-BasePlayer.prototype = Object.create(EventEmitter.prototype);
+/**
+ * Set name
+ *
+ * @param {String} name
+ */
+BasePlayer.prototype.setName = function(name)
+{
+    this.name = name;
+};
+
+/**
+ * Set name
+ *
+ * @param {String} name
+ */
+BasePlayer.prototype.setColor = function(color)
+{
+    this.color = color;
+};
+
+/**
+ * Toggle Ready
+ *
+ * @param {Boolean} toggle
+ */
+BasePlayer.prototype.toggleReady = function(toggle)
+{
+    this.ready = typeof(toggle) == 'undefined' ? (toggle ? true : false) : !this.ready;
+};
 
 /**
  * Serialize
@@ -455,9 +481,13 @@ BasePlayer.prototype.serialize = function()
  */
 function BaseRoom(name)
 {
+    EventEmitter.call(this);
+
     this.name    = name;
     this.players = new Collection([], 'name');
 }
+
+BaseRoom.prototype = Object.create(EventEmitter.prototype);
 
 /**
  * Add player
@@ -594,49 +624,148 @@ BaseTrail.prototype.getDistance = function(from, to)
 /**
  * Room Controller
  */
-function RoomController(socket, repository)
+function RoomController(io, repository)
 {
-    this.socket     = socket;
+    this.io         = io;
     this.repository = repository;
 }
 
 /**
- * Create a room
+ * Attach events
  *
- * @param {String} name
- *
- * @return {Room}
+ * @param {SocketClient} client
  */
-RoomController.prototype.create = function(name)
+RoomController.prototype.attach = function(client)
 {
-    var room = this.repository.create(name);
+    var controller = this,
+        rooms = this.repository.all();
 
-    if (room) {
-        this.emitNewRoom(room);
-    }
-}
+    client.socket.on('room:create', function (data, callback) { controller.onCreateRoom(client, data, callback); });
+    client.socket.on('room:join', function (data, callback) { controller.onJoinRoom(client, data, callback); });
+    client.socket.on('room:leave', function (data, callback) { controller.onLeaveRoom(client, data, callback); });
+    client.socket.on('room:ready', function (data, callback) { controller.onReadyRoom(client, data, callback); });
+    client.socket.on('room:color', function (data, callback) { controller.onColorRoom(client, data, callback); });
 
-/**
- * List rooms
- */
-RoomController.prototype.listRooms = function(client)
-{
-    for (var i = this.repository.rooms.ids.length - 1; i >= 0; i--) {
-        this.emitNewRoom(this.repository.rooms.items[i], client);
+    for (var i = rooms.length - 1; i >= 0; i--) {
+        client.socket.emit('room:new', rooms[i].serialize());
     }
 };
 
 /**
- * emitNewRoom
+ * Attach events
  *
- * @param {Room} room
- * @param {Socket} client
+ * @param {SocketClient} client
  */
-RoomController.prototype.emitNewRoom = function(room, client)
+RoomController.prototype.detach = function(client)
 {
-    var socket = (typeof(client) !== 'undefined' ? client : this.socket)
+    var controller = this;
 
-    socket.emit('room:new', room.serialize());
+    client.socket.removeAllListeners('room:create');
+    client.socket.removeAllListeners('room:join');
+    client.socket.removeAllListeners('room:leave');
+    client.socket.removeAllListeners('room:ready');
+    client.socket.removeAllListeners('room:color');
+
+    if (client.room) {
+        this.io.sockets.in('rooms').emit('room:leave', {room: client.room.name, player: client.player.name});
+        client.leaveRoom();
+    }
+};
+
+// Events:
+
+/**
+ * On new room
+ *
+ * @param {String} name
+ * @param {Function} callback
+ */
+RoomController.prototype.onCreateRoom = function(client, data, callback)
+{
+    var room = this.repository.create(data.name);
+
+    callback(room ? true : false);
+
+    if (room) {
+        this.io.sockets.in('rooms').emit('room:new', room.serialize());
+    }
+};
+
+/**
+ * On join room
+ *
+ * @param {Object} data
+ * @param {Function} callback
+ */
+RoomController.prototype.onJoinRoom = function(client, data, callback)
+{
+    var room = this.repository.get(data.room),
+        result = false;
+
+    if (room) {
+        result = client.joinRoom(room, data.player);
+    }
+
+    callback({result: result});
+
+    if (result) {
+        this.io.sockets.in('rooms').emit('room:join', {room: room.name, player: client.player.serialize()});
+    }
+};
+
+/**
+ * On leave room
+ *
+ * @param {Object} data
+ * @param {Function} callback
+ */
+RoomController.prototype.onLeaveRoom = function(client, data, callback)
+{
+    var result = client.leaveRoom();
+
+    callback({result: result});
+
+    if (result) {
+        this.io.sockets.in('rooms').emit('room:leave', {room: room.name, player: player.name});
+    }
+};
+
+/**
+ * On new room
+ *
+ * @param {Object} data
+ */
+RoomController.prototype.onReadyRoom = function(client, data, callback)
+{
+    client.player.toggleReady();
+
+    callback({success: true, ready: client.player.ready});
+
+    this.io.sockets.in('rooms').emit('room:player:ready', {
+        room: client.room.name,
+        player: client.player.name,
+        ready: client.player.ready
+    });
+
+    //this.room.checkReady();
+};
+
+/**
+ * On new room
+ *
+ * @param {Object} data
+ */
+RoomController.prototype.onColorRoom = function(client, data, callback)
+{
+    client.player.setColor(data.color);
+
+    callback({success: true, color: client.player.color});
+
+    this.io.sockets.in('rooms').emit('room:player:color', {
+        room: client.room.name,
+        player: client.player.name,
+        color: client.player.color
+    });
 };
 /**
  * Server
@@ -650,7 +779,7 @@ function Server(config)
     this.clients      = new Collection();
 
     this.repositories = {
-        room: new RoomRepository()
+        room: new RoomRepository(this.io)
     };
 
     this.controllers = {
@@ -666,9 +795,6 @@ function Server(config)
     this.server.listen(config.port, function() {
       console.log('listening on *:' + config.port);
     });
-
-    SocketClient.prototype.repositories = this.repositories;
-    SocketClient.prototype.controllers  = this.controllers;
 }
 
 /**
@@ -680,9 +806,14 @@ Server.prototype.onSocketConnection = function(socket)
 {
     console.log('Client connected', socket.id);
 
-    socket.on('disconnect', this.onSocketDisconnection);
+    var server = this;
 
-    this.clients.add(new SocketClient(socket));
+    socket.on('disconnect', function () { server.onSocketDisconnection(client); });
+
+    var client = new SocketClient(socket);
+
+    this.controllers.room.attach(client);
+    this.clients.add(client);
 };
 
 /**
@@ -690,16 +821,11 @@ Server.prototype.onSocketConnection = function(socket)
  *
  * @param {Socket} socket
  */
-Server.prototype.onSocketDisconnection = function(socket)
+Server.prototype.onSocketDisconnection = function(client)
 {
     console.log('Client disconnect');
-
-    var client = this.clients.getById(socket.id);
-
-    if (client) {
-        client.detachEvents();
-        this.clients.remove(client);
-    }
+    this.controllers.room.detach(client);
+    this.clients.remove(client);
 };
 /**
  * Socket Client
@@ -713,133 +839,64 @@ function SocketClient(socket)
     this.player = new Player(this, this.id);
     this.room   = null;
 
-    this.onJoinRoom   = this.onJoinRoom.bind(this);
-    this.onCreateRoom = this.onCreateRoom.bind(this);
-    this.onReadyRoom  = this.onReadyRoom.bind(this);
-    this.onColorRoom  = this.onColorRoom.bind(this);
+    this.onChannel = this.onChannel.bind(this);
 
-    this.attachEvents();
-
+    this.socket.on('channel', this.onChannel);
     this.socket.emit('open');
-
-    this.controllers.room.listRooms(this.socket);
 }
 
-/**
- * Attach events
- */
-SocketClient.prototype.attachEvents = function()
-{
-    this.socket.on('room:create', this.onCreateRoom);
-    this.socket.on('room:join', this.onJoinRoom);
-    this.socket.on('room:ready', this.onReadyRoom);
-    this.socket.on('room:color', this.onColorRoom);
-};
+SocketClient.prototype = Object.create(EventEmitter.prototype);
 
 /**
- * Attach events
- */
-SocketClient.prototype.detachEvents = function()
-{
-    this.socket.off('room:create', this.onCreateRoom);
-    this.socket.off('room:join', this.onJoinRoom);
-    this.socket.off('room:ready', this.onReadyRoom);
-    this.socket.off('room:color', this.onColorRoom);
-};
-
-/**
- * Broacast to room
+ * On channel change
  *
- * @param {String} event
- * @param {Object} data
+ * @param {String} channel
  */
-SocketClient.prototype.broadcastRoom = function(event, data)
+SocketClient.prototype.onChannel = function(channel)
 {
-    if (typeof(data.player) === 'undefined') {
-        data.player = this.player.name;
-    }
-
-    if (typeof(data.room) === 'undefined') {
-        data.room = this.room.name;
-    }
-
-    this.socket.emit(event, data);
-    this.socket.broadcast.emit(event, data);
+    console.log("%s switching to channel: %s", this.socket.id, channel);
+    this.socket.join(channel);
 };
 
 /**
- * On new room
+ * Join room
  *
+ * @param {Room} room
  * @param {String} name
- * @param {Function} callback
- */
-SocketClient.prototype.onCreateRoom = function(data, callback)
-{
-    callback(this.controllers.room.create(data.name));
-};
-
-/**
- * On join room
  *
- * @param {Object} data
- * @param {Function} callback
+ * @return {Boolean}
  */
-SocketClient.prototype.onJoinRoom = function(data, callback)
+SocketClient.prototype.joinRoom = function(room, name)
 {
-    var room = this.repositories.room.get(data.room),
-        result = false;
-
-    if (room) {
-        if (this.room) {
-            this.socket.leave(this.room.name);
-            this.room.removePlayer(this.player);
-        }
-
-        this.room = room;
-        this.socket.join(this.room.name);
-
-        this.player.name  = data.player;
-        this.player.ready = false;
-
-        result = room.addPlayer(this.player);
+    if (this.room) {
+        this.leaveRoom();
     }
 
-    callback({result: result, name: this.player.name});
+    this.room = room;
 
-    if (result) {
-        this.broadcastRoom('room:join', {player: this.player.serialize()});
+    this.player.setName(name);
+    this.player.toggleReady(false);
+
+    return this.room.addPlayer(this.player);
+};
+
+/**
+ * Leave room
+ *
+ * @return {[type]}
+ */
+SocketClient.prototype.leaveRoom = function()
+{
+    if (this.room && this.room.removePlayer(this.player)) {
+        this.player.toggleReady(false);
+        this.room = null;
+
+        return true;
     }
+
+    return false;
 };
 
-/**
- * On new room
- *
- * @param {Object} data
- */
-SocketClient.prototype.onReadyRoom = function(data, callback)
-{
-    this.player.ready = !this.player.ready;
-
-    callback({success: true, ready: this.player.ready});
-
-    this.broadcastRoom('room:player:update', {ready: this.player.ready});
-
-    //this.room.checkReady();
-};
-
-/**
- * On new room
- *
- * @param {Object} data
- */
-SocketClient.prototype.onColorRoom = function(data, callback)
-{
-    this.player.color = data.color;
-
-    callback({success: true, color: this.player.color});
-
-    this.broadcastRoom('room:player:update', {color: this.player.color});
-};
 /**
  * Game
  */
@@ -851,6 +908,9 @@ function Game()
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
+Player.prototype = Object.create(BasePlayer.prototype);
+Player.prototype.constructor = Player;
+
 /**
  * Player
  *
@@ -864,37 +924,15 @@ function Player(client, name, color, mail)
 
     this.client = client;
 }
-
-Player.prototype = Object.create(BasePlayer.prototype);
 /**
  * Room
  */
-function Room(name, client)
+function Room(name)
 {
     BaseRoom.call(this, name);
 }
 
 Room.prototype = Object.create(BaseRoom.prototype);
-
-/**
- * Add player
- *
- * @param {Player} player
- */
-BaseRoom.prototype.addPlayer = function(player)
-{
-    return this.players.add(player);
-};
-
-/**
- * Remove player
- *
- * @param {Player} player
- */
-BaseRoom.prototype.removePlayer = function(player)
-{
-    return this.players.remove(player);
-};
 /**
  * Trail
  */

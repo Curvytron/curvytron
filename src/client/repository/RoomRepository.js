@@ -10,14 +10,17 @@ function RoomRepository(SocketClient, PlayerRepository)
     this.client = SocketClient;
     this.rooms  = new Collection([], 'name');
 
-    this.onNewRoom      = this.onNewRoom.bind(this);
-    this.onJoinRoom     = this.onJoinRoom.bind(this);
-    this.onPlayerUpdate = this.onPlayerUpdate.bind(this);
+    this.onNewRoom     = this.onNewRoom.bind(this);
+    this.onJoinRoom    = this.onJoinRoom.bind(this);
+    this.onLeaveRoom   = this.onLeaveRoom.bind(this);
+    this.onPlayerReady = this.onPlayerReady.bind(this);
+    this.onPlayerColor = this.onPlayerColor.bind(this);
 
     this.client.io.on('room:new', this.onNewRoom);
     this.client.io.on('room:join', this.onJoinRoom);
-    this.client.io.on('room:leave', this.onJoinRoom);
-    this.client.io.on('room:player:update', this.onPlayerUpdate);
+    this.client.io.on('room:leave', this.onLeaveRoom);
+    this.client.io.on('room:player:ready', this.onPlayerReady);
+    this.client.io.on('room:player:color', this.onPlayerColor);
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
@@ -107,7 +110,7 @@ RoomRepository.prototype.onNewRoom = function(data)
     }
 
     if(this.rooms.add(room)) {
-        this.emit('room:new', room);
+        this.emit('room:new', {room: room});
     }
 };
 
@@ -124,26 +127,66 @@ RoomRepository.prototype.onJoinRoom = function(data)
         player = new Player(data.player.name, data.player.color);
 
     if (room && room.addPlayer(player)) {
-        this.emit('room:join', room);
-        this.emit('room:join:' + room.name, room);
+        var data = {room: room, player: player};
+        this.emit('room:join', data);
+        this.emit('room:join:' + room.name, data);
     }
 };
 
 /**
- * On join room
+ * On leave room
  *
  * @param {Object} data
  *
  * @return {Boolean}
  */
-RoomRepository.prototype.onPlayerUpdate = function(data)
+RoomRepository.prototype.onLeaveRoom = function(data)
 {
     var room = this.rooms.getById(data.room),
         player = room ? room.players.getById(data.player) : null;
 
-    if (player && this.updatePlayer(player, data)) {
-        this.emit('room:player:update', room);
-        this.emit('room:player:update:' + room.name, room);
+    if (room && player && room.removePlayer(player)) {
+        var data = {room: room, player: player};
+        this.emit('room:leave', data);
+        this.emit('room:leave:' + room.name, data);
+    }
+};
+
+/**
+ * On player change color
+ *
+ * @param {Object} data
+ *
+ * @return {Boolean}
+ */
+RoomRepository.prototype.onPlayerColor = function(data)
+{
+    var room = this.rooms.getById(data.room),
+        player = room ? room.players.getById(data.player) : null;
+
+    if (player && this.updatePlayer(player, {color: data.color})) {
+        var data = {room: room, player: player};
+        this.emit('room:player:color', data);
+        this.emit('room:player:color:' + room.name, data);
+    }
+};
+
+/**
+ * On player toggle ready
+ *
+ * @param {Object} data
+ *
+ * @return {Boolean}
+ */
+RoomRepository.prototype.onPlayerReady = function(data)
+{
+    var room = this.rooms.getById(data.room),
+        player = room ? room.players.getById(data.player) : null;
+
+    if (player && this.updatePlayer(player, {ready: data.ready})) {
+        var data = {room: room, player: player};
+        this.emit('room:player:ready', data);
+        this.emit('room:player:ready:' + room.name, data);
     }
 };
 

@@ -3,9 +3,13 @@
  */
 function BaseRoom(name)
 {
+    EventEmitter.call(this);
+
     this.name    = name;
     this.players = new Collection([], 'name');
 }
+
+BaseRoom.prototype = Object.create(EventEmitter.prototype);
 
 /**
  * Add player

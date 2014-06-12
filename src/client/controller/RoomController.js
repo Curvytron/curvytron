@@ -1,16 +1,22 @@
-function RoomController($scope, $routeParams, RoomRepository)
+function RoomController($scope, $routeParams, RoomRepository, SocketClient)
 {
     this.$scope     = $scope;
     this.repository = RoomRepository;
+    this.client     = SocketClient;
     this.roomName   = $routeParams.name;
+
+    this.client.join('rooms');
 
     this.createUser = this.createUser.bind(this);
     this.loadRoom   = this.loadRoom.bind(this);
     this.setColor   = this.setColor.bind(this);
     this.setReady   = this.setReady.bind(this);
 
+    this.repository.on('room:close:' + this.roomName, this.loadRoom);
     this.repository.on('room:join:' + this.roomName, this.loadRoom);
-    this.repository.on('room:player:update:' + this.roomName, this.loadRoom);
+    this.repository.on('room:leave:' + this.roomName, this.loadRoom);
+    this.repository.on('room:player:ready:' + this.roomName, this.loadRoom);
+    this.repository.on('room:player:color:' + this.roomName, this.loadRoom);
 
     this.$scope.submit   = this.createUser;
     this.$scope.setColor = this.setColor;

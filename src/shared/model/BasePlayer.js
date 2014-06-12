@@ -6,15 +6,41 @@
  */
 function BasePlayer(name, color, mail)
 {
-    EventEmitter.call(this);
-
     this.name   = name;
     this.color  = typeof(color) !== 'undefined' ? color : 'red';
     this.mail   = mail;
     this.ready  = false;
 }
 
-BasePlayer.prototype = Object.create(EventEmitter.prototype);
+/**
+ * Set name
+ *
+ * @param {String} name
+ */
+BasePlayer.prototype.setName = function(name)
+{
+    this.name = name;
+};
+
+/**
+ * Set name
+ *
+ * @param {String} name
+ */
+BasePlayer.prototype.setColor = function(color)
+{
+    this.color = color;
+};
+
+/**
+ * Toggle Ready
+ *
+ * @param {Boolean} toggle
+ */
+BasePlayer.prototype.toggleReady = function(toggle)
+{
+    this.ready = typeof(toggle) == 'undefined' ? (toggle ? true : false) : !this.ready;
+};
 
 /**
  * Serialize

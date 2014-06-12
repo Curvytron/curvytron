@@ -12,15 +12,24 @@ function SocketClient()
 }
 
 /**
+ * Join a channel
+ *
+ * @param {String} channel
+ */
+SocketClient.prototype.join = function(channel)
+{
+    console.log("Joinning channel %s", channel);
+    this.io.emit('channel', channel);
+};
+
+/**
  * On socket connection
  *
  * @param {Socket} socket
  */
-SocketClient.prototype.onSocketConnection = function(data)
+SocketClient.prototype.onSocketConnection = function()
 {
-    console.log('Connected', data);
-
-    //this.attachEvents();
+    console.log('Connected');
 };
 
 /**

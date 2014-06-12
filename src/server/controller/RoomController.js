@@ -1,47 +1,146 @@
 /**
  * Room Controller
  */
-function RoomController(socket, repository)
+function RoomController(io, repository)
 {
-    this.socket     = socket;
+    this.io         = io;
     this.repository = repository;
 }
 
 /**
- * Create a room
+ * Attach events
  *
- * @param {String} name
- *
- * @return {Room}
+ * @param {SocketClient} client
  */
-RoomController.prototype.create = function(name)
+RoomController.prototype.attach = function(client)
 {
-    var room = this.repository.create(name);
+    var controller = this,
+        rooms = this.repository.all();
 
-    if (room) {
-        this.emitNewRoom(room);
-    }
-}
+    client.socket.on('room:create', function (data, callback) { controller.onCreateRoom(client, data, callback); });
+    client.socket.on('room:join', function (data, callback) { controller.onJoinRoom(client, data, callback); });
+    client.socket.on('room:leave', function (data, callback) { controller.onLeaveRoom(client, data, callback); });
+    client.socket.on('room:ready', function (data, callback) { controller.onReadyRoom(client, data, callback); });
+    client.socket.on('room:color', function (data, callback) { controller.onColorRoom(client, data, callback); });
 
-/**
- * List rooms
- */
-RoomController.prototype.listRooms = function(client)
-{
-    for (var i = this.repository.rooms.ids.length - 1; i >= 0; i--) {
-        this.emitNewRoom(this.repository.rooms.items[i], client);
+    for (var i = rooms.length - 1; i >= 0; i--) {
+        client.socket.emit('room:new', rooms[i].serialize());
     }
 };
 
 /**
- * emitNewRoom
+ * Attach events
  *
- * @param {Room} room
- * @param {Socket} client
+ * @param {SocketClient} client
  */
-RoomController.prototype.emitNewRoom = function(room, client)
+RoomController.prototype.detach = function(client)
 {
-    var socket = (typeof(client) !== 'undefined' ? client : this.socket)
+    var controller = this;
 
-    socket.emit('room:new', room.serialize());
+    client.socket.removeAllListeners('room:create');
+    client.socket.removeAllListeners('room:join');
+    client.socket.removeAllListeners('room:leave');
+    client.socket.removeAllListeners('room:ready');
+    client.socket.removeAllListeners('room:color');
+
+    if (client.room) {
+        this.io.sockets.in('rooms').emit('room:leave', {room: client.room.name, player: client.player.name});
+        client.leaveRoom();
+    }
+};
+
+// Events:
+
+/**
+ * On new room
+ *
+ * @param {String} name
+ * @param {Function} callback
+ */
+RoomController.prototype.onCreateRoom = function(client, data, callback)
+{
+    var room = this.repository.create(data.name);
+
+    callback(room ? true : false);
+
+    if (room) {
+        this.io.sockets.in('rooms').emit('room:new', room.serialize());
+    }
+};
+
+/**
+ * On join room
+ *
+ * @param {Object} data
+ * @param {Function} callback
+ */
+RoomController.prototype.onJoinRoom = function(client, data, callback)
+{
+    var room = this.repository.get(data.room),
+        result = false;
+
+    if (room) {
+        result = client.joinRoom(room, data.player);
+    }
+
+    callback({result: result});
+
+    if (result) {
+        this.io.sockets.in('rooms').emit('room:join', {room: room.name, player: client.player.serialize()});
+    }
+};
+
+/**
+ * On leave room
+ *
+ * @param {Object} data
+ * @param {Function} callback
+ */
+RoomController.prototype.onLeaveRoom = function(client, data, callback)
+{
+    var result = client.leaveRoom();
+
+    callback({result: result});
+
+    if (result) {
+        this.io.sockets.in('rooms').emit('room:leave', {room: room.name, player: player.name});
+    }
+};
+
+/**
+ * On new room
+ *
+ * @param {Object} data
+ */
+RoomController.prototype.onReadyRoom = function(client, data, callback)
+{
+    client.player.toggleReady();
+
+    callback({success: true, ready: client.player.ready});
+
+    this.io.sockets.in('rooms').emit('room:player:ready', {
+        room: client.room.name,
+        player: client.player.name,
+        ready: client.player.ready
+    });
+
+    //this.room.checkReady();
+};
+
+/**
+ * On new room
+ *
+ * @param {Object} data
+ */
+RoomController.prototype.onColorRoom = function(client, data, callback)
+{
+    client.player.setColor(data.color);
+
+    callback({success: true, color: client.player.color});
+
+    this.io.sockets.in('rooms').emit('room:player:color', {
+        room: client.room.name,
+        player: client.player.name,
+        color: client.player.color
+    });
 };

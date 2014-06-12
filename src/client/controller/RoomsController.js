@@ -1,7 +1,10 @@
-function RoomsController($scope, RoomRepository)
+function RoomsController($scope, RoomRepository, SocketClient)
 {
     this.$scope     = $scope;
     this.repository = RoomRepository;
+    this.client     = SocketClient;
+
+    this.client.join('rooms');
 
     this.loadRooms = this.loadRooms.bind(this);
     this.createRoom = this.createRoom.bind(this);
@@ -9,7 +12,9 @@ function RoomsController($scope, RoomRepository)
     this.repository.on('room:new', this.loadRooms);
     this.repository.on('room:close', this.loadRooms);
     this.repository.on('room:join', this.loadRooms);
-    this.repository.on('room:player:update', this.loadRooms);
+    this.repository.on('room:leave', this.loadRooms);
+    this.repository.on('room:player:ready', this.loadRooms);
+    this.repository.on('room:player:color', this.loadRooms);
 
     this.$scope.submit = this.createRoom;
 
