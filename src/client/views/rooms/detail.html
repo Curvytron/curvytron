@@ -13,7 +13,7 @@
                 <div class="input-group input-group-lg">
                     <input type="text" ng-model="color" ng-change="setColor()" class="form-control" name="color" placeholder="#CCCCCC" />
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-lg btn-default" ng-model="ready" ng-click="setReady()">Ready?</button>
+                        <button type="button" class="btn btn-lg btn-default" ng-class="{ active: ready }" ng-model="ready" ng-click="setReady()">Ready?</button>
                     </span>
                 </div>
             </div>
