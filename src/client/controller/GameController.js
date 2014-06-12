@@ -3,7 +3,6 @@ function GameController($scope, $routeParams, RoomRepository)
     this.$scope     = $scope;
     this.repository = RoomRepository;
     this.name       = $routeParams.name;
-    this.room       = this.repository.get(this.roomName);
 
     this.loadGame();
 }
@@ -13,9 +12,9 @@ function GameController($scope, $routeParams, RoomRepository)
  *
  * @return {Array}
  */
-GameController.prototype.loadGame = function(e)
+GameController.prototype.loadGame = function()
 {
-    var room = this.repository.get(this.roomName);
+    var room = this.repository.get(this.name);
 
     this.$scope.curvytron.bodyClass = "game-mode";
 

@@ -1,9 +1,11 @@
 /**
  * Game
+ *
+ * @param {Room} room
  */
-function Game()
+function Game(room)
 {
-    BaseGame.call(this);
+    BaseGame.call(this, room);
 
     this.canvas = document.createElement('canvas');
 
@@ -12,6 +14,7 @@ function Game()
     this.canvas.setAttribute('resize', true);
     document.body.appendChild(this.canvas);
     paper.setup(this.canvas);
+    console.log("paper set up");
 }
 
 Game.prototype = Object.create(BaseGame.prototype);

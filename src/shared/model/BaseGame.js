@@ -1,11 +1,13 @@
 /**
  * BaseGame
+ *
+ * @param {Room} room
  */
 function BaseGame(room)
 {
     this.room    = room;
     this.frame   = null;
-    this.avatars = this.room.players.map(function () { new Avatar(this); });
+    this.avatars = this.room.players.map(function () { return new Avatar(this); });
 }
 
 /**
@@ -83,4 +85,17 @@ BaseGame.prototype.newFrame = function()
 BaseGame.prototype.onFrame = function(step)
 {
     this.update();
+};
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BaseGame.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        players: this.avatars.map(function () { return this.player.serialize(); }).items
+    };
 };

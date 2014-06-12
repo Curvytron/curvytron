@@ -4,6 +4,8 @@
 function RoomRepository()
 {
     this.rooms = new Collection([], 'name');
+
+    this.create('elao');
 }
 
 /**

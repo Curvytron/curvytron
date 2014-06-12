@@ -42,6 +42,16 @@ BaseRoom.prototype.isReady = function()
 };
 
 /**
+ * Start game
+ */
+BaseRoom.prototype.startGame = function()
+{
+    if (!this.game) {
+        this.game = new Game(this);
+    }
+};
+
+/**
  * Serialize
  *
  * @return {Object}

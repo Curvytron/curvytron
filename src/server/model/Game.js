@@ -1,9 +1,11 @@
 /**
  * Game
+ *
+ * @param {Room} room
  */
-function Game()
+function Game(room)
 {
-    BaseGame.call(this);
+    BaseGame.call(this, room);
 
     this.loop = this.loop.bind(this);
 }
