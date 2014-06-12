@@ -8,6 +8,7 @@ function BaseAvatar(player)
 {
     EventEmitter.call(this);
 
+    this.name   = player.name;
     this.player = player;
     this.trail  = new Trail(this.player.color);
 }
