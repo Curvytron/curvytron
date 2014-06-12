@@ -14,7 +14,6 @@ function Game(room)
     this.canvas.setAttribute('resize', true);
     document.body.appendChild(this.canvas);
     paper.setup(this.canvas);
-    console.log("paper set up");
 }
 
 Game.prototype = Object.create(BaseGame.prototype);

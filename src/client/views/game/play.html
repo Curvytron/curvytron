@@ -1,12 +1,13 @@
 <section ng-controller="GameController">
-    <aside class="sidebar">
-        <ul>
-            <li ng-repeat="player in game.players">
-                <img src="#" alt="" width="80" class="rounded" />
-                <p style="color: {{ player.color }};">{{ player.name }}</p>
-                <p>{{ player.points }}</p>
-            </li>
-        </ul>
-    </aside>
-    <canvas id="game" class="game"></canvas>
+    <section id="game-wrapper">
+        <aside id="game-infos">
+            <h3>{{ roomName }}</h3>
+            <ul id="game-players">
+                <li ng-repeat="player in game.players">
+                    <span class="color-preview" style="background-color: {{ player.color }};"></span> {{ player.name }}
+                </li>
+            </ul>
+        </aside>
+        <canvas id="game" class="game"></canvas>
+    </section>
 </section>

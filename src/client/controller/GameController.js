@@ -21,4 +21,5 @@ GameController.prototype.loadGame = function()
     room.startGame();
 
     this.$scope.game = room.game.serialize();
+    this.$scope.roomName = room.name;
 };

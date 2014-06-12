@@ -319,6 +319,7 @@ function BaseAvatar(player)
 {
     EventEmitter.call(this);
 
+    this.name   = player.name;
     this.player = player;
     this.trail  = new Trail(this.player.color);
 }
@@ -332,6 +333,7 @@ BaseAvatar.prototype.update = function()
 {
     this.trail.update();
 };
+
 /**
  * BaseGame
  *
@@ -342,6 +344,7 @@ function BaseGame(room)
     this.room    = room;
     this.frame   = null;
     this.avatars = this.room.players.map(function () { return new Avatar(this); });
+    console.log(this.room.players, this.avatars);
 }
 
 /**
@@ -433,6 +436,7 @@ BaseGame.prototype.serialize = function()
         players: this.avatars.map(function () { return this.player.serialize(); }).items
     };
 };
+
 /**
  * BasePlayer
  *
@@ -647,136 +651,6 @@ BaseTrail.prototype.getDistance = function(from, to)
     return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
 };
 /**
- * Server
- */
-function Server(config)
-{
-    this.config       = config;
-    this.app          = express();
-    this.server       = http.Server(this.app);
-    this.io           = io(this.server);
-    this.clients      = new Collection();
-
-    this.repositories = {
-        room: new RoomRepository(this.io)
-    };
-
-    this.controllers = {
-        room: new RoomController(this.io, this.repositories.room)
-    };
-
-    this.onSocketConnection    = this.onSocketConnection.bind(this);
-    this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
-
-    this.io.on('connection', this.onSocketConnection);
-    this.app.use(express.static('web'));
-
-    this.server.listen(config.port, function() {
-      console.log('listening on *:' + config.port);
-    });
-}
-
-/**
- * On socket connection
- *
- * @param {Socket} socket
- */
-Server.prototype.onSocketConnection = function(socket)
-{
-    console.log('Client connected', socket.id);
-
-    var server = this;
-
-    socket.on('disconnect', function () { server.onSocketDisconnection(client); });
-
-    var client = new SocketClient(socket);
-
-    this.controllers.room.attach(client);
-    this.clients.add(client);
-};
-
-/**
- * On socket connection
- *
- * @param {Socket} socket
- */
-Server.prototype.onSocketDisconnection = function(client)
-{
-    console.log('Client disconnect');
-    this.controllers.room.detach(client);
-    this.clients.remove(client);
-};
-/**
- * Socket Client
- *
- * @param {Socket} socket
- */
-function SocketClient(socket)
-{
-    this.id     = socket.id;
-    this.socket = socket;
-    this.player = new Player(this, this.id);
-    this.room   = null;
-
-    this.onChannel = this.onChannel.bind(this);
-
-    this.socket.on('channel', this.onChannel);
-    this.socket.emit('open');
-}
-
-SocketClient.prototype = Object.create(EventEmitter.prototype);
-
-/**
- * On channel change
- *
- * @param {String} channel
- */
-SocketClient.prototype.onChannel = function(channel)
-{
-    console.log("%s switching to channel: %s", this.socket.id, channel);
-    this.socket.join(channel);
-};
-
-/**
- * Join room
- *
- * @param {Room} room
- * @param {String} name
- *
- * @return {Boolean}
- */
-SocketClient.prototype.joinRoom = function(room, name)
-{
-    if (this.room) {
-        this.leaveRoom();
-    }
-
-    this.room = room;
-
-    this.player.setName(name);
-    this.player.toggleReady(false);
-
-    return this.room.addPlayer(this.player);
-};
-
-/**
- * Leave room
- *
- * @return {[type]}
- */
-SocketClient.prototype.leaveRoom = function()
-{
-    if (this.room && this.room.removePlayer(this.player)) {
-        this.player.toggleReady(false);
-        this.room = null;
-
-        return true;
-    }
-
-    return false;
-};
-
-/**
  * Room Controller
  */
 function RoomController(io, repository)
@@ -922,6 +796,136 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
         color: client.player.color
     });
 };
+/**
+ * Server
+ */
+function Server(config)
+{
+    this.config       = config;
+    this.app          = express();
+    this.server       = http.Server(this.app);
+    this.io           = io(this.server);
+    this.clients      = new Collection();
+
+    this.repositories = {
+        room: new RoomRepository(this.io)
+    };
+
+    this.controllers = {
+        room: new RoomController(this.io, this.repositories.room)
+    };
+
+    this.onSocketConnection    = this.onSocketConnection.bind(this);
+    this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
+
+    this.io.on('connection', this.onSocketConnection);
+    this.app.use(express.static('web'));
+
+    this.server.listen(config.port, function() {
+      console.log('listening on *:' + config.port);
+    });
+}
+
+/**
+ * On socket connection
+ *
+ * @param {Socket} socket
+ */
+Server.prototype.onSocketConnection = function(socket)
+{
+    console.log('Client connected', socket.id);
+
+    var server = this;
+
+    socket.on('disconnect', function () { server.onSocketDisconnection(client); });
+
+    var client = new SocketClient(socket);
+
+    this.controllers.room.attach(client);
+    this.clients.add(client);
+};
+
+/**
+ * On socket connection
+ *
+ * @param {Socket} socket
+ */
+Server.prototype.onSocketDisconnection = function(client)
+{
+    console.log('Client disconnect');
+    this.controllers.room.detach(client);
+    this.clients.remove(client);
+};
+/**
+ * Socket Client
+ *
+ * @param {Socket} socket
+ */
+function SocketClient(socket)
+{
+    this.id     = socket.id;
+    this.socket = socket;
+    this.player = new Player(this, this.id);
+    this.room   = null;
+
+    this.onChannel = this.onChannel.bind(this);
+
+    this.socket.on('channel', this.onChannel);
+    this.socket.emit('open');
+}
+
+SocketClient.prototype = Object.create(EventEmitter.prototype);
+
+/**
+ * On channel change
+ *
+ * @param {String} channel
+ */
+SocketClient.prototype.onChannel = function(channel)
+{
+    console.log("%s switching to channel: %s", this.socket.id, channel);
+    this.socket.join(channel);
+};
+
+/**
+ * Join room
+ *
+ * @param {Room} room
+ * @param {String} name
+ *
+ * @return {Boolean}
+ */
+SocketClient.prototype.joinRoom = function(room, name)
+{
+    if (this.room) {
+        this.leaveRoom();
+    }
+
+    this.room = room;
+
+    this.player.setName(name);
+    this.player.toggleReady(false);
+
+    return this.room.addPlayer(this.player);
+};
+
+/**
+ * Leave room
+ *
+ * @return {[type]}
+ */
+SocketClient.prototype.leaveRoom = function()
+{
+    if (this.room && this.room.removePlayer(this.player)) {
+        this.player.toggleReady(false);
+        this.room = null;
+
+        return true;
+    }
+
+    return false;
+};
+
 /**
  * Game
  *

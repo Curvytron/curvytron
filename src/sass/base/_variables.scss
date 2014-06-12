@@ -78,6 +78,7 @@ $container-lg-desktop:        ((1140px + $grid-gutter-width));
 ///////////////////////////
 $header-background: #bb2924;
 $header-color: #FFF;
+$game-header-height: 80px;
 
 
 ///////////////////////////
@@ -85,6 +86,7 @@ $header-color: #FFF;
 ///////////////////////////
 $footer-background: lighten(#75858C, 30%);
 $footer-color: darken($footer-background, 20%);
+$game-footer-height: 40px;
 
 
 ///////////////////////////
@@ -263,3 +265,9 @@ $fancybox-shadow: 0 10px 25px rgba(0,0,0,0.5);
 /// MISC
 ///////////////////////////
 $hr-border:                     #DDD;
+
+
+///////////////////////////
+/// GAME
+///////////////////////////
+$game-background:               #222;

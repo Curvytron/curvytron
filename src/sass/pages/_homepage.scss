@@ -83,6 +83,44 @@ li.player-row {
         background: $color-success;
     }
 }
-body.test {
-    background: red !important;
+
+#game-wrapper {
+    position: fixed;
+    display: table;
+    top: $game-header-height;
+    right: 0;
+    bottom: $game-footer-height;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: $game-background;
+    // border-top: 2px solid $game-background;
+    aside, canvas {
+        display: table-cell;
+        height: 100%;
+    }
+    aside {
+        width: 300px;
+        background: lighten($game-background, 5%);
+        color: #EEE;
+        font-weight: 300;
+        h3 {
+            margin: 0;
+            color: #FFF;
+            padding: 10px 20px;
+            // background: lighten($game-background, 10%);
+        }
+        #game-players {
+            @extend .no-bullet;
+            li {
+                border-top: 2px solid lighten($game-background, 10%);
+                padding: 10px 20px;
+                &:first-child {
+                    // border-top: 0;
+                }
+            }
+        }
+    }
 }
+
+

@@ -97,8 +97,29 @@ footer {
 
 body.game-mode {
   header {
-    padding: 10px 30px;
+    height: $game-header-height;
+    overflow: hidden;
+    padding: 10px 20px;
     font-size: 30px;
     text-align: left;
+  }
+  footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: $game-footer-height;
+    line-height: $game-footer-height;
+    overflow: hidden;
+    padding: 0 10px;
+    margin-top: 0;
+    font-size: 12px;
+    background: lighten($game-background, 10%);
+    &, a, a:visited {
+      color: lighten($game-background, 30%);
+    }
+    .container {
+      max-width: 100%;
+    }
   }
 }
