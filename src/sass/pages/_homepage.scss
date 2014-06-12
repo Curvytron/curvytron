@@ -1,5 +1,6 @@
 .btn-default {
-    &:hover {
+    &:hover,
+    &.active {
         background: $text-color;
         color: $background-color;
     }

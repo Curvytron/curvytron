@@ -22,8 +22,7 @@
         <table class="table table-hover table-hover v-align-middle">
             <thead>
                 <tr>
-                    <th>ready</th>
-                    <th>&nbsp;</th>
+                    <th>Ready ?</th>
                     <th>Name</th>
                     <th>Color</th>
                     <th>Points</th>
@@ -31,8 +30,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="player in room.players">
-                    <td>{{ player.ready }}</td>
-                    <td width="80"><img src="#" alt="" width="80" class="rounded" /></td>
+                    <td>{{ player.ready == true ? "YES !" : "No" }}</td>
                     <td>{{ player.name }}</td>
                     <td><span class="color-preview" style="background-color: {{ player.color }};"></span> {{ player.color }}</td>
                     <td>{{ player.points }}</td>

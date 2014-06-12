@@ -3483,7 +3483,7 @@ a, a:visited {
 a:hover {
   text-decoration: underline; }
 
-.btn-default:hover {
+.btn-default:hover, .btn-default.active {
   background: #75858C;
   color: #f6f7f3; }
 

@@ -84,7 +84,7 @@ RoomController.prototype.setReady = function(e)
 
     this.repository.setReady(this.roomName, function (result) {
         if (result.success) {
-            controller.$scope.ready = result; // A finir
+            controller.$scope.ready = result.ready; // A finir
             controller.loadRoom(true);
         } else {
             console.log('Error');
