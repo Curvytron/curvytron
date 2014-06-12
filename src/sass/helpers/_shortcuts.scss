@@ -62,3 +62,11 @@ hr {
 .rounded {
   @include border-radius(50%);
 }
+
+@mixin generatePct() {
+  @for $i from 0 through 100 {
+    .pct-#{$i} { width: $i * 1%; }
+  }
+}
+@include generatePct;
+

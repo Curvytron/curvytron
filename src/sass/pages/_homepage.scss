@@ -42,3 +42,44 @@ li.player-row {
         margin-left: -2px;
     }
 }
+
+
+
+#rooms {
+    margin-top: 30px;
+    h3 {
+        margin: 0;
+    }
+    .room-enter {
+        padding-left: 0;
+        padding-right: 5px;
+        font-size: 30px;
+        line-height: 40px;
+        @include transition(all 0.2s ease);
+        &:hover {
+            padding-right: 0;
+            padding-left: 5px;
+            @include opacity(50);
+        }
+    }
+}
+
+.player-ready {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    @extend .rounded;
+    border: 2px solid $color-danger;
+    color: $color-danger;
+    text-align: center;
+    i {
+        font-size: 20px;
+        line-height: 35px;
+        vertical-align: middle;
+    }
+    &.ready {
+        color: #FFF;
+        border-color: $color-success;
+        background: $color-success;
+    }
+}
