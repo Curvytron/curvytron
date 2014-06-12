@@ -1,12 +1,11 @@
 /**
  * Avatar
  *
- * @param {String} name
- * @param {String} color
+ * @param {Player} player
  */
-function Avatar(player, color)
+function Avatar(player)
 {
-    BaseAvatar.call(this, player, color);
+    BaseAvatar.call(this, player);
 
     this.input = new PlayerInput();
 }

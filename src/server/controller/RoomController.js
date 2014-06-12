@@ -124,7 +124,10 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
         ready: client.player.ready
     });
 
-    //this.room.checkReady();
+    if (client.room.isReady()) {
+        this.io.sockets.in('rooms').emit('room:warmup', {room: client.room.name});
+        client.room.startWarmup();
+    }
 };
 
 /**

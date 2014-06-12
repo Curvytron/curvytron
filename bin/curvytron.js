@@ -312,8 +312,7 @@ Collection.prototype.getLast = function()
 /**
  * Base Avatar
  *
- * @param {Player} name
- * @param {String} color
+ * @param {Player} player
  */
 function BaseAvatar(player)
 {
@@ -504,6 +503,9 @@ function BaseRoom(name)
 
     this.name    = name;
     this.players = new Collection([], 'name');
+    this.warmup  = null;
+
+    this.startGame = this.startGame.bind(this);
 }
 
 BaseRoom.prototype = Object.create(EventEmitter.prototype);
@@ -539,12 +541,21 @@ BaseRoom.prototype.isReady = function()
 };
 
 /**
+ * Start warmpup
+ */
+BaseRoom.prototype.startWarmup = function()
+{
+    setTimeout(this.startGame, 5000);
+};
+
+/**
  * Start game
  */
 BaseRoom.prototype.startGame = function()
 {
     if (!this.game) {
         this.game = new Game(this);
+        this.emit('game:new', {room: this, game: this.game});
     }
 };
 
@@ -776,7 +787,10 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
         ready: client.player.ready
     });
 
-    //this.room.checkReady();
+    if (client.room.isReady()) {
+        this.io.sockets.in('rooms').emit('room:warmup', {room: client.room.name});
+        client.room.startWarmup();
+    }
 };
 
 /**
@@ -926,6 +940,17 @@ SocketClient.prototype.leaveRoom = function()
     return false;
 };
 
+/**
+ * Avatar
+ *
+ * @param {Player} player
+ */
+function Avatar(player)
+{
+    BaseAvatar.call(this, player);
+}
+
+Avatar.prototype = Object.create(BaseAvatar.prototype);
 /**
  * Game
  *

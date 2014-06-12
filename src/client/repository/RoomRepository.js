@@ -13,12 +13,14 @@ function RoomRepository(SocketClient, PlayerRepository)
     this.onNewRoom     = this.onNewRoom.bind(this);
     this.onJoinRoom    = this.onJoinRoom.bind(this);
     this.onLeaveRoom   = this.onLeaveRoom.bind(this);
+    this.onWarmupRoom  = this.onWarmupRoom.bind(this);
     this.onPlayerReady = this.onPlayerReady.bind(this);
     this.onPlayerColor = this.onPlayerColor.bind(this);
 
     this.client.io.on('room:new', this.onNewRoom);
     this.client.io.on('room:join', this.onJoinRoom);
     this.client.io.on('room:leave', this.onLeaveRoom);
+    this.client.io.on('room:warmup', this.onWarmupRoom);
     this.client.io.on('room:player:ready', this.onPlayerReady);
     this.client.io.on('room:player:color', this.onPlayerColor);
 }
@@ -191,21 +193,27 @@ RoomRepository.prototype.onPlayerReady = function(data)
 };
 
 /**
- * Update player
+ * On join room
  *
- * @param {Player} player
  * @param {Object} data
+ *
+ * @return {Boolean}
  */
-RoomRepository.prototype.updatePlayer = function(player, data)
+RoomRepository.prototype.onWarmupRoom = function(data)
 {
-    var changed = false;
+    var room = this.rooms.getById(data.room),
+        repository = this;
 
-    for (var property in data) {
-        if (data.hasOwnProperty(property)) {
-            player[property] = data[property];
-            changed = true;
-        }
+    if (room) {
+        room.startWarmup();
+
+        room.on('game:new', function () {
+            repository.emit('room:game', data);
+            repository.emit('room:game:' + data.room.name, data);
+        });
+
+        var data = {room: room};
+        this.emit('room:warmup', data);
+        this.emit('room:warmup:' + room.name, data);
     }
-
-    return changed;
 };

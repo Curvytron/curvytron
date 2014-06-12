@@ -1,9 +1,11 @@
-function RoomController($scope, $routeParams, RoomRepository, SocketClient)
+function RoomController($scope, $rootScope, $routeParams, $location, RoomRepository, SocketClient)
 {
     this.$scope     = $scope;
+    this.$rootScope = $rootScope;
+    this.$location  = $location;
     this.repository = RoomRepository;
     this.client     = SocketClient;
-    this.roomName   = $routeParams.name;
+    this.name       = $routeParams.name;
 
     this.client.join('rooms');
 
@@ -11,12 +13,16 @@ function RoomController($scope, $routeParams, RoomRepository, SocketClient)
     this.loadRoom   = this.loadRoom.bind(this);
     this.setColor   = this.setColor.bind(this);
     this.setReady   = this.setReady.bind(this);
+    this.warmup     = this.warmup.bind(this);
+    this.startGame  = this.startGame.bind(this);
 
-    this.repository.on('room:close:' + this.roomName, this.loadRoom);
-    this.repository.on('room:join:' + this.roomName, this.loadRoom);
-    this.repository.on('room:leave:' + this.roomName, this.loadRoom);
-    this.repository.on('room:player:ready:' + this.roomName, this.loadRoom);
-    this.repository.on('room:player:color:' + this.roomName, this.loadRoom);
+    this.repository.on('room:close:' + this.name, this.loadRoom);
+    this.repository.on('room:join:' + this.name, this.loadRoom);
+    this.repository.on('room:leave:' + this.name, this.loadRoom);
+    this.repository.on('room:player:ready:' + this.name, this.loadRoom);
+    this.repository.on('room:player:color:' + this.name, this.loadRoom);
+    this.repository.on('room:warmup:' + this.name, this.warmup);
+    this.repository.on('room:game:' + this.name, this.startGame);
 
     this.$scope.submit   = this.createUser;
     this.$scope.setColor = this.setColor;
@@ -32,7 +38,7 @@ function RoomController($scope, $routeParams, RoomRepository, SocketClient)
  */
 RoomController.prototype.loadRoom = function(e)
 {
-    this.$scope.room = this.repository.get(this.roomName).serialize();
+    this.$scope.room = this.repository.get(this.name).serialize();
     this.$scope.curvytron.bodyClass = null;
 
     if (typeof(e) !== 'undefined') {
@@ -50,7 +56,7 @@ RoomController.prototype.createUser = function(e)
     if (this.$scope.username) {
         var $scope = this.$scope;
 
-        this.repository.join(this.roomName, $scope.username, function (result) {
+        this.repository.join(this.name, $scope.username, function (result) {
             if (result.success) {
                 $scope.username = null;
                 $scope.hasUsername = true;
@@ -71,7 +77,7 @@ RoomController.prototype.setColor = function(e)
 {
     var controller = this;
 
-    this.repository.setColor(this.roomName, this.$scope.color, function (result) {
+    this.repository.setColor(this.name, this.$scope.color, function (result) {
         if (result.success) {
             controller.loadRoom(true);
         } else {
@@ -89,7 +95,7 @@ RoomController.prototype.setReady = function(e)
 {
     var controller = this;
 
-    this.repository.setReady(this.roomName, function (result) {
+    this.repository.setReady(this.name, function (result) {
         if (result.success) {
             controller.$scope.ready = result.ready; // A finir
             controller.loadRoom(true);
@@ -97,4 +103,26 @@ RoomController.prototype.setReady = function(e)
             console.log('Error');
         }
     });
+};
+
+/**
+ * Start Game
+ *
+ * @param {Object} data
+ */
+RoomController.prototype.warmup = function(data)
+{
+    console.log("About to start!");
+};
+
+/**
+ * Start Game
+ *
+ * @param {Object} data
+ */
+RoomController.prototype.startGame = function(data)
+{
+    console.log("startGame", data, '/game/' + this.name);
+    this.$location.path('/game/' + this.name);
+    this.$rootScope.$apply();
 };
