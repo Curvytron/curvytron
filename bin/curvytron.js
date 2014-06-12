@@ -343,7 +343,8 @@ function BaseGame(room)
     this.room    = room;
     this.frame   = null;
     this.avatars = this.room.players.map(function () { return new Avatar(this); });
-    console.log(this.room.players, this.avatars);
+
+    this.start = this.start.bind(this);
 }
 
 /**
@@ -504,8 +505,6 @@ function BaseRoom(name)
     this.name    = name;
     this.players = new Collection([], 'name');
     this.warmup  = null;
-
-    this.startGame = this.startGame.bind(this);
 }
 
 BaseRoom.prototype = Object.create(EventEmitter.prototype);
@@ -545,17 +544,10 @@ BaseRoom.prototype.isReady = function()
  */
 BaseRoom.prototype.startWarmup = function()
 {
-    setTimeout(this.startGame, 5000);
-};
-
-/**
- * Start game
- */
-BaseRoom.prototype.startGame = function()
-{
     if (!this.game) {
         this.game = new Game(this);
         this.emit('game:new', {room: this, game: this.game});
+        setTimeout(this.game.start, 5000);
     }
 };
 
@@ -579,9 +571,9 @@ function BaseTrail(color)
 {
     this.color         = color;
     this.head          = [0, 0];
-    this.lastPosition  = this.head;
+    this.lastPosition  = this.head.slice(0);
     this.angle         = 0.5;
-    this.velocities    = [];
+    this.velocities    = [0,0];
     this.points        = [];
 
     this.updateVelocities();
@@ -596,8 +588,8 @@ BaseTrail.prototype.precision = 10;
  */
 BaseTrail.prototype.update = function()
 {
-    this.head[0] += this.velocities[0];
-    this.head[1] += this.velocities[1];
+    this.head[0] = this.head[0] + this.velocities[0];
+    this.head[1] = this.head[1] + this.velocities[1];
 
     if (this.getDistance(this.lastPosition, this.head) > this.precision) {
         this.addPoint(this.head);
@@ -633,7 +625,7 @@ BaseTrail.prototype.addAngle = function(angle)
  */
 BaseTrail.prototype.addPoint = function(point)
 {
-    this.lastPosition = point;
+    this.lastPosition = point.slice(0);
 
     this.points.push(point);
 };
@@ -811,6 +803,64 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
     });
 };
 /**
+ * Avatar
+ *
+ * @param {Player} player
+ */
+function Avatar(player)
+{
+    BaseAvatar.call(this, player);
+}
+
+Avatar.prototype = Object.create(BaseAvatar.prototype);
+/**
+ * Game
+ *
+ * @param {Room} room
+ */
+function Game(room)
+{
+    BaseGame.call(this, room);
+
+    this.loop = this.loop.bind(this);
+}
+
+Game.prototype = Object.create(BaseGame.prototype);
+Player.prototype = Object.create(BasePlayer.prototype);
+Player.prototype.constructor = Player;
+
+/**
+ * Player
+ *
+ * @param {SocketClient} client
+ * @param {String} name
+ * @param {String} color
+ */
+function Player(client, name, color, mail)
+{
+    BasePlayer.call(this, name, color, mail);
+
+    this.client = client;
+}
+/**
+ * Room
+ */
+function Room(name)
+{
+    BaseRoom.call(this, name);
+}
+
+Room.prototype = Object.create(BaseRoom.prototype);
+/**
+ * Trail
+ */
+function Trail(color)
+{
+    BaseTrail.call(this, color);
+}
+
+Trail.prototype = Object.create(BaseTrail.prototype);
+/**
  * Server
  */
 function Server(config)
@@ -940,64 +990,6 @@ SocketClient.prototype.leaveRoom = function()
     return false;
 };
 
-/**
- * Avatar
- *
- * @param {Player} player
- */
-function Avatar(player)
-{
-    BaseAvatar.call(this, player);
-}
-
-Avatar.prototype = Object.create(BaseAvatar.prototype);
-/**
- * Game
- *
- * @param {Room} room
- */
-function Game(room)
-{
-    BaseGame.call(this, room);
-
-    this.loop = this.loop.bind(this);
-}
-
-Game.prototype = Object.create(BaseGame.prototype);
-Player.prototype = Object.create(BasePlayer.prototype);
-Player.prototype.constructor = Player;
-
-/**
- * Player
- *
- * @param {SocketClient} client
- * @param {String} name
- * @param {String} color
- */
-function Player(client, name, color, mail)
-{
-    BasePlayer.call(this, name, color, mail);
-
-    this.client = client;
-}
-/**
- * Room
- */
-function Room(name)
-{
-    BaseRoom.call(this, name);
-}
-
-Room.prototype = Object.create(BaseRoom.prototype);
-/**
- * Trail
- */
-function Trail(color)
-{
-    BaseTrail.call(this, color);
-}
-
-Trail.prototype = Object.create(BaseTrail.prototype);
 /**
  * Room Repository
  */

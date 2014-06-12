@@ -184,8 +184,6 @@ RoomRepository.prototype.onPlayerReady = function(data)
     var room = this.rooms.getById(data.room),
         player = room ? room.players.getById(data.player) : null;
 
-    console.log("onPlayerReady", data, room, player);
-
     if (player) {
         player.toggleReady(data.ready);
         this.emit('room:player:ready:' + room.name, {room: room, player: player});
@@ -205,13 +203,6 @@ RoomRepository.prototype.onWarmupRoom = function(data)
         repository = this;
 
     if (room) {
-        room.startWarmup();
-
-        room.on('game:new', function () {
-            repository.emit('room:game', data);
-            repository.emit('room:game:' + data.room.name, data);
-        });
-
         var data = {room: room};
         this.emit('room:warmup', data);
         this.emit('room:warmup:' + room.name, data);

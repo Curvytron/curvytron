@@ -5,15 +5,19 @@
  */
 function Game(room)
 {
+    this.canvas = document.getElementById('game');
+
+    //this.canvas.setAttribute('resize', true);
+    paper.setup(this.canvas);
+
+    console.log("paper set up", this.canvas);
+
     BaseGame.call(this, room);
 
-    this.canvas = document.createElement('canvas');
-
     this.loop = this.loop.bind(this);
+    this.stop = this.stop.bind(this);
 
-    this.canvas.setAttribute('resize', true);
-    document.body.appendChild(this.canvas);
-    paper.setup(this.canvas);
+    window.addEventListener('error', this.stop);
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
@@ -24,6 +28,18 @@ Game.prototype = Object.create(BaseGame.prototype);
 Game.prototype.draw = function()
 {
     paper.view.draw();
+};
+
+/**
+ * Start loop
+ */
+Game.prototype.start = function()
+{
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        this.avatars.items[i].trail.initPath();
+    }
+
+    BaseGame.prototype.start.call(this);
 };
 
 /**

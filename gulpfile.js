@@ -16,9 +16,9 @@ var gulp      = require('gulp'),
         sassDir    = './src/sass/',
         expose     = [
             './bower_components/almond/almond.js',
-            './bower_components/paper/dist/paper-full.min.js',
             './bower_components/angular/angular.min.js',
             './bower_components/angular-route/angular-route.min.js',
+            './bower_components/paper/dist/paper-full.js',
         ],
         recipes    = {
             server: require('./recipes/server.json'),

@@ -14,7 +14,6 @@ function RoomController($scope, $rootScope, $routeParams, $location, RoomReposit
     this.setColor   = this.setColor.bind(this);
     this.setReady   = this.setReady.bind(this);
     this.warmup     = this.warmup.bind(this);
-    this.startGame  = this.startGame.bind(this);
 
     this.repository.on('room:close:' + this.name, this.loadRoom);
     this.repository.on('room:join:' + this.name, this.loadRoom);
@@ -112,17 +111,6 @@ RoomController.prototype.setReady = function(e)
  */
 RoomController.prototype.warmup = function(data)
 {
-    console.log("About to start!");
-};
-
-/**
- * Start Game
- *
- * @param {Object} data
- */
-RoomController.prototype.startGame = function(data)
-{
-    console.log("startGame", data, '/game/' + this.name);
     this.$location.path('/game/' + this.name);
     this.$rootScope.$apply();
 };

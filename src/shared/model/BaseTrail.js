@@ -5,9 +5,9 @@ function BaseTrail(color)
 {
     this.color         = color;
     this.head          = [0, 0];
-    this.lastPosition  = this.head;
+    this.lastPosition  = this.head.slice(0);
     this.angle         = 0.5;
-    this.velocities    = [];
+    this.velocities    = [0,0];
     this.points        = [];
 
     this.updateVelocities();
@@ -22,8 +22,8 @@ BaseTrail.prototype.precision = 10;
  */
 BaseTrail.prototype.update = function()
 {
-    this.head[0] += this.velocities[0];
-    this.head[1] += this.velocities[1];
+    this.head[0] = this.head[0] + this.velocities[0];
+    this.head[1] = this.head[1] + this.velocities[1];
 
     if (this.getDistance(this.lastPosition, this.head) > this.precision) {
         this.addPoint(this.head);
@@ -59,7 +59,7 @@ BaseTrail.prototype.addAngle = function(angle)
  */
 BaseTrail.prototype.addPoint = function(point)
 {
-    this.lastPosition = point;
+    this.lastPosition = point.slice(0);
 
     this.points.push(point);
 };

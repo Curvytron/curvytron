@@ -16,10 +16,12 @@ GameController.prototype.loadGame = function()
 {
     var room = this.repository.get(this.name);
 
-    this.$scope.curvytron.bodyClass = "game-mode";
+    room.startWarmup();
 
-    room.startGame();
+    this.$scope.curvytron.bodyClass = "game-mode";
 
     this.$scope.game = room.game.serialize();
     this.$scope.roomName = room.name;
+
+    //room.game.start();
 };
