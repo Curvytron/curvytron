@@ -7,6 +7,9 @@ function BaseRoom(name)
 
     this.name    = name;
     this.players = new Collection([], 'name');
+    this.warmup  = null;
+
+    this.startGame = this.startGame.bind(this);
 }
 
 BaseRoom.prototype = Object.create(EventEmitter.prototype);
@@ -42,12 +45,21 @@ BaseRoom.prototype.isReady = function()
 };
 
 /**
+ * Start warmpup
+ */
+BaseRoom.prototype.startWarmup = function()
+{
+    setTimeout(this.startGame, 5000);
+};
+
+/**
  * Start game
  */
 BaseRoom.prototype.startGame = function()
 {
     if (!this.game) {
         this.game = new Game(this);
+        this.emit('game:new', {room: this, game: this.game});
     }
 };
 

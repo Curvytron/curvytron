@@ -1,8 +1,7 @@
 /**
  * Base Avatar
  *
- * @param {Player} name
- * @param {String} color
+ * @param {Player} player
  */
 function BaseAvatar(player)
 {

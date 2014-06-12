@@ -8,6 +8,7 @@ function BaseGame(room)
     this.room    = room;
     this.frame   = null;
     this.avatars = this.room.players.map(function () { return new Avatar(this); });
+    console.log(this.room.players, this.avatars);
 }
 
 /**
