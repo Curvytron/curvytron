@@ -3808,12 +3808,12 @@ li.player-row {
     margin: 3px 3px 3px 0; }
 
 .color-preview {
-  width: 30px;
-  height: 30px;
+  width: 14px;
+  height: 14px;
   display: inline-block;
   margin-right: 5px;
   background: red;
-  vertical-align: middle; }
+  vertical-align: -6%; }
 
 .top-right-form {
   float: right;

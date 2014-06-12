@@ -17,13 +17,13 @@ li.player-row {
 }
 
 .color-preview {
-    width: 30px;
-    height: 30px;
+    width: 14px;
+    height: 14px;
     display: inline-block;
     margin-right: 5px;
     background: red;
     @extend .rounded;
-    vertical-align: middle;
+    vertical-align: -6%;
 }
 
 .top-right-form {
