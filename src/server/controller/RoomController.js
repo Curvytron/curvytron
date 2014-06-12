@@ -61,7 +61,7 @@ RoomController.prototype.onCreateRoom = function(client, data, callback)
 {
     var room = this.repository.create(data.name);
 
-    callback(room ? true : false);
+    callback({success: room ? true : false, room: room? room.name : null});
 
     if (room) {
         this.io.sockets.in('rooms').emit('room:new', room.serialize());
@@ -83,7 +83,7 @@ RoomController.prototype.onJoinRoom = function(client, data, callback)
         result = client.joinRoom(room, data.player);
     }
 
-    callback({result: result});
+    callback({success: result});
 
     if (result) {
         this.io.sockets.in('rooms').emit('room:join', {room: room.name, player: client.player.serialize()});
@@ -100,7 +100,7 @@ RoomController.prototype.onLeaveRoom = function(client, data, callback)
 {
     var result = client.leaveRoom();
 
-    callback({result: result});
+    callback({success: result});
 
     if (result) {
         this.io.sockets.in('rooms').emit('room:leave', {room: room.name, player: player.name});

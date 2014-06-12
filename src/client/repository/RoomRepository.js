@@ -164,10 +164,9 @@ RoomRepository.prototype.onPlayerColor = function(data)
     var room = this.rooms.getById(data.room),
         player = room ? room.players.getById(data.player) : null;
 
-    if (player && this.updatePlayer(player, {color: data.color})) {
-        var data = {room: room, player: player};
-        this.emit('room:player:color', data);
-        this.emit('room:player:color:' + room.name, data);
+    if (player) {
+        player.setColor(data.color);
+        this.emit('room:player:color:' + room.name, {room: room, player: player});
     }
 };
 
@@ -183,10 +182,11 @@ RoomRepository.prototype.onPlayerReady = function(data)
     var room = this.rooms.getById(data.room),
         player = room ? room.players.getById(data.player) : null;
 
-    if (player && this.updatePlayer(player, {ready: data.ready})) {
-        var data = {room: room, player: player};
-        this.emit('room:player:ready', data);
-        this.emit('room:player:ready:' + room.name, data);
+    console.log("onPlayerReady", data, room, player);
+
+    if (player) {
+        player.toggleReady(data.ready);
+        this.emit('room:player:ready:' + room.name, {room: room, player: player});
     }
 };
 

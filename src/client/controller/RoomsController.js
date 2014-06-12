@@ -47,11 +47,11 @@ RoomsController.prototype.createRoom = function(e)
     if (this.$scope.name) {
         var $scope = this.$scope;
 
-        this.repository.create(this.$scope.name, function (success) {
-            if (success) {
+        this.repository.create(this.$scope.name, function (result) {
+            if (result.success) {
                 $scope.name = null;
                 $scope.$apply();
-                window.location = "/#/room/" + $scope.name;
+                window.location = "/#/room/" + result.room;
             } else {
                 console.log('Error');
             }

@@ -39,7 +39,7 @@ BasePlayer.prototype.setColor = function(color)
  */
 BasePlayer.prototype.toggleReady = function(toggle)
 {
-    this.ready = typeof(toggle) == 'undefined' ? (toggle ? true : false) : !this.ready;
+    this.ready = typeof(toggle) !== 'undefined' ? (toggle ? true : false) : !this.ready;
 };
 
 /**
