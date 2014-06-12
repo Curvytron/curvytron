@@ -16,7 +16,7 @@
         </h1>
         <table id="rooms" class="table table-striped table-hover v-align-middle">
             <tbody>
-                <tr ng-repeat="room in rooms">
+                <tr ng-repeat="room in rooms" ng-click="join(room)">
                     <td><h3><a href="#/room/{{ room.name }}">{{ room.name }}</a></h3></td>
                     <td>
                         <h4>

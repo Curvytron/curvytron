@@ -8,6 +8,7 @@ function RoomsController($scope, RoomRepository, SocketClient)
 
     this.loadRooms = this.loadRooms.bind(this);
     this.createRoom = this.createRoom.bind(this);
+    this.joinRoom = this.joinRoom.bind(this);
 
     this.repository.on('room:new', this.loadRooms);
     this.repository.on('room:close', this.loadRooms);
@@ -17,6 +18,7 @@ function RoomsController($scope, RoomRepository, SocketClient)
     this.repository.on('room:player:color', this.loadRooms);
 
     this.$scope.submit = this.createRoom;
+    this.$scope.join   = this.joinRoom;
 
     this.loadRooms();
 }
@@ -59,4 +61,14 @@ RoomsController.prototype.createRoom = function(e)
             }
         });
     }
+};
+
+/**
+ * Join room
+ *
+ * @return {Array}
+ */
+RoomsController.prototype.joinRoom = function(room)
+{
+    window.location = "/#/room/" + room.name;
 };

@@ -803,64 +803,6 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
     });
 };
 /**
- * Avatar
- *
- * @param {Player} player
- */
-function Avatar(player)
-{
-    BaseAvatar.call(this, player);
-}
-
-Avatar.prototype = Object.create(BaseAvatar.prototype);
-/**
- * Game
- *
- * @param {Room} room
- */
-function Game(room)
-{
-    BaseGame.call(this, room);
-
-    this.loop = this.loop.bind(this);
-}
-
-Game.prototype = Object.create(BaseGame.prototype);
-Player.prototype = Object.create(BasePlayer.prototype);
-Player.prototype.constructor = Player;
-
-/**
- * Player
- *
- * @param {SocketClient} client
- * @param {String} name
- * @param {String} color
- */
-function Player(client, name, color, mail)
-{
-    BasePlayer.call(this, name, color, mail);
-
-    this.client = client;
-}
-/**
- * Room
- */
-function Room(name)
-{
-    BaseRoom.call(this, name);
-}
-
-Room.prototype = Object.create(BaseRoom.prototype);
-/**
- * Trail
- */
-function Trail(color)
-{
-    BaseTrail.call(this, color);
-}
-
-Trail.prototype = Object.create(BaseTrail.prototype);
-/**
  * Server
  */
 function Server(config)
@@ -990,6 +932,64 @@ SocketClient.prototype.leaveRoom = function()
     return false;
 };
 
+/**
+ * Avatar
+ *
+ * @param {Player} player
+ */
+function Avatar(player)
+{
+    BaseAvatar.call(this, player);
+}
+
+Avatar.prototype = Object.create(BaseAvatar.prototype);
+/**
+ * Game
+ *
+ * @param {Room} room
+ */
+function Game(room)
+{
+    BaseGame.call(this, room);
+
+    this.loop = this.loop.bind(this);
+}
+
+Game.prototype = Object.create(BaseGame.prototype);
+Player.prototype = Object.create(BasePlayer.prototype);
+Player.prototype.constructor = Player;
+
+/**
+ * Player
+ *
+ * @param {SocketClient} client
+ * @param {String} name
+ * @param {String} color
+ */
+function Player(client, name, color, mail)
+{
+    BasePlayer.call(this, name, color, mail);
+
+    this.client = client;
+}
+/**
+ * Room
+ */
+function Room(name)
+{
+    BaseRoom.call(this, name);
+}
+
+Room.prototype = Object.create(BaseRoom.prototype);
+/**
+ * Trail
+ */
+function Trail(color)
+{
+    BaseTrail.call(this, color);
+}
+
+Trail.prototype = Object.create(BaseTrail.prototype);
 /**
  * Room Repository
  */
