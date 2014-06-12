@@ -32,6 +32,8 @@ RoomsController.prototype.loadRooms = function(e)
         return this.serialize();
     }).items;
 
+    this.$scope.curvytron.bodyClass = null;
+
     if (typeof(e) !== 'undefined') {
         this.$scope.$apply();
     }

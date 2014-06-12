@@ -2621,6 +2621,9 @@ header {
   line-height: 60px;
   padding: 100px 40px;
   margin: 0 0 30px 0;
+  -webkit-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease;
   -webkit-animation: headerRainbow 20s infinite;
   -o-animation: headerRainbow 20s infinite;
   animation: headerRainbow 20s infinite; }
@@ -2710,6 +2713,11 @@ footer {
   margin-top: 30px; }
   footer a, footer a:visited {
     color: #919ea3; }
+
+body.game-mode header {
+  padding: 10px 30px;
+  font-size: 30px;
+  text-align: left; }
 
 .btn {
   display: inline-block;
@@ -3859,6 +3867,9 @@ li.player-row {
     color: #FFF;
     border-color: #60a760;
     background: #60a760; }
+
+body.test {
+  background: red !important; }
 
 @media (max-width: 767px) { }
 

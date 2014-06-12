@@ -17,6 +17,8 @@ GameController.prototype.loadGame = function(e)
 {
     var room = this.repository.get(this.roomName);
 
+    this.$scope.curvytron.bodyClass = "game-mode";
+
     room.startGame();
 
     this.$scope.game = room.game.serialize();

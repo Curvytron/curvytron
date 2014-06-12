@@ -33,6 +33,7 @@ function RoomController($scope, $routeParams, RoomRepository, SocketClient)
 RoomController.prototype.loadRoom = function(e)
 {
     this.$scope.room = this.repository.get(this.roomName).serialize();
+    this.$scope.curvytron.bodyClass = null;
 
     if (typeof(e) !== 'undefined') {
         this.$scope.$apply();
