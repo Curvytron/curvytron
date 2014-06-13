@@ -6,23 +6,24 @@
 function BaseGame(room)
 {
     this.room    = room;
+    this.name    = this.room.name;
+    this.channel = 'game:' + this.name;
     this.frame   = null;
     this.avatars = this.room.players.map(function () { return new Avatar(this); });
 
     this.start = this.start.bind(this);
+    this.stop  = this.stop.bind(this);
+    this.loop  = this.loop.bind(this);
 }
+
+BaseGame.prototype.framerate = 1/60;
 
 /**
  * Update
  *
  * @param {Number} step
  */
-BaseGame.prototype.update = function(step)
-{
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
-        this.avatars.items[i].update(step);
-    }
-};
+BaseGame.prototype.update = function(step) {};
 
 /**
  * Remove a avatar from the game
@@ -40,6 +41,7 @@ BaseGame.prototype.removeAvatar = function(avatar)
 BaseGame.prototype.start = function()
 {
     if (!this.frame) {
+        console.log("Game started!");
         this.rendered = new Date().getTime();
         this.loop();
     }
@@ -68,7 +70,7 @@ BaseGame.prototype.loop = function()
 
     this.rendered = now;
 
-    this.onFrame();
+    this.onFrame(step);
 };
 
 /**
@@ -86,7 +88,7 @@ BaseGame.prototype.newFrame = function()
  */
 BaseGame.prototype.onFrame = function(step)
 {
-    this.update();
+    this.update(step);
 };
 
 /**
