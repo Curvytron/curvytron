@@ -7,7 +7,9 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
-    this.world = new World(this.avatars.count() * 100);
+    this.world  = new World(this.size);
+
+    this.addPoint = this.addPoint.bind(this);
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
@@ -17,14 +19,13 @@ Game.prototype = Object.create(BaseGame.prototype);
  */
 Game.prototype.start = function()
 {
-    console.log("startgame?");
-
     var avatar;
 
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        avatar.setPosition(this.world.getRandomPosition(avatar.radius));
-        console.log('init', avatar.head);
+        avatar.on('point', this.addPoint);
+        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+        avatar.addPoint(avatar.head.slice(0));
     }
 
     BaseGame.prototype.start.call(this);
@@ -44,8 +45,21 @@ Game.prototype.update = function(step)
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
-        if (!this.world.test(avatar.update(step))) {
+        if (avatar.alive && !this.world.testCircle(avatar.update(step))) {
             avatar.die();
         }
     }
+};
+
+/**
+ * Add point
+ *
+ * @param {Object} data
+ */
+Game.prototype.addPoint = function(data)
+{
+    var world = this.world,
+        circle = [data.point[0], data.point[1], data.avatar.radius];
+
+    setTimeout(function () { world.addCircle(circle); }, 200);
 };

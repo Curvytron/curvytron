@@ -19,7 +19,7 @@ World.prototype.islandGrid = 10;
  */
 World.prototype.addCircle = function(circle)
 {
-    if (!this.circleInBound(circle, this.from, this.to)) {
+    if (!this.testCircle(circle)) {
         return false;
     }
 
@@ -33,25 +33,18 @@ World.prototype.addCircle = function(circle)
  *
  * @param {Array} circle
  */
-World.prototype.test = function(circle)
+World.prototype.testCircle = function(circle)
 {
-    console.log("test", circle);
-
     if (!this.circleInBound(circle, this.from, this.to)) {
-        console.log('not in bound');
         return false;
     }
-    console.log('in bound');
 
     for (var i = this.circles.length - 1; i >= 0; i--)
     {
         if (this.circlesTouch(this.circles[i], circle)) {
-            console.log('collids', this.circles[i]);
-            return false
+            return false;
         }
     }
-
-    console.log("pass");
 
     return true;
 };
@@ -66,9 +59,7 @@ World.prototype.test = function(circle)
  */
 World.prototype.circlesTouch = function(circleA, circleB)
 {
-    var distance = circleA[2] + circleB[2];
-
-    return Math.abs(circleA[0] - circleB[0]) < distance || Math.abs(circleA[1] - circleB[1]) < distance;
+    return this.getDistance(circleA, circleB) < (circleA[2] + circleB[2]);
 };
 
 /**
@@ -82,12 +73,23 @@ World.prototype.circlesTouch = function(circleA, circleB)
  */
 World.prototype.circleInBound = function(circle, from, to)
 {
-    console.log("circleInBound", circle, from, to);
-
     return circle[0] - circle[2] >= from[0]
         && circle[0] + circle[2] <= to[0]
         && circle[1] - circle[2] >= from[1]
         && circle[1] + circle[2] <= to[1]
+};
+
+/**
+ * get Distance
+ *
+ * @param {Array} from
+ * @param {Array} to
+ *
+ * @return {Boolean}
+ */
+World.prototype.getDistance = function(from, to)
+{
+    return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
 };
 
 /**
@@ -97,12 +99,13 @@ World.prototype.circleInBound = function(circle, from, to)
  *
  * @return {Array}
  */
-World.prototype.getRandomPosition = function(radius)
+World.prototype.getRandomPosition = function(radius, border)
 {
-    var point = this.getRandomPoint(radius);
+    var margin = radius + border * this.size,
+        point = this.getRandomPoint(margin);
 
-    while (!this.test([point[0], point[1], radius])) {
-        point = this.getRandomPoint(radius);
+    while (!this.testCircle([point[0], point[1], radius])) {
+        point = this.getRandomPoint(margin);
     }
 
     return point;
@@ -115,10 +118,10 @@ World.prototype.getRandomPosition = function(radius)
  *
  * @return {Array}
  */
-World.prototype.getRandomPoint = function(radius)
+World.prototype.getRandomPoint = function(margin)
 {
     return [
-        radius + Math.random() * (this.size - radius * 2),
-        radius + Math.random() * (this.size - radius * 2)
+        margin + Math.random() * (this.size - margin * 2),
+        margin + Math.random() * (this.size - margin * 2)
     ]
 };

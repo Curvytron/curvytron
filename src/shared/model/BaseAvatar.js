@@ -9,8 +9,8 @@ function BaseAvatar(player, position)
 
     this.name            = player.name;
     this.player          = player;
-    this.trail           = new Trail(player.color, this.radius);
     this.head            = [this.radius, this.radius];
+    this.trail           = new Trail(player.color, this.radius, this.head.slice(0));
     this.angle           = Math.random() * Math.PI;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
@@ -21,13 +21,13 @@ function BaseAvatar(player, position)
 
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
-BaseAvatar.prototype.velocity            = 3;
-BaseAvatar.prototype.radius              = 10;
-BaseAvatar.prototype.precision           = 10;
-BaseAvatar.prototype.angularVelocityBase = 0.01;
+BaseAvatar.prototype.velocity            = 20/1000;
+BaseAvatar.prototype.radius              = 1;
+BaseAvatar.prototype.precision           = 1;
+BaseAvatar.prototype.angularVelocityBase = 5/1000;
 
 /**
- * Set position
+ * Set Point
  *
  * @param {Array} point
  */
@@ -35,8 +35,16 @@ BaseAvatar.prototype.setPosition = function(point)
 {
     this.head[0] = point[0];
     this.head[1] = point[1];
+};
 
-    this.trail.addPoint(this.head.slice(0));
+/**
+ * Add Point
+ *
+ * @param {Array} point
+ */
+BaseAvatar.prototype.addPoint = function(point)
+{
+    this.trail.addPoint(point);
 };
 
 /**
@@ -67,6 +75,8 @@ BaseAvatar.prototype.setAngle = function(angle)
 
 /**
  * Update
+ *
+ * @param {Number} step
  */
 BaseAvatar.prototype.update = function(step)
 {
@@ -76,11 +86,26 @@ BaseAvatar.prototype.update = function(step)
 /**
  * Add angle
  *
- * @param {Float} angle
+ * @param {Number} step
  */
 BaseAvatar.prototype.updateAngle = function(step)
 {
     this.setAngle(this.angle + this.angularVelocity * step);
+};
+
+/**
+ * Update position
+ *
+ * @param {Number} step
+ *
+ * @return {[type]}
+ */
+BaseAvatar.prototype.updatePosition = function(step)
+{
+    this.setPosition([
+        this.head[0] + this.velocities[0] * step,
+        this.head[1] + this.velocities[1] * step
+    ]);
 };
 
 /**
@@ -114,4 +139,5 @@ BaseAvatar.prototype.die = function()
 {
     this.alive = false;
     console.log('I died');
+    this.addPoint(this.head.slice(0));
 };

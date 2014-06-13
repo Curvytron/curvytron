@@ -121,4 +121,4 @@ gulp.task('watch', ['dev', 'sass-full'], function () {
 });
 
 gulp.task('default', ['jshint', 'server', 'front-expose', 'front-min', 'sass-min']);
-gulp.task('dev', ['jshint', 'server', 'front-full', 'sass-full', 'nodemon']);
+gulp.task('dev', ['jshint', 'server', 'front-full', 'sass-full']);

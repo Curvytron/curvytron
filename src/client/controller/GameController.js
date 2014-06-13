@@ -18,10 +18,12 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
 
     this.onMove     = this.onMove.bind(this);
     this.onPosition = this.onPosition.bind(this);
+    this.onPoint    = this.onPoint.bind(this);
     this.onDie      = this.onDie.bind(this);
 
     this.input.on('move', this.onMove);
     this.client.io.on('position', this.onPosition);
+    this.client.io.on('point', this.onPoint);
     this.client.io.on('die', this.onDie);
 
     this.loadGame();
@@ -66,10 +68,22 @@ GameController.prototype.onPosition = function(data)
 {
     var avatar = this.game.avatars.getById(data.avatar);
 
-    console.log("onPosition", data, avatar);
-
     if (avatar) {
         avatar.setPosition(data.point);
+    }
+};
+
+/**
+ * On move
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onPoint = function(data)
+{
+    var avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.addPoint(data.point);
     }
 };
 

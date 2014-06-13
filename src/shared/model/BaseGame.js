@@ -10,13 +10,15 @@ function BaseGame(room)
     this.channel = 'game:' + this.name;
     this.frame   = null;
     this.avatars = this.room.players.map(function () { return new Avatar(this); });
+    this.size    = this.avatars.count() * this.perPlayerSize;
 
     this.start = this.start.bind(this);
     this.stop  = this.stop.bind(this);
     this.loop  = this.loop.bind(this);
 }
 
-BaseGame.prototype.framerate = 1/60;
+BaseGame.prototype.framerate     = 1/60;
+BaseGame.prototype.perPlayerSize = 50;
 
 /**
  * Update

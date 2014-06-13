@@ -8,10 +8,10 @@ function Trail(color, radius)
 
     this.path = new paper.Path({
         strokeColor: this.color,
-        strokeWidth: this.radius,
+        strokeWidth: this.radius * 1.1 * paper.sceneScale,
         strokeCap: 'round',
         strokeJoin: 'round',
-        fullySelected: true
+        fullySelected: false
     });
 }
 
@@ -24,6 +24,8 @@ Trail.prototype = Object.create(BaseTrail.prototype);
  */
 Trail.prototype.addPoint = function(point)
 {
-    this.path.moveTo(point);
-    this.path.lineTo(point);
+    this.path.add(new paper.Point(
+        point[0] * paper.sceneScale,
+        point[1] * paper.sceneScale)
+    );
 };

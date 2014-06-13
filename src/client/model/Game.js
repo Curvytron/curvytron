@@ -8,8 +8,11 @@ function Game(room)
     this.canvas = document.getElementById('game');
 
     paper.setup(this.canvas);
+    paper.sceneScale = Math.min(paper.view.viewSize.width, paper.view.viewSize.height) / (room.players.count() * this.perPlayerSize);
 
     BaseGame.call(this, room);
+
+    console.log(paper.view.size, paper.view.viewSize, paper.sceneScale);
 
     window.addEventListener('error', this.stop);
 }

@@ -45,6 +45,7 @@ GameController.prototype.attachEvents = function(client)
 
     client.avatar.on('die', function () { controller.onDie(client); });
     client.avatar.on('position', function (point) { controller.onPosition(client, point); });
+    client.avatar.on('point', function (data) { controller.onPoint(client, data.point); });
 };
 
 /**
@@ -69,14 +70,24 @@ GameController.prototype.onMove = function(client, move)
 };
 
 /**
- * On point
+ * On position
  *
  * @param {SocketClient} client
  * @param {Array} point
  */
 GameController.prototype.onPosition = function(client, point)
 {
-    console.log('onPosition', point, client.room.game.channel, {avatar: client.avatar.name, point: point});
+    this.io.sockets.in(client.room.game.channel).emit('position', {avatar: client.avatar.name, point: point});
+};
+
+/**
+ * On point
+ *
+ * @param {SocketClient} client
+ * @param {Array} point
+ */
+GameController.prototype.onPoint = function(client, point)
+{
     this.io.sockets.in(client.room.game.channel).emit('point', {avatar: client.avatar.name, point: point});
 };
 
