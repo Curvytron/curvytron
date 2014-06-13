@@ -111,6 +111,8 @@ li.player-row {
     }
     aside {
         width: 300px;
+        min-width: 300px;
+        max-width: 300px;
         background: lighten($game-background, 5%);
         color: #EEE;
         font-weight: 300;
