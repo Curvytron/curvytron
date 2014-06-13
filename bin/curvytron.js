@@ -633,6 +633,8 @@ function BaseRoom(name)
 
 BaseRoom.prototype = Object.create(EventEmitter.prototype);
 
+BaseRoom.prototype.warmupTime = 5000;
+
 /**
  * Add player
  *
@@ -672,7 +674,7 @@ BaseRoom.prototype.startWarmup = function()
         console.log("Start warmup");
         this.game = new Game(this);
         this.emit('game:new', {room: this, game: this.game});
-        setTimeout(this.game.start, 5000);
+        setTimeout(this.game.start, this.warmupTime);
     }
 };
 
@@ -689,6 +691,7 @@ BaseRoom.prototype.serialize = function()
         game: this.game ? true : false
     };
 };
+
 /**
  * BaseTrail
  */
@@ -1015,6 +1018,7 @@ RoomController.prototype.warmupRoom = function(room)
         this.gameController.attach(room.players.items[i].client, room.game);
     }
 };
+
 /**
  * Server
  */
