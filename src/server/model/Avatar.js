@@ -19,7 +19,7 @@ Avatar.prototype.update = function(step)
         this.updateAngle(step);
         this.updatePosition(step);
 
-        if (this.getDistance(this.trail.getLast(), this.head) > this.precision) {
+        if (this.printing && (!this.trail.getLast() || this.getDistance(this.trail.getLast(), this.head) > this.precision)) {
             this.addPoint(this.head.slice(0));
         }
     }

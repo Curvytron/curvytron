@@ -19,13 +19,11 @@ World.prototype.islandGrid = 10;
  */
 World.prototype.addCircle = function(circle)
 {
-    if (!this.testCircle(circle)) {
-        return false;
-    }
+    var result = !this.testCircle(circle);
 
     this.circles.push(circle);
 
-    return true;
+    return result;
 };
 
 /**

@@ -9,22 +9,28 @@ function BaseAvatar(player, position)
 
     this.name            = player.name;
     this.player          = player;
+    this.radius          = 1;
     this.head            = [this.radius, this.radius];
     this.trail           = new Trail(player.color, this.radius, this.head.slice(0));
     this.angle           = Math.random() * Math.PI;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
     this.alive           = true;
+    this.printing        = false;
 
+    this.togglePrinting = this.togglePrinting.bind(this);
+
+    this.togglePrinting();
     this.updateVelocities();
 }
 
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
 BaseAvatar.prototype.velocity            = 20/1000;
-BaseAvatar.prototype.radius              = 1;
 BaseAvatar.prototype.precision           = 1;
 BaseAvatar.prototype.angularVelocityBase = 5/1000;
+BaseAvatar.prototype.printingRatio       = 0.9;
+BaseAvatar.prototype.printingTime        = 3000;
 
 /**
  * Set Point
@@ -138,6 +144,33 @@ BaseAvatar.prototype.getDistance = function(from, to)
 BaseAvatar.prototype.die = function()
 {
     this.alive = false;
-    console.log('I died');
+    console.log('%s died', this.name);
     this.addPoint(this.head.slice(0));
+};
+
+/**
+ * Start printing
+ */
+BaseAvatar.prototype.togglePrinting = function()
+{
+    this.printing = !this.printing;
+
+    setTimeout(this.togglePrinting, this.getRandomPrintingTime());
+
+    if (!this.printing) {
+        this.trail.clear();
+    }
+};
+
+/**
+ * Get random printing time
+ *
+ * @return {Number}
+ */
+BaseAvatar.prototype.getRandomPrintingTime = function()
+{
+    var ratio = this.printing ? this.printingRatio : 1 - this.printingRatio,
+        base = this.printingTime * ratio;
+
+    return base * (0.5 + Math.random());
 };

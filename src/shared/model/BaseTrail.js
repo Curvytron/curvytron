@@ -3,10 +3,14 @@
  */
 function BaseTrail(color, radius)
 {
+    EventEmitter.call(this);
+
     this.color  = color;
     this.radius = radius;
     this.points = [];
 }
+
+BaseTrail.prototype = Object.create(EventEmitter.prototype);
 
 /**
  * Add point

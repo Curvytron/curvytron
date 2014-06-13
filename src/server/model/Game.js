@@ -10,26 +10,17 @@ function Game(room)
     this.world  = new World(this.size);
 
     this.addPoint = this.addPoint.bind(this);
-}
 
-Game.prototype = Object.create(BaseGame.prototype);
-
-/**
- * Start
- */
-Game.prototype.start = function()
-{
     var avatar;
 
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.on('point', this.addPoint);
-        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
-        avatar.addPoint(avatar.head.slice(0));
+        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.4));
     }
+}
 
-    BaseGame.prototype.start.call(this);
-};
+Game.prototype = Object.create(BaseGame.prototype);
 
 /**
  * Update
@@ -61,5 +52,5 @@ Game.prototype.addPoint = function(data)
     var world = this.world,
         circle = [data.point[0], data.point[1], data.avatar.radius];
 
-    setTimeout(function () { world.addCircle(circle); }, 200);
+    setTimeout(function () { world.addCircle(circle); }, 100);
 };
