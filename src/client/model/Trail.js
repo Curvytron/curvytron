@@ -2,27 +2,10 @@
  * Trail
  * @constructor
  */
-function Trail(color)
+function Trail(color, radius)
 {
-    BaseTrail.call(this, color);
+    BaseTrail.call(this, color, radius);
 
-    this.path = null;
-    /*this.path = new paper.Path({
-        strokeColor: this.color,
-        strokeWidth: this.radius,
-        strokeCap: 'round',
-        strokeJoin: 'round',
-        fullySelected: true
-    });*/
-}
-
-Trail.prototype = Object.create(BaseTrail.prototype);
-
-/**
- * Init Path
- */
-Trail.prototype.initPath = function()
-{
     this.path = new paper.Path({
         strokeColor: this.color,
         strokeWidth: this.radius,
@@ -30,7 +13,9 @@ Trail.prototype.initPath = function()
         strokeJoin: 'round',
         fullySelected: true
     });
-};
+}
+
+Trail.prototype = Object.create(BaseTrail.prototype);
 
 /**
  * Add point
@@ -42,7 +27,6 @@ Trail.prototype.addPoint = function(point)
     BaseTrail.prototype.addPoint.call(this, point);
     this.path.moveTo(point);
     this.path.lineTo(point);
-    this.path.smooth();
     /*this.add(this.head.add(this.velocities));
      this.smooth();*/
 };

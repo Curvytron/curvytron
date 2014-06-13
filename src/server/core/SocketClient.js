@@ -9,6 +9,8 @@ function SocketClient(socket)
     this.socket = socket;
     this.player = new Player(this, this.id);
     this.room   = null;
+    this.game   = null;
+    this.avatar = null;
 
     this.onChannel = this.onChannel.bind(this);
 
@@ -66,4 +68,32 @@ SocketClient.prototype.leaveRoom = function()
     }
 
     return false;
+};
+
+/**
+ * Join game
+ *
+ * @param {Game} game
+ */
+SocketClient.prototype.joinGame = function(game)
+{
+    if (this.game) {
+        this.leaveGame();
+    }
+
+    this.game   = game;
+    this.avatar = game.avatars.getById(this.player.name);
+};
+
+/**
+ * Leave room
+ *
+ * @return {[type]}
+ */
+SocketClient.prototype.leaveGame = function()
+{
+    if (this.game && this.game.removeAvatar(this.avatar)) {
+        this.game   = null;
+        this.avatar = null;
+    }
 };
