@@ -319,15 +319,17 @@ function BaseAvatar(player, position)
     EventEmitter.call(this);
 
     this.name            = player.name;
+    this.color           = player.color;
     this.player          = player;
     this.radius          = 1;
     this.head            = [this.radius, this.radius];
-    this.trail           = new Trail(player.color, this.radius, this.head.slice(0));
+    this.trail           = new Trail(this.color, this.radius, this.head.slice(0));
     this.angle           = Math.random() * Math.PI;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
     this.alive           = true;
     this.printing        = false;
+    this.score           = 0;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
@@ -340,7 +342,7 @@ BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 BaseAvatar.prototype.velocity            = 20/1000;
 BaseAvatar.prototype.precision           = 1;
 BaseAvatar.prototype.angularVelocityBase = 3/1000;
-BaseAvatar.prototype.printingRatio       = 0.9;
+BaseAvatar.prototype.printingRatio       = 0.8;
 BaseAvatar.prototype.printingTime        = 3000;
 
 /**
@@ -487,18 +489,53 @@ BaseAvatar.prototype.getRandomPrintingTime = function()
 };
 
 /**
+ * This score
+ *
+ * @param {Number} score
+ */
+BaseAvatar.prototype.addScore = function(score)
+{
+    this.setScore(this.score + score);
+};
+
+/**
+ * This score
+ *
+ * @param {Number} score
+ */
+BaseAvatar.prototype.setScore = function(score)
+{
+    this.score = score;
+};
+
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BaseAvatar.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        color: this.color,
+        score: this.score
+    };
+};
+/**
  * BaseGame
  *
  * @param {Room} room
  */
 function BaseGame(room)
 {
-    this.room    = room;
-    this.name    = this.room.name;
-    this.channel = 'game:' + this.name;
-    this.frame   = null;
-    this.avatars = this.room.players.map(function () { return new Avatar(this); });
-    this.size    = this.getSize(this.avatars.count());
+    this.room     = room;
+    this.name     = this.room.name;
+    this.channel  = 'game:' + this.name;
+    this.frame    = null;
+    this.avatars  = this.room.players.map(function () { return new Avatar(this); });
+    this.size     = this.getSize(this.avatars.count());
+    this.rendered = false;
 
     this.start = this.start.bind(this);
     this.stop  = this.stop.bind(this);
@@ -544,7 +581,8 @@ BaseGame.prototype.stop = function()
 {
     if (this.frame) {
         clearTimeout(this.frame);
-        this.frame = null;
+        this.frame    = null;
+        this.rendered = null;
     }
 };
 
@@ -602,8 +640,18 @@ BaseGame.prototype.serialize = function()
 {
     return {
         name: this.name,
-        players: this.avatars.map(function () { return this.player.serialize(); }).items
+        players: this.avatars.map(function () { return this.serialize(); }).items
     };
+};
+
+/**
+ * Is started
+ *
+ * @return {Boolean}
+ */
+BaseGame.prototype.isStarted = function()
+{
+    return this.rendered !== null;
 };
 
 /**
@@ -707,7 +755,7 @@ BaseRoom.prototype.removePlayer = function(player)
  */
 BaseRoom.prototype.isReady = function()
 {
-    return this.players.filter(function () { return !this.ready; }).isEmpty();
+    return this.players.count() > 1 && this.players.filter(function () { return !this.ready; }).isEmpty();
 };
 
 /**
@@ -829,6 +877,7 @@ GameController.prototype.attachEvents = function(client)
     client.avatar.on('die', function () { controller.onDie(client); });
     client.avatar.on('position', function (point) { controller.onPosition(client, point); });
     client.avatar.on('point', function (data) { controller.onPoint(client, data.point); });
+    client.avatar.on('score', function (data) { controller.onScore(client, data); });
     client.avatar.trail.on('clear', function (data) { controller.onTrailClear(client); });
 };
 
@@ -897,8 +946,17 @@ GameController.prototype.onPoint = function(client, point)
  */
 GameController.prototype.onDie = function(client)
 {
-    console.log('onDie');
     this.io.sockets.in(client.room.game.channel).emit('die', {avatar: client.avatar.name});
+};
+
+/**
+ * On score
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.onScore = function(client, data)
+{
+    this.io.sockets.in(client.room.game.channel).emit('score', {avatar: client.avatar.name, score: data.score});
 };
 
 /**
@@ -1430,7 +1488,19 @@ Avatar.prototype.addPoint = function(point)
 Avatar.prototype.die = function()
 {
     BaseAvatar.prototype.die.call(this);
-    this.emit('die');
+    this.emit('die', {avatar: this});
+};
+
+/**
+ * Set score
+ *
+ * @param {Number} score
+ */
+Avatar.prototype.setScore = function(score)
+{
+    BaseAvatar.prototype.setScore.call(this, score);
+
+    this.emit('score', {avatar: this, score: this.score});
 };
 /**
  * Game
@@ -1444,12 +1514,14 @@ function Game(room)
     this.world  = new World(this.size);
 
     this.addPoint = this.addPoint.bind(this);
+    this.onDie    = this.onDie.bind(this);
 
     var avatar;
 
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.on('point', this.addPoint);
+        avatar.on('die', this.onDie);
         avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
     }
 }
@@ -1487,6 +1559,18 @@ Game.prototype.addPoint = function(data)
         circle = [data.point[0], data.point[1], data.avatar.radius];
 
     setTimeout(function () { world.addCircle(circle); }, 100);
+};
+
+/**
+ * Add point
+ *
+ * @param {Object} data
+ */
+Game.prototype.onDie = function(data)
+{
+    var score = this.avatars.filter(function () { return !this.alive; }).count();
+
+    data.avatar.addScore(score);
 };
 Player.prototype = Object.create(BasePlayer.prototype);
 Player.prototype.constructor = Player;

@@ -20,12 +20,14 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
     this.onPosition   = this.onPosition.bind(this);
     this.onPoint      = this.onPoint.bind(this);
     this.onDie        = this.onDie.bind(this);
+    this.onScore      = this.onScore.bind(this);
     this.onTrailClear = this.onTrailClear.bind(this);
 
     this.input.on('move', this.onMove);
     this.client.io.on('position', this.onPosition);
     this.client.io.on('point', this.onPoint);
     this.client.io.on('die', this.onDie);
+    this.client.io.on('score', this.onScore);
     this.client.io.on('trail:clear', this.onTrailClear);
 
     this.loadGame();
@@ -83,7 +85,7 @@ GameController.prototype.onMove = function(e)
 };
 
 /**
- * On move
+ * On position
  *
  * @param {Object} data
  */
@@ -93,11 +95,17 @@ GameController.prototype.onPosition = function(data)
 
     if (avatar) {
         avatar.setPosition(data.point);
+
+        if (!this.game.isStarted()) {
+            console.log('pre draw');
+            paper.view.update();
+            paper.view.draw();
+        }
     }
 };
 
 /**
- * On move
+ * On point
  *
  * @param {Object} data
  */
@@ -111,7 +119,7 @@ GameController.prototype.onPoint = function(data)
 };
 
 /**
- * On move
+ * On die
  *
  * @param {Object} data
  */
@@ -121,6 +129,21 @@ GameController.prototype.onDie = function(data)
 
     if (avatar) {
         avatar.die();
+    }
+};
+
+/**
+ * On score
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onScore = function(data)
+{
+    var avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.setScore(data.score);
+        this.$scope.$apply();
     }
 };
 

@@ -10,12 +10,14 @@ function Game(room)
     this.world  = new World(this.size);
 
     this.addPoint = this.addPoint.bind(this);
+    this.onDie    = this.onDie.bind(this);
 
     var avatar;
 
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.on('point', this.addPoint);
+        avatar.on('die', this.onDie);
         avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
     }
 }
@@ -53,4 +55,16 @@ Game.prototype.addPoint = function(data)
         circle = [data.point[0], data.point[1], data.avatar.radius];
 
     setTimeout(function () { world.addCircle(circle); }, 100);
+};
+
+/**
+ * Add point
+ *
+ * @param {Object} data
+ */
+Game.prototype.onDie = function(data)
+{
+    var score = this.avatars.filter(function () { return !this.alive; }).count();
+
+    data.avatar.addScore(score);
 };

@@ -5,12 +5,13 @@
  */
 function BaseGame(room)
 {
-    this.room    = room;
-    this.name    = this.room.name;
-    this.channel = 'game:' + this.name;
-    this.frame   = null;
-    this.avatars = this.room.players.map(function () { return new Avatar(this); });
-    this.size    = this.getSize(this.avatars.count());
+    this.room     = room;
+    this.name     = this.room.name;
+    this.channel  = 'game:' + this.name;
+    this.frame    = null;
+    this.avatars  = this.room.players.map(function () { return new Avatar(this); });
+    this.size     = this.getSize(this.avatars.count());
+    this.rendered = false;
 
     this.start = this.start.bind(this);
     this.stop  = this.stop.bind(this);
@@ -56,7 +57,8 @@ BaseGame.prototype.stop = function()
 {
     if (this.frame) {
         clearTimeout(this.frame);
-        this.frame = null;
+        this.frame    = null;
+        this.rendered = null;
     }
 };
 
@@ -114,6 +116,16 @@ BaseGame.prototype.serialize = function()
 {
     return {
         name: this.name,
-        players: this.avatars.map(function () { return this.player.serialize(); }).items
+        players: this.avatars.map(function () { return this.serialize(); }).items
     };
+};
+
+/**
+ * Is started
+ *
+ * @return {Boolean}
+ */
+BaseGame.prototype.isStarted = function()
+{
+    return this.rendered !== null;
 };

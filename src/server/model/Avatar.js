@@ -55,5 +55,17 @@ Avatar.prototype.addPoint = function(point)
 Avatar.prototype.die = function()
 {
     BaseAvatar.prototype.die.call(this);
-    this.emit('die');
+    this.emit('die', {avatar: this});
+};
+
+/**
+ * Set score
+ *
+ * @param {Number} score
+ */
+Avatar.prototype.setScore = function(score)
+{
+    BaseAvatar.prototype.setScore.call(this, score);
+
+    this.emit('score', {avatar: this, score: this.score});
 };

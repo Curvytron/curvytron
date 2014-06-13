@@ -8,15 +8,17 @@ function BaseAvatar(player, position)
     EventEmitter.call(this);
 
     this.name            = player.name;
+    this.color           = player.color;
     this.player          = player;
     this.radius          = 1;
     this.head            = [this.radius, this.radius];
-    this.trail           = new Trail(player.color, this.radius, this.head.slice(0));
+    this.trail           = new Trail(this.color, this.radius, this.head.slice(0));
     this.angle           = Math.random() * Math.PI;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
     this.alive           = true;
     this.printing        = false;
+    this.score           = 0;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
@@ -29,7 +31,7 @@ BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 BaseAvatar.prototype.velocity            = 20/1000;
 BaseAvatar.prototype.precision           = 1;
 BaseAvatar.prototype.angularVelocityBase = 3/1000;
-BaseAvatar.prototype.printingRatio       = 0.9;
+BaseAvatar.prototype.printingRatio       = 0.8;
 BaseAvatar.prototype.printingTime        = 3000;
 
 /**
@@ -173,4 +175,39 @@ BaseAvatar.prototype.getRandomPrintingTime = function()
         base = this.printingTime * ratio;
 
     return base * (0.5 + Math.random());
+};
+
+/**
+ * This score
+ *
+ * @param {Number} score
+ */
+BaseAvatar.prototype.addScore = function(score)
+{
+    this.setScore(this.score + score);
+};
+
+/**
+ * This score
+ *
+ * @param {Number} score
+ */
+BaseAvatar.prototype.setScore = function(score)
+{
+    this.score = score;
+};
+
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BaseAvatar.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        color: this.color,
+        score: this.score
+    };
 };
