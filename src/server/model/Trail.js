@@ -7,3 +7,12 @@ function Trail(color, radius)
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
+
+/**
+ * Clear
+ */
+Trail.prototype.clear = function()
+{
+    BaseTrail.prototype.clear.call(this);
+    this.emit('clear');
+};

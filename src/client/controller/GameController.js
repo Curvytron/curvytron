@@ -16,15 +16,17 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
 
     this.client.join('game:' + this.name);
 
-    this.onMove     = this.onMove.bind(this);
-    this.onPosition = this.onPosition.bind(this);
-    this.onPoint    = this.onPoint.bind(this);
-    this.onDie      = this.onDie.bind(this);
+    this.onMove       = this.onMove.bind(this);
+    this.onPosition   = this.onPosition.bind(this);
+    this.onPoint      = this.onPoint.bind(this);
+    this.onDie        = this.onDie.bind(this);
+    this.onTrailClear = this.onTrailClear.bind(this);
 
     this.input.on('move', this.onMove);
     this.client.io.on('position', this.onPosition);
     this.client.io.on('point', this.onPoint);
     this.client.io.on('die', this.onDie);
+    this.client.io.on('trail:clear', this.onTrailClear);
 
     this.loadGame();
 }
@@ -66,6 +68,8 @@ GameController.prototype.displayWarmup = function()
             }, 1000);
 
         setTimeout(function() { clearInterval(interval); $scope.countFinish = true; $scope.$apply(); }, warmup);
+
+    // room.game.start();
 };
 
 /**
@@ -117,5 +121,19 @@ GameController.prototype.onDie = function(data)
 
     if (avatar) {
         avatar.die();
+    }
+};
+
+/**
+ * On trail clear
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onTrailClear = function(data)
+{
+    var avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.trail.clear();
     }
 };

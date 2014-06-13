@@ -10,9 +10,9 @@ function Game(room)
     paper.setup(this.canvas);
     paper.sceneScale = Math.min(paper.view.viewSize.width, paper.view.viewSize.height) / (room.players.count() * this.perPlayerSize);
 
-    BaseGame.call(this, room);
-
     console.log(paper.view.size, paper.view.viewSize, paper.sceneScale);
+
+    BaseGame.call(this, room);
 
     window.addEventListener('error', this.stop);
 }
