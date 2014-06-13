@@ -8,6 +8,7 @@ var gulp      = require('gulp'),
     plumber   = require('gulp-plumber'),
     gutil     = require('gulp-util'),
     minifyCSS = require('gulp-minify-css'),
+    nodemon   = require('gulp-nodemon'),
     meta      = require('./package.json');
 
     var srcDir     = './src/',
@@ -83,6 +84,20 @@ gulp.task('server', function() {
         .pipe(gulp.dest(recipes.server.path));
 });
 
+gulp.task('server', function() {
+    gulp.src(recipes.server.files)
+        .pipe(concat(recipes.server.name))
+        .pipe(gulp.dest(recipes.server.path));
+});
+
+gulp.task('nodemon', function () {
+    nodemon({ watch: recipes.server.files, ext: 'js', script: 'bin/curvytron.js', restartable: "rs"})
+        .on('change', ['server'])
+        .on('restart', function () {
+            console.log('restarted!')
+        })
+})
+
 gulp.task('sass-full', function() {
   gulp.src(sassDir + 'style.scss')
     .pipe(plumber({ errorHandler: onError }))
@@ -106,4 +121,4 @@ gulp.task('watch', ['dev', 'sass-full'], function () {
 });
 
 gulp.task('default', ['jshint', 'server', 'front-expose', 'front-min', 'sass-min']);
-gulp.task('dev', ['jshint', 'server', 'front-full', 'sass-full']);
+gulp.task('dev', ['jshint', 'server', 'front-full', 'sass-full', 'nodemon']);

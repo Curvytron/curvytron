@@ -1,7 +1,7 @@
 {
   "name": "curvytron",
   "version": "0.0.1",
-  "description": "A web multiplayer Tron game like with curves",
+  "description": "A web multiplayer Tron game like... with curves!",
   "keywords": [
     "tron",
     "game",
@@ -33,7 +33,8 @@
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^0.7.1",
     "gulp-util": "^2.2.14",
-    "gulp-minify-css": "~0.3.4"
+    "gulp-minify-css": "~0.3.4",
+    "gulp-nodemon": "~1.0.4"
   },
   "dependencies": {
     "socket.io": "^1.0.4",
