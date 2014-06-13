@@ -314,18 +314,18 @@ Collection.prototype.getLast = function()
  *
  * @param {Player} player
  */
-function BaseAvatar(player)
+function BaseAvatar(player, position)
 {
     EventEmitter.call(this);
 
     this.name            = player.name;
     this.player          = player;
     this.trail           = new Trail(player.color, this.radius);
-    this.head            = [0, 0];
-    this.lastPosition    = this.head.slice(0);
+    this.head            = [this.radius, this.radius];
     this.angle           = Math.random() * Math.PI;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
+    this.alive           = true;
 
     this.updateVelocities();
 }
@@ -338,12 +338,27 @@ BaseAvatar.prototype.precision           = 10;
 BaseAvatar.prototype.angularVelocityBase = 0.01;
 
 /**
+ * Set position
+ *
+ * @param {Array} point
+ */
+BaseAvatar.prototype.setPosition = function(point)
+{
+    this.head[0] = point[0];
+    this.head[1] = point[1];
+
+    this.trail.addPoint(this.head.slice(0));
+};
+
+/**
  * Set angular velocity
  *
  * @param {Number} factor
  */
 BaseAvatar.prototype.setAngularVelocity = function(factor)
 {
+    if (!this.alive) { return; }
+
     this.angularVelocity = factor * this.angularVelocityBase;
 };
 
@@ -354,14 +369,20 @@ BaseAvatar.prototype.setAngularVelocity = function(factor)
  */
 BaseAvatar.prototype.setAngle = function(angle)
 {
+    if (!this.alive) { return; }
+
     this.angle = angle;
 
     this.updateVelocities();
 };
+
 /**
  * Update
  */
-BaseAvatar.prototype.update = function(step) { };
+BaseAvatar.prototype.update = function(step)
+{
+    return [this.head[0], this.head[1], this.radius];
+};
 
 /**
  * Add angle
@@ -395,6 +416,15 @@ BaseAvatar.prototype.updateVelocities = function()
 BaseAvatar.prototype.getDistance = function(from, to)
 {
     return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
+};
+
+/**
+ * Die
+ */
+BaseAvatar.prototype.die = function()
+{
+    this.alive = false;
+    console.log('I died');
 };
 
 /**
@@ -611,6 +641,7 @@ BaseRoom.prototype.isReady = function()
 BaseRoom.prototype.startWarmup = function()
 {
     if (!this.game) {
+        console.log("Start warmup");
         this.game = new Game(this);
         this.emit('game:new', {room: this, game: this.game});
         setTimeout(this.game.start, 5000);
@@ -639,8 +670,6 @@ function BaseTrail(color, radius)
     this.radius = radius;
     this.points = [];
 }
-
-BaseTrail.prototype = Object.create(EventEmitter.prototype);
 
 /**
  * Add point
@@ -696,7 +725,8 @@ GameController.prototype.attachEvents = function(client)
 
     client.socket.on('player:move', function (data) { controller.onMove(client, data); });
 
-    client.avatar.trail.on('point', function (point) { controller.onPoint(client, point); });
+    client.avatar.on('die', function () { controller.onDie(client); });
+    client.avatar.on('position', function (point) { controller.onPosition(client, point); });
 };
 
 /**
@@ -710,7 +740,7 @@ GameController.prototype.detachEvents = function(client)
 };
 
 /**
- * On new room
+ * On move
  *
  * @param {SocketClient} client
  * @param {Number} move
@@ -726,9 +756,21 @@ GameController.prototype.onMove = function(client, move)
  * @param {SocketClient} client
  * @param {Array} point
  */
-GameController.prototype.onPoint = function(client, point)
+GameController.prototype.onPosition = function(client, point)
 {
+    console.log('onPosition', point, client.room.game.channel, {avatar: client.avatar.name, point: point});
     this.io.sockets.in(client.room.game.channel).emit('point', {avatar: client.avatar.name, point: point});
+};
+
+/**
+ * On die
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.onDie = function(client)
+{
+    console.log('onDie');
+    this.io.sockets.in(client.room.game.channel).emit('die', {avatar: client.avatar.name});
 };
 /**
  * Room Controller
@@ -1066,6 +1108,130 @@ SocketClient.prototype.leaveGame = function()
     }
 };
 /**
+ * World
+ */
+function World(size)
+{
+    this.size    = size;
+    this.from    = [0, 0];
+    this.to      = [size, size];
+    this.circles = [];
+    this.islands = [];
+}
+
+World.prototype.islandGrid = 10;
+
+/**
+ * Add circle
+ *
+ * @param {Array} circle
+ */
+World.prototype.addCircle = function(circle)
+{
+    if (!this.circleInBound(circle, this.from, this.to)) {
+        return false;
+    }
+
+    this.circles.push(circle);
+
+    return true;
+};
+
+/**
+ * Add circle
+ *
+ * @param {Array} circle
+ */
+World.prototype.test = function(circle)
+{
+    console.log("test", circle);
+
+    if (!this.circleInBound(circle, this.from, this.to)) {
+        console.log('not in bound');
+        return false;
+    }
+    console.log('in bound');
+
+    for (var i = this.circles.length - 1; i >= 0; i--)
+    {
+        if (this.circlesTouch(this.circles[i], circle)) {
+            console.log('collids', this.circles[i]);
+            return false
+        }
+    }
+
+    console.log("pass");
+
+    return true;
+};
+
+/**
+ * Circles touch
+ *
+ * @param {Array} circleA
+ * @param {Array} circleB
+ *
+ * @return {Boolean}
+ */
+World.prototype.circlesTouch = function(circleA, circleB)
+{
+    var distance = circleA[2] + circleB[2];
+
+    return Math.abs(circleA[0] - circleB[0]) < distance || Math.abs(circleA[1] - circleB[1]) < distance;
+};
+
+/**
+ * Is point in bound?
+ *
+ * @param {Array} circle
+ * @param {Array} from
+ * @param {Array} to
+ *
+ * @return {Boolean}
+ */
+World.prototype.circleInBound = function(circle, from, to)
+{
+    console.log("circleInBound", circle, from, to);
+
+    return circle[0] - circle[2] >= from[0]
+        && circle[0] + circle[2] <= to[0]
+        && circle[1] - circle[2] >= from[1]
+        && circle[1] + circle[2] <= to[1]
+};
+
+/**
+ * Random Position
+ *
+ * @param {Number} radius
+ *
+ * @return {Array}
+ */
+World.prototype.getRandomPosition = function(radius)
+{
+    var point = this.getRandomPoint(radius);
+
+    while (!this.test([point[0], point[1], radius])) {
+        point = this.getRandomPoint(radius);
+    }
+
+    return point;
+};
+
+/**
+ * Get random point
+ *
+ * @param {Number} radius
+ *
+ * @return {Array}
+ */
+World.prototype.getRandomPoint = function(radius)
+{
+    return [
+        radius + Math.random() * (this.size - radius * 2),
+        radius + Math.random() * (this.size - radius * 2)
+    ]
+};
+/**
  * Avatar
  *
  * @param {Player} player
@@ -1082,17 +1248,41 @@ Avatar.prototype = Object.create(BaseAvatar.prototype);
  */
 Avatar.prototype.update = function(step)
 {
-    this.updateAngle(step);
+    if (this.alive) {
+        this.updateAngle(step);
 
-    this.head[0] = this.head[0] + this.velocities[0];
-    this.head[1] = this.head[1] + this.velocities[1];
+        var position = [
+            this.head[0] + this.velocities[0],
+            this.head[1] + this.velocities[1]
+        ];
 
-    if (this.getDistance(this.lastPosition, this.head) > this.precision) {
-        this.lastPosition = this.head.slice(0);
-        this.trail.addPoint(this.lastPosition);
+        if (this.getDistance(position, this.head) > this.precision) {
+            this.setPosition(position);
+        }
     }
 
-    BaseAvatar.prototype.update.call(this);
+    return BaseAvatar.prototype.update.call(this);
+};
+
+/**
+ * Set position
+ *
+ * @param {Array} point
+ */
+Avatar.prototype.setPosition = function(point)
+{
+    BaseAvatar.prototype.setPosition.call(this, point);
+
+    this.emit('position', point);
+};
+
+/**
+ * Die
+ */
+Avatar.prototype.die = function()
+{
+    BaseAvatar.prototype.die.call(this);
+    this.emit('die');
 };
 /**
  * Game
@@ -1102,9 +1292,29 @@ Avatar.prototype.update = function(step)
 function Game(room)
 {
     BaseGame.call(this, room);
+
+    this.world = new World(this.avatars.count() * 100);
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
+
+/**
+ * Start
+ */
+Game.prototype.start = function()
+{
+    console.log("startgame?");
+
+    var avatar;
+
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        avatar.setPosition(this.world.getRandomPosition(avatar.radius));
+        console.log('init', avatar.head);
+    }
+
+    BaseGame.prototype.start.call(this);
+};
 
 /**
  * Update
@@ -1115,8 +1325,14 @@ Game.prototype.update = function(step)
 {
     BaseGame.prototype.update.call(this, step);
 
+    var avatar;
+
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
-        this.avatars.items[i].update(step);
+        avatar = this.avatars.items[i];
+
+        if (!this.world.test(avatar.update(step))) {
+            avatar.die();
+        }
     }
 };
 Player.prototype = Object.create(BasePlayer.prototype);
@@ -1153,18 +1369,6 @@ function Trail(color, radius)
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
-
-/**
- * Add point
- *
- * @param {Array} point
- */
-Trail.prototype.addPoint = function(point)
-{
-    BaseTrail.prototype.addPoint.call(this, point);
-
-    this.emit('point', point);
-};
 /**
  * Room Repository
  */

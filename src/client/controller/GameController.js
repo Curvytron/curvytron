@@ -1,3 +1,11 @@
+/**
+ * Game Controller
+ *
+ * @param {Object} $scope
+ * @param {Object} $routeParams
+ * @param {RoomRepository} RoomRepository
+ * @param {SocketClient} SocketClient
+ */
 function GameController($scope, $routeParams, RoomRepository, SocketClient)
 {
     this.$scope     = $scope;
@@ -8,11 +16,13 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
 
     this.client.join('game:' + this.name);
 
-    this.onMove  = this.onMove.bind(this);
-    this.onPoint = this.onPoint.bind(this);
+    this.onMove     = this.onMove.bind(this);
+    this.onPosition = this.onPosition.bind(this);
+    this.onDie      = this.onDie.bind(this);
 
     this.input.on('move', this.onMove);
-    this.client.io.on('point', this.onPoint);
+    this.client.io.on('position', this.onPosition);
+    this.client.io.on('die', this.onDie);
 
     this.loadGame();
 }
@@ -52,11 +62,27 @@ GameController.prototype.onMove = function(e)
  *
  * @param {Object} data
  */
-GameController.prototype.onPoint = function(data)
+GameController.prototype.onPosition = function(data)
+{
+    var avatar = this.game.avatars.getById(data.avatar);
+
+    console.log("onPosition", data, avatar);
+
+    if (avatar) {
+        avatar.setPosition(data.point);
+    }
+};
+
+/**
+ * On move
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onDie = function(data)
 {
     var avatar = this.game.avatars.getById(data.avatar);
 
     if (avatar) {
-        avatar.trail.addPoint(data.point);
+        avatar.die();
     }
 };

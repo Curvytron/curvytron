@@ -48,6 +48,7 @@ BaseRoom.prototype.isReady = function()
 BaseRoom.prototype.startWarmup = function()
 {
     if (!this.game) {
+        console.log("Start warmup");
         this.game = new Game(this);
         this.emit('game:new', {room: this, game: this.game});
         setTimeout(this.game.start, 5000);

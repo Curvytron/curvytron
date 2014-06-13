@@ -24,9 +24,6 @@ Trail.prototype = Object.create(BaseTrail.prototype);
  */
 Trail.prototype.addPoint = function(point)
 {
-    BaseTrail.prototype.addPoint.call(this, point);
     this.path.moveTo(point);
     this.path.lineTo(point);
-    /*this.add(this.head.add(this.velocities));
-     this.smooth();*/
 };

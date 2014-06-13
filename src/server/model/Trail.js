@@ -7,15 +7,3 @@ function Trail(color, radius)
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
-
-/**
- * Add point
- *
- * @param {Array} point
- */
-Trail.prototype.addPoint = function(point)
-{
-    BaseTrail.prototype.addPoint.call(this, point);
-
-    this.emit('point', point);
-};

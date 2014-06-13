@@ -15,15 +15,39 @@ Avatar.prototype = Object.create(BaseAvatar.prototype);
  */
 Avatar.prototype.update = function(step)
 {
-    this.updateAngle(step);
+    if (this.alive) {
+        this.updateAngle(step);
 
-    this.head[0] = this.head[0] + this.velocities[0];
-    this.head[1] = this.head[1] + this.velocities[1];
+        var position = [
+            this.head[0] + this.velocities[0],
+            this.head[1] + this.velocities[1]
+        ];
 
-    if (this.getDistance(this.lastPosition, this.head) > this.precision) {
-        this.lastPosition = this.head.slice(0);
-        this.trail.addPoint(this.lastPosition);
+        if (this.getDistance(position, this.head) > this.precision) {
+            this.setPosition(position);
+        }
     }
 
-    BaseAvatar.prototype.update.call(this);
+    return BaseAvatar.prototype.update.call(this);
+};
+
+/**
+ * Set position
+ *
+ * @param {Array} point
+ */
+Avatar.prototype.setPosition = function(point)
+{
+    BaseAvatar.prototype.setPosition.call(this, point);
+
+    this.emit('position', point);
+};
+
+/**
+ * Die
+ */
+Avatar.prototype.die = function()
+{
+    BaseAvatar.prototype.die.call(this);
+    this.emit('die');
 };
