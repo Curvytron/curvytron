@@ -16,7 +16,7 @@ function Game(room)
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.on('point', this.addPoint);
-        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.4));
+        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
     }
 }
 

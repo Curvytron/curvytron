@@ -506,7 +506,7 @@ function BaseGame(room)
 }
 
 BaseGame.prototype.framerate     = 1/60;
-BaseGame.prototype.perPlayerSize = 50;
+BaseGame.prototype.perPlayerSize = 100;
 
 /**
  * Update
@@ -1352,7 +1352,7 @@ World.prototype.getRandomPosition = function(radius, border)
     var margin = radius + border * this.size,
         point = this.getRandomPoint(margin);
 
-    while (!this.testCircle([point[0], point[1], radius])) {
+    while (!this.testCircle([point[0], point[1], margin])) {
         point = this.getRandomPoint(margin);
     }
 
@@ -1450,7 +1450,7 @@ function Game(room)
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.on('point', this.addPoint);
-        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.4));
+        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
     }
 }
 

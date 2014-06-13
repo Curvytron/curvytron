@@ -18,7 +18,7 @@ function BaseGame(room)
 }
 
 BaseGame.prototype.framerate     = 1/60;
-BaseGame.prototype.perPlayerSize = 50;
+BaseGame.prototype.perPlayerSize = 100;
 
 /**
  * Update
