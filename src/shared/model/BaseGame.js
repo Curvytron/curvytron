@@ -10,7 +10,7 @@ function BaseGame(room)
     this.channel = 'game:' + this.name;
     this.frame   = null;
     this.avatars = this.room.players.map(function () { return new Avatar(this); });
-    this.size    = this.avatars.count() * this.perPlayerSize;
+    this.size    = this.getSize(this.avatars.count());
 
     this.start = this.start.bind(this);
     this.stop  = this.stop.bind(this);
@@ -91,6 +91,18 @@ BaseGame.prototype.newFrame = function()
 BaseGame.prototype.onFrame = function(step)
 {
     this.update(step);
+};
+
+/**
+ * Get size by players
+ *
+ * @param {Number} players
+ *
+ * @return {Number}
+ */
+BaseGame.prototype.getSize = function(players)
+{
+    return Math.sqrt(players) * this.perPlayerSize;
 };
 
 /**

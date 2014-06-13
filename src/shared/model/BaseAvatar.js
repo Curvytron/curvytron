@@ -28,7 +28,7 @@ BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
 BaseAvatar.prototype.velocity            = 20/1000;
 BaseAvatar.prototype.precision           = 1;
-BaseAvatar.prototype.angularVelocityBase = 5/1000;
+BaseAvatar.prototype.angularVelocityBase = 3/1000;
 BaseAvatar.prototype.printingRatio       = 0.9;
 BaseAvatar.prototype.printingTime        = 3000;
 
