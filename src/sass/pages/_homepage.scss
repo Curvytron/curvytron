@@ -96,7 +96,6 @@ li.player-row {
 
 #game-wrapper {
     position: fixed;
-    display: table;
     top: $game-header-height;
     right: 0;
     bottom: $game-footer-height;
@@ -104,16 +103,19 @@ li.player-row {
     height: 100%;
     width: 100%;
     background: $game-background;
-    // border-top: 2px solid $game-background;
-    aside, canvas {
-        display: table-cell;
-        height: 100%;
+    aside, #col-right {
+        position: fixed;
+        top: $game-header-height;
+        bottom: 0;
     }
     aside {
         width: 300px;
+        min-width: 300px;
+        max-width: 300px;
         background: lighten($game-background, 5%);
         color: #EEE;
         font-weight: 300;
+        left: 0;
         h3 {
             margin: 0;
             color: #FFF;
@@ -131,6 +133,33 @@ li.player-row {
             }
         }
     }
+    #col-right {
+        top: $game-header-height;
+        bottom: 0;
+        right: 0;
+        left: 300px;
+        #countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -100px;
+            margin-left: -100px;
+            width: 200px;
+            height: 200px;
+            z-index: 100;
+            padding: 20px;
+            font-size: 100px;
+            line-height: 140px;
+            text-align: center;
+            color: #FFF;
+            background: lighten($game-background, 10%);
+            @extend .rounded;
+        }
+        #game {
+            z-index: 50;
+            border: 2px solid lighten($game-background, 10%);
+            width: 500px;
+            height: 500px;
+        }
+    }
 }
-
-

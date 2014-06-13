@@ -8,6 +8,11 @@
                 </li>
             </ul>
         </aside>
-        <canvas id="game" class="game"></canvas>
+        <div id="col-right">
+            <section id="countdown" ng-hide="countFinish">
+                <div id="count">{{ count }}</div>
+            </section>
+            <canvas id="game" class="game"></canvas>
+        </div>
     </section>
 </section>

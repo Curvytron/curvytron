@@ -49,8 +49,27 @@ GameController.prototype.loadGame = function()
 
     this.$scope.game     = this.game.serialize();
     this.$scope.roomName = this.game.name;
+    this.$scope.count    = 5;
+    this.$scope.countFinish = false;
 
-    room.game.start();
+    this.displayWarmup();
+};
+
+GameController.prototype.displayWarmup = function()
+{
+    var warmup = this.room.warmupTime,
+        count = warmup/1000,
+        $scope = this.$scope;
+
+        var interval = setInterval(function(){
+                count--;
+                $scope.count = count;
+                $scope.$apply();
+            }, 1000);
+
+        setTimeout(function() { clearInterval(interval); $scope.countFinish = true; $scope.$apply(); }, warmup);
+
+    // room.game.start();
 };
 
 /**
