@@ -8,11 +8,12 @@
  */
 function GameController($scope, $routeParams, RoomRepository, SocketClient)
 {
-    this.$scope     = $scope;
-    this.repository = RoomRepository;
-    this.client     = SocketClient;
-    this.name       = $routeParams.name;
-    this.input      = new PlayerInput();
+    this.$scope           = $scope;
+    this.repository       = RoomRepository;
+    this.client           = SocketClient;
+    this.name             = $routeParams.name;
+    this.input            = new PlayerInput();
+    this.$scope.sortorder = "-score";
 
     this.client.join('game:' + this.name);
 

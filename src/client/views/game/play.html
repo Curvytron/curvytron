@@ -4,7 +4,7 @@
             <header><a href="/">Curvytron</a></header>
             <h3>{{ roomName }}</h3>
             <ul id="game-players">
-                <li ng-repeat="avatar in avatars">
+                <li ng-repeat="avatar in avatars | orderBy:sortorder">
                     <span class="color-preview" style="background-color: {{ avatar.color }};"></span>
                     {{ avatar.name }}
                     <span class="score">{{ avatar.score }}</span>
