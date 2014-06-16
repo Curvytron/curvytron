@@ -5,56 +5,95 @@
  */
 function SocketClient(socket)
 {
-    this.id     = socket.id
+    this.id     = socket.id;
     this.socket = socket;
     this.player = new Player(this, this.id);
+    this.room   = null;
+    this.game   = null;
+    this.avatar = null;
 
-    this.onJoinLobby = this.onJoinLobby.bind(this);
-    this.onNewLobby  = this.onNewLobby.bind(this);
+    this.onChannel = this.onChannel.bind(this);
 
-    this.attachEvents();
-
+    this.socket.on('channel', this.onChannel);
     this.socket.emit('open');
 }
 
-/**
- * Attach events
- */
-SocketClient.prototype.attachEvents = function()
-{
-    this.socket.on('lobby:new', this.onNewLobby);
-    this.socket.on('lobby:join', this.onJoinLobby);
-};
+SocketClient.prototype = Object.create(EventEmitter.prototype);
 
 /**
- * Attach events
- */
-SocketClient.prototype.detachEvents = function()
-{
-    this.socket.off('lobby:new', this.onNewLobby);
-    this.socket.off('lobby:join', this.onJoinLobby);
-};
-
-/**
- * On new lobby
+ * On channel change
  *
+ * @param {String} channel
+ */
+SocketClient.prototype.onChannel = function(channel)
+{
+    console.log("%s switching to channel: %s", this.socket.id, channel);
+    this.socket.join(channel);
+};
+
+/**
+ * Join room
+ *
+ * @param {Room} room
  * @param {String} name
+ *
+ * @return {Boolean}
  */
-SocketClient.prototype.onNewLobby = function(name)
+SocketClient.prototype.joinRoom = function(room, name)
 {
-    console.log("onNewLobby", name);
-    this.repositories.lobby.create(name);
+    if (this.room) {
+        this.leaveRoom();
+    }
+
+    this.room = room;
+
+    this.player.setName(name);
+    this.player.toggleReady(false);
+
+    return this.room.addPlayer(this.player);
 };
 
 /**
- * On join lobby
+ * Leave room
  *
- * @param {Object} data
+ * @return {[type]}
  */
-SocketClient.prototype.onJoinLobby = function(data)
+SocketClient.prototype.leaveRoom = function()
 {
-    /*var lobby = this.lobbyController.get(data.lobby)
-        player = new Player(this, data.player);
+    if (this.room && this.room.removePlayer(this.player)) {
+        this.player.toggleReady(false);
+        this.room = null;
 
-    lobby.addPlayer(player);*/
+        return true;
+    }
+
+    return false;
+};
+
+/**
+ * Join game
+ *
+ * @param {Game} game
+ */
+SocketClient.prototype.joinGame = function(game)
+{
+    if (this.game) {
+        this.leaveGame();
+    }
+
+    this.game   = game;
+    this.avatar = game.avatars.getById(this.player.name);
+};
+
+/**
+ * Leave room
+ *
+ * @return {[type]}
+ */
+SocketClient.prototype.leaveGame = function()
+{
+    if (this.game && this.game.removeAvatar(this.avatar)) {
+        this.game   = null;
+        this.avatar = null;
+    }
 };

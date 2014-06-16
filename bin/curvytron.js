@@ -310,44 +310,299 @@ Collection.prototype.getLast = function()
     return this.items.length > 0 ? this.items[this.items.length - 1] : null;
 };
 /**
- * BaseGame
+ * Base Avatar
+ *
+ * @param {Player} player
  */
-function BaseGame()
+function BaseAvatar(player, position)
 {
-    this.frame   = null;
-    this.players = null;
+    EventEmitter.call(this);
+
+    this.name            = player.name;
+    this.color           = player.color;
+    this.player          = player;
+    this.radius          = 1;
+    this.head            = [this.radius, this.radius];
+    this.trail           = new Trail(this.color, this.radius, this.head.slice(0));
+    this.angle           = Math.random() * Math.PI;
+    this.velocities      = [0,0];
+    this.angularVelocity = 0;
+    this.alive           = true;
+    this.printing        = false;
+    this.score           = 0;
+    this.printimeTimeout = null;
+    this.ready           = false;
+
+    this.togglePrinting = this.togglePrinting.bind(this);
+
+    this.togglePrinting();
+    this.updateVelocities();
 }
+
+BaseAvatar.prototype = Object.create(EventEmitter.prototype);
+
+BaseAvatar.prototype.velocity            = 20/1000;
+BaseAvatar.prototype.precision           = 1;
+BaseAvatar.prototype.angularVelocityBase = 3/1000;
+BaseAvatar.prototype.printingRatio       = 0.8;
+BaseAvatar.prototype.printingTime        = 3000;
+
+/**
+ * Set Point
+ *
+ * @param {Array} point
+ */
+BaseAvatar.prototype.setPosition = function(point)
+{
+    this.head[0] = point[0];
+    this.head[1] = point[1];
+};
+
+/**
+ * Add Point
+ *
+ * @param {Array} point
+ */
+BaseAvatar.prototype.addPoint = function(point)
+{
+    this.trail.addPoint(point);
+};
+
+/**
+ * Set angular velocity
+ *
+ * @param {Number} factor
+ */
+BaseAvatar.prototype.setAngularVelocity = function(factor)
+{
+    if (!this.alive) { return; }
+
+    this.angularVelocity = factor * this.angularVelocityBase;
+};
+
+/**
+ * Set angle
+ *
+ * @param {Float} angle
+ */
+BaseAvatar.prototype.setAngle = function(angle)
+{
+    if (!this.alive) { return; }
+
+    this.angle = angle;
+
+    this.updateVelocities();
+};
 
 /**
  * Update
  *
  * @param {Number} step
  */
-BaseGame.prototype.update = function(step)
+BaseAvatar.prototype.update = function(step)
 {
-    for (var i = this.players.ids.length - 1; i >= 0; i--) {
-        this.players.items[i].update(step);
+    return [this.head[0], this.head[1], this.radius];
+};
+
+/**
+ * Add angle
+ *
+ * @param {Number} step
+ */
+BaseAvatar.prototype.updateAngle = function(step)
+{
+    this.setAngle(this.angle + this.angularVelocity * step);
+};
+
+/**
+ * Update position
+ *
+ * @param {Number} step
+ *
+ * @return {[type]}
+ */
+BaseAvatar.prototype.updatePosition = function(step)
+{
+    this.setPosition([
+        this.head[0] + this.velocities[0] * step,
+        this.head[1] + this.velocities[1] * step
+    ]);
+};
+
+/**
+ * Update velocities
+ */
+BaseAvatar.prototype.updateVelocities = function()
+{
+    this.velocities = [
+        Math.cos(this.angle) * this.velocity,
+        Math.sin(this.angle) * this.velocity
+    ];
+};
+
+/**
+ * Get distance
+ *
+ * @param {Array} from
+ * @param {Array} to
+ *
+ * @return {Number}
+ */
+BaseAvatar.prototype.getDistance = function(from, to)
+{
+    return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
+};
+
+/**
+ * Die
+ */
+BaseAvatar.prototype.die = function()
+{
+    this.alive = false;
+    this.addPoint(this.head.slice(0));
+};
+
+/**
+ * Start printing
+ */
+BaseAvatar.prototype.togglePrinting = function()
+{
+    this.printing = !this.printing;
+
+    this.printimeTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
+
+    if (!this.printing) {
+        this.trail.clear();
     }
 };
 
 /**
- * Add a player to the game
- *
- * @param {Player} player
+ * Stop printing
  */
-BaseGame.prototype.addPlayer = function(player)
+BaseAvatar.prototype.stopPrinting = function()
 {
-    return this.players.add(player);
+    console.log("stopPrinting", this.printimeTimeout);
+
+    this.printing = false;
+    this.trail.clear();
+
+    if (this.printimeTimeout) {
+        clearTimeout(this.printimeTimeout);
+    }
 };
 
 /**
- * Remove a player from the game
+ * Get random printing time
  *
- * @param {Player} player
+ * @return {Number}
  */
-BaseGame.prototype.removePlayer = function(player)
+BaseAvatar.prototype.getRandomPrintingTime = function()
 {
-    return this.players.remove(player);
+    var ratio = this.printing ? this.printingRatio : 1 - this.printingRatio,
+        base = this.printingTime * ratio;
+
+    return base * (0.5 + Math.random());
+};
+
+/**
+ * This score
+ *
+ * @param {Number} score
+ */
+BaseAvatar.prototype.addScore = function(score)
+{
+    this.setScore(this.score + score);
+};
+
+/**
+ * This score
+ *
+ * @param {Number} score
+ */
+BaseAvatar.prototype.setScore = function(score)
+{
+    this.score = score;
+};
+
+/**
+ * Clear
+ */
+BaseAvatar.prototype.clear = function()
+{
+    this.stopPrinting();
+
+    this.head            = [this.radius, this.radius];
+    this.angle           = Math.random() * Math.PI;
+    this.velocities      = [0,0];
+    this.angularVelocity = 0;
+    this.alive           = true;
+    this.printing        = false;
+
+    this.trail.clear();
+    this.updateVelocities();
+};
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BaseAvatar.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        color: this.color,
+        score: this.score
+    };
+};
+/**
+ * BaseGame
+ *
+ * @param {Room} room
+ */
+function BaseGame(room)
+{
+    EventEmitter.call(this);
+
+    this.room     = room;
+    this.name     = this.room.name;
+    this.channel  = 'game:' + this.name;
+    this.frame    = null;
+    this.avatars  = this.room.players.map(function () { return new Avatar(this); });
+    this.size     = this.getSize(this.avatars.count());
+    this.rendered = false;
+    this.maxScore = this.size * 10;
+
+    this.start    = this.start.bind(this);
+    this.stop     = this.stop.bind(this);
+    this.loop     = this.loop.bind(this);
+    this.newRound = this.newRound.bind(this);
+    this.endRound = this.endRound.bind(this);
+    this.end      = this.end.bind(this);
+}
+
+BaseGame.prototype = Object.create(EventEmitter.prototype);
+
+BaseGame.prototype.framerate     = 1/60;
+BaseGame.prototype.perPlayerSize = 100;
+BaseGame.prototype.warmupTime    = 5000;
+BaseGame.prototype.warmdownTime  = 3000;
+
+/**
+ * Update
+ *
+ * @param {Number} step
+ */
+BaseGame.prototype.update = function(step) {};
+
+/**
+ * Remove a avatar from the game
+ *
+ * @param {Avatar} avatar
+ */
+BaseGame.prototype.removeAvatar = function(avatar)
+{
+    return this.avatars.remove(avatar);
 };
 
 /**
@@ -356,6 +611,7 @@ BaseGame.prototype.removePlayer = function(player)
 BaseGame.prototype.start = function()
 {
     if (!this.frame) {
+        console.log("Game started!");
         this.rendered = new Date().getTime();
         this.loop();
     }
@@ -368,7 +624,8 @@ BaseGame.prototype.stop = function()
 {
     if (this.frame) {
         clearTimeout(this.frame);
-        this.frame = null;
+        this.frame    = null;
+        this.rendered = null;
     }
 };
 
@@ -384,7 +641,7 @@ BaseGame.prototype.loop = function()
 
     this.rendered = now;
 
-    this.onFrame();
+    this.onFrame(step);
 };
 
 /**
@@ -402,24 +659,148 @@ BaseGame.prototype.newFrame = function()
  */
 BaseGame.prototype.onFrame = function(step)
 {
-    this.update();
+    this.update(step);
+};
+
+/**
+ * Get size by players
+ *
+ * @param {Number} players
+ *
+ * @return {Number}
+ */
+BaseGame.prototype.getSize = function(players)
+{
+    return Math.sqrt(players) * this.perPlayerSize;
+};
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BaseGame.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        players: this.avatars.map(function () { return this.serialize(); }).items
+    };
+};
+
+/**
+ * Is started
+ *
+ * @return {Boolean}
+ */
+BaseGame.prototype.isStarted = function()
+{
+    return this.rendered !== null;
+};
+
+/**
+ * New round
+ */
+BaseGame.prototype.newRound = function()
+{
+    setTimeout(this.start, this.warmupTime);
+};
+
+
+/**
+ * Check end of round
+ */
+BaseGame.prototype.endRound = function()
+{
+    this.stop();
 };
 /**
- * Base Lobby
+ * FIN DU GAME
  */
-function BaseLobby(name)
+BaseGame.prototype.end = function()
 {
+    this.stop();
+};
+
+/**
+ * BasePlayer
+ *
+ * @param {String} name
+ * @param {String} color
+ */
+function BasePlayer(name, color, mail)
+{
+    this.name   = name;
+    this.color  = typeof(color) !== 'undefined' ? color : 'red';
+    this.mail   = mail;
+    this.ready  = false;
+}
+
+/**
+ * Set name
+ *
+ * @param {String} name
+ */
+BasePlayer.prototype.setName = function(name)
+{
+    this.name = name;
+};
+
+/**
+ * Set name
+ *
+ * @param {String} name
+ */
+BasePlayer.prototype.setColor = function(color)
+{
+    this.color = color;
+};
+
+/**
+ * Toggle Ready
+ *
+ * @param {Boolean} toggle
+ */
+BasePlayer.prototype.toggleReady = function(toggle)
+{
+    this.ready = typeof(toggle) !== 'undefined' ? (toggle ? true : false) : !this.ready;
+};
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BasePlayer.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        color: this.color,
+        mail: this.mail,
+        ready: this.ready
+    };
+};
+/**
+ * Base Room
+ */
+function BaseRoom(name)
+{
+    EventEmitter.call(this);
+
     this.name    = name;
     this.players = new Collection([], 'name');
-    this.game    = null;
+    this.warmup  = null;
 }
+
+BaseRoom.prototype = Object.create(EventEmitter.prototype);
+
+BaseRoom.prototype.warmupTime = 5000;
 
 /**
  * Add player
  *
  * @param {Player} player
  */
-BaseLobby.prototype.addPlayer = function(player)
+BaseRoom.prototype.addPlayer = function(player)
 {
     return this.players.add(player);
 };
@@ -429,87 +810,61 @@ BaseLobby.prototype.addPlayer = function(player)
  *
  * @param {Player} player
  */
-BaseLobby.prototype.removePlayer = function(player)
+BaseRoom.prototype.removePlayer = function(player)
 {
     return this.players.remove(player);
 };
+
 /**
- * BasePlayer
+ * Is ready
  *
- * @param {String} name
- * @param {String} color
+ * @return {Boolean}
  */
-function BasePlayer(name, color)
+BaseRoom.prototype.isReady = function()
 {
-    EventEmitter.call(this);
-
-    this.name  = name;
-    this.color = color || 'red';
-    this.trail = new Trail(this.color);
-}
-
-BasePlayer.prototype = Object.create(EventEmitter.prototype);
+    return this.players.count() > 1 && this.players.filter(function () { return !this.ready; }).isEmpty();
+};
 
 /**
- * Update
+ * Start warmpup
  */
-BasePlayer.prototype.update = function()
+BaseRoom.prototype.newGame = function()
 {
-    this.trail.update();
+    if (!this.game) {
+        this.game = new Game(this);
+        this.emit('game:new', {room: this, game: this.game});
+    }
+
+    return this.game;
 };
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BaseRoom.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        players: this.players.map(function () { return this.serialize(); }).items,
+        game: this.game ? true : false
+    };
+};
+
 /**
  * BaseTrail
  */
-function BaseTrail(color)
+function BaseTrail(color, radius)
 {
-    this.color         = color;
-    this.head          = [0, 0];
-    this.lastPosition  = this.head;
-    this.angle         = 0.5;
-    this.velocities    = [];
-    this.points        = [];
+    EventEmitter.call(this);
 
-    this.updateVelocities();
+    this.color  = color;
+    this.radius = radius;
+    this.points = [];
 }
 
-BaseTrail.prototype.velocity  = 5;
-BaseTrail.prototype.radius    = 10;
-BaseTrail.prototype.precision = 10;
-
-/**
- * Update
- */
-BaseTrail.prototype.update = function()
-{
-    this.head[0] += this.velocities[0];
-    this.head[1] += this.velocities[1];
-
-    if (this.getDistance(this.lastPosition, this.head) > this.precision) {
-        this.addPoint(this.head);
-    }
-};
-
-/**
- * Set angle
- *
- * @param {Float} angle
- */
-BaseTrail.prototype.setAngle = function(angle)
-{
-    this.angle = angle;
-
-    this.updateVelocities();
-};
-
-/**
- * Add angle
- *
- * @param {Float} angle
- */
-BaseTrail.prototype.addAngle = function(angle)
-{
-    this.setAngle(this.angle + angle);
-};
+BaseTrail.prototype = Object.create(EventEmitter.prototype);
 
 /**
  * Add point
@@ -518,83 +873,433 @@ BaseTrail.prototype.addAngle = function(angle)
  */
 BaseTrail.prototype.addPoint = function(point)
 {
-    this.lastPosition = point;
-
     this.points.push(point);
 };
 
 /**
- * Update velocities
+ * get last point
+ *
+ * @return {Array}
  */
-BaseTrail.prototype.updateVelocities = function()
+BaseTrail.prototype.getLast = function()
 {
-    this.velocities = [
-        Math.cos(this.angle) * this.velocity,
-        Math.sin(this.angle) * this.velocity
-    ];
+    return this.points.length ? this.points[this.points.length - 1] : null;
 };
 
 /**
- * Get distance
+ * Clear
  *
- * @param {Array} from
- * @param {Array} to
- *
- * @return {Number}
+ * @param {Array} point
  */
-BaseTrail.prototype.getDistance = function(from, to)
+BaseTrail.prototype.clear = function()
 {
-    return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
+    this.points = [];
 };
 /**
- * Lobby Repository
+ * Game Controller
  */
-function LobbyRepository(socket)
+function GameController(io)
 {
-    this.socket  = socket;
-    this.lobbies = new Collection([], 'name');
+    this.io    = io;
+    this.games = new Collection([], 'name');
 }
 
 /**
- * Create a lobby
+ * Add game
  *
- * @param {String} first_argument
- *
- * @return {Lobby}
+ * @param {Game} game
  */
-LobbyRepository.prototype.create = function(name)
+GameController.prototype.addGame = function(game)
 {
-    var lobby = new Lobby(name);
+    var controller = this;
 
-    if (this.lobbies.add(lobby)) {
-        this.socket.emit('lobby:new', lobby.name);
-
-        return lobby;
+    if (this.games.add(game)) {
+        game.on('round:new', function () { controller.onRoundNew(this); });
+        game.on('round:end', function (data) { controller.onRoundEnd(this, data); });
+        game.on('end', function () { controller.onEnd(this); });
     }
 };
 
 /**
- * Get by name
+ * Attach events
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.attach = function(client, game)
+{
+    client.joinGame(game);
+    this.attachEvents(client);
+};
+
+/**
+ * Attach events
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.detach = function(client)
+{
+    if (client.room && client.room.game) {
+        this.io.sockets.in(client.room.game.channel).emit('game:leave', {room: client.room.name, player: client.player.name});
+        client.leaveGame();
+    }
+
+    this.detachEvents(client);
+};
+
+/**
+ * Detach events
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.attachEvents = function(client)
+{
+    var controller = this;
+
+    client.socket.on('loaded', function (data) { controller.onGameLoaded(client); });
+    client.socket.on('channel', function (data) { controller.onChannel(client); });
+    client.socket.on('player:move', function (data) { controller.onMove(client, data); });
+
+    client.avatar.on('die', function () { controller.onDie(client); });
+    client.avatar.on('position', function (point) { controller.onPosition(client, point); });
+    client.avatar.on('point', function (data) { controller.onPoint(client, data.point); });
+    client.avatar.on('score', function (data) { controller.onScore(client, data); });
+    client.avatar.trail.on('clear', function (data) { controller.onTrailClear(client); });
+};
+
+/**
+ * Detach events
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.detachEvents = function(client)
+{
+    client.socket.removeAllListeners('game:move');
+};
+
+/**
+ * On game loaded
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.onGameLoaded = function(client)
+{
+    client.avatar.ready = true;
+
+    if (client.room.game.isReady()) {
+        client.room.game.newRound();
+    }
+};
+
+/**
+ * On channel change
+ *
+ * @param {String} channel
+ */
+GameController.prototype.onChannel = function(client)
+{
+    var avatar;
+
+    for (var i = client.game.avatars.ids.length - 1; i >= 0; i--) {
+        avatar = client.game.avatars.items[i];
+        this.io.sockets.in(client.room.game.channel).emit('position', {avatar: avatar.name, point: avatar.head});
+    }
+};
+
+/**
+ * On move
+ *
+ * @param {SocketClient} client
+ * @param {Number} move
+ */
+GameController.prototype.onMove = function(client, move)
+{
+    client.avatar.setAngularVelocity(move);
+};
+
+/**
+ * On position
+ *
+ * @param {SocketClient} client
+ * @param {Array} point
+ */
+GameController.prototype.onPosition = function(client, point)
+{
+    this.io.sockets.in(client.room.game.channel).emit('position', {avatar: client.avatar.name, point: point});
+};
+
+/**
+ * On point
+ *
+ * @param {SocketClient} client
+ * @param {Array} point
+ */
+GameController.prototype.onPoint = function(client, point)
+{
+    this.io.sockets.in(client.room.game.channel).emit('point', {avatar: client.avatar.name, point: point});
+};
+
+/**
+ * On die
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.onDie = function(client)
+{
+    this.io.sockets.in(client.room.game.channel).emit('die', {avatar: client.avatar.name});
+};
+
+/**
+ * On score
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.onScore = function(client, data)
+{
+    this.io.sockets.in(client.room.game.channel).emit('score', {avatar: client.avatar.name, score: data.score});
+};
+
+/**
+ * On point
+ *
+ * @param {SocketClient} client
+ * @param {Array} point
+ */
+GameController.prototype.onTrailClear = function(client)
+{
+    this.io.sockets.in(client.room.game.channel).emit('trail:clear', {avatar: client.avatar.name});
+};
+
+// Game events:
+
+/**
+ * On round new
+ *
+ * @param {Game} game
+ */
+GameController.prototype.onRoundNew = function(game)
+{
+    this.io.sockets.in(game.channel).emit('round:new');
+};
+
+/**
+ * On round new
+ *
+ * @param {Game} game
+ */
+GameController.prototype.onRoundEnd = function(game, data)
+{
+    this.io.sockets.in(game.channel).emit('round:end');
+};
+
+/**
+ * On round new
+ *
+ * @param {Game} game
+ */
+GameController.prototype.onEnd = function(game)
+{
+    this.io.sockets.in(game.channel).emit('end');
+};
+
+/**
+ * Room Controller
+ */
+function RoomController(io, repository, gameController)
+{
+    this.io             = io;
+    this.repository     = repository;
+    this.gameController = gameController;
+}
+
+/**
+ * Attach events
+ *
+ * @param {SocketClient} client
+ */
+RoomController.prototype.attach = function(client)
+{
+    var rooms = this.repository.all();
+
+    this.attachEvents(client);
+
+    for (var i = rooms.length - 1; i >= 0; i--) {
+        client.socket.emit('room:new', rooms[i].serialize());
+    }
+};
+
+/**
+ * Attach events
+ *
+ * @param {SocketClient} client
+ */
+RoomController.prototype.detach = function(client)
+{
+    if (client.room) {
+        this.io.sockets.in('rooms').emit('room:leave', {room: client.room.name, player: client.player.name});
+        client.leaveRoom();
+    }
+
+    this.detachEvents(client);
+};
+
+/**
+ * Detach events
+ *
+ * @param {SocketClient} client
+ */
+RoomController.prototype.attachEvents = function(client)
+{
+    var controller = this;
+
+    client.socket.on('room:create', function (data, callback) { controller.onCreateRoom(client, data, callback); });
+    client.socket.on('room:join', function (data, callback) { controller.onJoinRoom(client, data, callback); });
+    client.socket.on('room:leave', function (data, callback) { controller.onLeaveRoom(client, data, callback); });
+    client.socket.on('room:ready', function (data, callback) { controller.onReadyRoom(client, data, callback); });
+    client.socket.on('room:color', function (data, callback) { controller.onColorRoom(client, data, callback); });
+};
+
+/**
+ * Detach events
+ *
+ * @param {SocketClient} client
+ */
+RoomController.prototype.detachEvents = function(client)
+{
+    client.socket.removeAllListeners('room:create');
+    client.socket.removeAllListeners('room:join');
+    client.socket.removeAllListeners('room:leave');
+    client.socket.removeAllListeners('room:ready');
+    client.socket.removeAllListeners('room:color');
+};
+
+// Events:
+
+/**
+ * On new room
  *
  * @param {String} name
- *
- * @return {Lobby}
+ * @param {Function} callback
  */
-LobbyRepository.prototype.get = function(name)
+RoomController.prototype.onCreateRoom = function(client, data, callback)
 {
-    return this.lobbies.getById(name);
+    var room = this.repository.create(data.name);
+
+    callback({success: room ? true : false, room: room? room.name : null});
+
+    if (room) {
+        this.io.sockets.in('rooms').emit('room:new', room.serialize());
+    }
 };
+
+/**
+ * On join room
+ *
+ * @param {Object} data
+ * @param {Function} callback
+ */
+RoomController.prototype.onJoinRoom = function(client, data, callback)
+{
+    var room = this.repository.get(data.room),
+        result = false;
+
+    if (room) {
+        result = client.joinRoom(room, data.player);
+    }
+
+    callback({success: result});
+
+    if (result) {
+        this.io.sockets.in('rooms').emit('room:join', {room: room.name, player: client.player.serialize()});
+    }
+};
+
+/**
+ * On leave room
+ *
+ * @param {Object} data
+ * @param {Function} callback
+ */
+RoomController.prototype.onLeaveRoom = function(client, data, callback)
+{
+    var result = client.leaveRoom();
+
+    callback({success: result});
+
+    if (result) {
+        this.io.sockets.in('rooms').emit('room:leave', {room: room.name, player: player.name});
+    }
+};
+
+/**
+ * On new room
+ *
+ * @param {Object} data
+ */
+RoomController.prototype.onColorRoom = function(client, data, callback)
+{
+    client.player.setColor(data.color);
+
+    callback({success: true, color: client.player.color});
+
+    this.io.sockets.in('rooms').emit('room:player:color', {
+        room: client.room.name,
+        player: client.player.name,
+        color: client.player.color
+    });
+};
+
+/**
+ * On new room
+ *
+ * @param {Object} data
+ */
+RoomController.prototype.onReadyRoom = function(client, data, callback)
+{
+    client.player.toggleReady();
+
+    callback({success: true, ready: client.player.ready});
+
+    this.io.sockets.in('rooms').emit('room:player:ready', {
+        room: client.room.name,
+        player: client.player.name,
+        ready: client.player.ready
+    });
+
+    if (client.room.isReady()) {
+        this.warmupRoom(client.room);
+    }
+};
+
+/**
+ * Warmup room
+ *
+ * @param {Room} room
+ */
+RoomController.prototype.warmupRoom = function(room)
+{
+    this.io.sockets.in('rooms').emit('room:start', {room: room.name});
+
+    this.gameController.addGame(room.newGame());
+
+    for (var i = room.players.ids.length - 1; i >= 0; i--) {
+        this.detachEvents(room.players.items[i].client);
+        this.gameController.attach(room.players.items[i].client, room.game);
+    }
+};
+
 /**
  * Server
  */
 function Server(config)
 {
-    this.config          = config;
-    this.app             = express();
-    this.server          = http.Server(this.app);
-    this.io              = io(this.server);
-    this.clients         = new Collection();
-    this.lobbyController = new LobbyController(this.io);
+    this.config       = config;
+    this.app          = express();
+    this.server       = http.Server(this.app);
+    this.io           = io(this.server);
+
+    this.roomRepository = new RoomRepository(this.io);
+    this.gameController = new GameController(this.io);
+    this.roomController = new RoomController(this.io, this.roomRepository, this.gameController);
 
     this.onSocketConnection    = this.onSocketConnection.bind(this);
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
@@ -602,11 +1307,7 @@ function Server(config)
     this.io.on('connection', this.onSocketConnection);
     this.app.use(express.static('web'));
 
-    this.server.listen(config.port, function() {
-      console.log('listening on *:' + config.port);
-    });
-
-    SocketClient.prototype.lobbyController = this.lobbyController;
+    this.server.listen(config.port, function() { console.log('Listening on: %d' + config.port); });
 }
 
 /**
@@ -618,26 +1319,25 @@ Server.prototype.onSocketConnection = function(socket)
 {
     console.log('Client connected', socket.id);
 
-    socket.on('disconnect', this.onSocketDisconnection);
+    var server = this,
+        client = new SocketClient(socket);
 
-    this.clients.add(new SocketClient(socket));
+    socket.on('disconnect', function () { server.onSocketDisconnection(client); });
+
+    this.roomController.attach(client);
 };
 
 /**
  * On socket connection
  *
- * @param {Socket} socket
+ * @param {SocketClient} client
  */
-Server.prototype.onSocketDisconnection = function(socket)
+Server.prototype.onSocketDisconnection = function(client)
 {
-    console.log('Client disconnect');
+    console.log('Client disconnected', client.socket.id);
 
-    var client = this.clients.getById(socket.id);
-
-    if (client) {
-        client.detachEvents();
-        this.clients.remove(client);
-    }
+    this.roomController.detach(client);
+    this.gameController.detach(client);
 };
 /**
  * Socket Client
@@ -646,79 +1346,468 @@ Server.prototype.onSocketDisconnection = function(socket)
  */
 function SocketClient(socket)
 {
-    this.id     = socket.id
+    this.id     = socket.id;
     this.socket = socket;
     this.player = new Player(this, this.id);
+    this.room   = null;
+    this.game   = null;
+    this.avatar = null;
 
-    this.onJoinLobby = this.onJoinLobby.bind(this);
-    this.onNewLobby  = this.onNewLobby.bind(this);
+    this.onChannel = this.onChannel.bind(this);
 
-    this.attachEvents();
-
+    this.socket.on('channel', this.onChannel);
     this.socket.emit('open');
 }
 
-/**
- * Attach events
- */
-SocketClient.prototype.attachEvents = function()
-{
-    this.socket.on('lobby:new', this.onNewLobby);
-    this.socket.on('lobby:join', this.onJoinLobby);
-};
+SocketClient.prototype = Object.create(EventEmitter.prototype);
 
 /**
- * Attach events
- */
-SocketClient.prototype.detachEvents = function()
-{
-    this.socket.off('lobby:new', this.onNewLobby);
-    this.socket.off('lobby:join', this.onJoinLobby);
-};
-
-/**
- * On new lobby
+ * On channel change
  *
+ * @param {String} channel
+ */
+SocketClient.prototype.onChannel = function(channel)
+{
+    console.log("%s switching to channel: %s", this.socket.id, channel);
+    this.socket.join(channel);
+};
+
+/**
+ * Join room
+ *
+ * @param {Room} room
  * @param {String} name
+ *
+ * @return {Boolean}
  */
-SocketClient.prototype.onNewLobby = function(name)
+SocketClient.prototype.joinRoom = function(room, name)
 {
-    console.log("onNewLobby", name);
-    this.lobbyController.create(name);
+    if (this.room) {
+        this.leaveRoom();
+    }
+
+    this.room = room;
+
+    this.player.setName(name);
+    this.player.toggleReady(false);
+
+    return this.room.addPlayer(this.player);
 };
 
 /**
- * On join lobby
+ * Leave room
  *
- * @param {Object} data
+ * @return {[type]}
  */
-SocketClient.prototype.onJoinLobby = function(data)
+SocketClient.prototype.leaveRoom = function()
 {
-    var lobby = this.lobbyController.get(data.lobby);
+    if (this.room && this.room.removePlayer(this.player)) {
+        this.player.toggleReady(false);
+        this.room = null;
 
-    var player = new Player(this, this.socket.id),
-        lobby = this.lobbyController.get;
+        return true;
+    }
+
+    return false;
+};
+
+/**
+ * Join game
+ *
+ * @param {Game} game
+ */
+SocketClient.prototype.joinGame = function(game)
+{
+    if (this.game) {
+        this.leaveGame();
+    }
+
+    this.game   = game;
+    this.avatar = game.avatars.getById(this.player.name);
+};
+
+/**
+ * Leave room
+ *
+ * @return {[type]}
+ */
+SocketClient.prototype.leaveGame = function()
+{
+    if (this.game && this.game.removeAvatar(this.avatar)) {
+        this.game   = null;
+        this.avatar = null;
+    }
+};
+/**
+ * World
+ */
+function World(size)
+{
+    this.size    = size;
+    this.from    = [0, 0];
+    this.to      = [size, size];
+    this.circles = [];
+    this.islands = [];
+}
+
+World.prototype.islandGrid = 10;
+
+/**
+ * Add circle
+ *
+ * @param {Array} circle
+ */
+World.prototype.addCircle = function(circle)
+{
+    var result = !this.testCircle(circle);
+
+    this.circles.push(circle);
+
+    return result;
+};
+
+/**
+ * Add circle
+ *
+ * @param {Array} circle
+ */
+World.prototype.testCircle = function(circle)
+{
+    if (!this.circleInBound(circle, this.from, this.to)) {
+        return false;
+    }
+
+    for (var i = this.circles.length - 1; i >= 0; i--)
+    {
+        if (this.circlesTouch(this.circles[i], circle)) {
+            return false;
+        }
+    }
+
+    return true;
+};
+
+/**
+ * Circles touch
+ *
+ * @param {Array} circleA
+ * @param {Array} circleB
+ *
+ * @return {Boolean}
+ */
+World.prototype.circlesTouch = function(circleA, circleB)
+{
+    return this.getDistance(circleA, circleB) < (circleA[2] + circleB[2]);
+};
+
+/**
+ * Is point in bound?
+ *
+ * @param {Array} circle
+ * @param {Array} from
+ * @param {Array} to
+ *
+ * @return {Boolean}
+ */
+World.prototype.circleInBound = function(circle, from, to)
+{
+    return circle[0] - circle[2] >= from[0]
+        && circle[0] + circle[2] <= to[0]
+        && circle[1] - circle[2] >= from[1]
+        && circle[1] + circle[2] <= to[1]
+};
+
+/**
+ * get Distance
+ *
+ * @param {Array} from
+ * @param {Array} to
+ *
+ * @return {Boolean}
+ */
+World.prototype.getDistance = function(from, to)
+{
+    return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
+};
+
+/**
+ * Random Position
+ *
+ * @param {Number} radius
+ *
+ * @return {Array}
+ */
+World.prototype.getRandomPosition = function(radius, border)
+{
+    var margin = radius + border * this.size,
+        point = this.getRandomPoint(margin);
+
+    while (!this.testCircle([point[0], point[1], margin])) {
+        point = this.getRandomPoint(margin);
+    }
+
+    return point;
+};
+
+/**
+ * Get random point
+ *
+ * @param {Number} radius
+ *
+ * @return {Array}
+ */
+World.prototype.getRandomPoint = function(margin)
+{
+    return [
+        margin + Math.random() * (this.size - margin * 2),
+        margin + Math.random() * (this.size - margin * 2)
+    ]
+};
+
+/**
+ * Clear the world
+ */
+World.prototype.clear = function()
+{
+    this.circles = [];
+};
+/**
+ * Avatar
+ *
+ * @param {Player} player
+ */
+function Avatar(player)
+{
+    BaseAvatar.call(this, player);
+}
+
+Avatar.prototype = Object.create(BaseAvatar.prototype);
+
+/**
+ * Update
+ */
+Avatar.prototype.update = function(step)
+{
+    if (this.alive) {
+        this.updateAngle(step);
+        this.updatePosition(step);
+
+        if (this.printing && (!this.trail.getLast() || this.getDistance(this.trail.getLast(), this.head) > this.precision)) {
+            this.addPoint(this.head.slice(0));
+        }
+    }
+
+    return BaseAvatar.prototype.update.call(this);
+};
+
+/**
+ * Set position
+ *
+ * @param {Array} point
+ */
+Avatar.prototype.setPosition = function(point)
+{
+    BaseAvatar.prototype.setPosition.call(this, point);
+    this.emit('position', point);
+};
+
+/**
+ * Add point
+ *
+ * @param {Array} point
+ */
+Avatar.prototype.addPoint = function(point)
+{
+    BaseAvatar.prototype.addPoint.call(this, point);
+    this.emit('point', {point: point, avatar: this});
+};
+
+/**
+ * Die
+ */
+Avatar.prototype.die = function()
+{
+    BaseAvatar.prototype.die.call(this);
+    this.emit('die', {avatar: this});
+};
+
+/**
+ * Set score
+ *
+ * @param {Number} score
+ */
+Avatar.prototype.setScore = function(score)
+{
+    BaseAvatar.prototype.setScore.call(this, score);
+
+    this.emit('score', {avatar: this, score: this.score});
 };
 /**
  * Game
+ *
+ * @param {Room} room
  */
-function Game()
+function Game(room)
 {
-    BaseGame.call(this);
+    BaseGame.call(this, room);
 
-    this.loop = this.loop.bind(this);
+    this.world  = new World(this.size);
+
+    this.addPoint = this.addPoint.bind(this);
+    this.onDie    = this.onDie.bind(this);
+
+    var avatar;
+
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+
+        avatar.on('point', this.addPoint);
+        avatar.on('die', this.onDie);
+        //avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+    }
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
-/**
- * Lobby
- */
-function Lobby(name)
-{
-    BaseLobby.call(this, name);
-}
 
-Lobby.prototype = Object.create(BaseLobby.prototype);
+/**
+ * Update
+ *
+ * @param {Number} step
+ */
+Game.prototype.update = function(step)
+{
+    BaseGame.prototype.update.call(this, step);
+
+    var avatar;
+
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+
+        if (avatar.alive && !this.world.testCircle(avatar.update(step))) {
+            avatar.die();
+        }
+    }
+};
+
+/**
+ * Add point
+ *
+ * @param {Object} data
+ */
+Game.prototype.addPoint = function(data)
+{
+    var world = this.world,
+        circle = [data.point[0], data.point[1], data.avatar.radius];
+
+    setTimeout(function () { world.addCircle(circle); }, 100);
+};
+
+/**
+ * Is done
+ *
+ * @return {Boolean}
+ */
+Game.prototype.isWon = function()
+{
+    var game = this,
+        winner = this.avatars.match(function () { return this.score >= game.maxScore; });
+
+    return winner ? winner : false;
+};
+
+/**
+ * Add point
+ *
+ * @param {Object} data
+ */
+Game.prototype.onDie = function(data)
+{
+    var alivePlayers = this.avatars.filter(function () { return this.alive; }),
+        size = this.avatars.count();
+
+    data.avatar.addScore(size - alivePlayers.count());
+
+    if (alivePlayers.count() === 1) {
+        alivePlayers.items[0].addScore(size);
+        setTimeout(this.endRound, this.warmdownTime);
+    }
+};
+
+/**
+ * Is ready
+ *
+ * @return {Boolean}
+ */
+Game.prototype.isReady = function()
+{
+    return this.avatars.filter(function () { return !this.ready; }).isEmpty();
+};
+
+/**
+ * Check end of round
+ */
+Game.prototype.endRound = function()
+{
+    BaseGame.prototype.endRound.call(this);
+
+    this.emit('round:end');
+
+    if (this.isWon()) {
+        this.end();
+    } else {
+        this.newRound();
+    }
+};
+
+/**
+ * New round
+ */
+Game.prototype.newRound = function()
+{
+    var avatar;
+
+    this.emit('round:new');
+
+    this.world.clear();
+
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        avatar.clear();
+        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+    }
+
+    BaseGame.prototype.newRound.call(this);
+};
+
+/**
+ * Start
+ */
+Game.prototype.start = function()
+{
+    if (!this.frame) {
+        for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+            setTimeout(this.avatars.items[i].togglePrinting, 3000);
+        }
+    }
+
+    BaseGame.prototype.start.call(this);
+};
+
+/**
+ * FIN DU GAME
+ */
+Game.prototype.end = function()
+{
+    this.world.clear();
+
+    this.emit('end');
+
+    BaseGame.prototype.end.call(this);
+};
+
+Player.prototype = Object.create(BasePlayer.prototype);
+Player.prototype.constructor = Player;
+
 /**
  * Player
  *
@@ -726,23 +1815,84 @@ Lobby.prototype = Object.create(BaseLobby.prototype);
  * @param {String} name
  * @param {String} color
  */
-function Player(client, name, color)
+function Player(client, name, color, mail)
 {
-    BasePlayer.call(this, name, color);
+    BasePlayer.call(this, name, color, mail);
 
     this.client = client;
 }
+/**
+ * Room
+ */
+function Room(name)
+{
+    BaseRoom.call(this, name);
+}
 
-Player.prototype = Object.create(BasePlayer.prototype);
+Room.prototype = Object.create(BaseRoom.prototype);
 /**
  * Trail
  */
-function Trail(color)
+function Trail(color, radius)
 {
-    BaseTrail.call(this, color);
+    BaseTrail.call(this, color, radius);
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
+
+/**
+ * Clear
+ */
+Trail.prototype.clear = function()
+{
+    BaseTrail.prototype.clear.call(this);
+    this.emit('clear');
+};
+/**
+ * Room Repository
+ */
+function RoomRepository()
+{
+    this.rooms = new Collection([], 'name');
+
+    this.create('elao');
+}
+
+/**
+ * Create a room
+ *
+ * @param {String} name
+ *
+ * @return {Room}
+ */
+RoomRepository.prototype.create = function(name)
+{
+    var room = new Room(name);
+
+    return this.rooms.add(room) ? room : null;
+}
+
+/**
+ * Get by name
+ *
+ * @param {String} name
+ *
+ * @return {Room}
+ */
+RoomRepository.prototype.get = function(name)
+{
+    return this.rooms.getById(name);
+};
+
+/**
+ * Get all
+ *
+ * @return {Array}
+ */
+RoomRepository.prototype.all = function()
+{
+    return this.rooms.items;
+};
 module.exports = new Server({
     port: 8080
 });

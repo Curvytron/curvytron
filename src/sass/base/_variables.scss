@@ -9,7 +9,7 @@ $base-line-height: $base-font-size * 1.75; // 26px
 $text-color: #75858C;
 $link-color: $text-color;
 $link-hover-color: darken($text-color, 25%);
-$container-max-width: 1000px;
+$container-max-width: 1200px;
 $base-margin: 20px;
 $bold-font-weight: bold;
 
@@ -78,6 +78,7 @@ $container-lg-desktop:        ((1140px + $grid-gutter-width));
 ///////////////////////////
 $header-background: #bb2924;
 $header-color: #FFF;
+$game-header-height: 80px;
 
 
 ///////////////////////////
@@ -85,6 +86,7 @@ $header-color: #FFF;
 ///////////////////////////
 $footer-background: lighten(#75858C, 30%);
 $footer-color: darken($footer-background, 20%);
+$game-footer-height: 40px;
 
 
 ///////////////////////////
@@ -122,7 +124,7 @@ $input-height-large: ceil($base-line-height*1.5 + ($padding-large-vertical * 2) 
 
 $input-color: $text-color;
 $input-color-placeholder: lighter($text-color, 40%);
-$input-bg: #FFF;
+$input-bg: $background-color;
 $input-border: darken(#e9eae7, 10%);
 $input-border-focus: darken($input-border, 15%);
 $input-border-radius: $border-radius-base;
@@ -150,7 +152,7 @@ $state-danger-border:            darken(adjust-hue($state-danger-bg, -10), 5%) !
 ///////////////////////////
 $btn-default-color:              $text-color !default;
 $btn-default-bg:                 $background-color !default;
-$btn-default-border:             darken(#e9eae7, 10%) !default;
+$btn-default-border:             $text-color !default;
 $btn-font-family:                $base-font-family;
 
 $btn-primary-color:              #fff !default;
@@ -182,7 +184,7 @@ $caret-width-large:              5px !default;
 ///////////////////////////
 /// TABLES
 ///////////////////////////
-$table-cell-padding:            8px !default;
+$table-cell-padding:            8px 12px !default;
 $table-condensed-cell-padding:  5px !default;
 
 $table-bg:                      transparent !default;
@@ -263,3 +265,9 @@ $fancybox-shadow: 0 10px 25px rgba(0,0,0,0.5);
 /// MISC
 ///////////////////////////
 $hr-border:                     #DDD;
+
+
+///////////////////////////
+/// GAME
+///////////////////////////
+$game-background:               #222;

@@ -1,42 +1,51 @@
 /**
  * BaseGame
+ *
+ * @param {Room} room
  */
-function BaseGame()
+function BaseGame(room)
 {
-    this.frame   = null;
-    this.players = null;
+    EventEmitter.call(this);
+
+    this.room     = room;
+    this.name     = this.room.name;
+    this.channel  = 'game:' + this.name;
+    this.frame    = null;
+    this.avatars  = this.room.players.map(function () { return new Avatar(this); });
+    this.size     = this.getSize(this.avatars.count());
+    this.rendered = false;
+    this.maxScore = this.size * 10;
+
+    this.start    = this.start.bind(this);
+    this.stop     = this.stop.bind(this);
+    this.loop     = this.loop.bind(this);
+    this.newRound = this.newRound.bind(this);
+    this.endRound = this.endRound.bind(this);
+    this.end      = this.end.bind(this);
 }
+
+BaseGame.prototype = Object.create(EventEmitter.prototype);
+
+BaseGame.prototype.framerate     = 1/60;
+BaseGame.prototype.perPlayerSize = 100;
+BaseGame.prototype.warmupTime    = 5000;
+BaseGame.prototype.warmdownTime  = 3000;
 
 /**
  * Update
  *
  * @param {Number} step
  */
-BaseGame.prototype.update = function(step)
-{
-    for (var i = this.players.ids.length - 1; i >= 0; i--) {
-        this.players.items[i].update(step);
-    }
-};
+BaseGame.prototype.update = function(step) {};
 
 /**
- * Add a player to the game
+ * Remove a avatar from the game
  *
- * @param {Player} player
+ * @param {Avatar} avatar
  */
-BaseGame.prototype.addPlayer = function(player)
+BaseGame.prototype.removeAvatar = function(avatar)
 {
-    return this.players.add(player);
-};
-
-/**
- * Remove a player from the game
- *
- * @param {Player} player
- */
-BaseGame.prototype.removePlayer = function(player)
-{
-    return this.players.remove(player);
+    return this.avatars.remove(avatar);
 };
 
 /**
@@ -45,6 +54,7 @@ BaseGame.prototype.removePlayer = function(player)
 BaseGame.prototype.start = function()
 {
     if (!this.frame) {
+        console.log("Game started!");
         this.rendered = new Date().getTime();
         this.loop();
     }
@@ -57,7 +67,8 @@ BaseGame.prototype.stop = function()
 {
     if (this.frame) {
         clearTimeout(this.frame);
-        this.frame = null;
+        this.frame    = null;
+        this.rendered = null;
     }
 };
 
@@ -73,7 +84,7 @@ BaseGame.prototype.loop = function()
 
     this.rendered = now;
 
-    this.onFrame();
+    this.onFrame(step);
 };
 
 /**
@@ -91,5 +102,64 @@ BaseGame.prototype.newFrame = function()
  */
 BaseGame.prototype.onFrame = function(step)
 {
-    this.update();
+    this.update(step);
+};
+
+/**
+ * Get size by players
+ *
+ * @param {Number} players
+ *
+ * @return {Number}
+ */
+BaseGame.prototype.getSize = function(players)
+{
+    return Math.sqrt(players) * this.perPlayerSize;
+};
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BaseGame.prototype.serialize = function()
+{
+    return {
+        name: this.name,
+        players: this.avatars.map(function () { return this.serialize(); }).items
+    };
+};
+
+/**
+ * Is started
+ *
+ * @return {Boolean}
+ */
+BaseGame.prototype.isStarted = function()
+{
+    return this.rendered !== null;
+};
+
+/**
+ * New round
+ */
+BaseGame.prototype.newRound = function()
+{
+    setTimeout(this.start, this.warmupTime);
+};
+
+
+/**
+ * Check end of round
+ */
+BaseGame.prototype.endRound = function()
+{
+    this.stop();
+};
+/**
+ * FIN DU GAME
+ */
+BaseGame.prototype.end = function()
+{
+    this.stop();
 };

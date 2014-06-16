@@ -7,18 +7,5 @@
 }
 
 @media (max-width: $screen-lg-desktop - 1) {
-  header {
-    font-size: 30px;
-    line-height: 40px;
-    padding: 50px 20px;
-    margin: 0 0 30px 0;
-  }
 
-  footer {
-    text-align: center;
-
-    .text-right {
-      text-align: center;
-    }
-  }
 }

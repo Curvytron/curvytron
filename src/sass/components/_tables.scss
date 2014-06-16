@@ -20,6 +20,8 @@ th {
         line-height: $base-line-height;
         vertical-align: top;
         border-top: 1px solid $table-border-color;
+        &.v-align-middle { vertical-align: middle; }
+        &.v-align-bottom { vertical-align: bottom; }
       }
     }
   }
@@ -46,6 +48,32 @@ th {
 
   .table {
     background-color: $background-color;
+  }
+
+  &.v-align-middle {
+    > thead,
+    > tbody,
+    > tfoot {
+      > tr {
+        > th,
+        > td {
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+
+  &.v-align-bottom {
+    > thead,
+    > tbody,
+    > tfoot {
+      > tr {
+        > th,
+        > td {
+          vertical-align: bottom;
+        }
+      }
+    }
   }
 }
 

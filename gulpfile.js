@@ -8,28 +8,30 @@ var gulp      = require('gulp'),
     plumber   = require('gulp-plumber'),
     gutil     = require('gulp-util'),
     minifyCSS = require('gulp-minify-css'),
+    nodemon   = require('gulp-nodemon'),
     meta      = require('./package.json');
 
-var srcDir  = './src/',
-    jsDir   = './web/js/',
-    cssDir  = './web/css/',
-    sassDir = './web/sass/',
-    expose  = [
-        './bower_components/almond/almond.js',
-        './bower_components/paper/dist/paper-full.min.js',
-        './bower_components/angular/angular.min.js'
-    ],
-    recipes = {
-        server: require('./recipes/server.json'),
-        client: require('./recipes/client.json')
-    },
-    banner = [
-      '/*!',
-      ' * <%= name %> <%= version %>',
-      ' * <%= homepage %>',
-      ' * <%= license %>',
-      ' */\n\n'
-    ].join('\n');
+    var srcDir     = './src/',
+        jsDir      = './web/js/',
+        cssDir     = './web/css/',
+        sassDir    = './src/sass/',
+        expose     = [
+            './bower_components/almond/almond.js',
+            './bower_components/angular/angular.min.js',
+            './bower_components/angular-route/angular-route.min.js',
+            './bower_components/paper/dist/paper-full.js',
+        ],
+        recipes    = {
+            server: require('./recipes/server.json'),
+            client: require('./recipes/client.json')
+        },
+        banner     = [
+          '/*!',
+          ' * <%= name %> <%= version %>',
+          ' * <%= homepage %>',
+          ' * <%= license %>',
+          ' */\n\n'
+        ].join('\n');
 
 var onError = function (err) {
   gutil.beep();
@@ -54,6 +56,12 @@ gulp.task('front-full', function() {
         .pipe(concat(recipes.client.name))
         .pipe(header(banner, meta))
         .pipe(gulp.dest(recipes.client.path));
+
+    gulp.src('src/client/fixtures/*.json')
+        .pipe(gulp.dest(jsDir + 'fixtures'));
+
+    gulp.src('src/client/views/**/*')
+        .pipe(gulp.dest(jsDir + 'views'));
 });
 
 gulp.task('front-min', function(){
@@ -62,6 +70,12 @@ gulp.task('front-min', function(){
         .pipe(uglify())
         .pipe(header(banner, meta))
         .pipe(gulp.dest(recipes.client.path));
+
+    gulp.src('src/client/fixtures/*.json')
+        .pipe(gulp.dest(jsDir + 'fixtures'));
+
+    gulp.src('src/client/views/**/*')
+        .pipe(gulp.dest(jsDir + 'views'));
 });
 
 gulp.task('server', function() {
@@ -69,6 +83,20 @@ gulp.task('server', function() {
         .pipe(concat(recipes.server.name))
         .pipe(gulp.dest(recipes.server.path));
 });
+
+gulp.task('server', function() {
+    gulp.src(recipes.server.files)
+        .pipe(concat(recipes.server.name))
+        .pipe(gulp.dest(recipes.server.path));
+});
+
+gulp.task('nodemon', function () {
+    nodemon({ watch: recipes.server.files, ext: 'js', script: 'bin/curvytron.js', restartable: "rs"})
+        .on('change', ['server'])
+        .on('restart', function () {
+            console.log('restarted!')
+        })
+})
 
 gulp.task('sass-full', function() {
   gulp.src(sassDir + 'style.scss')
@@ -87,7 +115,7 @@ gulp.task('sass-min', function() {
     .pipe(gulp.dest(cssDir));
 });
 
-gulp.task('watch', ['dev'], function () {
+gulp.task('watch', ['dev', 'sass-full'], function () {
     gulp.watch('src/**/*.js', ['dev']);
     gulp.watch('src/**/*.scss', ['sass-full']);
 });

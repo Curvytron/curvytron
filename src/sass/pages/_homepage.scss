@@ -1,0 +1,313 @@
+.btn-default {
+    &:hover,
+    &.active {
+        background: $text-color;
+        color: $background-color;
+    }
+}
+li.player-row {
+    vertical-align: middle;
+    img {
+        width: 40px;
+        border-radius: 50%;
+        vertical-align: middle;
+        display: inline-block;
+        margin: 3px 3px 3px 0;
+    }
+}
+
+.color-preview {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    margin-right: 5px;
+    background: red;
+    @extend .rounded;
+    vertical-align: -6%;
+}
+
+.top-right-form {
+    float: right;
+    max-width: 400px;
+    .form-control {
+        border: 2px solid $text-color !important;
+    }
+    .btn-default {
+        &:hover {
+            background: $text-color;
+            color: $background-color;
+        }
+    }
+    .input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group {
+        margin-left: -2px;
+    }
+}
+
+
+
+#rooms {
+    margin-top: 30px;
+    h3 {
+        margin: 0;
+    }
+    .room-enter {
+        padding-left: 0;
+        padding-right: 5px;
+        font-size: 24px;
+        line-height: 40px;
+        @include transition(all 0.2s ease);
+        &:hover {
+            padding-right: 0;
+            padding-left: 5px;
+            @include opacity(50);
+        }
+    }
+    tr {
+        cursor: pointer;
+        &:hover {
+            .room-enter {
+                padding-right: 0;
+                padding-left: 5px;
+                @include opacity(50);
+            }
+        }
+    }
+}
+
+.player-ready {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    @extend .rounded;
+    border: 2px solid $color-danger;
+    color: $color-danger;
+    text-align: center;
+    i {
+        font-size: 20px;
+        line-height: 35px;
+        vertical-align: middle;
+    }
+    &.ready {
+        color: #FFF;
+        border-color: $color-success;
+        background: $color-success;
+    }
+}
+
+#game-wrapper {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: $game-background;
+    aside, #col-right {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+    }
+    aside {
+        width: 300px;
+        min-width: 300px;
+        max-width: 300px;
+        background: lighten($game-background, 5%);
+        color: #EEE;
+        font-weight: 300;
+        left: 0;
+        border-right: 4px solid #000;
+        @include animation(gameBorder 20s infinite);
+        header {
+            background: red;
+            height: $game-header-height;
+            overflow: hidden;
+            padding: 10px 20px;
+            margin: 0;
+            font-size: 30px;
+            text-align: left;
+            display: block !important;
+        }
+        h3 {
+            margin: 0;
+            color: #FFF;
+            padding: 10px 20px;
+            // background: lighten($game-background, 10%);
+        }
+        #game-players {
+            @extend .no-bullet;
+            li {
+                border-bottom: 2px solid lighten($game-background, 10%);
+                padding: 10px 20px;
+                position: relative;
+                .score {
+                    display: block;
+                    text-align: center;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    width: 50px;
+                    line-height: 44px;
+                    font-size: 24px;
+                    border-left: 2px solid lighten($game-background, 10%);
+                }
+                &:first-child {
+                    border-top: 2px solid lighten($game-background, 10%);
+                }
+            }
+        }
+        footer {
+            display: block !important;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 300px;
+            min-width: 300px;
+            max-width: 300px;
+            background: transparent;
+            padding: 10px 20px;
+            margin: 0;
+            .game-copy {
+                color: #FFF;
+                display: block;
+                text-align: left;
+                font-size: 14px;
+                text-transform: none;
+                cursor: pointer;
+                @include opacity(70);
+                @include transition(all 0.2s ease);
+                &:hover {
+                    @include opacity(100);
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+    #col-right {
+        bottom: 0;
+        right: 0;
+        left: 300px;
+        text-align: center;
+        .countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -100px;
+            margin-left: -100px;
+            width: 200px;
+            height: 200px;
+            z-index: 100;
+            padding: 20px;
+            font-size: 100px;
+            line-height: 140px;
+            font-weight: 300;
+            text-align: center;
+            color: #FFF;
+            background: lighten($game-background, 10%);
+            @extend .rounded;
+        }
+        .countdown-anim {
+            width: 250px;
+            height: 250px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -125px;
+            margin-left: -125px;
+            background: transparentize(lighten($game-background, 10%), 0.8);
+            border: 4px solid lighten($game-background, 10%);
+            @include animation(countdownAnim 1s infinite);
+            z-index: 90;
+            @extend .rounded;
+        }
+        #game {
+            z-index: 50;
+            border: 4px solid lighten($game-background, 10%);
+            margin-top: -4px;
+        }
+    }
+}
+
+@mixin countdownAnim {
+  0% {
+    width: 280px;
+    height: 280px;
+    margin-top: -140px;
+    margin-left: -140px;
+    border-width: 8px;
+    border-color: lighten($game-background, 30%);
+  }
+  50% {
+    width: 200px;
+    height: 200px;
+    margin-top: -100px;
+    margin-left: -100px;
+    border-width: 4px;
+    border-color: lighten($game-background, 10%);
+  }
+  100% {
+    width: 280px;
+    height: 280px;
+    margin-top: -140px;
+    margin-left: -140px;
+    border-width: 8px;
+    border-color: lighten($game-background, 30%);
+  }
+}
+@-webkit-keyframes countdownAnim {
+    @include countdownAnim;
+}
+@-moz-keyframes countdownAnim {
+    @include countdownAnim;
+}
+@-o-keyframes countdownAnim {
+    @include countdownAnim;
+}
+@keyframes countdownAnim {
+    @include countdownAnim;
+}
+
+
+@mixin gameBorder {
+  0%   { border-color: $header-background; }
+  20%  { border-color: #16a085; }
+  40%  { border-color: #2C3E50; }
+  60%  { border-color: #95A5A6; }
+  80%  { border-color: #913D88; }
+  100% { border-color: $header-background; }
+}
+@-webkit-keyframes gameBorder {
+    @include gameBorder;
+}
+@-moz-keyframes gameBorder {
+    @include gameBorder;
+}
+@-o-keyframes gameBorder {
+    @include gameBorder;
+}
+@keyframes gameBorder {
+    @include gameBorder;
+}
+
+
+@mixin headerRainbow {
+  0%   { background-color: $header-background; }
+  20%  { background-color: #16a085; }
+  40%  { background-color: #2C3E50; }
+  60%  { background-color: #95A5A6; }
+  80%  { background-color: #913D88; }
+  100% { background-color: $header-background; }
+}
+@-webkit-keyframes headerRainbow {
+    @include headerRainbow;
+}
+@-moz-keyframes headerRainbow {
+    @include headerRainbow;
+}
+@-o-keyframes headerRainbow {
+    @include headerRainbow;
+}
+@keyframes headerRainbow {
+    @include headerRainbow;
+}

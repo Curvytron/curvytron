@@ -1,28 +1,23 @@
 /**
  * Game
+ *
+ * @param {Room} room
  */
-function Game()
+function Game(room)
 {
-    BaseGame.call(this);
+    this.canvas = document.getElementById('game');
+    this.size   = this.getSize(room.players.count());
 
-    this.canvas = document.createElement('canvas');
-
-    this.loop = this.loop.bind(this);
-
-    this.canvas.setAttribute('resize', true);
-    document.body.appendChild(this.canvas);
     paper.setup(this.canvas);
+    this.onResize();
+
+    BaseGame.call(this, room);
+
+    window.addEventListener('error', this.stop);
+    window.addEventListener('resize', this.onResize);
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
-
-/**
- * Draw
- */
-Game.prototype.draw = function()
-{
-    paper.view.draw();
-};
 
 /**
  * Stop loop
@@ -51,5 +46,65 @@ Game.prototype.newFrame = function()
 Game.prototype.onFrame = function(step)
 {
     BaseGame.prototype.onFrame.call(this, step);
-    this.draw(step);
+
+    paper.view.draw();
+};
+
+/**
+ * New round
+ */
+Game.prototype.newRound = function()
+{
+    BaseGame.prototype.newRound.call(this);
+
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        this.avatars.items[i].clear();
+    }
+};
+
+/**
+ * End round
+ */
+Game.prototype.endRound = function()
+{
+    //this.newProject();
+
+    BaseGame.prototype.newRound.call(this);
+};
+
+/**
+ * FIN DU GAME
+ */
+Game.prototype.end = function()
+{
+    BaseGame.prototype.end.call(this);
+
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        this.avatars.items[i].clear();
+    }
+};
+
+/*Game.prototype.newProject = function()
+{
+    paper.setup(this.canvas);
+
+    for (var i = Things.length - 1; i >= 0; i--) {
+        Things[i]
+    }
+
+    paper.view.draw();
+};*/
+
+/**
+ * On resize
+ */
+Game.prototype.onResize = function()
+{
+    var w=window,d=document,e=d.documentElement,g=d.getElementsByTagName('body')[0],x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
+
+    var width = Math.min(x - 300 - 8, y);
+
+    paper.view.viewSize.width = width;
+    paper.view.viewSize.height = width;
+    paper.sceneScale = width / this.size;
 };
