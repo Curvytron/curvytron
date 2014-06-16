@@ -15,9 +15,10 @@
             </footer>
         </aside>
         <div id="col-right">
-            <section id="countdown" ng-hide="countFinish">
-                <div id="count">{{ count }}</div>
+            <section class="countdown" ng-hide="countFinish">
+                <div class="count">{{ count }}</div>
             </section>
+            <div class="countdown-anim" ng-hide="countFinish"></div>
             <canvas id="game" class="game"></canvas>
         </div>
     </section>
