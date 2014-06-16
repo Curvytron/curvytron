@@ -215,7 +215,7 @@ li.player-row {
             left: 50%;
             margin-top: -125px;
             margin-left: -125px;
-            background: transparent;
+            background: transparentize(lighten($game-background, 10%), 0.8);
             border: 4px solid lighten($game-background, 10%);
             @include animation(countdownAnim 1s infinite);
             z-index: 90;
@@ -229,8 +229,7 @@ li.player-row {
     }
 }
 
-
-@-webkit-keyframes countdownAnim {
+@mixin countdownAnim {
   0% {
     width: 280px;
     height: 280px;
@@ -256,132 +255,59 @@ li.player-row {
     border-color: lighten($game-background, 30%);
   }
 }
+@-webkit-keyframes countdownAnim {
+    @include countdownAnim;
+}
 @-moz-keyframes countdownAnim {
-  0% {
-    width: 300px;
-    height: 300px;
-    margin-top: -150px;
-    margin-left: -150px;
-  }
-  50% {
-    width: 200px;
-    height: 200px;
-    margin-top: -100px;
-    margin-left: -100px;
-  }
-  100% {
-    width: 300px;
-    height: 300px;
-    margin-top: -150px;
-    margin-left: -150px;
-  }
+    @include countdownAnim;
 }
 @-o-keyframes countdownAnim {
-  0% {
-    width: 300px;
-    height: 300px;
-    margin-top: -150px;
-    margin-left: -150px;
-  }
-  50% {
-    width: 200px;
-    height: 200px;
-    margin-top: -100px;
-    margin-left: -100px;
-  }
-  100% {
-    width: 300px;
-    height: 300px;
-    margin-top: -150px;
-    margin-left: -150px;
-  }
+    @include countdownAnim;
 }
 @keyframes countdownAnim {
-  0% {
-    width: 300px;
-    height: 300px;
-    margin-top: -150px;
-    margin-left: -150px;
-  }
-  50% {
-    width: 200px;
-    height: 200px;
-    margin-top: -100px;
-    margin-left: -100px;
-  }
-  100% {
-    width: 300px;
-    height: 300px;
-    margin-top: -150px;
-    margin-left: -150px;
-  }
+    @include countdownAnim;
 }
 
 
-@-webkit-keyframes gameBorder {
+@mixin gameBorder {
   0%   { border-color: $header-background; }
   20%  { border-color: #16a085; }
   40%  { border-color: #2C3E50; }
   60%  { border-color: #95A5A6; }
   80%  { border-color: #913D88; }
   100% { border-color: $header-background; }
+}
+@-webkit-keyframes gameBorder {
+    @include gameBorder;
 }
 @-moz-keyframes gameBorder {
-  0%   { border-color: $header-background; }
-  20%  { border-color: #16a085; }
-  40%  { border-color: #2C3E50; }
-  60%  { border-color: #95A5A6; }
-  80%  { border-color: #913D88; }
-  100% { border-color: $header-background; }
+    @include gameBorder;
 }
 @-o-keyframes gameBorder {
-  0%   { border-color: $header-background; }
-  20%  { border-color: #16a085; }
-  40%  { border-color: #2C3E50; }
-  60%  { border-color: #95A5A6; }
-  80%  { border-color: #913D88; }
-  100% { border-color: $header-background; }
+    @include gameBorder;
 }
 @keyframes gameBorder {
-  0%   { border-color: $header-background; }
-  20%  { border-color: #16a085; }
-  40%  { border-color: #2C3E50; }
-  60%  { border-color: #95A5A6; }
-  80%  { border-color: #913D88; }
-  100% { border-color: $header-background; }
+    @include gameBorder;
 }
 
 
-
-@-webkit-keyframes headerRainbow {
+@mixin headerRainbow {
   0%   { background-color: $header-background; }
   20%  { background-color: #16a085; }
   40%  { background-color: #2C3E50; }
   60%  { background-color: #95A5A6; }
   80%  { background-color: #913D88; }
   100% { background-color: $header-background; }
+}
+@-webkit-keyframes headerRainbow {
+    @include headerRainbow;
 }
 @-moz-keyframes headerRainbow {
-  0%   { background-color: $header-background; }
-  20%  { background-color: #16a085; }
-  40%  { background-color: #2C3E50; }
-  60%  { background-color: #95A5A6; }
-  80%  { background-color: #913D88; }
-  100% { background-color: $header-background; }
+    @include headerRainbow;
 }
 @-o-keyframes headerRainbow {
-  0%   { background-color: $header-background; }
-  20%  { background-color: #16a085; }
-  40%  { background-color: #2C3E50; }
-  60%  { background-color: #95A5A6; }
-  80%  { background-color: #913D88; }
-  100% { background-color: $header-background; }
+    @include headerRainbow;
 }
 @keyframes headerRainbow {
-  0%   { background-color: $header-background; }
-  20%  { background-color: #16a085; }
-  40%  { background-color: #2C3E50; }
-  60%  { background-color: #95A5A6; }
-  80%  { background-color: #913D88; }
-  100% { background-color: $header-background; }
+    @include headerRainbow;
 }
