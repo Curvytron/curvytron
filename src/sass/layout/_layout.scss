@@ -47,39 +47,9 @@ header {
   a, a:visited {
     color: $header-color;
   }
-}
-
-@-webkit-keyframes headerRainbow {
-  0%   { background-color: $header-background; }
-  20%  { background-color: #16a085; }
-  40%  { background-color: #2C3E50; }
-  60%  { background-color: #95A5A6; }
-  80%  { background-color: #913D88; }
-  100% { background-color: $header-background; }
-}
-@-moz-keyframes headerRainbow {
-  0%   { background-color: $header-background; }
-  20%  { background-color: #16a085; }
-  40%  { background-color: #2C3E50; }
-  60%  { background-color: #95A5A6; }
-  80%  { background-color: #913D88; }
-  100% { background-color: $header-background; }
-}
-@-o-keyframes headerRainbow {
-  0%   { background-color: $header-background; }
-  20%  { background-color: #16a085; }
-  40%  { background-color: #2C3E50; }
-  60%  { background-color: #95A5A6; }
-  80%  { background-color: #913D88; }
-  100% { background-color: $header-background; }
-}
-@keyframes headerRainbow {
-  0%   { background-color: $header-background; }
-  20%  { background-color: #16a085; }
-  40%  { background-color: #2C3E50; }
-  60%  { background-color: #95A5A6; }
-  80%  { background-color: #913D88; }
-  100% { background-color: $header-background; }
+  .game-copy {
+    display: none;
+  }
 }
 
 
@@ -96,14 +66,7 @@ footer {
 }
 
 body.game-mode {
-  header {
-    height: $game-header-height;
-    overflow: hidden;
-    padding: 10px 20px;
-    font-size: 30px;
-    text-align: left;
-  }
-  footer {
+  header, footer {
     display: none;
   }
 }

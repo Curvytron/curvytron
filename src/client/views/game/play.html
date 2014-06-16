@@ -1,6 +1,7 @@
 <section>
     <section id="game-wrapper">
         <aside id="game-infos">
+            <header><a href="/">Curvytron</a></header>
             <h3>{{ roomName }}</h3>
             <ul id="game-players">
                 <li ng-repeat="player in game.players">
@@ -9,11 +10,15 @@
                     <span class="score">{{ player.score }}</span>
                 </li>
             </ul>
+            <footer>
+                <a href="http://www.elao.com" class="game-copy" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>
+            </footer>
         </aside>
         <div id="col-right">
-            <section id="countdown" ng-hide="countFinish">
-                <div id="count">{{ count }}</div>
+            <section class="countdown" ng-hide="countFinish">
+                <div class="count">{{ count }}</div>
             </section>
+            <div class="countdown-anim" ng-hide="countFinish"></div>
             <canvas id="game" class="game"></canvas>
         </div>
     </section>
