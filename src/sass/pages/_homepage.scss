@@ -204,7 +204,7 @@ li.player-row {
             font-weight: 300;
             text-align: center;
             color: #FFF;
-            background: lighten($game-background, 10%);
+            background: transparent;
             @extend .rounded;
         }
         .countdown-anim {

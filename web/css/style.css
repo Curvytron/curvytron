@@ -3905,7 +3905,7 @@ li.player-row {
       font-weight: 300;
       text-align: center;
       color: #FFF;
-      background: #3c3c3c; }
+      background: transparent; }
     #game-wrapper #col-right .countdown-anim {
       width: 250px;
       height: 250px;
