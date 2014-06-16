@@ -478,6 +478,10 @@ table {
   content: '\e806'; }
 
 /* '' */
+.icon-love:before {
+  content: '\e807'; }
+
+/* '' */
 .text-left {
   text-align: left; }
 
@@ -2629,6 +2633,8 @@ header {
   animation: headerRainbow 20s infinite; }
   header a, header a:visited {
     color: #FFF; }
+  header .game-copy {
+    display: none; }
 
 @-webkit-keyframes headerRainbow {
   0% {
@@ -2714,13 +2720,7 @@ footer {
   footer a, footer a:visited {
     color: #919ea3; }
 
-body.game-mode header {
-  height: 80px;
-  overflow: hidden;
-  padding: 10px 20px;
-  font-size: 30px;
-  text-align: left; }
-body.game-mode footer {
+body.game-mode header, body.game-mode footer {
   display: none; }
 
 .btn {
@@ -3881,16 +3881,16 @@ li.player-row {
 
 #game-wrapper {
   position: fixed;
-  top: 80px;
+  top: 0;
   right: 0;
-  bottom: 40px;
+  bottom: 0;
   left: 0;
   height: 100%;
   width: 100%;
   background: #222; }
   #game-wrapper aside, #game-wrapper #col-right {
     position: fixed;
-    top: 80px;
+    top: 0;
     bottom: 0; }
   #game-wrapper aside {
     width: 300px;
@@ -3900,6 +3900,15 @@ li.player-row {
     color: #EEE;
     font-weight: 300;
     left: 0; }
+    #game-wrapper aside header {
+      background: red;
+      height: 80px;
+      overflow: hidden;
+      padding: 10px 20px;
+      margin: 0;
+      font-size: 30px;
+      text-align: left;
+      display: block !important; }
     #game-wrapper aside h3 {
       margin: 0;
       color: #FFF;
@@ -3907,11 +3916,38 @@ li.player-row {
     #game-wrapper aside #game-players li {
       border-top: 2px solid #3c3c3c;
       padding: 10px 20px; }
+    #game-wrapper aside footer {
+      display: block !important;
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 300px;
+      min-width: 300px;
+      max-width: 300px;
+      background: #2f2f2f;
+      padding: 10px 20px;
+      margin: 0; }
+      #game-wrapper aside footer .game-copy {
+        color: #FFF;
+        display: block;
+        text-align: left;
+        font-size: 14px;
+        text-transform: none;
+        cursor: pointer;
+        opacity: 0.7;
+        filter: alpha(opacity=70);
+        -webkit-transition: all 0.2s ease;
+        -o-transition: all 0.2s ease;
+        transition: all 0.2s ease; }
+        #game-wrapper aside footer .game-copy:hover {
+          opacity: 1;
+          filter: alpha(opacity=100);
+          text-decoration: none; }
   #game-wrapper #col-right {
-    top: 80px;
     bottom: 0;
     right: 0;
-    left: 300px; }
+    left: 300px;
+    text-align: center; }
     #game-wrapper #col-right #countdown {
       position: absolute;
       top: 50%;
@@ -3929,19 +3965,90 @@ li.player-row {
       background: #3c3c3c; }
     #game-wrapper #col-right #game {
       z-index: 50;
-      border: 2px solid #3c3c3c; }
+      border: 6px solid #3c3c3c;
+      -webkit-animation: gameBorder 10s infinite;
+      -o-animation: gameBorder 10s infinite;
+      animation: gameBorder 10s infinite;
+      margin-top: -6px; }
+
+@-webkit-keyframes gameBorder {
+  0% {
+    border-color: #bb2924; }
+
+  20% {
+    border-color: #16a085; }
+
+  40% {
+    border-color: #2C3E50; }
+
+  60% {
+    border-color: #95A5A6; }
+
+  80% {
+    border-color: #913D88; }
+
+  100% {
+    border-color: #bb2924; } }
+
+@-moz-keyframes gameBorder {
+  0% {
+    border-color: #bb2924; }
+
+  20% {
+    border-color: #16a085; }
+
+  40% {
+    border-color: #2C3E50; }
+
+  60% {
+    border-color: #95A5A6; }
+
+  80% {
+    border-color: #913D88; }
+
+  100% {
+    border-color: #bb2924; } }
+
+@-o-keyframes gameBorder {
+  0% {
+    border-color: #bb2924; }
+
+  20% {
+    border-color: #16a085; }
+
+  40% {
+    border-color: #2C3E50; }
+
+  60% {
+    border-color: #95A5A6; }
+
+  80% {
+    border-color: #913D88; }
+
+  100% {
+    border-color: #bb2924; } }
+
+@keyframes gameBorder {
+  0% {
+    border-color: #bb2924; }
+
+  20% {
+    border-color: #16a085; }
+
+  40% {
+    border-color: #2C3E50; }
+
+  60% {
+    border-color: #95A5A6; }
+
+  80% {
+    border-color: #913D88; }
+
+  100% {
+    border-color: #bb2924; } }
 
 @media (max-width: 767px) { }
 
 @media (max-width: 899px) { }
 
-@media (max-width: 1023px) {
-  header {
-    font-size: 30px;
-    line-height: 40px;
-    padding: 50px 20px;
-    margin: 0 0 30px 0; }
-  footer {
-    text-align: center; }
-    footer .text-right {
-      text-align: center; } }
+@media (max-width: 1023px) { }

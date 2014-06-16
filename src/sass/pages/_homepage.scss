@@ -96,16 +96,16 @@ li.player-row {
 
 #game-wrapper {
     position: fixed;
-    top: $game-header-height;
+    top: 0;
     right: 0;
-    bottom: $game-footer-height;
+    bottom: 0;
     left: 0;
     height: 100%;
     width: 100%;
     background: $game-background;
     aside, #col-right {
         position: fixed;
-        top: $game-header-height;
+        top: 0;
         bottom: 0;
     }
     aside {
@@ -116,6 +116,16 @@ li.player-row {
         color: #EEE;
         font-weight: 300;
         left: 0;
+        header {
+            background: red;
+            height: $game-header-height;
+            overflow: hidden;
+            padding: 10px 20px;
+            margin: 0;
+            font-size: 30px;
+            text-align: left;
+            display: block !important;
+        }
         h3 {
             margin: 0;
             color: #FFF;
@@ -132,12 +142,38 @@ li.player-row {
                 }
             }
         }
+        footer {
+            display: block !important;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 300px;
+            min-width: 300px;
+            max-width: 300px;
+            background: lighten($game-background, 5%);
+            padding: 10px 20px;
+            margin: 0;
+            .game-copy {
+                color: #FFF;
+                display: block;
+                text-align: left;
+                font-size: 14px;
+                text-transform: none;
+                cursor: pointer;
+                @include opacity(70);
+                @include transition(all 0.2s ease);
+                &:hover {
+                    @include opacity(100);
+                    text-decoration: none;
+                }
+            }
+        }
     }
     #col-right {
-        top: $game-header-height;
         bottom: 0;
         right: 0;
         left: 300px;
+        text-align: center;
         #countdown {
             position: absolute;
             top: 50%;
@@ -157,7 +193,44 @@ li.player-row {
         }
         #game {
             z-index: 50;
-            border: 2px solid lighten($game-background, 10%);
+            border: 6px solid lighten($game-background, 10%);
+            @include animation(gameBorder 10s infinite);
+            margin-top: -6px;
         }
     }
+}
+
+
+
+@-webkit-keyframes gameBorder {
+  0%   { border-color: $header-background; }
+  20%  { border-color: #16a085; }
+  40%  { border-color: #2C3E50; }
+  60%  { border-color: #95A5A6; }
+  80%  { border-color: #913D88; }
+  100% { border-color: $header-background; }
+}
+@-moz-keyframes gameBorder {
+  0%   { border-color: $header-background; }
+  20%  { border-color: #16a085; }
+  40%  { border-color: #2C3E50; }
+  60%  { border-color: #95A5A6; }
+  80%  { border-color: #913D88; }
+  100% { border-color: $header-background; }
+}
+@-o-keyframes gameBorder {
+  0%   { border-color: $header-background; }
+  20%  { border-color: #16a085; }
+  40%  { border-color: #2C3E50; }
+  60%  { border-color: #95A5A6; }
+  80%  { border-color: #913D88; }
+  100% { border-color: $header-background; }
+}
+@keyframes gameBorder {
+  0%   { border-color: $header-background; }
+  20%  { border-color: #16a085; }
+  40%  { border-color: #2C3E50; }
+  60%  { border-color: #95A5A6; }
+  80%  { border-color: #913D88; }
+  100% { border-color: $header-background; }
 }

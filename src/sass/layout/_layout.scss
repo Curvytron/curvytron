@@ -47,6 +47,9 @@ header {
   a, a:visited {
     color: $header-color;
   }
+  .game-copy {
+    display: none;
+  }
 }
 
 @-webkit-keyframes headerRainbow {
@@ -96,14 +99,7 @@ footer {
 }
 
 body.game-mode {
-  header {
-    height: $game-header-height;
-    overflow: hidden;
-    padding: 10px 20px;
-    font-size: 30px;
-    text-align: left;
-  }
-  footer {
+  header, footer {
     display: none;
   }
 }
