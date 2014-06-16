@@ -170,8 +170,6 @@ BaseAvatar.prototype.togglePrinting = function()
  */
 BaseAvatar.prototype.stopPrinting = function()
 {
-    console.log("stopPrinting", this.printimeTimeout);
-
     this.printing = false;
     this.trail.clear();
 
