@@ -13,14 +13,14 @@ function RoomController($scope, $rootScope, $routeParams, $location, RoomReposit
     this.loadRoom   = this.loadRoom.bind(this);
     this.setColor   = this.setColor.bind(this);
     this.setReady   = this.setReady.bind(this);
-    this.warmup     = this.warmup.bind(this);
+    this.start      = this.start.bind(this);
 
     this.repository.on('room:close:' + this.name, this.loadRoom);
     this.repository.on('room:join:' + this.name, this.loadRoom);
     this.repository.on('room:leave:' + this.name, this.loadRoom);
     this.repository.on('room:player:ready:' + this.name, this.loadRoom);
     this.repository.on('room:player:color:' + this.name, this.loadRoom);
-    this.repository.on('room:warmup:' + this.name, this.warmup);
+    this.repository.on('room:start:' + this.name, this.start);
     this.repository.on('room:game:' + this.name, this.startGame);
 
     this.$scope.submit   = this.createUser;
@@ -109,7 +109,7 @@ RoomController.prototype.setReady = function(e)
  *
  * @param {Object} data
  */
-RoomController.prototype.warmup = function(data)
+RoomController.prototype.start = function(data)
 {
     this.$location.path('/game/' + this.name);
     this.$rootScope.$apply();

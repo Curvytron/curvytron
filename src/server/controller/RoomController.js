@@ -174,8 +174,9 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
  */
 RoomController.prototype.warmupRoom = function(room)
 {
-    this.io.sockets.in('rooms').emit('room:warmup', {room: room.name});
-    room.startWarmup();
+    this.io.sockets.in('rooms').emit('room:start', {room: room.name});
+
+    this.gameController.addGame(room.newGame());
 
     for (var i = room.players.ids.length - 1; i >= 0; i--) {
         this.detachEvents(room.players.items[i].client);

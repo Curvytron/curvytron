@@ -47,14 +47,15 @@ BaseRoom.prototype.isReady = function()
 /**
  * Start warmpup
  */
-BaseRoom.prototype.startWarmup = function()
+BaseRoom.prototype.newGame = function()
 {
     if (!this.game) {
-        console.log("Start warmup");
+        console.log("Start new game");
         this.game = new Game(this);
         this.emit('game:new', {room: this, game: this.game});
-        setTimeout(this.game.start, this.warmupTime);
     }
+
+    return this.game;
 };
 
 /**

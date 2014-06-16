@@ -16,9 +16,10 @@ function Game(room)
 
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
+
         avatar.on('point', this.addPoint);
         avatar.on('die', this.onDie);
-        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+        //avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
     }
 }
 
@@ -58,13 +59,90 @@ Game.prototype.addPoint = function(data)
 };
 
 /**
+ * Is done
+ *
+ * @return {Boolean}
+ */
+Game.prototype.isWon = function()
+{
+    var game = this,
+        winner = this.avatars.match(function () { return this.score >= game.maxScore; });
+
+    return winner ? winner : false;
+};
+
+/**
  * Add point
  *
  * @param {Object} data
  */
 Game.prototype.onDie = function(data)
 {
-    var score = this.avatars.filter(function () { return !this.alive; }).count();
+    var alivePlayers = this.avatars.filter(function () { return this.alive; }),
+        size = this.avatars.count();
 
-    data.avatar.addScore(score);
+    data.avatar.addScore(size - alivePlayers.count());
+
+    if (alivePlayers.count() === 1) {
+        alivePlayers.items[0].addScore(size);
+        setTimeout(this.endRound, this.warmdownTime);
+    }
+};
+
+/**
+ * Is ready
+ *
+ * @return {Boolean}
+ */
+Game.prototype.isReady = function()
+{
+    return this.avatars.filter(function () { return !this.ready; }).isEmpty();
+};
+
+/**
+ * Check end of round
+ */
+Game.prototype.endRound = function()
+{
+    BaseGame.prototype.endRound.call(this);
+
+    this.emit('round:end');
+
+    if (this.isWon()) {
+        this.end();
+    } else {
+        this.newRound();
+    }
+};
+
+/**
+ * New round
+ */
+Game.prototype.newRound = function()
+{
+    var avatar;
+
+    this.emit('round:new');
+
+    this.world.clear();
+
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        avatar.clear();
+        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+    }
+
+    BaseGame.prototype.newRound.call(this);
+};
+
+/**
+ * FIN DU GAME
+ */
+Game.prototype.end = function()
+{
+    this.world.clear();
+
+    this.emit('end');
+
+    BaseGame.prototype.end.call(this);
 };

@@ -5,6 +5,8 @@
  */
 function BaseGame(room)
 {
+    EventEmitter.call(this);
+
     this.room     = room;
     this.name     = this.room.name;
     this.channel  = 'game:' + this.name;
@@ -12,14 +14,22 @@ function BaseGame(room)
     this.avatars  = this.room.players.map(function () { return new Avatar(this); });
     this.size     = this.getSize(this.avatars.count());
     this.rendered = false;
+    this.maxScore = this.size * 10;
 
-    this.start = this.start.bind(this);
-    this.stop  = this.stop.bind(this);
-    this.loop  = this.loop.bind(this);
+    this.start    = this.start.bind(this);
+    this.stop     = this.stop.bind(this);
+    this.loop     = this.loop.bind(this);
+    this.newRound = this.newRound.bind(this);
+    this.endRound = this.endRound.bind(this);
+    this.end      = this.end.bind(this);
 }
+
+BaseGame.prototype = Object.create(EventEmitter.prototype);
 
 BaseGame.prototype.framerate     = 1/60;
 BaseGame.prototype.perPlayerSize = 100;
+BaseGame.prototype.warmupTime    = 5000;
+BaseGame.prototype.warmdownTime  = 3000;
 
 /**
  * Update
@@ -128,4 +138,28 @@ BaseGame.prototype.serialize = function()
 BaseGame.prototype.isStarted = function()
 {
     return this.rendered !== null;
+};
+
+/**
+ * New round
+ */
+BaseGame.prototype.newRound = function()
+{
+    setTimeout(this.start, this.warmupTime);
+};
+
+
+/**
+ * Check end of round
+ */
+BaseGame.prototype.endRound = function()
+{
+    this.stop();
+};
+/**
+ * FIN DU GAME
+ */
+BaseGame.prototype.end = function()
+{
+    this.stop();
 };

@@ -22,6 +22,11 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
     this.onDie        = this.onDie.bind(this);
     this.onScore      = this.onScore.bind(this);
     this.onTrailClear = this.onTrailClear.bind(this);
+    this.onWarmup     = this.onWarmup.bind(this);
+    this.endWarmup    = this.endWarmup.bind(this);
+    this.onRoundNew   = this.onRoundNew.bind(this);
+    this.onRoundEnd   = this.onRoundEnd.bind(this);
+    this.onEnd        = this.onEnd.bind(this);
 
     this.input.on('move', this.onMove);
     this.client.io.on('position', this.onPosition);
@@ -29,6 +34,9 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
     this.client.io.on('die', this.onDie);
     this.client.io.on('score', this.onScore);
     this.client.io.on('trail:clear', this.onTrailClear);
+    this.client.io.on('round:new', this.onRoundNew);
+    this.client.io.on('round:end', this.onRoundEnd);
+    this.client.io.on('end', this.onEnd);
 
     this.loadGame();
 }
@@ -42,36 +50,55 @@ GameController.prototype.loadGame = function()
 {
     var room = this.repository.get(this.name);
 
-    room.startWarmup();
-
     this.room = room;
-    this.game = this.room.game;
+    this.game = room.newGame();
 
     this.$scope.curvytron.bodyClass = "game-mode";
 
     this.$scope.game     = this.game.serialize();
     this.$scope.roomName = this.game.name;
-    this.$scope.count    = 5;
-    this.$scope.countFinish = false;
 
-    this.displayWarmup();
+    this.client.io.emit('loaded');
 };
 
-GameController.prototype.displayWarmup = function()
+/**
+ * Start warmup
+ */
+GameController.prototype.displayWarmup = function(time)
 {
-    var warmup = this.room.warmupTime,
-        count = warmup/1000,
-        $scope = this.$scope;
+    var controller = this;
 
-        var interval = setInterval(function(){
-                count--;
-                $scope.count = count;
-                $scope.$apply();
-            }, 1000);
+    this.$scope.count       = time/1000;
+    this.$scope.countFinish = false;
+    this.$scope.$apply();
 
-        setTimeout(function() { clearInterval(interval); $scope.countFinish = true; $scope.$apply(); }, warmup);
+    var warmupInterval = setInterval(this.onWarmup, 1000);
 
-    // room.game.start();
+    setTimeout(function () { controller.endWarmup(warmupInterval); }, time);
+
+    this.warmupInterval = warmupInterval;
+};
+
+/**
+ * On warmup
+ */
+GameController.prototype.onWarmup = function()
+{
+    this.$scope.count--;
+    this.$scope.$apply();
+};
+
+/**
+ * End warmup
+ */
+GameController.prototype.endWarmup = function(interval)
+{
+    clearInterval(interval);
+
+    if (this.warmupInterval === interval) {
+        this.$scope.countFinish = true;
+        this.$scope.$apply();
+    }
 };
 
 /**
@@ -97,7 +124,6 @@ GameController.prototype.onPosition = function(data)
         avatar.setPosition(data.point);
 
         if (!this.game.isStarted()) {
-            console.log('pre draw');
             paper.view.update();
             paper.view.draw();
         }
@@ -159,4 +185,35 @@ GameController.prototype.onTrailClear = function(data)
     if (avatar) {
         avatar.trail.clear();
     }
+};
+
+/**
+ * On round new
+ *
+ * @param {Game} game
+ */
+GameController.prototype.onRoundNew = function()
+{
+    this.displayWarmup(this.game.warmupTime);
+    this.game.newRound();
+};
+
+/**
+ * On round new
+ *
+ * @param {Game} game
+ */
+GameController.prototype.onRoundEnd = function()
+{
+    this.game.endRound();
+};
+
+/**
+ * On round new
+ *
+ * @param {Game} game
+ */
+GameController.prototype.onEnd = function()
+{
+    this.game.end();
 };

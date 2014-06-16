@@ -27,3 +27,13 @@ Avatar.prototype.setPosition = function(point)
     BaseAvatar.prototype.setPosition.call(this, point);
     this.path.position = [this.head[0] * paper.sceneScale, this.head[1] * paper.sceneScale];
 };
+
+/**
+ * Clear
+ */
+Avatar.prototype.clear = function()
+{
+    BaseAvatar.prototype.clear.call(this);
+
+    this.trail.clearPaths();
+};

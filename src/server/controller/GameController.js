@@ -3,8 +3,25 @@
  */
 function GameController(io)
 {
-    this.io = io;
+    this.io    = io;
+    this.games = new Collection([], 'name');
 }
+
+/**
+ * Add game
+ *
+ * @param {Game} game
+ */
+GameController.prototype.addGame = function(game)
+{
+    var controller = this;
+
+    if (this.games.add(game)) {
+        game.on('round:new', function () { controller.onRoundNew(this); });
+        game.on('round:end', function (data) { controller.onRoundEnd(this, data); });
+        game.on('end', function () { controller.onEnd(this); });
+    }
+};
 
 /**
  * Attach events
@@ -41,6 +58,7 @@ GameController.prototype.attachEvents = function(client)
 {
     var controller = this;
 
+    client.socket.on('loaded', function (data) { controller.onGameLoaded(client); });
     client.socket.on('channel', function (data) { controller.onChannel(client); });
     client.socket.on('player:move', function (data) { controller.onMove(client, data); });
 
@@ -59,6 +77,20 @@ GameController.prototype.attachEvents = function(client)
 GameController.prototype.detachEvents = function(client)
 {
     client.socket.removeAllListeners('game:move');
+};
+
+/**
+ * On game loaded
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.onGameLoaded = function(client)
+{
+    client.avatar.ready = true;
+
+    if (client.room.game.isReady()) {
+        client.room.game.newRound();
+    }
 };
 
 /**
@@ -126,6 +158,7 @@ GameController.prototype.onDie = function(client)
  */
 GameController.prototype.onScore = function(client, data)
 {
+    console.log('server onScore', client.avatar.name, data.score);
     this.io.sockets.in(client.room.game.channel).emit('score', {avatar: client.avatar.name, score: data.score});
 };
 
@@ -138,4 +171,36 @@ GameController.prototype.onScore = function(client, data)
 GameController.prototype.onTrailClear = function(client)
 {
     this.io.sockets.in(client.room.game.channel).emit('trail:clear', {avatar: client.avatar.name});
+};
+
+// Game events:
+
+/**
+ * On round new
+ *
+ * @param {Game} game
+ */
+GameController.prototype.onRoundNew = function(game)
+{
+    this.io.sockets.in(game.channel).emit('round:new');
+};
+
+/**
+ * On round new
+ *
+ * @param {Game} game
+ */
+GameController.prototype.onRoundEnd = function(game, data)
+{
+    this.io.sockets.in(game.channel).emit('round:end');
+};
+
+/**
+ * On round new
+ *
+ * @param {Game} game
+ */
+GameController.prototype.onEnd = function(game)
+{
+    this.io.sockets.in(game.channel).emit('end');
 };

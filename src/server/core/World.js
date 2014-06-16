@@ -123,3 +123,11 @@ World.prototype.getRandomPoint = function(margin)
         margin + Math.random() * (this.size - margin * 2)
     ]
 };
+
+/**
+ * Clear the world
+ */
+World.prototype.clear = function()
+{
+    this.circles = [];
+};

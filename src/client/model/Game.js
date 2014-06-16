@@ -51,6 +51,51 @@ Game.prototype.onFrame = function(step)
 };
 
 /**
+ * New round
+ */
+Game.prototype.newRound = function()
+{
+    BaseGame.prototype.newRound.call(this);
+
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        this.avatars.items[i].clear();
+    }
+};
+
+/**
+ * End round
+ */
+Game.prototype.endRound = function()
+{
+    //this.newProject();
+
+    BaseGame.prototype.newRound.call(this);
+};
+
+/**
+ * FIN DU GAME
+ */
+Game.prototype.end = function()
+{
+    BaseGame.prototype.end.call(this);
+
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        this.avatars.items[i].clear();
+    }
+};
+
+/*Game.prototype.newProject = function()
+{
+    paper.setup(this.canvas);
+
+    for (var i = Things.length - 1; i >= 0; i--) {
+        Things[i]
+    }
+
+    paper.view.draw();
+};*/
+
+/**
  * On resize
  */
 Game.prototype.onResize = function()

@@ -19,6 +19,8 @@ function BaseAvatar(player, position)
     this.alive           = true;
     this.printing        = false;
     this.score           = 0;
+    this.printimeTimeout = null;
+    this.ready           = false;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
@@ -157,7 +159,7 @@ BaseAvatar.prototype.togglePrinting = function()
 {
     this.printing = !this.printing;
 
-    setTimeout(this.togglePrinting, this.getRandomPrintingTime());
+    this.printimeTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
 
     if (!this.printing) {
         this.trail.clear();
@@ -195,8 +197,30 @@ BaseAvatar.prototype.addScore = function(score)
 BaseAvatar.prototype.setScore = function(score)
 {
     this.score = score;
+    console.log("setScore", this.score);
 };
 
+/**
+ * Clear
+ */
+BaseAvatar.prototype.clear = function()
+{
+    if (this.printimeTimeout) {
+        clearTimeout(this.printimeTimeout);
+    }
+
+    this.head            = [this.radius, this.radius];
+    this.angle           = Math.random() * Math.PI;
+    this.velocities      = [0,0];
+    this.angularVelocity = 0;
+    this.alive           = true;
+    this.printing        = false;
+
+    this.trail.clear();
+
+    this.togglePrinting();
+    this.updateVelocities();
+};
 
 /**
  * Serialize

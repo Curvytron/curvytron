@@ -20,7 +20,7 @@ function RoomRepository(SocketClient, PlayerRepository)
     this.client.io.on('room:new', this.onNewRoom);
     this.client.io.on('room:join', this.onJoinRoom);
     this.client.io.on('room:leave', this.onLeaveRoom);
-    this.client.io.on('room:warmup', this.onWarmupRoom);
+    this.client.io.on('room:start', this.onWarmupRoom);
     this.client.io.on('room:player:ready', this.onPlayerReady);
     this.client.io.on('room:player:color', this.onPlayerColor);
 }
@@ -204,7 +204,7 @@ RoomRepository.prototype.onWarmupRoom = function(data)
 
     if (room) {
         var data = {room: room};
-        this.emit('room:warmup', data);
-        this.emit('room:warmup:' + room.name, data);
+        this.emit('room:start', data);
+        this.emit('room:start:' + room.name, data);
     }
 };

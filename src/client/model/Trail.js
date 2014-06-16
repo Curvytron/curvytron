@@ -6,7 +6,8 @@ function Trail(color, radius)
 {
     BaseTrail.call(this, color, radius);
 
-    this.path = null;
+    this.path  = null;
+    this.paths = [];
 
     this.createPath();
 }
@@ -44,5 +45,18 @@ Trail.prototype.addPoint = function(point)
  */
 Trail.prototype.clear = function()
 {
+    this.paths.push(this.path);
     this.createPath();
+};
+
+/**
+ * Clear Paths
+ */
+Trail.prototype.clearPaths = function()
+{
+    for (var i = this.paths.length - 1; i >= 0; i--) {
+        this.paths[i].remove();
+    }
+
+    this.paths = [];
 };
