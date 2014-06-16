@@ -20,6 +20,8 @@ function Game(room)
 
 Game.prototype = Object.create(BaseGame.prototype);
 
+Game.prototype.trailLatency = 300;
+
 /**
  * Update
  *
@@ -50,7 +52,7 @@ Game.prototype.addPoint = function(data)
     var world = this.world,
         circle = [data.point[0], data.point[1], data.avatar.radius];
 
-    setTimeout(function () { world.addCircle(circle); }, 100);
+    setTimeout(function () { world.addCircle(circle); }, this.trailLatency);
 };
 
 /**
