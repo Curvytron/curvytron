@@ -477,6 +477,21 @@ BaseAvatar.prototype.togglePrinting = function()
 };
 
 /**
+ * Stop printing
+ */
+BaseAvatar.prototype.stopPrinting = function()
+{
+    console.log("stopPrinting", this.printimeTimeout);
+
+    this.printing = false;
+    this.trail.clear();
+
+    if (this.printimeTimeout) {
+        clearTimeout(this.printimeTimeout);
+    }
+};
+
+/**
  * Get random printing time
  *
  * @return {Number}
@@ -514,9 +529,7 @@ BaseAvatar.prototype.setScore = function(score)
  */
 BaseAvatar.prototype.clear = function()
 {
-    if (this.printimeTimeout) {
-        clearTimeout(this.printimeTimeout);
-    }
+    this.stopPrinting();
 
     this.head            = [this.radius, this.radius];
     this.angle           = Math.random() * Math.PI;
@@ -526,8 +539,6 @@ BaseAvatar.prototype.clear = function()
     this.printing        = false;
 
     this.trail.clear();
-
-    this.togglePrinting();
     this.updateVelocities();
 };
 
@@ -1766,6 +1777,20 @@ Game.prototype.newRound = function()
     }
 
     BaseGame.prototype.newRound.call(this);
+};
+
+/**
+ * Start
+ */
+Game.prototype.start = function()
+{
+    if (!this.frame) {
+        for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+            setTimeout(this.avatars.items[i].togglePrinting, 3000);
+        }
+    }
+
+    BaseGame.prototype.start.call(this);
 };
 
 /**

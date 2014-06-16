@@ -136,6 +136,20 @@ Game.prototype.newRound = function()
 };
 
 /**
+ * Start
+ */
+Game.prototype.start = function()
+{
+    if (!this.frame) {
+        for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+            setTimeout(this.avatars.items[i].togglePrinting, 3000);
+        }
+    }
+
+    BaseGame.prototype.start.call(this);
+};
+
+/**
  * FIN DU GAME
  */
 Game.prototype.end = function()
