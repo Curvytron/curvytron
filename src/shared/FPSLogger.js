@@ -1,9 +1,10 @@
 /**
  * FPS Logger
  */
-function FPSLogger()
+function FPSLogger(element)
 {
-    this.fps = 0;
+    this.fps     = 0;
+    this.element = typeof(element) != 'undefined' ? element : null;
 
     this.clear = this.clear.bind(this);
 
@@ -27,6 +28,29 @@ FPSLogger.prototype.update = function(step)
  */
 FPSLogger.prototype.clear = function()
 {
-    console.log(this.fps);
+    this.draw();
+
     this.fps = 0;
+};
+
+/**
+ * Set element
+ *
+ * @param {DOMElement} element
+ */
+FPSLogger.prototype.setElement = function(element)
+{
+    this.element = element;
+};
+
+/**
+ * Draw FPS
+ */
+FPSLogger.prototype.draw = function()
+{
+    if (this.element) {
+        this.element.innerHTML = this.fps;
+    } else {
+        console.log(this.fps);
+    }
 };

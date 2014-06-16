@@ -12,14 +12,9 @@ function Game(room)
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
 
-    var avatar;
-
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
-        avatar = this.avatars.items[i];
-
-        avatar.on('point', this.addPoint);
-        avatar.on('die', this.onDie);
-        //avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+        this.avatars.items[i].on('point', this.addPoint);
+        this.avatars.items[i].on('die', this.onDie);
     }
 }
 

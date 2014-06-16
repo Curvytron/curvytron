@@ -53,6 +53,8 @@ GameController.prototype.loadGame = function()
     this.room = room;
     this.game = room.newGame();
 
+    this.game.fps.setElement(document.getElementById('fps'));
+
     this.$scope.curvytron.bodyClass = "game-mode";
 
     this.$scope.game     = this.game;
