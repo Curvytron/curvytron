@@ -127,6 +127,9 @@ li.player-row {
             font-size: 30px;
             text-align: left;
             display: block !important;
+            a:hover {
+                text-decoration: none;
+            }
         }
         h3 {
             margin: 0;
