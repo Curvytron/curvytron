@@ -3,14 +3,70 @@
  */
 function World(size)
 {
-    this.size    = size;
-    this.from    = [0, 0];
-    this.to      = [size, size];
-    this.circles = [];
-    this.islands = [];
+    this.size       = size;
+    this.from       = [0, 0];
+    this.to         = [size, size];
+    this.islands    = new Collection();
+    this.islandSize = this.size / this.islandGridSize;
+
+    var x, y, id;
+
+    for (y = this.islandGridSize - 1; y >= 0; y--) {
+        for (x = this.islandGridSize - 1; x >= 0; x--) {
+            id = x.toString() + ':' + y.toString();
+            this.islands.add(new Island(id, this.islandSize, [x * this.islandSize, y * this.islandSize]));
+        }
+    }
 }
 
-World.prototype.islandGrid = 10;
+/**
+ * Island grid size
+ *
+ * @type {Number}
+ */
+World.prototype.islandGridSize = 4;
+
+/**
+ * Get island by point
+ *
+ * @param {Array} point
+ *
+ * @return {Island}
+ */
+World.prototype.getIslandByPoint = function(point)
+{
+    var x = Math.floor(point[0]/this.islandSize),
+        y = Math.floor(point[1]/this.islandSize),
+        id = x.toString() + ':' + y.toString();
+
+    return this.islands.getById(id);
+};
+
+/**
+ * Get island by circle
+ *
+ * @param {Array} circle
+ *
+ * @return {Island}
+ */
+World.prototype.getIslandsByCircle = function(circle)
+{
+    var islands = new Collection(),
+        sources = [
+            this.getIslandByPoint([circle[0] - circle[2], circle[1] - circle[2]]),
+            this.getIslandByPoint([circle[0] + circle[2], circle[1] - circle[2]]),
+            this.getIslandByPoint([circle[0] - circle[2], circle[1] + circle[2]]),
+            this.getIslandByPoint([circle[0] + circle[2], circle[1] + circle[2]]),
+        ];
+
+    for (var i = sources.length - 1; i >= 0; i--) {
+        if (sources[i]) {
+            islands.add(sources[i]);
+        }
+    }
+
+    return islands.items;
+};
 
 /**
  * Add circle
@@ -19,11 +75,11 @@ World.prototype.islandGrid = 10;
  */
 World.prototype.addCircle = function(circle)
 {
-    var result = !this.testCircle(circle);
+    var islands = this.getIslandsByCircle(circle);
 
-    this.circles.push(circle);
-
-    return result;
+    for (var i = islands.length - 1; i >= 0; i--) {
+        islands[i].addCircle(circle);
+    }
 };
 
 /**
@@ -37,27 +93,15 @@ World.prototype.testCircle = function(circle)
         return false;
     }
 
-    for (var i = this.circles.length - 1; i >= 0; i--)
-    {
-        if (this.circlesTouch(this.circles[i], circle)) {
+    var islands = this.getIslandsByCircle(circle);
+
+    for (var i = islands.length - 1; i >= 0; i--) {
+        if (!islands[i].testCircle(circle)) {
             return false;
         }
     }
 
     return true;
-};
-
-/**
- * Circles touch
- *
- * @param {Array} circleA
- * @param {Array} circleB
- *
- * @return {Boolean}
- */
-World.prototype.circlesTouch = function(circleA, circleB)
-{
-    return this.getDistance(circleA, circleB) < (circleA[2] + circleB[2]);
 };
 
 /**
@@ -75,19 +119,6 @@ World.prototype.circleInBound = function(circle, from, to)
         && circle[0] + circle[2] <= to[0]
         && circle[1] - circle[2] >= from[1]
         && circle[1] + circle[2] <= to[1]
-};
-
-/**
- * get Distance
- *
- * @param {Array} from
- * @param {Array} to
- *
- * @return {Boolean}
- */
-World.prototype.getDistance = function(from, to)
-{
-    return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
 };
 
 /**
@@ -129,5 +160,7 @@ World.prototype.getRandomPoint = function(margin)
  */
 World.prototype.clear = function()
 {
-    this.circles = [];
+    for (var i = this.islands.items.length - 1; i >= 0; i--) {
+        this.islands.items[i].clear();
+    }
 };
