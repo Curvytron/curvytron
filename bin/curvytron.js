@@ -786,7 +786,7 @@ BaseGame.prototype.end = function()
 function BasePlayer(name, color, mail)
 {
     this.name   = name;
-    this.color  = typeof(color) !== 'undefined' ? color : 'red';
+    this.color  = typeof(color) !== 'undefined' ? color : this.getRandomColor();
     this.mail   = mail;
     this.ready  = false;
 }
@@ -834,6 +834,16 @@ BasePlayer.prototype.serialize = function()
         mail: this.mail,
         ready: this.ready
     };
+};
+
+/**
+ * Get random Color
+ *
+ * @return {String}
+ */
+BasePlayer.prototype.getRandomColor = function()
+{
+    return '#' + Math.floor(Math.random()*16777215).toString(16);
 };
 /**
  * Base Room
