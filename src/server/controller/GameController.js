@@ -158,7 +158,6 @@ GameController.prototype.onDie = function(client)
  */
 GameController.prototype.onScore = function(client, data)
 {
-    console.log('server onScore', client.avatar.name, data.score);
     this.io.sockets.in(client.room.game.channel).emit('score', {avatar: client.avatar.name, score: data.score});
 };
 

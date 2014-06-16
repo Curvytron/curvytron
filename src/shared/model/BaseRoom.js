@@ -50,7 +50,6 @@ BaseRoom.prototype.isReady = function()
 BaseRoom.prototype.newGame = function()
 {
     if (!this.game) {
-        console.log("Start new game");
         this.game = new Game(this);
         this.emit('game:new', {room: this, game: this.game});
     }

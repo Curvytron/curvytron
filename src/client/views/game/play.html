@@ -4,10 +4,10 @@
             <header><a href="/">Curvytron</a></header>
             <h3>{{ roomName }}</h3>
             <ul id="game-players">
-                <li ng-repeat="player in game.players">
-                    <span class="color-preview" style="background-color: {{ player.color }};"></span>
-                    {{ player.name }}
-                    <span class="score">{{ player.score }}</span>
+                <li ng-repeat="avatar in avatars">
+                    <span class="color-preview" style="background-color: {{ avatar.color }};"></span>
+                    {{ avatar.name }}
+                    <span class="score">{{ avatar.score }}</span>
                 </li>
             </ul>
             <footer>

@@ -459,7 +459,6 @@ BaseAvatar.prototype.getDistance = function(from, to)
 BaseAvatar.prototype.die = function()
 {
     this.alive = false;
-    console.log('%s died', this.name);
     this.addPoint(this.head.slice(0));
 };
 
@@ -508,7 +507,6 @@ BaseAvatar.prototype.addScore = function(score)
 BaseAvatar.prototype.setScore = function(score)
 {
     this.score = score;
-    console.log("setScore", this.score);
 };
 
 /**
@@ -822,7 +820,6 @@ BaseRoom.prototype.isReady = function()
 BaseRoom.prototype.newGame = function()
 {
     if (!this.game) {
-        console.log("Start new game");
         this.game = new Game(this);
         this.emit('game:new', {room: this, game: this.game});
     }
@@ -1047,7 +1044,6 @@ GameController.prototype.onDie = function(client)
  */
 GameController.prototype.onScore = function(client, data)
 {
-    console.log('server onScore', client.avatar.name, data.score);
     this.io.sockets.in(client.room.game.channel).emit('score', {avatar: client.avatar.name, score: data.score});
 };
 

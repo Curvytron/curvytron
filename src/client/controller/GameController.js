@@ -55,7 +55,8 @@ GameController.prototype.loadGame = function()
 
     this.$scope.curvytron.bodyClass = "game-mode";
 
-    this.$scope.game     = this.game.serialize();
+    this.$scope.game     = this.game;
+    this.$scope.avatars  = this.game.avatars.items;
     this.$scope.roomName = this.game.name;
 
     this.client.io.emit('loaded');
