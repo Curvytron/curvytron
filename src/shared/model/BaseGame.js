@@ -15,6 +15,7 @@ function BaseGame(room)
     this.size     = this.getSize(this.avatars.count());
     this.rendered = false;
     this.maxScore = this.size * 10;
+    this.fps      = new FPSLogger();
 
     this.start    = this.start.bind(this);
     this.stop     = this.stop.bind(this);
@@ -103,6 +104,7 @@ BaseGame.prototype.newFrame = function()
 BaseGame.prototype.onFrame = function(step)
 {
     this.update(step);
+    this.fps.update();
 };
 
 /**

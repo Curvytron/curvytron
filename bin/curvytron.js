@@ -310,6 +310,38 @@ Collection.prototype.getLast = function()
     return this.items.length > 0 ? this.items[this.items.length - 1] : null;
 };
 /**
+ * FPS Logger
+ */
+function FPSLogger()
+{
+    this.fps = 0;
+
+    this.clear = this.clear.bind(this);
+
+    setInterval(this.clear, 1000);
+}
+
+/**
+ * Update
+ *
+ * @param {Number} step
+ */
+FPSLogger.prototype.update = function(step)
+{
+    var fps = step > 0 ? 1000/step : 60;
+
+    this.fps = this.fps ? (this.fps + fps)/2 : fps;
+};
+
+/**
+ * Clear
+ */
+FPSLogger.prototype.clear = function()
+{
+    console.log(this.fps);
+    this.fps = 0;
+};
+/**
  * Base Avatar
  *
  * @param {Player} player
@@ -572,6 +604,7 @@ function BaseGame(room)
     this.size     = this.getSize(this.avatars.count());
     this.rendered = false;
     this.maxScore = this.size * 10;
+    this.fps      = new FPSLogger();
 
     this.start    = this.start.bind(this);
     this.stop     = this.stop.bind(this);
@@ -660,6 +693,7 @@ BaseGame.prototype.newFrame = function()
 BaseGame.prototype.onFrame = function(step)
 {
     this.update(step);
+    this.fps.update();
 };
 
 /**
