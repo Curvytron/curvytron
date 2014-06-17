@@ -22,7 +22,7 @@ function Game(room)
 
 Game.prototype = Object.create(BaseGame.prototype);
 
-Game.prototype.trailLatency = 300;
+Game.prototype.trailLatency = 150;
 
 /**
  * Update
@@ -51,7 +51,7 @@ Game.prototype.update = function(step)
  */
 Game.prototype.removeAvatar = function(avatar)
 {
-    var result = BaseGame.prototype.removeAvatar.call(this);
+    var result = BaseGame.prototype.removeAvatar.call(this, avatar);
 
     this.checkRoundEnd();
 
