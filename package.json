@@ -39,5 +39,8 @@
   "dependencies": {
     "socket.io": "^1.0.4",
     "express": "~4.4.2"
+  },
+  "scripts" : {
+    "install" : "bower install"
   }
 }

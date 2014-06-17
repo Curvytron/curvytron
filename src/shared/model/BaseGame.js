@@ -116,7 +116,15 @@ BaseGame.prototype.onFrame = function(step)
  */
 BaseGame.prototype.getSize = function(players)
 {
-    return Math.sqrt(players) * this.perPlayerSize;
+    /**
+     * Should be:
+     * 2  -> 105 -> 11000
+     * 3  -> 110 -> 12000
+     * 4  -> 114 -> 13000
+     * 5  -> 118 -> 14000
+     */
+    var baseSquareSize = this.perPlayerSize * this.perPlayerSize;
+    return Math.sqrt(baseSquareSize + ((players - 1) * baseSquareSize / 10.0));
 };
 
 /**
