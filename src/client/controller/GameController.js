@@ -28,6 +28,7 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
     this.onRoundNew   = this.onRoundNew.bind(this);
     this.onRoundEnd   = this.onRoundEnd.bind(this);
     this.onEnd        = this.onEnd.bind(this);
+    this.onLeave      = this.onLeave.bind(this);
 
     this.input.on('move', this.onMove);
     this.client.io.on('position', this.onPosition);
@@ -38,6 +39,7 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
     this.client.io.on('round:new', this.onRoundNew);
     this.client.io.on('round:end', this.onRoundEnd);
     this.client.io.on('end', this.onEnd);
+    this.client.io.on('game:leave', this.onLeave);
 
     this.loadGame();
 }
@@ -221,4 +223,19 @@ GameController.prototype.onRoundEnd = function()
 GameController.prototype.onEnd = function()
 {
     this.game.end();
+};
+
+/**
+ * On leave
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onLeave = function(data)
+{
+    var avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        this.game.removeAvatar(avatar);
+        this.$scope.$apply();
+    }
 };

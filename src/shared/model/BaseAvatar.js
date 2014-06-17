@@ -10,7 +10,7 @@ function BaseAvatar(player, position)
     this.name            = player.name;
     this.color           = player.color;
     this.player          = player;
-    this.radius          = 1;
+    this.radius          = this.defaultRadius;
     this.head            = [this.radius, this.radius];
     this.trail           = new Trail(this.color, this.radius, this.head.slice(0));
     this.angle           = Math.random() * Math.PI;
@@ -19,22 +19,22 @@ function BaseAvatar(player, position)
     this.alive           = true;
     this.printing        = false;
     this.score           = 0;
-    this.printimeTimeout = null;
+    this.printingTimeout = null;
     this.ready           = false;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
-    this.togglePrinting();
     this.updateVelocities();
 }
 
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
-BaseAvatar.prototype.velocity            = 20/1000;
 BaseAvatar.prototype.precision           = 1;
+BaseAvatar.prototype.velocity            = 20/1000;
 BaseAvatar.prototype.angularVelocityBase = 3/1000;
-BaseAvatar.prototype.printingRatio       = 0.8;
+BaseAvatar.prototype.noPrintingTime      = 200;
 BaseAvatar.prototype.printingTime        = 3000;
+BaseAvatar.prototype.defaultRadius       = 0.6;
 
 /**
  * Set Point
@@ -154,11 +154,13 @@ BaseAvatar.prototype.die = function()
 /**
  * Start printing
  */
-BaseAvatar.prototype.togglePrinting = function()
+BaseAvatar.prototype.togglePrinting = function(e)
 {
     this.printing = !this.printing;
 
-    this.printimeTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
+    clearTimeout(this.printingTimeout);
+
+    this.printingTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
 
     if (!this.printing) {
         this.trail.clear();
@@ -170,12 +172,11 @@ BaseAvatar.prototype.togglePrinting = function()
  */
 BaseAvatar.prototype.stopPrinting = function()
 {
-    this.printing = false;
-    this.trail.clear();
+    clearTimeout(this.printingTimeout);
 
-    if (this.printimeTimeout) {
-        clearTimeout(this.printimeTimeout);
-    }
+    this.printing = false;
+
+    this.trail.clear();
 };
 
 /**
@@ -185,10 +186,11 @@ BaseAvatar.prototype.stopPrinting = function()
  */
 BaseAvatar.prototype.getRandomPrintingTime = function()
 {
-    var ratio = this.printing ? this.printingRatio : 1 - this.printingRatio,
-        base = this.printingTime * ratio;
-
-    return base * (0.5 + Math.random());
+    if (this.printing) {
+        return this.printingTime * (0.2 + Math.random() * 0.8);
+    } else {
+        return this.noPrintingTime * (0.8 + Math.random() * 0.5);
+    }
 };
 
 /**
@@ -225,7 +227,6 @@ BaseAvatar.prototype.clear = function()
     this.alive           = true;
     this.printing        = false;
 
-    this.trail.clear();
     this.updateVelocities();
 };
 

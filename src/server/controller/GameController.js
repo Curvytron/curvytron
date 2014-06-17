@@ -41,12 +41,12 @@ GameController.prototype.attach = function(client, game)
  */
 GameController.prototype.detach = function(client)
 {
+    this.detachEvents(client);
+
     if (client.room && client.room.game) {
-        this.io.sockets.in(client.room.game.channel).emit('game:leave', {room: client.room.name, player: client.player.name});
+        this.io.sockets.in(client.room.game.channel).emit('game:leave', {avatar: client.avatar.name});
         client.leaveGame();
     }
-
-    this.detachEvents(client);
 };
 
 /**
@@ -76,7 +76,15 @@ GameController.prototype.attachEvents = function(client)
  */
 GameController.prototype.detachEvents = function(client)
 {
-    client.socket.removeAllListeners('game:move');
+    client.socket.removeAllListeners('loaded');
+    client.socket.removeAllListeners('channel');
+    client.socket.removeAllListeners('player:move');
+
+    client.avatar.removeAllListeners('die');
+    client.avatar.removeAllListeners('position');
+    client.avatar.removeAllListeners('point');
+    client.avatar.removeAllListeners('score');
+    client.avatar.trail.removeAllListeners('clear');
 };
 
 /**

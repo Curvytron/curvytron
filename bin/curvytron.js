@@ -377,7 +377,7 @@ function BaseAvatar(player, position)
     this.name            = player.name;
     this.color           = player.color;
     this.player          = player;
-    this.radius          = 1;
+    this.radius          = this.defaultRadius;
     this.head            = [this.radius, this.radius];
     this.trail           = new Trail(this.color, this.radius, this.head.slice(0));
     this.angle           = Math.random() * Math.PI;
@@ -386,22 +386,22 @@ function BaseAvatar(player, position)
     this.alive           = true;
     this.printing        = false;
     this.score           = 0;
-    this.printimeTimeout = null;
+    this.printingTimeout = null;
     this.ready           = false;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
-    this.togglePrinting();
     this.updateVelocities();
 }
 
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
-BaseAvatar.prototype.velocity            = 20/1000;
 BaseAvatar.prototype.precision           = 1;
+BaseAvatar.prototype.velocity            = 20/1000;
 BaseAvatar.prototype.angularVelocityBase = 3/1000;
-BaseAvatar.prototype.printingRatio       = 0.8;
+BaseAvatar.prototype.noPrintingTime      = 200;
 BaseAvatar.prototype.printingTime        = 3000;
+BaseAvatar.prototype.defaultRadius       = 0.6;
 
 /**
  * Set Point
@@ -521,11 +521,13 @@ BaseAvatar.prototype.die = function()
 /**
  * Start printing
  */
-BaseAvatar.prototype.togglePrinting = function()
+BaseAvatar.prototype.togglePrinting = function(e)
 {
     this.printing = !this.printing;
 
-    this.printimeTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
+    clearTimeout(this.printingTimeout);
+
+    this.printingTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
 
     if (!this.printing) {
         this.trail.clear();
@@ -537,12 +539,11 @@ BaseAvatar.prototype.togglePrinting = function()
  */
 BaseAvatar.prototype.stopPrinting = function()
 {
-    this.printing = false;
-    this.trail.clear();
+    clearTimeout(this.printingTimeout);
 
-    if (this.printimeTimeout) {
-        clearTimeout(this.printimeTimeout);
-    }
+    this.printing = false;
+
+    this.trail.clear();
 };
 
 /**
@@ -552,10 +553,11 @@ BaseAvatar.prototype.stopPrinting = function()
  */
 BaseAvatar.prototype.getRandomPrintingTime = function()
 {
-    var ratio = this.printing ? this.printingRatio : 1 - this.printingRatio,
-        base = this.printingTime * ratio;
-
-    return base * (0.5 + Math.random());
+    if (this.printing) {
+        return this.printingTime * (0.2 + Math.random() * 0.8);
+    } else {
+        return this.noPrintingTime * (0.8 + Math.random() * 0.5);
+    }
 };
 
 /**
@@ -592,7 +594,6 @@ BaseAvatar.prototype.clear = function()
     this.alive           = true;
     this.printing        = false;
 
-    this.trail.clear();
     this.updateVelocities();
 };
 
@@ -657,6 +658,8 @@ BaseGame.prototype.update = function(step) {};
  */
 BaseGame.prototype.removeAvatar = function(avatar)
 {
+    avatar.clear();
+
     return this.avatars.remove(avatar);
 };
 
@@ -727,7 +730,16 @@ BaseGame.prototype.onFrame = function(step)
  */
 BaseGame.prototype.getSize = function(players)
 {
-    return Math.sqrt(players) * this.perPlayerSize;
+    /**
+     * Should be:
+     * 2  -> 105 -> 11000
+     * 3  -> 110 -> 12000
+     * 4  -> 114 -> 13000
+     * 5  -> 118 -> 14000
+     */
+    var baseSquareSize = this.perPlayerSize * this.perPlayerSize;
+
+    return Math.sqrt(baseSquareSize + ((players - 1) * baseSquareSize / 5.0));
 };
 
 /**
@@ -888,7 +900,7 @@ BaseRoom.prototype.removePlayer = function(player)
  */
 BaseRoom.prototype.isReady = function()
 {
-    return this.players.count() > 1 && this.players.filter(function () { return !this.ready; }).isEmpty();
+    return /*this.players.count() > 1 &&*/ this.players.filter(function () { return !this.ready; }).isEmpty();
 };
 
 /**
@@ -1004,12 +1016,12 @@ GameController.prototype.attach = function(client, game)
  */
 GameController.prototype.detach = function(client)
 {
+    this.detachEvents(client);
+
     if (client.room && client.room.game) {
-        this.io.sockets.in(client.room.game.channel).emit('game:leave', {room: client.room.name, player: client.player.name});
+        this.io.sockets.in(client.room.game.channel).emit('game:leave', {avatar: client.avatar.name});
         client.leaveGame();
     }
-
-    this.detachEvents(client);
 };
 
 /**
@@ -1039,7 +1051,15 @@ GameController.prototype.attachEvents = function(client)
  */
 GameController.prototype.detachEvents = function(client)
 {
-    client.socket.removeAllListeners('game:move');
+    client.socket.removeAllListeners('loaded');
+    client.socket.removeAllListeners('channel');
+    client.socket.removeAllListeners('player:move');
+
+    client.avatar.removeAllListeners('die');
+    client.avatar.removeAllListeners('position');
+    client.avatar.removeAllListeners('point');
+    client.avatar.removeAllListeners('score');
+    client.avatar.trail.removeAllListeners('clear');
 };
 
 /**
@@ -1200,12 +1220,16 @@ RoomController.prototype.attach = function(client)
  */
 RoomController.prototype.detach = function(client)
 {
+    this.detachEvents(client);
+
     if (client.room) {
+        if (client.room.game) {
+            this.gameController.detach(client, client.room.game);
+        }
+
         this.io.sockets.in('rooms').emit('room:leave', {room: client.room.name, player: client.player.name});
         client.leaveRoom();
     }
-
-    this.detachEvents(client);
 };
 
 /**
@@ -1531,7 +1555,6 @@ Server.prototype.onSocketDisconnection = function(client)
     console.log('Client disconnected', client.socket.id);
 
     this.roomController.detach(client);
-    this.gameController.detach(client);
 };
 /**
  * Socket Client
@@ -1598,11 +1621,7 @@ SocketClient.prototype.leaveRoom = function()
     if (this.room && this.room.removePlayer(this.player)) {
         this.player.toggleReady(false);
         this.room = null;
-
-        return true;
     }
-
-    return false;
 };
 
 /**
@@ -1622,8 +1641,6 @@ SocketClient.prototype.joinGame = function(game)
 
 /**
  * Leave room
- *
- * @return {[type]}
  */
 SocketClient.prototype.leaveGame = function()
 {
@@ -1879,6 +1896,8 @@ function Game(room)
     BaseGame.call(this, room);
 
     this.world  = new World(this.size);
+    this.end    = false;
+    this.deaths = [];
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -1891,7 +1910,7 @@ function Game(room)
 
 Game.prototype = Object.create(BaseGame.prototype);
 
-Game.prototype.trailLatency = 300;
+Game.prototype.trailLatency = 150;
 
 /**
  * Update
@@ -1911,6 +1930,20 @@ Game.prototype.update = function(step)
             avatar.die();
         }
     }
+};
+
+/**
+ * Remove a avatar from the game
+ *
+ * @param {Avatar} avatar
+ */
+Game.prototype.removeAvatar = function(avatar)
+{
+    var result = BaseGame.prototype.removeAvatar.call(this, avatar);
+
+    this.checkRoundEnd();
+
+    return result;
 };
 
 /**
@@ -1946,13 +1979,25 @@ Game.prototype.isWon = function()
  */
 Game.prototype.onDie = function(data)
 {
-    var alivePlayers = this.avatars.filter(function () { return this.alive; }),
-        size = this.avatars.count();
+    this.deaths.push(data.avatar);
 
-    data.avatar.addScore(size - alivePlayers.count());
+    this.checkRoundEnd();
+};
 
-    if (alivePlayers.count() === 1) {
-        alivePlayers.items[0].addScore(size);
+/**
+ * Check if the round should end
+ */
+Game.prototype.checkRoundEnd = function()
+{
+    if (this.end) {
+        return;
+    }
+
+    var alivePlayers = this.avatars.filter(function () { return this.alive; });
+
+    if (alivePlayers.count() <= 1) {
+        this.end = true;
+        this.setScores();
         setTimeout(this.endRound, this.warmdownTime);
     }
 };
@@ -1965,6 +2010,29 @@ Game.prototype.onDie = function(data)
 Game.prototype.isReady = function()
 {
     return this.avatars.filter(function () { return !this.ready; }).isEmpty();
+};
+
+/**
+ * Set scores
+ */
+Game.prototype.setScores = function()
+{
+    if (this.end) {
+        var deaths = this.deaths.length,
+            total = this.avatars.count();
+
+        for (var i = deaths - 1; i >= 0; i--) {
+            this.deaths[i].addScore(i + 1);
+        }
+
+        if (deaths < total) {
+            var victor = this.avatars.match(function () { return this.alive; });
+
+            victor.addScore(total);
+        }
+
+        this.deaths = [];
+    }
 };
 
 /**
@@ -1993,6 +2061,9 @@ Game.prototype.newRound = function()
     this.emit('round:new');
 
     this.world.clear();
+
+    this.end    = false;
+    this.deaths = [];
 
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];

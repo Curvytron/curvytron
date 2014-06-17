@@ -63,11 +63,7 @@ SocketClient.prototype.leaveRoom = function()
     if (this.room && this.room.removePlayer(this.player)) {
         this.player.toggleReady(false);
         this.room = null;
-
-        return true;
     }
-
-    return false;
 };
 
 /**
@@ -87,8 +83,6 @@ SocketClient.prototype.joinGame = function(game)
 
 /**
  * Leave room
- *
- * @return {[type]}
  */
 SocketClient.prototype.leaveGame = function()
 {
