@@ -4,13 +4,15 @@
             <header><a href="/">Curvytron</a></header>
             <h3>{{ roomName }}</h3>
             <ul id="game-players">
-                <li ng-repeat="avatar in avatars">
+                <li ng-repeat="avatar in avatars | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="color-preview" style="background-color: {{ avatar.color }};"></span>
                     {{ avatar.name }}
                     <span class="score">{{ avatar.score }}</span>
                 </li>
             </ul>
+            <object width="295" height="90" id="radio"><param name="allowscriptaccess" value="always" /><param name="movie" value="http://static.radionomy.com/cdn/flash/BannerEmbed.swf?RadUID=46b6f68c-eaf7-4802-9bca-5d2536fd0e66&amp;titlesColor=dddddd&amp;color=2f2f2f&amp;autoPlay=yes&amp;lang=fr" /><param name="wmode" value="transparent" /><embed src="http://static.radionomy.com/cdn/flash/BannerEmbed.swf?RadUID=46b6f68c-eaf7-4802-9bca-5d2536fd0e66&amp;titlesColor=dddddd&amp;color=2f2f2f&amp;autoPlay=yes&amp;lang=fr" wmode="transparent" type="application/x-shockwave-flash" allowscriptaccess="always" width="295" height="90"></embed></object>
             <footer>
+                <span id="fps" class="pull-right"></span>
                 <a href="http://www.elao.com" class="game-copy" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>
             </footer>
         </aside>

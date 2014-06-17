@@ -13,8 +13,9 @@ function BaseGame(room)
     this.frame    = null;
     this.avatars  = this.room.players.map(function () { return new Avatar(this); });
     this.size     = this.getSize(this.avatars.count());
-    this.rendered = false;
+    this.rendered = null;
     this.maxScore = this.size * 10;
+    this.fps      = new FPSLogger();
 
     this.start    = this.start.bind(this);
     this.stop     = this.stop.bind(this);
@@ -45,6 +46,8 @@ BaseGame.prototype.update = function(step) {};
  */
 BaseGame.prototype.removeAvatar = function(avatar)
 {
+    avatar.clear();
+
     return this.avatars.remove(avatar);
 };
 
@@ -55,6 +58,7 @@ BaseGame.prototype.start = function()
 {
     if (!this.frame) {
         console.log("Game started!");
+        this.onStart();
         this.rendered = new Date().getTime();
         this.loop();
     }
@@ -67,8 +71,7 @@ BaseGame.prototype.stop = function()
 {
     if (this.frame) {
         clearTimeout(this.frame);
-        this.frame    = null;
-        this.rendered = null;
+        this.onStop();
     }
 };
 
@@ -88,6 +91,20 @@ BaseGame.prototype.loop = function()
 };
 
 /**
+ * On start
+ */
+BaseGame.prototype.onStart = function() {};
+
+/**
+ * Onn stop
+ */
+BaseGame.prototype.onStop = function()
+{
+    this.frame    = null;
+    this.rendered = null;
+};
+
+/**
  * Get new frame
  */
 BaseGame.prototype.newFrame = function()
@@ -103,6 +120,7 @@ BaseGame.prototype.newFrame = function()
 BaseGame.prototype.onFrame = function(step)
 {
     this.update(step);
+    this.fps.update();
 };
 
 /**
@@ -114,7 +132,16 @@ BaseGame.prototype.onFrame = function(step)
  */
 BaseGame.prototype.getSize = function(players)
 {
-    return Math.sqrt(players) * this.perPlayerSize;
+    /**
+     * Should be:
+     * 2  -> 105 -> 11000
+     * 3  -> 110 -> 12000
+     * 4  -> 114 -> 13000
+     * 5  -> 118 -> 14000
+     */
+    var baseSquareSize = this.perPlayerSize * this.perPlayerSize;
+
+    return Math.sqrt(baseSquareSize + ((players - 1) * baseSquareSize / 5.0));
 };
 
 /**

@@ -2641,8 +2641,10 @@ footer {
   color: #919ea3;
   padding: 30px 0;
   margin-top: 30px; }
-  footer a, footer a:visited {
-    color: #919ea3; }
+  footer a {
+    cursor: pointer; }
+    footer a, footer a:visited {
+      color: #919ea3; }
 
 body.game-mode header, body.game-mode footer {
   display: none; }
@@ -3837,6 +3839,8 @@ li.player-row {
       font-size: 30px;
       text-align: left;
       display: block !important; }
+      #game-wrapper aside header a:hover {
+        text-decoration: none; }
     #game-wrapper aside h3 {
       margin: 0;
       color: #FFF;
@@ -3858,11 +3862,22 @@ li.player-row {
         border-left: 2px solid #3c3c3c; }
       #game-wrapper aside #game-players li:first-child {
         border-top: 2px solid #3c3c3c; }
+      #game-wrapper aside #game-players li.dead {
+        -webkit-animation: deadAnim 1s;
+        -o-animation: deadAnim 1s;
+        animation: deadAnim 1s;
+        -webkit-transition: all 0.2s ease;
+        -o-transition: all 0.2s ease;
+        transition: all 0.2s ease; }
+    #game-wrapper aside #radio {
+      position: fixed;
+      left: 0;
+      bottom: 0; }
     #game-wrapper aside footer {
       display: block !important;
       position: fixed;
       left: 0;
-      bottom: 0;
+      bottom: 90px;
       width: 300px;
       min-width: 300px;
       max-width: 300px;
@@ -3905,7 +3920,7 @@ li.player-row {
       font-weight: 300;
       text-align: center;
       color: #FFF;
-      background: #3c3c3c; }
+      background: transparent; }
     #game-wrapper #col-right .countdown-anim {
       width: 250px;
       height: 250px;
@@ -4176,6 +4191,54 @@ li.player-row {
 
   100% {
     background-color: #bb2924; } }
+
+@-webkit-keyframes deadAnim {
+  0% {
+    background-color: transparent; }
+
+  50% {
+    background-color: rgba(202, 94, 91, 0.5); }
+
+  100% {
+    background-color: transparent;
+    opacity: 0.5;
+    filter: alpha(opacity=50); } }
+
+@-moz-keyframes deadAnim {
+  0% {
+    background-color: transparent; }
+
+  50% {
+    background-color: rgba(202, 94, 91, 0.5); }
+
+  100% {
+    background-color: transparent;
+    opacity: 0.5;
+    filter: alpha(opacity=50); } }
+
+@-o-keyframes deadAnim {
+  0% {
+    background-color: transparent; }
+
+  50% {
+    background-color: rgba(202, 94, 91, 0.5); }
+
+  100% {
+    background-color: transparent;
+    opacity: 0.5;
+    filter: alpha(opacity=50); } }
+
+@keyframes deadAnim {
+  0% {
+    background-color: transparent; }
+
+  50% {
+    background-color: rgba(202, 94, 91, 0.5); }
+
+  100% {
+    background-color: transparent;
+    opacity: 0.5;
+    filter: alpha(opacity=50); } }
 
 @media (max-width: 767px) { }
 

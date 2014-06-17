@@ -127,6 +127,9 @@ li.player-row {
             font-size: 30px;
             text-align: left;
             display: block !important;
+            a:hover {
+                text-decoration: none;
+            }
         }
         h3 {
             margin: 0;
@@ -155,13 +158,22 @@ li.player-row {
                 &:first-child {
                     border-top: 2px solid lighten($game-background, 10%);
                 }
+                &.dead {
+                    @include animation(deadAnim 1s);
+                    @include transition(all 0.2s ease);
+                }
             }
+        }
+        #radio {
+            position: fixed;
+            left: 0;
+            bottom: 0;
         }
         footer {
             display: block !important;
             position: fixed;
             left: 0;
-            bottom: 0;
+            bottom: 90px;
             width: 300px;
             min-width: 300px;
             max-width: 300px;
@@ -204,7 +216,7 @@ li.player-row {
             font-weight: 300;
             text-align: center;
             color: #FFF;
-            background: lighten($game-background, 10%);
+            background: transparent;
             @extend .rounded;
         }
         .countdown-anim {
@@ -310,4 +322,23 @@ li.player-row {
 }
 @keyframes headerRainbow {
     @include headerRainbow;
+}
+
+
+@mixin deadAnim {
+  0%   { background-color: transparent; }
+  50%  { background-color: transparentize($color-danger, 0.5); }
+  100% { background-color: transparent; @include opacity(50); }
+}
+@-webkit-keyframes deadAnim {
+    @include deadAnim;
+}
+@-moz-keyframes deadAnim {
+    @include deadAnim;
+}
+@-o-keyframes deadAnim {
+    @include deadAnim;
+}
+@keyframes deadAnim {
+    @include deadAnim;
 }

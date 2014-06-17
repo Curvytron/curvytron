@@ -8,22 +8,27 @@ function Game(room)
     BaseGame.call(this, room);
 
     this.world  = new World(this.size);
+    this.end    = false;
+    this.deaths = [];
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
 
-    var avatar;
-
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
-        avatar = this.avatars.items[i];
-
-        avatar.on('point', this.addPoint);
-        avatar.on('die', this.onDie);
-        //avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+        this.avatars.items[i].on('point', this.addPoint);
+        this.avatars.items[i].on('die', this.onDie);
+        this.avatars.items[i].setMask(i+1);
     }
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
+
+/**
+ * Trail latency
+ *
+ * @type {Number}
+ */
+Game.prototype.trailLatency = 150;
 
 /**
  * Update
@@ -46,6 +51,20 @@ Game.prototype.update = function(step)
 };
 
 /**
+ * Remove a avatar from the game
+ *
+ * @param {Avatar} avatar
+ */
+Game.prototype.removeAvatar = function(avatar)
+{
+    var result = BaseGame.prototype.removeAvatar.call(this, avatar);
+
+    this.checkRoundEnd();
+
+    return result;
+};
+
+/**
  * Add point
  *
  * @param {Object} data
@@ -53,9 +72,11 @@ Game.prototype.update = function(step)
 Game.prototype.addPoint = function(data)
 {
     var world = this.world,
-        circle = [data.point[0], data.point[1], data.avatar.radius];
+        circle = [data.point[0], data.point[1], data.avatar.radius, data.avatar.mask];
 
-    setTimeout(function () { world.addCircle(circle); }, 100);
+    setTimeout(function () { circle[3] = 0; }, this.trailLatency);
+
+    world.addCircle(circle);
 };
 
 /**
@@ -78,13 +99,25 @@ Game.prototype.isWon = function()
  */
 Game.prototype.onDie = function(data)
 {
-    var alivePlayers = this.avatars.filter(function () { return this.alive; }),
-        size = this.avatars.count();
+    this.deaths.push(data.avatar);
 
-    data.avatar.addScore(size - alivePlayers.count());
+    this.checkRoundEnd();
+};
 
-    if (alivePlayers.count() === 1) {
-        alivePlayers.items[0].addScore(size);
+/**
+ * Check if the round should end
+ */
+Game.prototype.checkRoundEnd = function()
+{
+    if (this.end) {
+        return;
+    }
+
+    var alivePlayers = this.avatars.filter(function () { return this.alive; });
+
+    if (alivePlayers.count() <= 1) {
+        this.end = true;
+        this.setScores();
         setTimeout(this.endRound, this.warmdownTime);
     }
 };
@@ -97,6 +130,29 @@ Game.prototype.onDie = function(data)
 Game.prototype.isReady = function()
 {
     return this.avatars.filter(function () { return !this.ready; }).isEmpty();
+};
+
+/**
+ * Set scores
+ */
+Game.prototype.setScores = function()
+{
+    if (this.end) {
+        var deaths = this.deaths.length,
+            total = this.avatars.count();
+
+        for (var i = deaths - 1; i >= 0; i--) {
+            this.deaths[i].addScore(i + 1);
+        }
+
+        if (deaths < total) {
+            var victor = this.avatars.match(function () { return this.alive; });
+
+            victor.addScore(total);
+        }
+
+        this.deaths = [];
+    }
 };
 
 /**
@@ -126,10 +182,14 @@ Game.prototype.newRound = function()
 
     this.world.clear();
 
+    this.end    = false;
+    this.deaths = [];
+
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.clear();
         avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+        avatar.setAngle(Math.random() * Math.PI * 2);
     }
 
     BaseGame.prototype.newRound.call(this);

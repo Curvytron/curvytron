@@ -9,6 +9,7 @@ function SocketClient()
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
 
     this.io.on('open', this.onSocketConnection);
+    this.io.on('close', this.onSocketDisconnection);
 }
 
 /**
