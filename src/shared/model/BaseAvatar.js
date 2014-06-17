@@ -13,7 +13,7 @@ function BaseAvatar(player, position)
     this.radius          = this.defaultRadius;
     this.head            = [this.radius, this.radius];
     this.trail           = new Trail(this.color, this.radius, this.head.slice(0));
-    this.angle           = Math.random() * Math.PI;
+    this.angle           = 0;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
     this.alive           = true;

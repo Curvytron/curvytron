@@ -40,4 +40,3 @@ curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvi
             redirectTo: '/'
         });
 }]);
-

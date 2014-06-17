@@ -23,6 +23,11 @@ function Game(room)
 
 Game.prototype = Object.create(BaseGame.prototype);
 
+/**
+ * Trail latency
+ *
+ * @type {Number}
+ */
 Game.prototype.trailLatency = 150;
 
 /**
@@ -184,6 +189,7 @@ Game.prototype.newRound = function()
         avatar = this.avatars.items[i];
         avatar.clear();
         avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+        avatar.setAngle(Math.random() * Math.PI * 2);
     }
 
     BaseGame.prototype.newRound.call(this);

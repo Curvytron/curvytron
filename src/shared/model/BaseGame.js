@@ -13,7 +13,7 @@ function BaseGame(room)
     this.frame    = null;
     this.avatars  = this.room.players.map(function () { return new Avatar(this); });
     this.size     = this.getSize(this.avatars.count());
-    this.rendered = false;
+    this.rendered = null;
     this.maxScore = this.size * 10;
     this.fps      = new FPSLogger();
 
@@ -58,6 +58,7 @@ BaseGame.prototype.start = function()
 {
     if (!this.frame) {
         console.log("Game started!");
+        this.onStart();
         this.rendered = new Date().getTime();
         this.loop();
     }
@@ -70,8 +71,7 @@ BaseGame.prototype.stop = function()
 {
     if (this.frame) {
         clearTimeout(this.frame);
-        this.frame    = null;
-        this.rendered = null;
+        this.onStop();
     }
 };
 
@@ -88,6 +88,20 @@ BaseGame.prototype.loop = function()
     this.rendered = now;
 
     this.onFrame(step);
+};
+
+/**
+ * On start
+ */
+BaseGame.prototype.onStart = function() {};
+
+/**
+ * Onn stop
+ */
+BaseGame.prototype.onStop = function()
+{
+    this.frame    = null;
+    this.rendered = null;
 };
 
 /**

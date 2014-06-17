@@ -380,7 +380,7 @@ function BaseAvatar(player, position)
     this.radius          = this.defaultRadius;
     this.head            = [this.radius, this.radius];
     this.trail           = new Trail(this.color, this.radius, this.head.slice(0));
-    this.angle           = Math.random() * Math.PI;
+    this.angle           = 0;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
     this.alive           = true;
@@ -636,7 +636,7 @@ function BaseGame(room)
     this.frame    = null;
     this.avatars  = this.room.players.map(function () { return new Avatar(this); });
     this.size     = this.getSize(this.avatars.count());
-    this.rendered = false;
+    this.rendered = null;
     this.maxScore = this.size * 10;
     this.fps      = new FPSLogger();
 
@@ -681,6 +681,7 @@ BaseGame.prototype.start = function()
 {
     if (!this.frame) {
         console.log("Game started!");
+        this.onStart();
         this.rendered = new Date().getTime();
         this.loop();
     }
@@ -693,8 +694,7 @@ BaseGame.prototype.stop = function()
 {
     if (this.frame) {
         clearTimeout(this.frame);
-        this.frame    = null;
-        this.rendered = null;
+        this.onStop();
     }
 };
 
@@ -711,6 +711,20 @@ BaseGame.prototype.loop = function()
     this.rendered = now;
 
     this.onFrame(step);
+};
+
+/**
+ * On start
+ */
+BaseGame.prototype.onStart = function() {};
+
+/**
+ * Onn stop
+ */
+BaseGame.prototype.onStop = function()
+{
+    this.frame    = null;
+    this.rendered = null;
 };
 
 /**
@@ -1049,6 +1063,7 @@ GameController.prototype.attachEvents = function(client)
     client.socket.on('player:move', function (data) { controller.onMove(client, data); });
 
     client.avatar.on('die', function () { controller.onDie(client); });
+    client.avatar.on('angle', function (point) { controller.onAngle(client, point); });
     client.avatar.on('position', function (point) { controller.onPosition(client, point); });
     client.avatar.on('point', function (data) { controller.onPoint(client, data.point); });
     client.avatar.on('score', function (data) { controller.onScore(client, data); });
@@ -1099,6 +1114,7 @@ GameController.prototype.onChannel = function(client)
     for (var i = client.game.avatars.ids.length - 1; i >= 0; i--) {
         avatar = client.game.avatars.items[i];
         this.io.sockets.in(client.room.game.channel).emit('position', {avatar: avatar.name, point: avatar.head});
+        this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: avatar.name, angle: avatar.angle});
     }
 };
 
@@ -1122,6 +1138,17 @@ GameController.prototype.onMove = function(client, move)
 GameController.prototype.onPosition = function(client, point)
 {
     this.io.sockets.in(client.room.game.channel).emit('position', {avatar: client.avatar.name, point: point});
+};
+
+/**
+ * On angle
+ *
+ * @param {SocketClient} client
+ * @param {Array} point
+ */
+GameController.prototype.onAngle = function(client, angle)
+{
+    this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: client.avatar.name, angle: angle});
 };
 
 /**
@@ -1868,6 +1895,17 @@ Avatar.prototype.setPosition = function(point)
 };
 
 /**
+ * Set position
+ *
+ * @param {Array} point
+ */
+Avatar.prototype.setAngle = function(angle)
+{
+    BaseAvatar.prototype.setAngle.call(this, angle);
+    this.emit('angle', angle);
+};
+
+/**
  * Add point
  *
  * @param {Array} point
@@ -1923,6 +1961,11 @@ function Game(room)
 
 Game.prototype = Object.create(BaseGame.prototype);
 
+/**
+ * Trail latency
+ *
+ * @type {Number}
+ */
 Game.prototype.trailLatency = 150;
 
 /**
@@ -2084,6 +2127,7 @@ Game.prototype.newRound = function()
         avatar = this.avatars.items[i];
         avatar.clear();
         avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+        avatar.setAngle(Math.random() * Math.PI * 2);
     }
 
     BaseGame.prototype.newRound.call(this);

@@ -39,6 +39,17 @@ Avatar.prototype.setPosition = function(point)
 };
 
 /**
+ * Set position
+ *
+ * @param {Array} point
+ */
+Avatar.prototype.setAngle = function(angle)
+{
+    BaseAvatar.prototype.setAngle.call(this, angle);
+    this.emit('angle', angle);
+};
+
+/**
  * Add point
  *
  * @param {Array} point
