@@ -388,6 +388,7 @@ function BaseAvatar(player, position)
     this.score           = 0;
     this.printingTimeout = null;
     this.ready           = false;
+    this.mask            = 0;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
@@ -397,8 +398,8 @@ function BaseAvatar(player, position)
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
 BaseAvatar.prototype.precision           = 1;
-BaseAvatar.prototype.velocity            = 20/1000;
-BaseAvatar.prototype.angularVelocityBase = 3/1000;
+BaseAvatar.prototype.velocity            = 18/1000;
+BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 200;
 BaseAvatar.prototype.printingTime        = 3000;
 BaseAvatar.prototype.defaultRadius       = 0.6;
@@ -457,7 +458,7 @@ BaseAvatar.prototype.setAngle = function(angle)
  */
 BaseAvatar.prototype.update = function(step)
 {
-    return [this.head[0], this.head[1], this.radius];
+    return [this.head[0], this.head[1], this.radius, this.mask];
 };
 
 /**
@@ -578,6 +579,16 @@ BaseAvatar.prototype.addScore = function(score)
 BaseAvatar.prototype.setScore = function(score)
 {
     this.score = score;
+};
+
+/**
+ * Set mask
+ *
+ * @param {Number} mask
+ */
+BaseAvatar.prototype.setMask = function(mask)
+{
+    this.mask = mask;
 };
 
 /**
@@ -1431,7 +1442,8 @@ Island.prototype.testCircle = function(circle)
  */
 Island.prototype.circlesTouch = function(circleA, circleB)
 {
-    return this.getDistance(circleA, circleB) < (circleA[2] + circleB[2]);
+    return this.getDistance(circleA, circleB) < (circleA[2] + circleB[2])
+        && (circleA[3] && circleB[3] ? circleA[3] !== circleB[3] : true);
 };
 
 /**
@@ -1476,7 +1488,7 @@ Island.prototype.getRandomPosition = function(radius, border)
     var margin = radius + border * this.size,
         point = this.getRandomPoint(margin);
 
-    while (!this.testCircle([point[0], point[1], margin])) {
+    while (!this.testCircle([point[0], point[1], margin, 0])) {
         point = this.getRandomPoint(margin);
     }
 
@@ -1784,7 +1796,7 @@ World.prototype.getRandomPosition = function(radius, border)
     var margin = radius + border * this.size,
         point = this.getRandomPoint(margin);
 
-    while (!this.testCircle([point[0], point[1], margin])) {
+    while (!this.testCircle([point[0], point[1], margin, 0])) {
         point = this.getRandomPoint(margin);
     }
 
@@ -1905,6 +1917,7 @@ function Game(room)
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         this.avatars.items[i].on('point', this.addPoint);
         this.avatars.items[i].on('die', this.onDie);
+        this.avatars.items[i].setMask(i+1);
     }
 }
 
@@ -1954,9 +1967,11 @@ Game.prototype.removeAvatar = function(avatar)
 Game.prototype.addPoint = function(data)
 {
     var world = this.world,
-        circle = [data.point[0], data.point[1], data.avatar.radius];
+        circle = [data.point[0], data.point[1], data.avatar.radius, data.avatar.mask];
 
-    setTimeout(function () { world.addCircle(circle); }, this.trailLatency);
+    setTimeout(function () { circle[3] = 0; }, this.trailLatency);
+
+    world.addCircle(circle);
 };
 
 /**

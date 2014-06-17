@@ -21,6 +21,7 @@ function BaseAvatar(player, position)
     this.score           = 0;
     this.printingTimeout = null;
     this.ready           = false;
+    this.mask            = 0;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
@@ -30,8 +31,8 @@ function BaseAvatar(player, position)
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
 BaseAvatar.prototype.precision           = 1;
-BaseAvatar.prototype.velocity            = 20/1000;
-BaseAvatar.prototype.angularVelocityBase = 3/1000;
+BaseAvatar.prototype.velocity            = 18/1000;
+BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 200;
 BaseAvatar.prototype.printingTime        = 3000;
 BaseAvatar.prototype.defaultRadius       = 0.6;
@@ -90,7 +91,7 @@ BaseAvatar.prototype.setAngle = function(angle)
  */
 BaseAvatar.prototype.update = function(step)
 {
-    return [this.head[0], this.head[1], this.radius];
+    return [this.head[0], this.head[1], this.radius, this.mask];
 };
 
 /**
@@ -211,6 +212,16 @@ BaseAvatar.prototype.addScore = function(score)
 BaseAvatar.prototype.setScore = function(score)
 {
     this.score = score;
+};
+
+/**
+ * Set mask
+ *
+ * @param {Number} mask
+ */
+BaseAvatar.prototype.setMask = function(mask)
+{
+    this.mask = mask;
 };
 
 /**
