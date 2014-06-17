@@ -19,12 +19,11 @@ function BaseAvatar(player, position)
     this.alive           = true;
     this.printing        = false;
     this.score           = 0;
-    this.printimeTimeout = null;
+    this.printingTimeout = null;
     this.ready           = false;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
-    this.togglePrinting();
     this.updateVelocities();
 }
 
@@ -154,11 +153,13 @@ BaseAvatar.prototype.die = function()
 /**
  * Start printing
  */
-BaseAvatar.prototype.togglePrinting = function()
+BaseAvatar.prototype.togglePrinting = function(e)
 {
     this.printing = !this.printing;
 
-    this.printimeTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
+    clearTimeout(this.printingTimeout);
+
+    this.printingTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
 
     if (!this.printing) {
         this.trail.clear();
@@ -170,12 +171,11 @@ BaseAvatar.prototype.togglePrinting = function()
  */
 BaseAvatar.prototype.stopPrinting = function()
 {
-    this.printing = false;
-    this.trail.clear();
+    clearTimeout(this.printingTimeout);
 
-    if (this.printimeTimeout) {
-        clearTimeout(this.printimeTimeout);
-    }
+    this.printing = false;
+
+    this.trail.clear();
 };
 
 /**
@@ -225,7 +225,6 @@ BaseAvatar.prototype.clear = function()
     this.alive           = true;
     this.printing        = false;
 
-    this.trail.clear();
     this.updateVelocities();
 };
 

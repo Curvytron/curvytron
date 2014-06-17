@@ -46,6 +46,8 @@ BaseGame.prototype.update = function(step) {};
  */
 BaseGame.prototype.removeAvatar = function(avatar)
 {
+    avatar.clear();
+
     return this.avatars.remove(avatar);
 };
 
