@@ -133,7 +133,7 @@ World.prototype.getRandomPosition = function(radius, border)
     var margin = radius + border * this.size,
         point = this.getRandomPoint(margin);
 
-    while (!this.testCircle([point[0], point[1], margin])) {
+    while (!this.testCircle([point[0], point[1], margin, 0])) {
         point = this.getRandomPoint(margin);
     }
 

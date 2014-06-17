@@ -20,13 +20,38 @@ function Game(room)
 Game.prototype = Object.create(BaseGame.prototype);
 
 /**
+ * On start
+ */
+Game.prototype.onStart = function()
+{
+    BaseGame.prototype.onStart.call(this);
+
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        this.avatars.items[i].setStarted(true);
+    }
+};
+
+/**
+ * On start
+ */
+Game.prototype.onStop = function()
+{
+    BaseGame.prototype.onStop.call(this);
+
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        this.avatars.items[i].setStarted(false);
+    }
+};
+
+
+/**
  * Stop loop
  */
 Game.prototype.stop = function()
 {
     if (this.frame) {
         window.cancelAnimationFrame(this.frame);
-        this.frame = null;
+        this.onStop();
     }
 };
 
@@ -61,17 +86,6 @@ Game.prototype.newRound = function()
         this.avatars.items[i].clear();
     }
 };
-
-/**
- * End round
- */
-Game.prototype.endRound = function()
-{
-    //this.newProject();
-
-    BaseGame.prototype.newRound.call(this);
-};
-
 /**
  * FIN DU GAME
  */
@@ -83,17 +97,6 @@ Game.prototype.end = function()
         this.avatars.items[i].clear();
     }
 };
-
-/*Game.prototype.newProject = function()
-{
-    paper.setup(this.canvas);
-
-    for (var i = Things.length - 1; i >= 0; i--) {
-        Things[i]
-    }
-
-    paper.view.draw();
-};*/
 
 /**
  * On resize

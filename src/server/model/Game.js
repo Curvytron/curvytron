@@ -17,11 +17,17 @@ function Game(room)
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         this.avatars.items[i].on('point', this.addPoint);
         this.avatars.items[i].on('die', this.onDie);
+        this.avatars.items[i].setMask(i+1);
     }
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
 
+/**
+ * Trail latency
+ *
+ * @type {Number}
+ */
 Game.prototype.trailLatency = 150;
 
 /**
@@ -66,9 +72,11 @@ Game.prototype.removeAvatar = function(avatar)
 Game.prototype.addPoint = function(data)
 {
     var world = this.world,
-        circle = [data.point[0], data.point[1], data.avatar.radius];
+        circle = [data.point[0], data.point[1], data.avatar.radius, data.avatar.mask];
 
-    setTimeout(function () { world.addCircle(circle); }, this.trailLatency);
+    setTimeout(function () { circle[3] = 0; }, this.trailLatency);
+
+    world.addCircle(circle);
 };
 
 /**
@@ -181,6 +189,7 @@ Game.prototype.newRound = function()
         avatar = this.avatars.items[i];
         avatar.clear();
         avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+        avatar.setAngle(Math.random() * Math.PI * 2);
     }
 
     BaseGame.prototype.newRound.call(this);

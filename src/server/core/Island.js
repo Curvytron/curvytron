@@ -52,7 +52,8 @@ Island.prototype.testCircle = function(circle)
  */
 Island.prototype.circlesTouch = function(circleA, circleB)
 {
-    return this.getDistance(circleA, circleB) < (circleA[2] + circleB[2]);
+    return this.getDistance(circleA, circleB) < (circleA[2] + circleB[2])
+        && (circleA[3] && circleB[3] ? circleA[3] !== circleB[3] : true);
 };
 
 /**
@@ -97,7 +98,7 @@ Island.prototype.getRandomPosition = function(radius, border)
     var margin = radius + border * this.size,
         point = this.getRandomPoint(margin);
 
-    while (!this.testCircle([point[0], point[1], margin])) {
+    while (!this.testCircle([point[0], point[1], margin, 0])) {
         point = this.getRandomPoint(margin);
     }
 

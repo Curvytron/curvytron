@@ -63,6 +63,7 @@ GameController.prototype.attachEvents = function(client)
     client.socket.on('player:move', function (data) { controller.onMove(client, data); });
 
     client.avatar.on('die', function () { controller.onDie(client); });
+    client.avatar.on('angle', function (point) { controller.onAngle(client, point); });
     client.avatar.on('position', function (point) { controller.onPosition(client, point); });
     client.avatar.on('point', function (data) { controller.onPoint(client, data.point); });
     client.avatar.on('score', function (data) { controller.onScore(client, data); });
@@ -113,6 +114,7 @@ GameController.prototype.onChannel = function(client)
     for (var i = client.game.avatars.ids.length - 1; i >= 0; i--) {
         avatar = client.game.avatars.items[i];
         this.io.sockets.in(client.room.game.channel).emit('position', {avatar: avatar.name, point: avatar.head});
+        this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: avatar.name, angle: avatar.angle});
     }
 };
 
@@ -136,6 +138,17 @@ GameController.prototype.onMove = function(client, move)
 GameController.prototype.onPosition = function(client, point)
 {
     this.io.sockets.in(client.room.game.channel).emit('position', {avatar: client.avatar.name, point: point});
+};
+
+/**
+ * On angle
+ *
+ * @param {SocketClient} client
+ * @param {Array} point
+ */
+GameController.prototype.onAngle = function(client, angle)
+{
+    this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: client.avatar.name, angle: angle});
 };
 
 /**
