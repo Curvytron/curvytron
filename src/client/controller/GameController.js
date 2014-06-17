@@ -159,6 +159,7 @@ GameController.prototype.onDie = function(data)
 
     if (avatar) {
         avatar.die();
+        this.$scope.$apply();
     }
 };
 

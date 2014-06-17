@@ -4,12 +4,13 @@
             <header><a href="/">Curvytron</a></header>
             <h3>{{ roomName }}</h3>
             <ul id="game-players">
-                <li ng-repeat="avatar in avatars | orderBy:sortorder">
+                <li ng-repeat="avatar in avatars | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="color-preview" style="background-color: {{ avatar.color }};"></span>
                     {{ avatar.name }}
                     <span class="score">{{ avatar.score }}</span>
                 </li>
             </ul>
+            <!-- <iframe src="https://embed.spotify.com/?uri=spotify:user:spotify_france:playlist:47plOXS8YtrlF7VnzG9RPu" width="296" height="80" frameborder="0" allowtransparency="true"></iframe> -->
             <footer>
                 <span id="fps" class="pull-right"></span>
                 <a href="http://www.elao.com" class="game-copy" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>
