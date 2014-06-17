@@ -20,6 +20,7 @@ var gulp      = require('gulp'),
             './bower_components/angular/angular.min.js',
             './bower_components/angular-route/angular-route.min.js',
             './bower_components/paper/dist/paper-full.js',
+            './bower_components/createjs-soundjs/lib/soundjs-0.5.2.min.js',
         ],
         recipes    = {
             server: require('./recipes/server.json'),

@@ -3862,6 +3862,13 @@ li.player-row {
         border-left: 2px solid #3c3c3c; }
       #game-wrapper aside #game-players li:first-child {
         border-top: 2px solid #3c3c3c; }
+      #game-wrapper aside #game-players li.dead {
+        -webkit-animation: deadAnim 1s;
+        -o-animation: deadAnim 1s;
+        animation: deadAnim 1s;
+        -webkit-transition: all 0.2s ease;
+        -o-transition: all 0.2s ease;
+        transition: all 0.2s ease; }
     #game-wrapper aside footer {
       display: block !important;
       position: fixed;
@@ -4180,6 +4187,54 @@ li.player-row {
 
   100% {
     background-color: #bb2924; } }
+
+@-webkit-keyframes deadAnim {
+  0% {
+    background-color: transparent; }
+
+  50% {
+    background-color: rgba(202, 94, 91, 0.5); }
+
+  100% {
+    background-color: transparent;
+    opacity: 0.5;
+    filter: alpha(opacity=50); } }
+
+@-moz-keyframes deadAnim {
+  0% {
+    background-color: transparent; }
+
+  50% {
+    background-color: rgba(202, 94, 91, 0.5); }
+
+  100% {
+    background-color: transparent;
+    opacity: 0.5;
+    filter: alpha(opacity=50); } }
+
+@-o-keyframes deadAnim {
+  0% {
+    background-color: transparent; }
+
+  50% {
+    background-color: rgba(202, 94, 91, 0.5); }
+
+  100% {
+    background-color: transparent;
+    opacity: 0.5;
+    filter: alpha(opacity=50); } }
+
+@keyframes deadAnim {
+  0% {
+    background-color: transparent; }
+
+  50% {
+    background-color: rgba(202, 94, 91, 0.5); }
+
+  100% {
+    background-color: transparent;
+    opacity: 0.5;
+    filter: alpha(opacity=50); } }
 
 @media (max-width: 767px) { }
 

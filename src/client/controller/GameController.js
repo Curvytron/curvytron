@@ -15,6 +15,12 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
     this.input            = new PlayerInput();
     this.$scope.sortorder = "-score";
 
+    this.audioPath = "../sounds/";
+    this.manifest = [
+        {id:"loose", src:"loose.ogg"},
+        {id:"win",   src:"win.ogg"}
+    ];
+
     this.client.join('game:' + this.name);
 
     this.onMove       = this.onMove.bind(this);
@@ -65,6 +71,9 @@ GameController.prototype.loadGame = function()
     this.$scope.game     = this.game;
     this.$scope.avatars  = this.game.avatars.items;
     this.$scope.roomName = this.game.name;
+
+    createjs.Sound.alternateExtensions = ["mp3"];
+    createjs.Sound.registerManifest(this.manifest, this.audioPath);
 
     this.client.io.emit('loaded');
 };
@@ -184,6 +193,8 @@ GameController.prototype.onDie = function(data)
 
     if (avatar) {
         avatar.die();
+        this.$scope.$apply();
+        createjs.Sound.play("loose");
     }
 };
 
