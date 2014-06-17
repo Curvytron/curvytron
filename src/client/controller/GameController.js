@@ -36,8 +36,10 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
     this.onRoundEnd   = this.onRoundEnd.bind(this);
     this.onEnd        = this.onEnd.bind(this);
     this.onLeave      = this.onLeave.bind(this);
+    this.onMe         = this.onMe.bind(this);
 
     this.input.on('move', this.onMove);
+    this.client.io.on('me', this.onMe);
     this.client.io.on('position', this.onPosition);
     this.client.io.on('angle', this.onAngle);
     this.client.io.on('point', this.onPoint);
@@ -129,6 +131,20 @@ GameController.prototype.onMove = function(e)
 };
 
 /**
+ * On me
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onMe = function(data)
+{
+    var avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.setMe(true);
+    }
+};
+
+/**
  * On position
  *
  * @param {Object} data
@@ -139,12 +155,6 @@ GameController.prototype.onPosition = function(data)
 
     if (avatar) {
         avatar.setPosition(data.point);
-
-        /*if (!this.game.isStarted()) {
-            avatar.updateArrowPosition();
-            paper.view.update();
-            paper.view.draw();
-        }*/
     }
 };
 
@@ -159,12 +169,6 @@ GameController.prototype.onAngle = function(data)
 
     if (avatar) {
         avatar.setAngle(data.angle);
-
-        /*if (!this.game.isStarted()) {
-            avatar.updateArrowPosition();
-            paper.view.update();
-            paper.view.draw();
-        }*/
     }
 };
 

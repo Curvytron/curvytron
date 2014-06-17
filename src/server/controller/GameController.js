@@ -59,7 +59,6 @@ GameController.prototype.attachEvents = function(client)
     var controller = this;
 
     client.socket.on('loaded', function (data) { controller.onGameLoaded(client); });
-    client.socket.on('channel', function (data) { controller.onChannel(client); });
     client.socket.on('player:move', function (data) { controller.onMove(client, data); });
 
     client.avatar.on('die', function () { controller.onDie(client); });
@@ -97,24 +96,20 @@ GameController.prototype.onGameLoaded = function(client)
 {
     client.avatar.ready = true;
 
-    if (client.room.game.isReady()) {
-        client.room.game.newRound();
-    }
-};
-
-/**
- * On channel change
- *
- * @param {String} channel
- */
-GameController.prototype.onChannel = function(client)
-{
     var avatar;
 
     for (var i = client.game.avatars.ids.length - 1; i >= 0; i--) {
         avatar = client.game.avatars.items[i];
         this.io.sockets.in(client.room.game.channel).emit('position', {avatar: avatar.name, point: avatar.head});
         this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: avatar.name, angle: avatar.angle});
+    }
+
+    console.log("emit");
+
+    client.socket.emit('me', {avatar: client.avatar.name});
+
+    if (client.room.game.isReady()) {
+        client.room.game.newRound();
     }
 };
 

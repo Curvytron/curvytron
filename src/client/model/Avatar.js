@@ -7,14 +7,14 @@ function Avatar(player)
 {
     BaseAvatar.call(this, player);
 
+    this.me = false;
+
     this.path = new paper.Shape.Circle({
         center: [this.head[0] * paper.sceneScale, this.head[1] * paper.sceneScale],
         radius: this.radius * paper.sceneScale,
         fillColor: this.color,
         fullySelected: false
     });
-
-    this.setArrow(true);
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
@@ -44,6 +44,20 @@ Avatar.prototype.setAngle = function(angle)
     BaseAvatar.prototype.setAngle.call(this, angle);
 
     this.updateArrowPosition();
+};
+
+/**
+ * Set me
+ *
+ * @param {Boolean} me
+ */
+Avatar.prototype.setMe = function(me)
+{
+    this.me = me;
+
+    if (this.me){
+        this.setArrow(true);
+    }
 };
 
 /**
@@ -77,21 +91,24 @@ Avatar.prototype.setArrow = function(toggle)
         this.arrow.remove();
     }
 
-    if (toggle) {
+    if (this.me && toggle) {
         this.arrow = new paper.Group({
             children: [
                 new paper.Path([[20, -10], [30, 0], [20, 10]]),
                 new paper.Path([[0, 0], [30, 0]])
             ],
             position: [
-                this.path.position.x + 40/* + (Math.cos(this.angle) * 40)*/,
-                this.path.position.y/* + (Math.sin(this.angle) * 40)*/
+                this.path.position.x + 40,
+                this.path.position.y
             ],
             strokeColor: this.color,
             strokeWidth: 2,
         });
 
         this.arrow.rotate(this.angle * 180 / Math.PI, [this.path.position.x, this.path.position.y]);
+
+        paper.view.update();
+        paper.view.draw();
     } else {
         this.arrow = null;
     }

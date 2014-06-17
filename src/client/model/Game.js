@@ -85,6 +85,9 @@ Game.prototype.newRound = function()
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
     }
+
+    paper.view.update();
+    paper.view.draw();
 };
 /**
  * FIN DU GAME
