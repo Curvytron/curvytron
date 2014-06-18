@@ -1,0 +1,31 @@
+# TEAM
+
+    Thomas Jarrand  --  Co-founder / Developer  --  @tom32i
+    Johan Dufour    --  Co-founder / Developer  --  @lutangar
+    Jeremy Fagis    --  Front End Developer     --  @JeremyFagis
+
+# THANKS
+
+    Inspired by:
+
+        Curve Fever -- http://curvefever.com
+
+    Made at:
+
+        Elao -- http://www.elao.com -- @elao
+
+    Beta testers & contributors:
+
+        Emeric Kasbarian  --  Developer / Balancing  --  @emerick42
+        Jérémy James      --  Balancing              --  @JamesJrmy
+
+        People from Elao and Zol:
+        Jeremy, Nicolas, Camille, Maxime, Benjamin, Florian, Guewen, Xavier
+
+# TECHNOLOGY COLOPHON
+
+    HTML5, CSS3, Javascript, Node JS
+
+    AgularJS  -- https://angularjs.org
+    Socket.io -- http://socket.io
+    Paper.js  -- http://paperjs.org
