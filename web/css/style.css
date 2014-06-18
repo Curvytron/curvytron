@@ -482,6 +482,10 @@ table {
   content: '\e807'; }
 
 /* '' */
+.icon-trophy:before {
+  content: '\e808'; }
+
+/* '' */
 .text-left {
   text-align: left; }
 
@@ -3939,6 +3943,64 @@ li.player-row {
       z-index: 50;
       border: 4px solid #3c3c3c;
       margin-top: -4px; }
+    #game-wrapper #col-right #end {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 150;
+      height: 100%;
+      background: rgba(21, 21, 21, 0.8);
+      display: none; }
+      #game-wrapper #col-right #end #round-view, #game-wrapper #col-right #end #game-view {
+        position: relative;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+        color: #FFF;
+        display: none; }
+        #game-wrapper #col-right #end #round-view i, #game-wrapper #col-right #end #game-view i {
+          display: block;
+          font-size: 100px; }
+        #game-wrapper #col-right #end #round-view p, #game-wrapper #col-right #end #game-view p {
+          font-size: 40px;
+          font-weight: 300;
+          line-height: 110px;
+          display: inline-block; }
+          #game-wrapper #col-right #end #round-view p:after, #game-wrapper #col-right #end #game-view p:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 40%;
+            margin: 0 auto;
+            background-color: #FFF;
+            bottom: -30px; }
+      #game-wrapper #col-right #end #game-view table.recap {
+        max-width: 700px;
+        margin: 50px auto 20px auto;
+        text-align: left; }
+        #game-wrapper #col-right #end #game-view table.recap td {
+          border-top: 2px solid rgba(255, 255, 255, 0.05);
+          background: rgba(255, 255, 255, 0.05);
+          -webkit-transition: background 0.2s ease;
+          -o-transition: background 0.2s ease;
+          transition: background 0.2s ease;
+          padding: 30px 25px;
+          font-size: 30px;
+          font-weight: 300; }
+          #game-wrapper #col-right #end #game-view table.recap td.rank {
+            width: 80px;
+            text-align: center; }
+          #game-wrapper #col-right #end #game-view table.recap td.name {
+            font-weight: bold; }
+          #game-wrapper #col-right #end #game-view table.recap td.points {
+            width: 210px; }
+        #game-wrapper #col-right #end #game-view table.recap tr:first-child td {
+          border: 0; }
+        #game-wrapper #col-right #end #game-view table.recap tr:hover td {
+          background: rgba(255, 255, 255, 0.1); }
 
 @-webkit-keyframes countdownAnim {
   0% {

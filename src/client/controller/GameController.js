@@ -251,6 +251,10 @@ GameController.prototype.onRoundNew = function()
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
 
+    document.getElementById('end').style.display = 'none';
+    document.getElementById('game-view').style.display = 'none';
+    document.getElementById('round-view').style.display = 'none';
+
     paper.view.draw();
 };
 
@@ -275,6 +279,10 @@ GameController.prototype.onEnd = function()
 {
     this.game.end();
 
+    document.getElementById('end').style.display = 'block';
+    document.getElementById('game-view').style.display = 'block';
+    document.getElementById('round-view').style.display = 'none';
+
     paper.view.draw();
 };
 
@@ -285,10 +293,13 @@ GameController.prototype.onEnd = function()
  */
 GameController.prototype.onRoundWinner = function(data)
 {
-    var avatar = this.game.avatars.getById(data.avatar);
+    var avatar = this.game.avatars.getById(data.winner);
 
     if (avatar) {
-
+        this.$scope.roundWinner = avatar.serialize();
+        this.$scope.$apply();
+        document.getElementById('end').style.display = 'block';
+        document.getElementById('round-view').style.display = 'block';
     }
 };
 
