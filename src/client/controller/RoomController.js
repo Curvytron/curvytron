@@ -27,7 +27,11 @@ function RoomController($scope, $rootScope, $routeParams, $location, RoomReposit
     this.$scope.setColor = this.setColor;
     this.$scope.setReady = this.setReady;
 
-    this.loadRoom();
+    if (this.client.connected) {
+        this.loadRoom();
+    } else {
+        this.repository.on('synced', this.loadRoom);
+    }
 }
 
 /**
@@ -37,11 +41,20 @@ function RoomController($scope, $rootScope, $routeParams, $location, RoomReposit
  */
 RoomController.prototype.loadRoom = function(e)
 {
-    this.$scope.room = this.repository.get(this.name).serialize();
-    this.$scope.curvytron.bodyClass = null;
+    var room = this.repository.get(this.name);
 
-    if (typeof(e) !== 'undefined') {
-        this.$scope.$apply();
+    console.log('loadRoom', room);
+
+    if (room) {
+        this.$scope.room = room.serialize();
+        this.$scope.curvytron.bodyClass = null;
+
+        if (typeof(e) !== 'undefined') {
+            this.$scope.$apply();
+        }
+    } else {
+        this.$location.path('/');
+        this.$rootScope.$apply();
     }
 };
 

@@ -7,6 +7,7 @@ function RoomRepository(SocketClient, PlayerRepository)
 {
     EventEmitter.call(this);
 
+    this.synced = false;
     this.client = SocketClient;
     this.rooms  = new Collection([], 'name');
 
@@ -114,6 +115,8 @@ RoomRepository.prototype.onNewRoom = function(data)
     if(this.rooms.add(room)) {
         this.emit('room:new', {room: room});
     }
+
+    this.setSynced();
 };
 
 /**
@@ -206,5 +209,16 @@ RoomRepository.prototype.onWarmupRoom = function(data)
         var data = {room: room};
         this.emit('room:start', data);
         this.emit('room:start:' + room.name, data);
+    }
+};
+
+/**
+ * Set synced
+ */
+RoomRepository.prototype.setSynced = function()
+{
+    if (!this.synced) {
+        this.synced = true;
+        this.emit('synced');
     }
 };

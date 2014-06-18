@@ -3,7 +3,8 @@
  */
 function SocketClient()
 {
-    this.io = io();
+    this.io        = io();
+    this.connected = false;
 
     this.onSocketConnection    = this.onSocketConnection.bind(this);
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
@@ -31,6 +32,7 @@ SocketClient.prototype.join = function(channel)
 SocketClient.prototype.onSocketConnection = function()
 {
     console.log('Connected');
+    this.connected = true;
 };
 
 /**
@@ -41,4 +43,5 @@ SocketClient.prototype.onSocketConnection = function()
 SocketClient.prototype.onSocketDisconnection = function(e)
 {
     console.log('Disconnect', e);
+    this.connected = false;
 };
