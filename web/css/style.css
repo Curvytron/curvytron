@@ -486,6 +486,309 @@ table {
   content: '\e808'; }
 
 /* '' */
+/**
+ * CUSTOMS
+ */
+@-webkit-keyframes countdownAnim {
+  0% {
+    width: 280px;
+    height: 280px;
+    margin-top: -140px;
+    margin-left: -140px;
+    border-width: 8px;
+    border-color: #6f6f6f; }
+
+  50% {
+    width: 200px;
+    height: 200px;
+    margin-top: -100px;
+    margin-left: -100px;
+    border-width: 4px;
+    border-color: #3c3c3c; }
+
+  100% {
+    width: 280px;
+    height: 280px;
+    margin-top: -140px;
+    margin-left: -140px;
+    border-width: 8px;
+    border-color: #6f6f6f; } }
+
+@-moz-keyframes countdownAnim {
+  0% {
+    width: 280px;
+    height: 280px;
+    margin-top: -140px;
+    margin-left: -140px;
+    border-width: 8px;
+    border-color: #6f6f6f; }
+
+  50% {
+    width: 200px;
+    height: 200px;
+    margin-top: -100px;
+    margin-left: -100px;
+    border-width: 4px;
+    border-color: #3c3c3c; }
+
+  100% {
+    width: 280px;
+    height: 280px;
+    margin-top: -140px;
+    margin-left: -140px;
+    border-width: 8px;
+    border-color: #6f6f6f; } }
+
+@-o-keyframes countdownAnim {
+  0% {
+    width: 280px;
+    height: 280px;
+    margin-top: -140px;
+    margin-left: -140px;
+    border-width: 8px;
+    border-color: #6f6f6f; }
+
+  50% {
+    width: 200px;
+    height: 200px;
+    margin-top: -100px;
+    margin-left: -100px;
+    border-width: 4px;
+    border-color: #3c3c3c; }
+
+  100% {
+    width: 280px;
+    height: 280px;
+    margin-top: -140px;
+    margin-left: -140px;
+    border-width: 8px;
+    border-color: #6f6f6f; } }
+
+@keyframes countdownAnim {
+  0% {
+    width: 280px;
+    height: 280px;
+    margin-top: -140px;
+    margin-left: -140px;
+    border-width: 8px;
+    border-color: #6f6f6f; }
+
+  50% {
+    width: 200px;
+    height: 200px;
+    margin-top: -100px;
+    margin-left: -100px;
+    border-width: 4px;
+    border-color: #3c3c3c; }
+
+  100% {
+    width: 280px;
+    height: 280px;
+    margin-top: -140px;
+    margin-left: -140px;
+    border-width: 8px;
+    border-color: #6f6f6f; } }
+
+@-webkit-keyframes gameBorder {
+  0% {
+    border-color: #bb2924; }
+
+  20% {
+    border-color: #16a085; }
+
+  40% {
+    border-color: #2C3E50; }
+
+  60% {
+    border-color: #95A5A6; }
+
+  80% {
+    border-color: #913D88; }
+
+  100% {
+    border-color: #bb2924; } }
+
+@-moz-keyframes gameBorder {
+  0% {
+    border-color: #bb2924; }
+
+  20% {
+    border-color: #16a085; }
+
+  40% {
+    border-color: #2C3E50; }
+
+  60% {
+    border-color: #95A5A6; }
+
+  80% {
+    border-color: #913D88; }
+
+  100% {
+    border-color: #bb2924; } }
+
+@-o-keyframes gameBorder {
+  0% {
+    border-color: #bb2924; }
+
+  20% {
+    border-color: #16a085; }
+
+  40% {
+    border-color: #2C3E50; }
+
+  60% {
+    border-color: #95A5A6; }
+
+  80% {
+    border-color: #913D88; }
+
+  100% {
+    border-color: #bb2924; } }
+
+@keyframes gameBorder {
+  0% {
+    border-color: #bb2924; }
+
+  20% {
+    border-color: #16a085; }
+
+  40% {
+    border-color: #2C3E50; }
+
+  60% {
+    border-color: #95A5A6; }
+
+  80% {
+    border-color: #913D88; }
+
+  100% {
+    border-color: #bb2924; } }
+
+@-webkit-keyframes headerRainbow {
+  0% {
+    background-color: #bb2924; }
+
+  20% {
+    background-color: #16a085; }
+
+  40% {
+    background-color: #2C3E50; }
+
+  60% {
+    background-color: #95A5A6; }
+
+  80% {
+    background-color: #913D88; }
+
+  100% {
+    background-color: #bb2924; } }
+
+@-moz-keyframes headerRainbow {
+  0% {
+    background-color: #bb2924; }
+
+  20% {
+    background-color: #16a085; }
+
+  40% {
+    background-color: #2C3E50; }
+
+  60% {
+    background-color: #95A5A6; }
+
+  80% {
+    background-color: #913D88; }
+
+  100% {
+    background-color: #bb2924; } }
+
+@-o-keyframes headerRainbow {
+  0% {
+    background-color: #bb2924; }
+
+  20% {
+    background-color: #16a085; }
+
+  40% {
+    background-color: #2C3E50; }
+
+  60% {
+    background-color: #95A5A6; }
+
+  80% {
+    background-color: #913D88; }
+
+  100% {
+    background-color: #bb2924; } }
+
+@keyframes headerRainbow {
+  0% {
+    background-color: #bb2924; }
+
+  20% {
+    background-color: #16a085; }
+
+  40% {
+    background-color: #2C3E50; }
+
+  60% {
+    background-color: #95A5A6; }
+
+  80% {
+    background-color: #913D88; }
+
+  100% {
+    background-color: #bb2924; } }
+
+@-webkit-keyframes deadAnim {
+  0% {
+    background-color: transparent; }
+
+  50% {
+    background-color: rgba(202, 94, 91, 0.5); }
+
+  100% {
+    background-color: transparent;
+    opacity: 0.5;
+    filter: alpha(opacity=50); } }
+
+@-moz-keyframes deadAnim {
+  0% {
+    background-color: transparent; }
+
+  50% {
+    background-color: rgba(202, 94, 91, 0.5); }
+
+  100% {
+    background-color: transparent;
+    opacity: 0.5;
+    filter: alpha(opacity=50); } }
+
+@-o-keyframes deadAnim {
+  0% {
+    background-color: transparent; }
+
+  50% {
+    background-color: rgba(202, 94, 91, 0.5); }
+
+  100% {
+    background-color: transparent;
+    opacity: 0.5;
+    filter: alpha(opacity=50); } }
+
+@keyframes deadAnim {
+  0% {
+    background-color: transparent; }
+
+  50% {
+    background-color: rgba(202, 94, 91, 0.5); }
+
+  100% {
+    background-color: transparent;
+    opacity: 0.5;
+    filter: alpha(opacity=50); } }
+
 .text-left {
   text-align: left; }
 
@@ -4006,305 +4309,29 @@ li.player-row {
           #game-wrapper #col-right #end #game-view table.recap tr:hover td {
             background: rgba(255, 255, 255, 0.1); }
 
-@-webkit-keyframes countdownAnim {
-  0% {
-    width: 280px;
-    height: 280px;
-    margin-top: -140px;
-    margin-left: -140px;
-    border-width: 8px;
-    border-color: #6f6f6f; }
-
-  50% {
-    width: 200px;
-    height: 200px;
-    margin-top: -100px;
-    margin-left: -100px;
-    border-width: 4px;
-    border-color: #3c3c3c; }
-
-  100% {
-    width: 280px;
-    height: 280px;
-    margin-top: -140px;
-    margin-left: -140px;
-    border-width: 8px;
-    border-color: #6f6f6f; } }
-
-@-moz-keyframes countdownAnim {
-  0% {
-    width: 280px;
-    height: 280px;
-    margin-top: -140px;
-    margin-left: -140px;
-    border-width: 8px;
-    border-color: #6f6f6f; }
-
-  50% {
-    width: 200px;
-    height: 200px;
-    margin-top: -100px;
-    margin-left: -100px;
-    border-width: 4px;
-    border-color: #3c3c3c; }
-
-  100% {
-    width: 280px;
-    height: 280px;
-    margin-top: -140px;
-    margin-left: -140px;
-    border-width: 8px;
-    border-color: #6f6f6f; } }
-
-@-o-keyframes countdownAnim {
-  0% {
-    width: 280px;
-    height: 280px;
-    margin-top: -140px;
-    margin-left: -140px;
-    border-width: 8px;
-    border-color: #6f6f6f; }
-
-  50% {
-    width: 200px;
-    height: 200px;
-    margin-top: -100px;
-    margin-left: -100px;
-    border-width: 4px;
-    border-color: #3c3c3c; }
-
-  100% {
-    width: 280px;
-    height: 280px;
-    margin-top: -140px;
-    margin-left: -140px;
-    border-width: 8px;
-    border-color: #6f6f6f; } }
-
-@keyframes countdownAnim {
-  0% {
-    width: 280px;
-    height: 280px;
-    margin-top: -140px;
-    margin-left: -140px;
-    border-width: 8px;
-    border-color: #6f6f6f; }
-
-  50% {
-    width: 200px;
-    height: 200px;
-    margin-top: -100px;
-    margin-left: -100px;
-    border-width: 4px;
-    border-color: #3c3c3c; }
-
-  100% {
-    width: 280px;
-    height: 280px;
-    margin-top: -140px;
-    margin-left: -140px;
-    border-width: 8px;
-    border-color: #6f6f6f; } }
-
-@-webkit-keyframes gameBorder {
-  0% {
-    border-color: #bb2924; }
-
-  20% {
-    border-color: #16a085; }
-
-  40% {
-    border-color: #2C3E50; }
-
-  60% {
-    border-color: #95A5A6; }
-
-  80% {
-    border-color: #913D88; }
-
-  100% {
-    border-color: #bb2924; } }
-
-@-moz-keyframes gameBorder {
-  0% {
-    border-color: #bb2924; }
-
-  20% {
-    border-color: #16a085; }
-
-  40% {
-    border-color: #2C3E50; }
-
-  60% {
-    border-color: #95A5A6; }
-
-  80% {
-    border-color: #913D88; }
-
-  100% {
-    border-color: #bb2924; } }
-
-@-o-keyframes gameBorder {
-  0% {
-    border-color: #bb2924; }
-
-  20% {
-    border-color: #16a085; }
-
-  40% {
-    border-color: #2C3E50; }
-
-  60% {
-    border-color: #95A5A6; }
-
-  80% {
-    border-color: #913D88; }
-
-  100% {
-    border-color: #bb2924; } }
-
-@keyframes gameBorder {
-  0% {
-    border-color: #bb2924; }
-
-  20% {
-    border-color: #16a085; }
-
-  40% {
-    border-color: #2C3E50; }
-
-  60% {
-    border-color: #95A5A6; }
-
-  80% {
-    border-color: #913D88; }
-
-  100% {
-    border-color: #bb2924; } }
-
-@-webkit-keyframes headerRainbow {
-  0% {
-    background-color: #bb2924; }
-
-  20% {
-    background-color: #16a085; }
-
-  40% {
-    background-color: #2C3E50; }
-
-  60% {
-    background-color: #95A5A6; }
-
-  80% {
-    background-color: #913D88; }
-
-  100% {
-    background-color: #bb2924; } }
-
-@-moz-keyframes headerRainbow {
-  0% {
-    background-color: #bb2924; }
-
-  20% {
-    background-color: #16a085; }
-
-  40% {
-    background-color: #2C3E50; }
-
-  60% {
-    background-color: #95A5A6; }
-
-  80% {
-    background-color: #913D88; }
-
-  100% {
-    background-color: #bb2924; } }
-
-@-o-keyframes headerRainbow {
-  0% {
-    background-color: #bb2924; }
-
-  20% {
-    background-color: #16a085; }
-
-  40% {
-    background-color: #2C3E50; }
-
-  60% {
-    background-color: #95A5A6; }
-
-  80% {
-    background-color: #913D88; }
-
-  100% {
-    background-color: #bb2924; } }
-
-@keyframes headerRainbow {
-  0% {
-    background-color: #bb2924; }
-
-  20% {
-    background-color: #16a085; }
-
-  40% {
-    background-color: #2C3E50; }
-
-  60% {
-    background-color: #95A5A6; }
-
-  80% {
-    background-color: #913D88; }
-
-  100% {
-    background-color: #bb2924; } }
-
-@-webkit-keyframes deadAnim {
-  0% {
-    background-color: transparent; }
-
-  50% {
-    background-color: rgba(202, 94, 91, 0.5); }
-
-  100% {
-    background-color: transparent;
-    opacity: 0.5;
-    filter: alpha(opacity=50); } }
-
-@-moz-keyframes deadAnim {
-  0% {
-    background-color: transparent; }
-
-  50% {
-    background-color: rgba(202, 94, 91, 0.5); }
-
-  100% {
-    background-color: transparent;
-    opacity: 0.5;
-    filter: alpha(opacity=50); } }
-
-@-o-keyframes deadAnim {
-  0% {
-    background-color: transparent; }
-
-  50% {
-    background-color: rgba(202, 94, 91, 0.5); }
-
-  100% {
-    background-color: transparent;
-    opacity: 0.5;
-    filter: alpha(opacity=50); } }
-
-@keyframes deadAnim {
-  0% {
-    background-color: transparent; }
-
-  50% {
-    background-color: rgba(202, 94, 91, 0.5); }
-
-  100% {
-    background-color: transparent;
-    opacity: 0.5;
-    filter: alpha(opacity=50); } }
+#about {
+  text-align: center; }
+  #about.container {
+    max-width: 900px; }
+  #about > section {
+    padding: 40px 0; }
+    #about > section h1 {
+      display: inline-block;
+      line-height: 70px;
+      padding-bottom: 40px; }
+      #about > section h1:after {
+        content: '';
+        display: block;
+        height: 2px;
+        width: 40%;
+        margin: 0 auto;
+        background-color: #75858C;
+        bottom: 0; }
+    #about > section h3 {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      font-size: 22px;
+      font-weight: bold; }
 
 @media (max-width: 767px) { }
 

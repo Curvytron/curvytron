@@ -3,3 +3,110 @@
 @import "mixins/buttons";
 @import "mixins/alerts";
 @import "mixins/grid";
+
+
+/**
+ * CUSTOMS
+ */
+
+@mixin countdownAnim {
+  0% {
+    width: 280px;
+    height: 280px;
+    margin-top: -140px;
+    margin-left: -140px;
+    border-width: 8px;
+    border-color: lighten($game-background, 30%);
+  }
+  50% {
+    width: 200px;
+    height: 200px;
+    margin-top: -100px;
+    margin-left: -100px;
+    border-width: 4px;
+    border-color: lighten($game-background, 10%);
+  }
+  100% {
+    width: 280px;
+    height: 280px;
+    margin-top: -140px;
+    margin-left: -140px;
+    border-width: 8px;
+    border-color: lighten($game-background, 30%);
+  }
+}
+@-webkit-keyframes countdownAnim {
+    @include countdownAnim;
+}
+@-moz-keyframes countdownAnim {
+    @include countdownAnim;
+}
+@-o-keyframes countdownAnim {
+    @include countdownAnim;
+}
+@keyframes countdownAnim {
+    @include countdownAnim;
+}
+
+
+@mixin gameBorder {
+  0%   { border-color: $header-background; }
+  20%  { border-color: #16a085; }
+  40%  { border-color: #2C3E50; }
+  60%  { border-color: #95A5A6; }
+  80%  { border-color: #913D88; }
+  100% { border-color: $header-background; }
+}
+@-webkit-keyframes gameBorder {
+    @include gameBorder;
+}
+@-moz-keyframes gameBorder {
+    @include gameBorder;
+}
+@-o-keyframes gameBorder {
+    @include gameBorder;
+}
+@keyframes gameBorder {
+    @include gameBorder;
+}
+
+
+@mixin headerRainbow {
+  0%   { background-color: $header-background; }
+  20%  { background-color: #16a085; }
+  40%  { background-color: #2C3E50; }
+  60%  { background-color: #95A5A6; }
+  80%  { background-color: #913D88; }
+  100% { background-color: $header-background; }
+}
+@-webkit-keyframes headerRainbow {
+    @include headerRainbow;
+}
+@-moz-keyframes headerRainbow {
+    @include headerRainbow;
+}
+@-o-keyframes headerRainbow {
+    @include headerRainbow;
+}
+@keyframes headerRainbow {
+    @include headerRainbow;
+}
+
+
+@mixin deadAnim {
+  0%   { background-color: transparent; }
+  50%  { background-color: transparentize($color-danger, 0.5); }
+  100% { background-color: transparent; @include opacity(50); }
+}
+@-webkit-keyframes deadAnim {
+    @include deadAnim;
+}
+@-moz-keyframes deadAnim {
+    @include deadAnim;
+}
+@-o-keyframes deadAnim {
+    @include deadAnim;
+}
+@keyframes deadAnim {
+    @include deadAnim;
+}
