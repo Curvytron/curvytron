@@ -52,8 +52,9 @@ RoomController.prototype.loadRoom = function(e)
  */
 RoomController.prototype.createUser = function(e)
 {
-    if (this.$scope.username) {
-        var $scope = this.$scope;
+    var $scope = this.$scope;
+
+    if ($scope.username) {
 
         this.repository.join(this.name, $scope.username, function (result) {
             if (result.success) {

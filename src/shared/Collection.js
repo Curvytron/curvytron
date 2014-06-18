@@ -198,6 +198,18 @@ Collection.prototype.exists = function(element)
 };
 
 /**
+ * Test if the given index exists is in the collection
+ *
+ * @param {String} index
+ *
+ * @return {Boolean}
+ */
+Collection.prototype.indexExists = function(index)
+{
+    return this.ids.indexOf(index) >= 0;
+};
+
+/**
  * Map
  *
  * @param {Function} callable

@@ -25,6 +25,16 @@ BaseRoom.prototype.addPlayer = function(player)
 };
 
 /**
+ * Is name available?
+ *
+ * @param {String} name
+ */
+BaseRoom.prototype.isNameAvailable = function(name)
+{
+    return !this.players.indexExists(name);
+};
+
+/**
  * Remove player
  *
  * @param {Player} player

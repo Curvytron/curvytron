@@ -27,7 +27,6 @@ SocketClient.prototype = Object.create(EventEmitter.prototype);
  */
 SocketClient.prototype.onChannel = function(channel)
 {
-    console.log("%s switching to channel: %s", this.socket.id, channel);
     this.socket.join(channel);
 };
 
@@ -45,12 +44,18 @@ SocketClient.prototype.joinRoom = function(room, name)
         this.leaveRoom();
     }
 
-    this.room = room;
+    if (room.isNameAvailable(name)) {
+        this.room = room;
 
-    this.player.setName(name);
-    this.player.toggleReady(false);
+        this.player.setName(name);
+        this.player.toggleReady(false);
 
-    return this.room.addPlayer(this.player);
+        this.room.addPlayer(this.player);
+
+        return true;
+    }
+
+    return false;
 };
 
 /**

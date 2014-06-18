@@ -209,6 +209,18 @@ Collection.prototype.exists = function(element)
 };
 
 /**
+ * Test if the given index exists is in the collection
+ *
+ * @param {String} index
+ *
+ * @return {Boolean}
+ */
+Collection.prototype.indexExists = function(index)
+{
+    return this.ids.indexOf(index) >= 0;
+};
+
+/**
  * Map
  *
  * @param {Function} callable
@@ -906,6 +918,16 @@ BaseRoom.prototype.warmupTime = 5000;
 BaseRoom.prototype.addPlayer = function(player)
 {
     return this.players.add(player);
+};
+
+/**
+ * Is name available?
+ *
+ * @param {String} name
+ */
+BaseRoom.prototype.isNameAvailable = function(name)
+{
+    return !this.players.indexExists(name);
 };
 
 /**
@@ -1619,7 +1641,6 @@ SocketClient.prototype = Object.create(EventEmitter.prototype);
  */
 SocketClient.prototype.onChannel = function(channel)
 {
-    console.log("%s switching to channel: %s", this.socket.id, channel);
     this.socket.join(channel);
 };
 
@@ -1637,12 +1658,18 @@ SocketClient.prototype.joinRoom = function(room, name)
         this.leaveRoom();
     }
 
-    this.room = room;
+    if (room.isNameAvailable(name)) {
+        this.room = room;
 
-    this.player.setName(name);
-    this.player.toggleReady(false);
+        this.player.setName(name);
+        this.player.toggleReady(false);
 
-    return this.room.addPlayer(this.player);
+        this.room.addPlayer(this.player);
+
+        return true;
+    }
+
+    return false;
 };
 
 /**
