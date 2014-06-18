@@ -238,6 +238,83 @@ li.player-row {
             border: 4px solid lighten($game-background, 10%);
             margin-top: -4px;
         }
+       #end {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 150;
+            height: 100%;
+            background: transparentize(darken($game-background, 5%), 0.2);
+            display: none;
+            #round-view, #game-view {
+                position: relative;
+                top: 50%;
+                -webkit-transform: translateY(-50%);
+                -ms-transform: translateY(-50%);
+                transform: translateY(-50%);
+                color: #FFF;
+                display: none;
+                i {
+                    display: block;
+                    font-size: 100px;
+                }
+                p {
+                    font-size: 40px;
+                    font-weight: 300;
+                    line-height: 110px;
+                    display: inline-block;
+                    &:after {
+                        content: '';
+                        display: block;
+                        height: 2px;
+                        width: 40%;
+                        margin: 0 auto;
+                        background-color: #FFF;
+                        bottom: -30px;
+                    }
+                }
+            }
+            #round-view {}
+            #game-view {
+                table.recap {
+                    max-width: 700px;
+                    margin: 50px auto 20px auto;
+                    text-align: left;
+                    td {
+                        border-top: 2px solid transparentize(#FFF, 0.95);
+                        background: transparentize(#FFF, 0.95);
+                        @include transition(background 0.2s ease);
+                        padding: 30px 25px;
+                        font-size: 30px;
+                        font-weight: 300;
+                        &.rank {
+                            width: 80px;
+                            text-align: center;
+                        }
+                        &.name {
+                            font-weight: bold;
+                        }
+                        &.points {
+                            width: 210px;
+                        }
+                    }
+                    tr {
+                        &:first-child {
+                            td {
+                                border: 0;
+                            }
+                        }
+                        &:hover {
+                            td {
+                                background: transparentize(#FFF, 0.9);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
