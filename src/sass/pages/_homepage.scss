@@ -247,13 +247,10 @@ li.player-row {
             z-index: 150;
             height: 100%;
             background: transparentize(darken($game-background, 5%), 0.2);
+            overflow-y: scroll;
             display: none;
             #round-view, #game-view {
                 position: relative;
-                top: 50%;
-                -webkit-transform: translateY(-50%);
-                -ms-transform: translateY(-50%);
-                transform: translateY(-50%);
                 color: #FFF;
                 display: none;
                 i {
@@ -276,11 +273,17 @@ li.player-row {
                     }
                 }
             }
-            #round-view {}
+            #round-view {
+                top: 50%;
+                -webkit-transform: translateY(-50%);
+                -ms-transform: translateY(-50%);
+                transform: translateY(-50%);
+            }
             #game-view {
+                padding: 60px 0 40px 0;
                 table.recap {
                     max-width: 700px;
-                    margin: 50px auto 20px auto;
+                    margin: 50px auto 0 auto;
                     text-align: left;
                     td {
                         border-top: 2px solid transparentize(#FFF, 0.95);

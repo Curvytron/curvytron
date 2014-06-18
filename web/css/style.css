@@ -3952,13 +3952,10 @@ li.player-row {
       z-index: 150;
       height: 100%;
       background: rgba(21, 21, 21, 0.8);
+      overflow-y: scroll;
       display: none; }
       #game-wrapper #col-right #end #round-view, #game-wrapper #col-right #end #game-view {
         position: relative;
-        top: 50%;
-        -webkit-transform: translateY(-50%);
-        -ms-transform: translateY(-50%);
-        transform: translateY(-50%);
         color: #FFF;
         display: none; }
         #game-wrapper #col-right #end #round-view i, #game-wrapper #col-right #end #game-view i {
@@ -3977,30 +3974,37 @@ li.player-row {
             margin: 0 auto;
             background-color: #FFF;
             bottom: -30px; }
-      #game-wrapper #col-right #end #game-view table.recap {
-        max-width: 700px;
-        margin: 50px auto 20px auto;
-        text-align: left; }
-        #game-wrapper #col-right #end #game-view table.recap td {
-          border-top: 2px solid rgba(255, 255, 255, 0.05);
-          background: rgba(255, 255, 255, 0.05);
-          -webkit-transition: background 0.2s ease;
-          -o-transition: background 0.2s ease;
-          transition: background 0.2s ease;
-          padding: 30px 25px;
-          font-size: 30px;
-          font-weight: 300; }
-          #game-wrapper #col-right #end #game-view table.recap td.rank {
-            width: 80px;
-            text-align: center; }
-          #game-wrapper #col-right #end #game-view table.recap td.name {
-            font-weight: bold; }
-          #game-wrapper #col-right #end #game-view table.recap td.points {
-            width: 210px; }
-        #game-wrapper #col-right #end #game-view table.recap tr:first-child td {
-          border: 0; }
-        #game-wrapper #col-right #end #game-view table.recap tr:hover td {
-          background: rgba(255, 255, 255, 0.1); }
+      #game-wrapper #col-right #end #round-view {
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%); }
+      #game-wrapper #col-right #end #game-view {
+        padding: 60px 0 40px 0; }
+        #game-wrapper #col-right #end #game-view table.recap {
+          max-width: 700px;
+          margin: 50px auto 0 auto;
+          text-align: left; }
+          #game-wrapper #col-right #end #game-view table.recap td {
+            border-top: 2px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.05);
+            -webkit-transition: background 0.2s ease;
+            -o-transition: background 0.2s ease;
+            transition: background 0.2s ease;
+            padding: 30px 25px;
+            font-size: 30px;
+            font-weight: 300; }
+            #game-wrapper #col-right #end #game-view table.recap td.rank {
+              width: 80px;
+              text-align: center; }
+            #game-wrapper #col-right #end #game-view table.recap td.name {
+              font-weight: bold; }
+            #game-wrapper #col-right #end #game-view table.recap td.points {
+              width: 210px; }
+          #game-wrapper #col-right #end #game-view table.recap tr:first-child td {
+            border: 0; }
+          #game-wrapper #col-right #end #game-view table.recap tr:hover td {
+            background: rgba(255, 255, 255, 0.1); }
 
 @-webkit-keyframes countdownAnim {
   0% {
