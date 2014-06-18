@@ -208,7 +208,8 @@ GameController.prototype.onDie = function(data)
     if (avatar) {
         avatar.die();
         this.$scope.$apply();
-        createjs.Sound.play("loose");
+        var loose = createjs.Sound.play("loose");
+        loose.volume = 0.2;
     }
 };
 
@@ -282,6 +283,9 @@ GameController.prototype.onEnd = function()
     document.getElementById('end').style.display = 'block';
     document.getElementById('game-view').style.display = 'block';
     document.getElementById('round-view').style.display = 'none';
+
+    var win = createjs.Sound.play("win");
+    win.volume = 0.6;
 
     paper.view.draw();
 };

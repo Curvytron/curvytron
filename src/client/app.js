@@ -28,6 +28,9 @@ curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvi
             templateUrl: '/js/views/rooms/list.html',
             controller: 'RoomsController'
         })
+        .when('/about', {
+            templateUrl: '/js/views/pages/about.html'
+        })
         .when('/room/:name', {
             templateUrl: '/js/views/rooms/detail.html',
             controller: 'RoomController'
