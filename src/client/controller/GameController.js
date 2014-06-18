@@ -23,20 +23,21 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
 
     this.client.join('game:' + this.name);
 
-    this.onMove       = this.onMove.bind(this);
-    this.onPosition   = this.onPosition.bind(this);
-    this.onAngle      = this.onAngle.bind(this);
-    this.onPoint      = this.onPoint.bind(this);
-    this.onDie        = this.onDie.bind(this);
-    this.onScore      = this.onScore.bind(this);
-    this.onTrailClear = this.onTrailClear.bind(this);
-    this.onWarmup     = this.onWarmup.bind(this);
-    this.endWarmup    = this.endWarmup.bind(this);
-    this.onRoundNew   = this.onRoundNew.bind(this);
-    this.onRoundEnd   = this.onRoundEnd.bind(this);
-    this.onEnd        = this.onEnd.bind(this);
-    this.onLeave      = this.onLeave.bind(this);
-    this.onMe         = this.onMe.bind(this);
+    this.onMove        = this.onMove.bind(this);
+    this.onPosition    = this.onPosition.bind(this);
+    this.onAngle       = this.onAngle.bind(this);
+    this.onPoint       = this.onPoint.bind(this);
+    this.onDie         = this.onDie.bind(this);
+    this.onScore       = this.onScore.bind(this);
+    this.onTrailClear  = this.onTrailClear.bind(this);
+    this.onWarmup      = this.onWarmup.bind(this);
+    this.endWarmup     = this.endWarmup.bind(this);
+    this.onRoundNew    = this.onRoundNew.bind(this);
+    this.onRoundEnd    = this.onRoundEnd.bind(this);
+    this.onRoundWinner = this.onRoundWinner.bind(this);
+    this.onEnd         = this.onEnd.bind(this);
+    this.onLeave       = this.onLeave.bind(this);
+    this.onMe          = this.onMe.bind(this);
 
     this.input.on('move', this.onMove);
     this.client.io.on('me', this.onMe);
@@ -48,6 +49,7 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
     this.client.io.on('trail:clear', this.onTrailClear);
     this.client.io.on('round:new', this.onRoundNew);
     this.client.io.on('round:end', this.onRoundEnd);
+    this.client.io.on('round:winner', this.onRoundWinner);
     this.client.io.on('end', this.onEnd);
     this.client.io.on('game:leave', this.onLeave);
 
@@ -274,6 +276,20 @@ GameController.prototype.onEnd = function()
     this.game.end();
 
     paper.view.draw();
+};
+
+/**
+ * On round new
+ *
+ * @param {Game} game
+ */
+GameController.prototype.onRoundWinner = function(data)
+{
+    var avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+
+    }
 };
 
 /**

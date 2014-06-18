@@ -146,9 +146,10 @@ Game.prototype.setScores = function()
         }
 
         if (deaths < total) {
-            var victor = this.avatars.match(function () { return this.alive; });
+            var winner = this.avatars.match(function () { return this.alive; });
 
-            victor.addScore(total);
+            winner.addScore(total);
+            this.emit('round:winner', {winner: winner});
         }
 
         this.deaths = [];

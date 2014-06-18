@@ -1055,6 +1055,7 @@ GameController.prototype.addGame = function(game)
     if (this.games.add(game)) {
         game.on('round:new', function () { controller.onRoundNew(this); });
         game.on('round:end', function (data) { controller.onRoundEnd(this, data); });
+        game.on('round:winner', function (data) { controller.onRoundWinner(this, data); });
         game.on('end', function () { controller.onEnd(this); });
     }
 };
@@ -1244,6 +1245,16 @@ GameController.prototype.onRoundNew = function(game)
 GameController.prototype.onRoundEnd = function(game, data)
 {
     this.io.sockets.in(game.channel).emit('round:end');
+};
+
+/**
+ * On round winner
+ *
+ * @param {Game} game
+ */
+GameController.prototype.onRoundWinner = function(game, data)
+{
+    this.io.sockets.in(game.channel).emit('round:winner', {winner: data.winner.name});
 };
 
 /**
@@ -2120,9 +2131,10 @@ Game.prototype.setScores = function()
         }
 
         if (deaths < total) {
-            var victor = this.avatars.match(function () { return this.alive; });
+            var winner = this.avatars.match(function () { return this.alive; });
 
-            victor.addScore(total);
+            winner.addScore(total);
+            this.emit('round:winner', {winner: winner});
         }
 
         this.deaths = [];
