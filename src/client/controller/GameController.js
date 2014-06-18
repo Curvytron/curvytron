@@ -155,6 +155,10 @@ GameController.prototype.onPosition = function(data)
 
     if (avatar) {
         avatar.setPosition(data.point);
+
+        if (!this.game.isStarted()) {
+            paper.view.draw();
+        }
     }
 };
 
@@ -169,6 +173,10 @@ GameController.prototype.onAngle = function(data)
 
     if (avatar) {
         avatar.setAngle(data.angle);
+
+        if (!this.game.isStarted()) {
+            paper.view.draw();
+        }
     }
 };
 
@@ -240,6 +248,8 @@ GameController.prototype.onRoundNew = function()
 {
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
+
+    paper.view.draw();
 };
 
 /**
@@ -250,6 +260,8 @@ GameController.prototype.onRoundNew = function()
 GameController.prototype.onRoundEnd = function()
 {
     this.game.endRound();
+
+    paper.view.draw();
 };
 
 /**
@@ -260,6 +272,8 @@ GameController.prototype.onRoundEnd = function()
 GameController.prototype.onEnd = function()
 {
     this.game.end();
+
+    paper.view.draw();
 };
 
 /**

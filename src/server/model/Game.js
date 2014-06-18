@@ -7,9 +7,9 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
-    this.world  = new World(this.size);
-    this.end    = false;
-    this.deaths = [];
+    this.world   = new World(this.size);
+    this.inRound = false;
+    this.deaths  = [];
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -109,14 +109,14 @@ Game.prototype.onDie = function(data)
  */
 Game.prototype.checkRoundEnd = function()
 {
-    if (this.end) {
+    if (!this.inRound) {
         return;
     }
 
     var alivePlayers = this.avatars.filter(function () { return this.alive; });
 
     if (alivePlayers.count() <= 1) {
-        this.end = true;
+        this.inRound = false;
         this.setScores();
         setTimeout(this.endRound, this.warmdownTime);
     }
@@ -182,8 +182,8 @@ Game.prototype.newRound = function()
 
     this.world.clear();
 
-    this.end    = false;
-    this.deaths = [];
+    this.inRound = true;
+    this.deaths  = [];
 
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];

@@ -14,7 +14,7 @@ function BaseGame(room)
     this.avatars  = this.room.players.map(function () { return new Avatar(this); });
     this.size     = this.getSize(this.avatars.count());
     this.rendered = null;
-    this.maxScore = this.size * 10;
+    this.maxScore = this.getMaxScore(this.avatars.count());
     this.fps      = new FPSLogger();
 
     this.start    = this.start.bind(this);
@@ -142,6 +142,20 @@ BaseGame.prototype.getSize = function(players)
     var baseSquareSize = this.perPlayerSize * this.perPlayerSize;
 
     return Math.sqrt(baseSquareSize + ((players - 1) * baseSquareSize / 5.0));
+};
+
+/**
+ * Get max score
+ *
+ * @param {Number} players
+ *
+ * @return {Number}
+ */
+BaseGame.prototype.getMaxScore = function(players)
+{
+    console.log("getMaxScore", players);
+
+    return players * 10 - 10;
 };
 
 /**

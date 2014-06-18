@@ -649,7 +649,7 @@ function BaseGame(room)
     this.avatars  = this.room.players.map(function () { return new Avatar(this); });
     this.size     = this.getSize(this.avatars.count());
     this.rendered = null;
-    this.maxScore = this.size * 10;
+    this.maxScore = this.getMaxScore(this.avatars.count());
     this.fps      = new FPSLogger();
 
     this.start    = this.start.bind(this);
@@ -777,6 +777,20 @@ BaseGame.prototype.getSize = function(players)
     var baseSquareSize = this.perPlayerSize * this.perPlayerSize;
 
     return Math.sqrt(baseSquareSize + ((players - 1) * baseSquareSize / 5.0));
+};
+
+/**
+ * Get max score
+ *
+ * @param {Number} players
+ *
+ * @return {Number}
+ */
+BaseGame.prototype.getMaxScore = function(players)
+{
+    console.log("getMaxScore", players);
+
+    return players * 10 - 10;
 };
 
 /**
@@ -1967,9 +1981,9 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
-    this.world  = new World(this.size);
-    this.end    = false;
-    this.deaths = [];
+    this.world   = new World(this.size);
+    this.inRound = false;
+    this.deaths  = [];
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -2069,14 +2083,14 @@ Game.prototype.onDie = function(data)
  */
 Game.prototype.checkRoundEnd = function()
 {
-    if (this.end) {
+    if (!this.inRound) {
         return;
     }
 
     var alivePlayers = this.avatars.filter(function () { return this.alive; });
 
     if (alivePlayers.count() <= 1) {
-        this.end = true;
+        this.inRound = false;
         this.setScores();
         setTimeout(this.endRound, this.warmdownTime);
     }
@@ -2142,8 +2156,8 @@ Game.prototype.newRound = function()
 
     this.world.clear();
 
-    this.end    = false;
-    this.deaths = [];
+    this.inRound = true;
+    this.deaths  = [];
 
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
