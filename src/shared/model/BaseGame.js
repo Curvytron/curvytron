@@ -57,7 +57,6 @@ BaseGame.prototype.removeAvatar = function(avatar)
 BaseGame.prototype.start = function()
 {
     if (!this.frame) {
-        console.log("Game started!");
         this.onStart();
         this.rendered = new Date().getTime();
         this.loop();
@@ -120,7 +119,7 @@ BaseGame.prototype.newFrame = function()
 BaseGame.prototype.onFrame = function(step)
 {
     this.update(step);
-    this.fps.update();
+    this.fps.update(step);
 };
 
 /**

@@ -178,24 +178,26 @@ Game.prototype.endRound = function()
  */
 Game.prototype.newRound = function()
 {
-    var avatar, position;
+    if (!this.inRound) {
+        var avatar, position;
 
-    this.emit('round:new', {game: this});
+        this.emit('round:new', {game: this});
 
-    this.world.clear();
+        this.world.clear();
 
-    this.inRound = true;
-    this.deaths  = [];
+        this.inRound = true;
+        this.deaths  = [];
 
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        avatar = this.avatars.items[i];
+        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+            avatar = this.avatars.items[i];
 
-        avatar.clear();
-        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
-        avatar.setAngle(Math.random() * Math.PI * 2);
+            avatar.clear();
+            avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+            avatar.setAngle(Math.random() * Math.PI * 2);
+        }
+
+        BaseGame.prototype.newRound.call(this);
     }
-
-    BaseGame.prototype.newRound.call(this);
 };
 
 /**

@@ -22,8 +22,4 @@ Player.prototype = Object.create(BasePlayer.prototype);
 Player.prototype.setLocal = function(local)
 {
     this.local = local;
-
-    /*if (this.avatar) {
-        this.avatar.setLocal(this.local);
-    }*/
 };

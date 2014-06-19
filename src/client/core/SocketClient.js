@@ -21,7 +21,6 @@ function SocketClient()
  */
 SocketClient.prototype.join = function(channel)
 {
-    console.log("Joinning channel %s", channel);
     this.io.emit('channel', channel);
 };
 

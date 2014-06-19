@@ -342,7 +342,8 @@ function FPSLogger(element)
     this.fps     = 0;
     this.element = typeof(element) != 'undefined' ? element : null;
 
-    this.clear = this.clear.bind(this);
+    this.update = this.update.bind(this);
+    this.clear  = this.clear.bind(this);
 
     setInterval(this.clear, 1000);
 }
@@ -356,7 +357,7 @@ FPSLogger.prototype.update = function(step)
 {
     var fps = step > 0 ? 1000/step : 60;
 
-    this.fps = this.fps ? (this.fps + fps)/2 : fps;
+    this.fps = ~~ (0.5 + (this.fps ? (this.fps + fps)/2 : fps));
 };
 
 /**
@@ -387,7 +388,7 @@ FPSLogger.prototype.draw = function()
     if (this.element) {
         this.element.innerHTML = this.fps;
     } else {
-        console.log(this.fps);
+        console.log('FPS: %s', this.fps);
     }
 };
 /**
@@ -705,7 +706,6 @@ BaseGame.prototype.removeAvatar = function(avatar)
 BaseGame.prototype.start = function()
 {
     if (!this.frame) {
-        console.log("Game started!");
         this.onStart();
         this.rendered = new Date().getTime();
         this.loop();
@@ -768,7 +768,7 @@ BaseGame.prototype.newFrame = function()
 BaseGame.prototype.onFrame = function(step)
 {
     this.update(step);
-    this.fps.update();
+    this.fps.update(step);
 };
 
 /**
@@ -1183,8 +1183,8 @@ GameController.prototype.onGameLoaded = function(client)
 {
     var avatar;
 
-    for (var i = client.game.avatars.ids.length - 1; i >= 0; i--) {
-        avatar = client.game.avatars.items[i];
+    for (var i = client.players.ids.length - 1; i >= 0; i--) {
+        avatar = client.players.items[i].avatar;
         avatar.ready = true;
         this.io.sockets.in(client.room.game.channel).emit('position', {avatar: avatar.name, point: avatar.head});
         this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: avatar.name, angle: avatar.angle});
@@ -2260,24 +2260,26 @@ Game.prototype.endRound = function()
  */
 Game.prototype.newRound = function()
 {
-    var avatar, position;
+    if (!this.inRound) {
+        var avatar, position;
 
-    this.emit('round:new', {game: this});
+        this.emit('round:new', {game: this});
 
-    this.world.clear();
+        this.world.clear();
 
-    this.inRound = true;
-    this.deaths  = [];
+        this.inRound = true;
+        this.deaths  = [];
 
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        avatar = this.avatars.items[i];
+        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+            avatar = this.avatars.items[i];
 
-        avatar.clear();
-        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
-        avatar.setAngle(Math.random() * Math.PI * 2);
+            avatar.clear();
+            avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+            avatar.setAngle(Math.random() * Math.PI * 2);
+        }
+
+        BaseGame.prototype.newRound.call(this);
     }
-
-    BaseGame.prototype.newRound.call(this);
 };
 
 /**

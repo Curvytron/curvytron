@@ -117,8 +117,8 @@ GameController.prototype.onGameLoaded = function(client)
 {
     var avatar;
 
-    for (var i = client.game.avatars.ids.length - 1; i >= 0; i--) {
-        avatar = client.game.avatars.items[i];
+    for (var i = client.players.ids.length - 1; i >= 0; i--) {
+        avatar = client.players.items[i].avatar;
         avatar.ready = true;
         this.io.sockets.in(client.room.game.channel).emit('position', {avatar: avatar.name, point: avatar.head});
         this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: avatar.name, angle: avatar.angle});
