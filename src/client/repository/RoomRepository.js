@@ -109,7 +109,7 @@ RoomRepository.prototype.onNewRoom = function(data)
     var room = new Room(data.name);
 
     for (var i = data.players.length - 1; i >= 0; i--) {
-        room.addPlayer(new Player(data.players[i].name, data.players[i].color));
+        room.addPlayer(new Player(data.players[i].client, data.players[i].name, data.players[i].color));
     }
 
     if(this.rooms.add(room)) {
