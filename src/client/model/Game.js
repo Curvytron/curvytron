@@ -91,6 +91,10 @@ Game.prototype.newRound = function()
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
     }
+
+    for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
+        this.bonuses.items[i].clear();
+    }
 };
 
 /**
