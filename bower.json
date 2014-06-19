@@ -34,7 +34,8 @@
     "angular": "~1.2.*",
     "angular-route": "~1.2.x",
     "createjs-soundjs": "*",
-    "angular-bootstrap-colorpicker": "~3.0.7"
+    "angular-bootstrap-colorpicker": "~3.0.7",
+    "lodash": "~2.4.1"
   },
   "ignore": [
     "**/.*",
