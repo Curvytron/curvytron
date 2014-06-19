@@ -11,7 +11,8 @@ function BaseGame(room)
     this.name     = this.room.name;
     this.channel  = 'game:' + this.name;
     this.frame    = null;
-    this.avatars  = this.room.players.map(function () { return this.getAvatar(); });
+    this.avatars  = this.room.players.map(function () { return this.getAvatar(); });
+    this.bonuses  = new Collection([], 'id');
     this.size     = this.getSize(this.avatars.count());
     this.rendered = null;
     this.maxScore = this.getMaxScore(this.avatars.count());
