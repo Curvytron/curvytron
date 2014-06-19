@@ -30,6 +30,8 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.onPrinting    = this.onPrinting.bind(this);
     this.onAngle       = this.onAngle.bind(this);
     this.onPoint       = this.onPoint.bind(this);
+    this.onBonusPop    = this.onBonusPop.bind(this);
+    this.onBonusClear  = this.onBonusClear.bind(this);
     this.onDie         = this.onDie.bind(this);
     this.onScore       = this.onScore.bind(this);
     this.onTrailClear  = this.onTrailClear.bind(this);
@@ -58,6 +60,8 @@ GameController.prototype.attachSocketEvents = function()
     this.client.on('printing', this.onPrinting);
     this.client.on('angle', this.onAngle);
     this.client.on('point', this.onPoint);
+    this.client.on('bonus:pop', this.onBonusPop);
+    this.client.on('bonus:clear', this.onBonusClear);
     this.client.on('die', this.onDie);
     this.client.on('score', this.onScore);
     this.client.on('trail:clear', this.onTrailClear);
@@ -179,6 +183,31 @@ GameController.prototype.onPosition = function(e)
     if (avatar) {
         avatar.setPosition(data.point);
     }
+};
+
+/**
+ * On bonus pop
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onBonusPop = function(data)
+{
+    var bonus = new Bonus();
+        bonus.unserialize(data);
+        bonus.pop();
+
+    this.game.bonuses.add(bonus);
+};
+
+/**
+ * On bonus pop
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onBonusClear = function(data)
+{
+    var bonus = this.game.bonuses.getById(data.id);
+        bonus.clear();
 };
 
 /**
