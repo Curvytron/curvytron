@@ -16,8 +16,6 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
     this.repository = repository;
     this.client     = client;
 
-    console.log('on room %s', $routeParams.name);
-
     this.client.join('rooms');
 
     // Binding:
@@ -164,7 +162,6 @@ RoomController.prototype.setColor = function(player)
  */
 RoomController.prototype.setReady = function(player)
 {
-    console.log('setReady', player.name, player.local);
     if (!player.local) {
         return;
     }
@@ -192,6 +189,7 @@ RoomController.prototype.setReady = function(player)
 RoomController.prototype.start = function(data)
 {
     this.$location.path('/game/' + this.$scope.room.name);
+    this.applyScope();
 };
 
 /**

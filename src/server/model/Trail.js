@@ -1,9 +1,9 @@
 /**
  * Trail
  */
-function Trail(color, radius)
+function Trail(avatar)
 {
-    BaseTrail.call(this, color, radius);
+    BaseTrail.call(this, avatar);
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
@@ -14,5 +14,5 @@ Trail.prototype = Object.create(BaseTrail.prototype);
 Trail.prototype.clear = function()
 {
     BaseTrail.prototype.clear.call(this);
-    this.emit('clear');
+    this.emit('clear', {avatar: this.avatar});
 };

@@ -17,7 +17,7 @@ function Avatar(player)
     });
 
     if (this.local) {
-        this.input = new PlayerInput();
+        this.input = new PlayerInput(this);
     }
 }
 

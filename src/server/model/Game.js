@@ -10,6 +10,7 @@ function Game(room)
     this.world   = new World(this.size);
     this.inRound = false;
     this.deaths  = [];
+    this.clients = new Collection();
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -149,7 +150,7 @@ Game.prototype.setScores = function()
             var winner = this.avatars.match(function () { return this.alive; });
 
             winner.addScore(total);
-            this.emit('round:winner', {winner: winner});
+            this.emit('round:winner', {game: this, winner: winner});
         }
 
         this.deaths = [];
@@ -163,7 +164,7 @@ Game.prototype.endRound = function()
 {
     BaseGame.prototype.endRound.call(this);
 
-    this.emit('round:end');
+    this.emit('round:end', {game: this});
 
     if (this.isWon()) {
         this.end();
@@ -177,17 +178,18 @@ Game.prototype.endRound = function()
  */
 Game.prototype.newRound = function()
 {
-    var avatar;
+    var avatar, position;
 
-    this.emit('round:new');
+    this.emit('round:new', {game: this});
 
     this.world.clear();
 
     this.inRound = true;
     this.deaths  = [];
 
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
+
         avatar.clear();
         avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
         avatar.setAngle(Math.random() * Math.PI * 2);
@@ -217,7 +219,7 @@ Game.prototype.end = function()
 {
     this.world.clear();
 
-    this.emit('end');
+    this.emit('end', {game: this});
 
     BaseGame.prototype.end.call(this);
 };

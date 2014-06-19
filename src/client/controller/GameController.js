@@ -71,16 +71,16 @@ GameController.prototype.attachSocketEvents = function()
 GameController.prototype.loadGame = function(name)
 {
     var room = this.repository.get(name),
-        controller = this,
-        avatars;
+        avatars, avatar;
 
     this.room = room;
     this.game = room.newGame();
 
-    avatars = this.game.avatars.filter(function () { return this.local; });
+    avatars = this.game.avatars.filter(function () { return this.local; }).items;
 
     for (var i = avatars.length - 1; i >= 0; i--) {
-        avatars[i].input.on('move', function (event) { controller.onMove(avatars[i], e.detail); });
+        avatar = avatars[i];
+        avatar.input.on('move', this.onMove);
     }
 
     this.game.fps.setElement(document.getElementById('fps'));
@@ -107,8 +107,6 @@ GameController.prototype.displayWarmup = function(time)
     var warmupInterval = setInterval(this.onWarmup, 1000);
 
     setTimeout(function () { controller.endWarmup(warmupInterval); }, time);
-
-    this.warmupInterval = warmupInterval;
 };
 
 /**
@@ -127,23 +125,18 @@ GameController.prototype.endWarmup = function(interval)
 {
     clearInterval(interval);
 
-    if (this.warmupInterval === interval) {
-        this.$scope.countFinish = true;
-        this.applyScope();
-    } else {
-        console.log(this.warmupInterval, interval);
-    }
+    this.$scope.countFinish = true;
+    this.applyScope();
 };
 
 /**
  * On move
  *
- * @param {Avatar} e
- * @param {number} move
+ * @param {Object} data
  */
-GameController.prototype.onMove = function(avatar, move)
+GameController.prototype.onMove = function(event)
 {
-    this.client.io.emit('player:move', {avatar: avatar.name, move: move});
+    this.client.io.emit('player:move', {avatar: event.detail.avatar.name, move: event.detail.move});
 };
 
 /**

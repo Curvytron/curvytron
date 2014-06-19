@@ -1,12 +1,13 @@
 /**
  * BaseTrail
  */
-function BaseTrail(color, radius)
+function BaseTrail(avatar)
 {
     EventEmitter.call(this);
 
-    this.color  = color;
-    this.radius = radius;
+    this.avatar = avatar;
+    this.color  = this.avatar.color;
+    this.radius = this.avatar.radius;
     this.points = [];
 }
 

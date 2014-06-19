@@ -39,12 +39,16 @@ SocketClient.prototype.onChannel = function(channel)
  */
 SocketClient.prototype.joinRoom = function(room, name)
 {
-    if (this.room !== room) {
+    if (this.room && this.room !== room) {
         this.leaveRoom();
     }
 
     if (room.isNameAvailable(name)) {
-        this.room = room;
+
+        if (!this.room) {
+            this.room = room;
+            this.room.clients.add(this);
+        }
 
         var player = new Player(this, name);
 
@@ -74,6 +78,7 @@ SocketClient.prototype.leaveRoom = function()
         }
 
         this.players.clear();
+        this.room.clients.remove(this);
         this.room = null;
     }
 };
@@ -85,11 +90,14 @@ SocketClient.prototype.leaveRoom = function()
  */
 SocketClient.prototype.joinGame = function(game)
 {
-    if (this.game) {
+    if (this.game && this.game !== game) {
         this.leaveGame();
     }
 
-    this.game = game;
+    if (!this.game) {
+        this.game = game;
+        this.game.clients.add(this);
+    }
 };
 
 /**
@@ -105,6 +113,7 @@ SocketClient.prototype.leaveGame = function()
             this.game.removeAvatar(player.avatar);
         }
 
+        this.game.clients.remove(this);
         this.game = null;
     }
 };

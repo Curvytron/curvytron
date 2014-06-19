@@ -103,8 +103,6 @@ RoomController.prototype.onJoinRoom = function(client, data, callback)
     var room = this.repository.get(data.room),
         player = room ? client.joinRoom(room, data.player) : null;
 
-    console.log(client.players.ids);
-
     callback({success: player ? true : false});
 
     if (player) {
@@ -162,8 +160,6 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
     var room = client.room,
         player = client.players.getById(data.player);
 
-    console.log(client.players.ids);
-
     if (room && player) {
         player.toggleReady();
 
@@ -175,7 +171,6 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
             ready: player.ready
         });
 
-        console.log(room.isReady());
         if (room.isReady()) {
             this.warmupRoom(room);
         }
@@ -193,8 +188,11 @@ RoomController.prototype.warmupRoom = function(room)
 
     this.gameController.addGame(room.newGame());
 
-    for (var i = room.players.ids.length - 1; i >= 0; i--) {
-        this.detachEvents(room.players.items[i].client);
-        this.gameController.attach(room.players.items[i].client, room.game);
+    var client;
+
+    for (var i = room.clients.items.length - 1; i >= 0; i--) {
+        client = room.clients.items[i];
+        this.detachEvents(client);
+        this.gameController.attach(client, room.game);
     }
 };

@@ -8,8 +8,6 @@
  */
 function RoomsController($scope, $location, repository, client)
 {
-    console.log("on rooms");
-
     this.$scope     = $scope;
     this.$location  = $location;
     this.repository = repository;

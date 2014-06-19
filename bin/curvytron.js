@@ -404,7 +404,7 @@ function BaseAvatar(player, position)
     this.player          = player;
     this.radius          = this.defaultRadius;
     this.head            = [this.radius, this.radius];
-    this.trail           = new Trail(this.color, this.radius, this.head.slice(0));
+    this.trail           = new Trail(this);
     this.angle           = 0;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
@@ -493,15 +493,15 @@ BaseAvatar.prototype.update = function(step)
  */
 BaseAvatar.prototype.updateAngle = function(step)
 {
-    this.setAngle(this.angle + this.angularVelocity * step);
+    if (this.angularVelocity) {
+        this.setAngle(this.angle + this.angularVelocity * step);
+    }
 };
 
 /**
  * Update position
  *
  * @param {Number} step
- *
- * @return {[type]}
  */
 BaseAvatar.prototype.updatePosition = function(step)
 {
@@ -801,8 +801,6 @@ BaseGame.prototype.getSize = function(players)
  */
 BaseGame.prototype.getMaxScore = function(players)
 {
-    console.log("getMaxScore", players);
-
     return players * 10 - 10;
 };
 
@@ -1025,12 +1023,13 @@ BaseRoom.prototype.serialize = function()
 /**
  * BaseTrail
  */
-function BaseTrail(color, radius)
+function BaseTrail(avatar)
 {
     EventEmitter.call(this);
 
-    this.color  = color;
-    this.radius = radius;
+    this.avatar = avatar;
+    this.color  = this.avatar.color;
+    this.radius = this.avatar.radius;
     this.points = [];
 }
 
@@ -1072,6 +1071,17 @@ function GameController(io)
 {
     this.io    = io;
     this.games = new Collection([], 'name');
+
+    this.onDie         = this.onDie.bind(this);
+    this.onAngle       = this.onAngle.bind(this);
+    this.onPosition    = this.onPosition.bind(this);
+    this.onPoint       = this.onPoint.bind(this);
+    this.onScore       = this.onScore.bind(this);
+    this.onTrailClear  = this.onTrailClear.bind(this);
+    this.onRoundNew    = this.onRoundNew.bind(this);
+    this.onRoundEnd    = this.onRoundEnd.bind(this);
+    this.onRoundWinner = this.onRoundWinner.bind(this);
+    this.onEnd         = this.onEnd.bind(this);
 }
 
 /**
@@ -1081,13 +1091,11 @@ function GameController(io)
  */
 GameController.prototype.addGame = function(game)
 {
-    var controller = this;
-
     if (this.games.add(game)) {
-        game.on('round:new', function () { controller.onRoundNew(this); });
-        game.on('round:end', function (data) { controller.onRoundEnd(this, data); });
-        game.on('round:winner', function (data) { controller.onRoundWinner(this, data); });
-        game.on('end', function () { controller.onEnd(this); });
+        game.on('round:new', this.onRoundNew);
+        game.on('round:end', this.onRoundEnd);
+        game.on('round:winner', this.onRoundWinner);
+        game.on('end', this.onEnd);
     }
 };
 
@@ -1098,8 +1106,10 @@ GameController.prototype.addGame = function(game)
  */
 GameController.prototype.attach = function(client, game)
 {
-    client.joinGame(game);
-    this.attachEvents(client);
+    if (!game.clients.exists(client)) {
+        client.joinGame(game);
+        this.attachEvents(client);
+    }
 };
 
 /**
@@ -1135,12 +1145,12 @@ GameController.prototype.attachEvents = function(client)
     for (var i = client.players.items.length - 1; i >= 0; i--) {
         avatar = client.players.items[i].avatar;
 
-        avatar.on('die', function () { controller.onDie(client, avatar); });
-        avatar.on('angle', function (point) { controller.onAngle(client, avatar, point); });
-        avatar.on('position', function (point) { controller.onPosition(client, avatar, point); });
-        avatar.on('point', function (data) { controller.onPoint(client, avatar, data.point); });
-        avatar.on('score', function (data) { controller.onScore(client, avatar, data); });
-        avatar.trail.on('clear', function (data) { controller.onTrailClear(client, avatar); });
+        avatar.on('die', this.onDie);
+        avatar.on('angle', this.onAngle);
+        avatar.on('position', this.onPosition);
+        avatar.on('point', this.onPoint);
+        avatar.on('score', this.onScore);
+        avatar.trail.on('clear', this.onTrailClear);
     }
 };
 
@@ -1193,75 +1203,93 @@ GameController.prototype.onGameLoaded = function(client)
  */
 GameController.prototype.onMove = function(client, data)
 {
-    var player = client.players.getbyId(data.avatar);
+    var player = client.players.getById(data.avatar);
 
     if (player && player.avatar) {
-        player.avatar.setAngularVelocity(move);
+        player.avatar.setAngularVelocity(data.move);
     }
 };
 
 /**
  * On position
  *
- * @param {SocketClient} client
- * @param {Array} point
+ * @param {Object} data
  */
-GameController.prototype.onPosition = function(client, avatar, point)
+GameController.prototype.onPosition = function(data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('position', {avatar: avatar.name, point: point});
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel,
+        point = data.point;
+
+    this.io.sockets.in(channel).emit('position', {avatar: avatar.name, point: point});
 };
 
 /**
  * On angle
  *
- * @param {SocketClient} client
- * @param {Array} point
+ * @param {Object} data
  */
-GameController.prototype.onAngle = function(client, angle)
+GameController.prototype.onAngle = function(data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: avatar.name, angle: angle});
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel,
+        angle = data.angle;
+
+    this.io.sockets.in(channel).emit('angle', {avatar: avatar.name, angle: angle});
 };
 
 /**
  * On point
  *
- * @param {SocketClient} client
- * @param {Array} point
+ * @param {Object} data
  */
-GameController.prototype.onPoint = function(client, point)
+GameController.prototype.onPoint = function(data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('point', {avatar: avatar.name, point: point});
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel,
+        point = data.point;
+
+    this.io.sockets.in(channel).emit('point', {avatar: avatar.name, point: point});
 };
 
 /**
  * On die
  *
- * @param {SocketClient} client
+ * @param {Object} data
  */
-GameController.prototype.onDie = function(client, avatar)
+GameController.prototype.onDie = function(data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('die', {avatar: avatar.name});
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel;
+
+    this.io.sockets.in(channel).emit('die', {avatar: avatar.name});
 };
 
 /**
  * On score
  *
- * @param {SocketClient} client
+ * @param {Object} data
  */
-GameController.prototype.onScore = function(client, avatar, data)
+GameController.prototype.onScore = function(data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('score', {avatar: avatar.name, score: data.score});
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel,
+        score = data.score;
+
+    this.io.sockets.in(channel).emit('score', {avatar: avatar.name, score: score});
 };
 
 /**
  * On point
  *
- * @param {SocketClient} client
- * @param {Array} point
+ * @param {Object} data
  */
-GameController.prototype.onTrailClear = function(client, avatar)
+GameController.prototype.onTrailClear = function(data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('trail:clear', {avatar: avatar.name});
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel;
+
+    this.io.sockets.in(channel).emit('trail:clear', {avatar: avatar.name});
 };
 
 // Game events:
@@ -1269,41 +1297,41 @@ GameController.prototype.onTrailClear = function(client, avatar)
 /**
  * On round new
  *
- * @param {Game} game
+ * @param {Object} data
  */
-GameController.prototype.onRoundNew = function(game)
+GameController.prototype.onRoundNew = function(data)
 {
-    this.io.sockets.in(game.channel).emit('round:new');
+    this.io.sockets.in(data.game.channel).emit('round:new');
 };
 
 /**
  * On round new
  *
- * @param {Game} game
+ * @param {Object} data
  */
-GameController.prototype.onRoundEnd = function(game, data)
+GameController.prototype.onRoundEnd = function(data)
 {
-    this.io.sockets.in(game.channel).emit('round:end');
+    this.io.sockets.in(data.game.channel).emit('round:end');
 };
 
 /**
  * On round winner
  *
- * @param {Game} game
+ * @param {Object} data
  */
-GameController.prototype.onRoundWinner = function(game, data)
+GameController.prototype.onRoundWinner = function(data)
 {
-    this.io.sockets.in(game.channel).emit('round:winner', {winner: data.winner.name});
+    this.io.sockets.in(data.game.channel).emit('round:winner', {winner: data.winner.name});
 };
 
 /**
  * On round new
  *
- * @param {Game} game
+ * @param {Object} data
  */
-GameController.prototype.onEnd = function(game)
+GameController.prototype.onEnd = function(data)
 {
-    this.io.sockets.in(game.channel).emit('end');
+    this.io.sockets.in(data.game.channel).emit('end');
 };
 
 /**
@@ -1411,8 +1439,6 @@ RoomController.prototype.onJoinRoom = function(client, data, callback)
     var room = this.repository.get(data.room),
         player = room ? client.joinRoom(room, data.player) : null;
 
-    console.log(client.players.ids);
-
     callback({success: player ? true : false});
 
     if (player) {
@@ -1470,8 +1496,6 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
     var room = client.room,
         player = client.players.getById(data.player);
 
-    console.log(client.players.ids);
-
     if (room && player) {
         player.toggleReady();
 
@@ -1483,7 +1507,6 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
             ready: player.ready
         });
 
-        console.log(room.isReady());
         if (room.isReady()) {
             this.warmupRoom(room);
         }
@@ -1501,9 +1524,12 @@ RoomController.prototype.warmupRoom = function(room)
 
     this.gameController.addGame(room.newGame());
 
-    for (var i = room.players.ids.length - 1; i >= 0; i--) {
-        this.detachEvents(room.players.items[i].client);
-        this.gameController.attach(room.players.items[i].client, room.game);
+    var client;
+
+    for (var i = room.clients.items.length - 1; i >= 0; i--) {
+        client = room.clients.items[i];
+        this.detachEvents(client);
+        this.gameController.attach(client, room.game);
     }
 };
 
@@ -1728,12 +1754,16 @@ SocketClient.prototype.onChannel = function(channel)
  */
 SocketClient.prototype.joinRoom = function(room, name)
 {
-    if (this.room !== room) {
+    if (this.room && this.room !== room) {
         this.leaveRoom();
     }
 
     if (room.isNameAvailable(name)) {
-        this.room = room;
+
+        if (!this.room) {
+            this.room = room;
+            this.room.clients.add(this);
+        }
 
         var player = new Player(this, name);
 
@@ -1763,6 +1793,7 @@ SocketClient.prototype.leaveRoom = function()
         }
 
         this.players.clear();
+        this.room.clients.remove(this);
         this.room = null;
     }
 };
@@ -1774,11 +1805,14 @@ SocketClient.prototype.leaveRoom = function()
  */
 SocketClient.prototype.joinGame = function(game)
 {
-    if (this.game) {
+    if (this.game && this.game !== game) {
         this.leaveGame();
     }
 
-    this.game = game;
+    if (!this.game) {
+        this.game = game;
+        this.game.clients.add(this);
+    }
 };
 
 /**
@@ -1794,6 +1828,7 @@ SocketClient.prototype.leaveGame = function()
             this.game.removeAvatar(player.avatar);
         }
 
+        this.game.clients.remove(this);
         this.game = null;
     }
 };
@@ -2000,7 +2035,7 @@ Avatar.prototype.update = function(step)
 Avatar.prototype.setPosition = function(point)
 {
     BaseAvatar.prototype.setPosition.call(this, point);
-    this.emit('position', point);
+    this.emit('position', {avatar: this, point: point});
 };
 
 /**
@@ -2011,7 +2046,7 @@ Avatar.prototype.setPosition = function(point)
 Avatar.prototype.setAngle = function(angle)
 {
     BaseAvatar.prototype.setAngle.call(this, angle);
-    this.emit('angle', angle);
+    this.emit('angle', {avatar: this, angle: angle});
 };
 
 /**
@@ -2022,7 +2057,7 @@ Avatar.prototype.setAngle = function(angle)
 Avatar.prototype.addPoint = function(point)
 {
     BaseAvatar.prototype.addPoint.call(this, point);
-    this.emit('point', {point: point, avatar: this});
+    this.emit('point', {avatar: this, point: point});
 };
 
 /**
@@ -2057,6 +2092,7 @@ function Game(room)
     this.world   = new World(this.size);
     this.inRound = false;
     this.deaths  = [];
+    this.clients = new Collection();
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -2196,7 +2232,7 @@ Game.prototype.setScores = function()
             var winner = this.avatars.match(function () { return this.alive; });
 
             winner.addScore(total);
-            this.emit('round:winner', {winner: winner});
+            this.emit('round:winner', {game: this, winner: winner});
         }
 
         this.deaths = [];
@@ -2210,7 +2246,7 @@ Game.prototype.endRound = function()
 {
     BaseGame.prototype.endRound.call(this);
 
-    this.emit('round:end');
+    this.emit('round:end', {game: this});
 
     if (this.isWon()) {
         this.end();
@@ -2224,17 +2260,18 @@ Game.prototype.endRound = function()
  */
 Game.prototype.newRound = function()
 {
-    var avatar;
+    var avatar, position;
 
-    this.emit('round:new');
+    this.emit('round:new', {game: this});
 
     this.world.clear();
 
     this.inRound = true;
     this.deaths  = [];
 
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
+
         avatar.clear();
         avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
         avatar.setAngle(Math.random() * Math.PI * 2);
@@ -2264,7 +2301,7 @@ Game.prototype.end = function()
 {
     this.world.clear();
 
-    this.emit('end');
+    this.emit('end', {game: this});
 
     BaseGame.prototype.end.call(this);
 };
@@ -2289,15 +2326,17 @@ function Player(client, name, color, mail)
 function Room(name)
 {
     BaseRoom.call(this, name);
+
+    this.clients = new Collection();
 }
 
 Room.prototype = Object.create(BaseRoom.prototype);
 /**
  * Trail
  */
-function Trail(color, radius)
+function Trail(avatar)
 {
-    BaseTrail.call(this, color, radius);
+    BaseTrail.call(this, avatar);
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
@@ -2308,7 +2347,7 @@ Trail.prototype = Object.create(BaseTrail.prototype);
 Trail.prototype.clear = function()
 {
     BaseTrail.prototype.clear.call(this);
-    this.emit('clear');
+    this.emit('clear', {avatar: this.avatar});
 };
 /**
  * Room Repository

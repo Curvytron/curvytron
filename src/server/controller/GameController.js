@@ -5,6 +5,17 @@ function GameController(io)
 {
     this.io    = io;
     this.games = new Collection([], 'name');
+
+    this.onDie         = this.onDie.bind(this);
+    this.onAngle       = this.onAngle.bind(this);
+    this.onPosition    = this.onPosition.bind(this);
+    this.onPoint       = this.onPoint.bind(this);
+    this.onScore       = this.onScore.bind(this);
+    this.onTrailClear  = this.onTrailClear.bind(this);
+    this.onRoundNew    = this.onRoundNew.bind(this);
+    this.onRoundEnd    = this.onRoundEnd.bind(this);
+    this.onRoundWinner = this.onRoundWinner.bind(this);
+    this.onEnd         = this.onEnd.bind(this);
 }
 
 /**
@@ -14,13 +25,11 @@ function GameController(io)
  */
 GameController.prototype.addGame = function(game)
 {
-    var controller = this;
-
     if (this.games.add(game)) {
-        game.on('round:new', function () { controller.onRoundNew(this); });
-        game.on('round:end', function (data) { controller.onRoundEnd(this, data); });
-        game.on('round:winner', function (data) { controller.onRoundWinner(this, data); });
-        game.on('end', function () { controller.onEnd(this); });
+        game.on('round:new', this.onRoundNew);
+        game.on('round:end', this.onRoundEnd);
+        game.on('round:winner', this.onRoundWinner);
+        game.on('end', this.onEnd);
     }
 };
 
@@ -31,8 +40,10 @@ GameController.prototype.addGame = function(game)
  */
 GameController.prototype.attach = function(client, game)
 {
-    client.joinGame(game);
-    this.attachEvents(client);
+    if (!game.clients.exists(client)) {
+        client.joinGame(game);
+        this.attachEvents(client);
+    }
 };
 
 /**
@@ -68,12 +79,12 @@ GameController.prototype.attachEvents = function(client)
     for (var i = client.players.items.length - 1; i >= 0; i--) {
         avatar = client.players.items[i].avatar;
 
-        avatar.on('die', function () { controller.onDie(client, avatar); });
-        avatar.on('angle', function (point) { controller.onAngle(client, avatar, point); });
-        avatar.on('position', function (point) { controller.onPosition(client, avatar, point); });
-        avatar.on('point', function (data) { controller.onPoint(client, avatar, data.point); });
-        avatar.on('score', function (data) { controller.onScore(client, avatar, data); });
-        avatar.trail.on('clear', function (data) { controller.onTrailClear(client, avatar); });
+        avatar.on('die', this.onDie);
+        avatar.on('angle', this.onAngle);
+        avatar.on('position', this.onPosition);
+        avatar.on('point', this.onPoint);
+        avatar.on('score', this.onScore);
+        avatar.trail.on('clear', this.onTrailClear);
     }
 };
 
@@ -126,75 +137,93 @@ GameController.prototype.onGameLoaded = function(client)
  */
 GameController.prototype.onMove = function(client, data)
 {
-    var player = client.players.getbyId(data.avatar);
+    var player = client.players.getById(data.avatar);
 
     if (player && player.avatar) {
-        player.avatar.setAngularVelocity(move);
+        player.avatar.setAngularVelocity(data.move);
     }
 };
 
 /**
  * On position
  *
- * @param {SocketClient} client
- * @param {Array} point
+ * @param {Object} data
  */
-GameController.prototype.onPosition = function(client, avatar, point)
+GameController.prototype.onPosition = function(data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('position', {avatar: avatar.name, point: point});
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel,
+        point = data.point;
+
+    this.io.sockets.in(channel).emit('position', {avatar: avatar.name, point: point});
 };
 
 /**
  * On angle
  *
- * @param {SocketClient} client
- * @param {Array} point
+ * @param {Object} data
  */
-GameController.prototype.onAngle = function(client, angle)
+GameController.prototype.onAngle = function(data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: avatar.name, angle: angle});
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel,
+        angle = data.angle;
+
+    this.io.sockets.in(channel).emit('angle', {avatar: avatar.name, angle: angle});
 };
 
 /**
  * On point
  *
- * @param {SocketClient} client
- * @param {Array} point
+ * @param {Object} data
  */
-GameController.prototype.onPoint = function(client, point)
+GameController.prototype.onPoint = function(data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('point', {avatar: avatar.name, point: point});
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel,
+        point = data.point;
+
+    this.io.sockets.in(channel).emit('point', {avatar: avatar.name, point: point});
 };
 
 /**
  * On die
  *
- * @param {SocketClient} client
+ * @param {Object} data
  */
-GameController.prototype.onDie = function(client, avatar)
+GameController.prototype.onDie = function(data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('die', {avatar: avatar.name});
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel;
+
+    this.io.sockets.in(channel).emit('die', {avatar: avatar.name});
 };
 
 /**
  * On score
  *
- * @param {SocketClient} client
+ * @param {Object} data
  */
-GameController.prototype.onScore = function(client, avatar, data)
+GameController.prototype.onScore = function(data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('score', {avatar: avatar.name, score: data.score});
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel,
+        score = data.score;
+
+    this.io.sockets.in(channel).emit('score', {avatar: avatar.name, score: score});
 };
 
 /**
  * On point
  *
- * @param {SocketClient} client
- * @param {Array} point
+ * @param {Object} data
  */
-GameController.prototype.onTrailClear = function(client, avatar)
+GameController.prototype.onTrailClear = function(data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('trail:clear', {avatar: avatar.name});
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel;
+
+    this.io.sockets.in(channel).emit('trail:clear', {avatar: avatar.name});
 };
 
 // Game events:
@@ -202,39 +231,39 @@ GameController.prototype.onTrailClear = function(client, avatar)
 /**
  * On round new
  *
- * @param {Game} game
+ * @param {Object} data
  */
-GameController.prototype.onRoundNew = function(game)
+GameController.prototype.onRoundNew = function(data)
 {
-    this.io.sockets.in(game.channel).emit('round:new');
+    this.io.sockets.in(data.game.channel).emit('round:new');
 };
 
 /**
  * On round new
  *
- * @param {Game} game
+ * @param {Object} data
  */
-GameController.prototype.onRoundEnd = function(game, data)
+GameController.prototype.onRoundEnd = function(data)
 {
-    this.io.sockets.in(game.channel).emit('round:end');
+    this.io.sockets.in(data.game.channel).emit('round:end');
 };
 
 /**
  * On round winner
  *
- * @param {Game} game
+ * @param {Object} data
  */
-GameController.prototype.onRoundWinner = function(game, data)
+GameController.prototype.onRoundWinner = function(data)
 {
-    this.io.sockets.in(game.channel).emit('round:winner', {winner: data.winner.name});
+    this.io.sockets.in(data.game.channel).emit('round:winner', {winner: data.winner.name});
 };
 
 /**
  * On round new
  *
- * @param {Game} game
+ * @param {Object} data
  */
-GameController.prototype.onEnd = function(game)
+GameController.prototype.onEnd = function(data)
 {
-    this.io.sockets.in(game.channel).emit('end');
+    this.io.sockets.in(data.game.channel).emit('end');
 };
