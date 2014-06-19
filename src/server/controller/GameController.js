@@ -28,6 +28,7 @@ GameController.prototype.addGame = function(game)
         game.on('round:new', this.onRoundNew);
         game.on('round:end', this.onRoundEnd);
         game.on('round:winner', this.onRoundWinner);
+<<<<<<< refs/heads/develop
 
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
             this.attach(game.clients.items[i], game);
@@ -50,6 +51,12 @@ GameController.prototype.removeGame = function(game)
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
             this.detach(game.clients.items[i], game);
         }
+=======
+        game.on('end', this.onEnd);
+
+        game.on('bonus:pop', this.onBonusPop);
+        game.on('bonus:clear', this.onBonusClear);
+>>>>>>> HEAD~28
     }
 };
 
@@ -223,6 +230,34 @@ GameController.prototype.onDie = function(data)
 
     this.io.sockets.in(channel).emit('die', {avatar: avatar.name});
 };
+
+/**
+ * On bonus pop
+ *
+ * @param {SocketClient} game
+ */
+GameController.prototype.onBonusPop = function(client, data)
+{
+    var game = data.game,
+        channel = data.game.channel;
+    
+    this.io.sockets.in(channel).emit('bonus:pop', data.bonus);
+};
+
+/**
+ * On bonus clear
+ *
+ * @param {SocketClient}client
+ * @param data
+ */
+GameController.prototype.onBonusClear = function(client, data)
+{
+    var game = data.game,
+        channel = data.game.channel;
+
+    this.io.sockets.in(channel).emit('bonus:clear', data.bonus);
+};
+
 
 /**
  * On score
