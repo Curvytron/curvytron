@@ -1,27 +1,28 @@
 <section>
-    <div id="rooms" class="container">
+    <div id="room" class="container">
         <h1>
             <form ng-submit="submit()" class="top-right-form">
                 <div class="input-group input-group-lg">
-                    <input type="text" ng-model="username" class="form-control" name="username" placeholder="Username" />
+                    <input type="text" ng-model="username" class="form-control" name="username" placeholder="Add a player" />
                     <span class="input-group-btn">
-                        <button type="submit" id="submit" class="btn btn-lg btn-default"><i class="icon-angle-right"></i></button>
+                        <button type="submit" id="submit" class="btn btn-lg btn-default"><i class="icon-plus"></i></button>
                     </span>
                 </div>
             </form>
             {{ room.name }}
         </h1>
-        <table class="table table-hover table-striped v-align-middle">
+        <table class="room-players table table-hover table-striped v-align-middle">
             <thead>
                 <tr>
-                    <th class="pct-10">Ready?</th>
+                    <th class="pct-10">Ready ?</th>
                     <th class="pct-50">Name</th>
-                    <th class="pct-40">Color</th>
+                    <th class="pct-25">Color</th>
+                    <th class="pct-15">Keys</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="player in room.players.items" ng-class="{ local: player.local }">
-                    <td class="text-center">
+                    <td>
                         <span class="player-ready" ng-class="{ ready: player.ready }" ng-click="setReady(player)">
                             <i ng-if="player.ready == true" class="icon-check success"></i>
                             <i ng-if="player.ready == false" class="icon-close success"></i>
@@ -30,10 +31,14 @@
                     <td>
                         {{ player.name }}
                     </td>
-                    <td>
+                    <td class="player-color-col">
                         <span class="color-preview" style="background-color: {{ player.color }};"></span>
                         <p ng-if="!player.local">{{ player.color }}</p>
-                        <input type="text" ng-if="player.local" ng-model="player.color" ng-change="setColor(player)" class="form-control" name="color" placeholder="#CCCCCC" />
+                        <input type="text" ng-if="player.local" ng-model="player.color" ng-change="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" />
+                    </td>
+                    <td>
+                        <button class="btn btn-default" ng-if="player.local"><i class="icon-left-dir"></i></button>
+                        <button class="btn btn-default" ng-if="player.local"><i class="icon-right-dir"></i></button>
                     </td>
                 </tr>
             </tbody>
