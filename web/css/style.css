@@ -454,7 +454,7 @@ table {
   content: '\e800'; }
 
 /* '' */
-.icon-arrow-right:before {
+.icon-left-dir:before {
   content: '\e801'; }
 
 /* '' */
@@ -486,6 +486,10 @@ table {
   content: '\e808'; }
 
 /* '' */
+.icon-right-dir:before {
+  content: '\e809'; }
+
+/* '' */
 /**
  * CUSTOMS
  */
@@ -4162,7 +4166,8 @@ li.player-row {
   width: 44px;
   height: 44px;
   line-height: 40px;
-  padding: 0; }
+  padding: 0;
+  font-size: 22px; }
 
 #game-wrapper {
   position: fixed;
