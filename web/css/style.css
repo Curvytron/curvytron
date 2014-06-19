@@ -2618,16 +2618,16 @@ select[multiple], select[size] {
   line-height: 28px;
   color: #75858C;
   font-family: "Raleway", "Helvetica Neue", "Helvetica";
-  background-color: #f6f7f3;
+  background-color: transparent;
   background-image: none;
-  border: 1px solid #d0d2cc;
+  border: 2px solid #75858C;
   border-radius: 4px;
   -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
   -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
   transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
   -webkit-appearance: none; }
   .form-control:focus {
-    border-color: #abafa3;
+    border-color: #919ea3;
     outline: 0; }
   .form-control::-moz-placeholder {
     color: lighter(#75858C, 40%);
@@ -3001,18 +3001,18 @@ body.game-mode header, body.game-mode footer {
 
 .btn-default {
   color: #75858C;
-  background-color: #f6f7f3;
+  background-color: rgba(246, 247, 243, 0);
   border-color: #75858C; }
   .btn-default:hover, .btn-default:active, .btn-default.active, .open > .btn-default.dropdown-toggle {
     color: #75858C;
-    background-color: #dfe3d4; }
+    background-color: rgba(223, 226, 212, 0); }
   .btn-default:active, .btn-default.active, .open > .btn-default.dropdown-toggle {
     background-image: none; }
   .btn-default.disabled, .btn-default.disabled:hover, .btn-default.disabled:active, .btn-default.disabled.active, .btn-default[disabled], .btn-default[disabled]:hover, .btn-default[disabled]:active, .btn-default[disabled].active, fieldset[disabled] .btn-default, fieldset[disabled] .btn-default:hover, fieldset[disabled] .btn-default:active, fieldset[disabled] .btn-default.active {
-    background-color: #f6f7f3;
+    background-color: rgba(246, 247, 243, 0);
     border-color: #75858C; }
   .btn-default .badge {
-    color: #f6f7f3;
+    color: rgba(246, 247, 243, 0);
     background-color: #75858C; }
 
 .btn-primary {
@@ -3293,8 +3293,8 @@ input[type="submit"].btn-block, input[type="reset"].btn-block, input[type="butto
   display: inline-block;
   cursor: pointer;
   overflow: hidden;
-  background-color: #f6f7f3;
-  border: 1px solid #d0d2cc;
+  background-color: transparent;
+  border: 1px solid #75858C;
   border-radius: 4px;
   width: auto;
   vertical-align: middle; }
@@ -3304,7 +3304,7 @@ input[type="submit"].btn-block, input[type="reset"].btn-block, input[type="butto
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
-    background-color: #f6f7f3;
+    background-color: transparent;
     color: #75858C;
     padding: 0 12px;
     font-size: 16px;
@@ -3321,7 +3321,7 @@ input[type="submit"].btn-block, input[type="reset"].btn-block, input[type="butto
     display: inline-block;
     padding: 0 8px;
     background-color: rgba(0, 0, 0, 0.05);
-    border-left: 1px solid #d0d2cc;
+    border-left: 1px solid #75858C;
     vertical-align: middle;
     color: #75858C; }
   .selector-wrapper select {
@@ -3350,9 +3350,9 @@ input[type="submit"].btn-block, input[type="reset"].btn-block, input[type="butto
   line-height: 28px;
   color: #75858C;
   font-family: "Raleway", "Helvetica Neue", "Helvetica";
-  background-color: #f6f7f3;
+  background-color: transparent;
   background-image: none;
-  border: 1px solid #d0d2cc;
+  border: 1px solid #75858C;
   border-radius: 4px;
   -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
   -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
@@ -3698,7 +3698,7 @@ table td[class*="col-"], table th[class*="col-"] {
   color: #75858C;
   text-align: center;
   background-color: #EEE;
-  border: 1px solid #d0d2cc;
+  border: 1px solid #75858C;
   border-radius: 4px; }
   .input-group-addon.input-sm, .input-group-sm > .input-group-addon.form-control, .input-group-sm > .input-group-addon, .input-group-sm > .input-group-btn > .input-group-addon.btn {
     padding: 5px 10px;
@@ -4081,7 +4081,10 @@ li.player-row {
   display: inline-block;
   margin-right: 5px;
   background: red;
-  vertical-align: -6%; }
+  vertical-align: -6%;
+  -webkit-transition: all 0.2s linear;
+  -o-transition: all 0.2s linear;
+  transition: all 0.2s linear; }
 
 .top-right-form {
   float: right;
@@ -4094,11 +4097,11 @@ li.player-row {
   .top-right-form .input-group-btn:last-child > .btn, .top-right-form .input-group-btn:last-child > .btn-group {
     margin-left: -2px; }
 
-#rooms {
+#rooms, #room {
   margin-top: 30px; }
-  #rooms h3 {
+  #rooms h3, #room h3 {
     margin: 0; }
-  #rooms .room-enter {
+  #rooms .room-enter, #room .room-enter {
     padding-left: 0;
     padding-right: 5px;
     font-size: 24px;
@@ -4106,18 +4109,22 @@ li.player-row {
     -webkit-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
     transition: all 0.2s ease; }
-    #rooms .room-enter:hover {
+    #rooms .room-enter:hover, #room .room-enter:hover {
       padding-right: 0;
       padding-left: 5px;
       opacity: 0.5;
       filter: alpha(opacity=50); }
-  #rooms tr {
-    cursor: pointer; }
-    #rooms tr:hover .room-enter {
-      padding-right: 0;
-      padding-left: 5px;
-      opacity: 0.5;
-      filter: alpha(opacity=50); }
+  #rooms tr:hover .room-enter, #room tr:hover .room-enter {
+    padding-right: 0;
+    padding-left: 5px;
+    opacity: 0.5;
+    filter: alpha(opacity=50); }
+
+#rooms tr {
+  cursor: pointer; }
+
+#room tr.local .player-ready {
+  cursor: pointer; }
 
 .player-ready {
   width: 40px;
@@ -4128,12 +4135,34 @@ li.player-row {
   text-align: center; }
   .player-ready i {
     font-size: 20px;
-    line-height: 35px;
+    line-height: 37px;
     vertical-align: middle; }
   .player-ready.ready {
     color: #FFF;
     border-color: #60a760;
     background: #60a760; }
+
+.room-players tr td.player-color-col {
+  position: relative; }
+  .room-players tr td.player-color-col .color-preview {
+    display: inline-block;
+    margin-left: 10px; }
+  .room-players tr td.player-color-col p {
+    margin: 0 0 0 5px;
+    display: inline-block; }
+.room-players tr.local td.player-color-col .color-preview {
+  position: absolute;
+  left: 23px;
+  top: 21px;
+  margin-left: 0; }
+.room-players tr.local td.player-color-col input.form-control {
+  width: 140px;
+  padding-left: 35px; }
+.room-players tr .btn {
+  width: 44px;
+  height: 44px;
+  line-height: 40px;
+  padding: 0; }
 
 #game-wrapper {
   position: fixed;
@@ -4169,6 +4198,8 @@ li.player-row {
       font-size: 30px;
       text-align: left;
       display: block !important; }
+      #game-wrapper aside header a {
+        line-height: auto; }
       #game-wrapper aside header a:hover {
         text-decoration: none; }
     #game-wrapper aside h3 {
