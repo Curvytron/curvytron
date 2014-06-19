@@ -27,6 +27,8 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.onPosition    = this.onPosition.bind(this);
     this.onAngle       = this.onAngle.bind(this);
     this.onPoint       = this.onPoint.bind(this);
+    this.onBonusPop    = this.onBonusPop.bind(this);
+    this.onBonusClear  = this.onBonusClear.bind(this);
     this.onDie         = this.onDie.bind(this);
     this.onScore       = this.onScore.bind(this);
     this.onTrailClear  = this.onTrailClear.bind(this);
@@ -54,6 +56,8 @@ GameController.prototype.attachSocketEvents = function()
     this.client.io.on('position', this.onPosition);
     this.client.io.on('angle', this.onAngle);
     this.client.io.on('point', this.onPoint);
+    this.client.io.on('bonus:pop', this.onBonusPop);
+    this.client.io.on('bonus:clear', this.onBonusClear);
     this.client.io.on('die', this.onDie);
     this.client.io.on('score', this.onScore);
     this.client.io.on('trail:clear', this.onTrailClear);
@@ -172,6 +176,31 @@ GameController.prototype.onPosition = function(data)
     if (avatar) {
         avatar.setPosition(data.point);
     }
+};
+
+/**
+ * On bonus pop
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onBonusPop = function(data)
+{
+    var bonus = new Bonus();
+        bonus.unserialize(data);
+        bonus.pop();
+
+    this.game.bonuses.add(bonus);
+};
+
+/**
+ * On bonus pop
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onBonusClear = function(data)
+{
+    var bonus = this.game.bonuses.getById(data.id);
+        bonus.clear();
 };
 
 /**
