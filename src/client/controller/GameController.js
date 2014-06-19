@@ -11,7 +11,6 @@ function GameController($scope, $routeParams, repository, client)
     this.$scope     = $scope;
     this.repository = repository;
     this.client     = client;
-    this.input      = new PlayerInput();
 
     createjs.Sound.alternateExtensions = ["mp3"];
     createjs.Sound.registerManifest(
@@ -37,9 +36,6 @@ function GameController($scope, $routeParams, repository, client)
     this.onRoundWinner = this.onRoundWinner.bind(this);
     this.onEnd         = this.onEnd.bind(this);
     this.onLeave       = this.onLeave.bind(this);
-    this.onMe          = this.onMe.bind(this);
-
-    this.input.on('move', this.onMove);
 
     this.attachSocketEvents();
 
@@ -54,7 +50,6 @@ function GameController($scope, $routeParams, repository, client)
  */
 GameController.prototype.attachSocketEvents = function()
 {
-    this.client.io.on('me', this.onMe);
     this.client.io.on('position', this.onPosition);
     this.client.io.on('angle', this.onAngle);
     this.client.io.on('point', this.onPoint);
@@ -75,10 +70,18 @@ GameController.prototype.attachSocketEvents = function()
  */
 GameController.prototype.loadGame = function(name)
 {
-    var room = this.repository.get(name);
+    var room = this.repository.get(name),
+        controller = this,
+        avatars;
 
     this.room = room;
     this.game = room.newGame();
+
+    avatars = this.game.avatars.filter(function () { return this.local; });
+
+    for (var i = avatars.length - 1; i >= 0; i--) {
+        avatars[i].input.on('move', function (event) { controller.onMove(avatars[i], e.detail); });
+    }
 
     this.game.fps.setElement(document.getElementById('fps'));
 
@@ -135,25 +138,12 @@ GameController.prototype.endWarmup = function(interval)
 /**
  * On move
  *
- * @param {Event} e
+ * @param {Avatar} e
+ * @param {number} move
  */
-GameController.prototype.onMove = function(e)
+GameController.prototype.onMove = function(avatar, move)
 {
-    this.client.io.emit('player:move', e.detail);
-};
-
-/**
- * On me
- *
- * @param {Object} data
- */
-GameController.prototype.onMe = function(data)
-{
-    var avatar = this.game.avatars.getById(data.avatar);
-
-    if (avatar) {
-        avatar.setMe(true);
-    }
+    this.client.io.emit('player:move', {avatar: avatar.name, move: move});
 };
 
 /**

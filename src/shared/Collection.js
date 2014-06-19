@@ -24,6 +24,19 @@ function Collection(items, key, index)
 }
 
 /**
+ * Clear
+ */
+Collection.prototype.clear = function()
+{
+    this.ids   = [];
+    this.items = [];
+
+    if (this.index) {
+        this.id = 1;
+    }
+};
+
+/**
  * Count the size of the collection
  *
  * @return {Number}

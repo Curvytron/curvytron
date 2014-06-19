@@ -5,6 +5,7 @@ function SocketClient()
 {
     this.io        = io();
     this.connected = false;
+    this.id        = null;
 
     this.onSocketConnection    = this.onSocketConnection.bind(this);
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
@@ -29,10 +30,11 @@ SocketClient.prototype.join = function(channel)
  *
  * @param {Socket} socket
  */
-SocketClient.prototype.onSocketConnection = function()
+SocketClient.prototype.onSocketConnection = function(id)
 {
     console.log('Connected');
     this.connected = true;
+    this.id        = id;
 };
 
 /**

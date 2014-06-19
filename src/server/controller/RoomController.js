@@ -101,16 +101,14 @@ RoomController.prototype.onCreateRoom = function(client, data, callback)
 RoomController.prototype.onJoinRoom = function(client, data, callback)
 {
     var room = this.repository.get(data.room),
-        result = false;
+        player = room ? client.joinRoom(room, data.player) : null;
 
-    if (room) {
-        result = client.joinRoom(room, data.player);
-    }
+    console.log(client.players.ids);
 
-    callback({success: result});
+    callback({success: player ? true : false});
 
-    if (result) {
-        this.io.sockets.in('rooms').emit('room:join', {room: room.name, player: client.player.serialize()});
+    if (player) {
+        this.io.sockets.in('rooms').emit('room:join', {room: room.name, player: player.serialize()});
     }
 };
 
@@ -138,15 +136,20 @@ RoomController.prototype.onLeaveRoom = function(client, data, callback)
  */
 RoomController.prototype.onColorRoom = function(client, data, callback)
 {
-    client.player.setColor(data.color);
+    var room = client.room,
+        player = client.players.getById(data.player);
 
-    callback({success: true, color: client.player.color});
+    if (room && player) {
+        player.setColor(data.color);
 
-    this.io.sockets.in('rooms').emit('room:player:color', {
-        room: client.room.name,
-        player: client.player.name,
-        color: client.player.color
-    });
+        callback({success: true, color: player.color});
+
+        this.io.sockets.in('rooms').emit('room:player:color', {
+            room: room.name,
+            player: player.name,
+            color: player.color
+        });
+    }
 };
 
 /**
@@ -156,18 +159,26 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
  */
 RoomController.prototype.onReadyRoom = function(client, data, callback)
 {
-    client.player.toggleReady();
+    var room = client.room,
+        player = client.players.getById(data.player);
 
-    callback({success: true, ready: client.player.ready});
+    console.log(client.players.ids);
 
-    this.io.sockets.in('rooms').emit('room:player:ready', {
-        room: client.room.name,
-        player: client.player.name,
-        ready: client.player.ready
-    });
+    if (room && player) {
+        player.toggleReady();
 
-    if (client.room.isReady()) {
-        this.warmupRoom(client.room);
+        callback({success: true, ready: player.ready});
+
+        this.io.sockets.in('rooms').emit('room:player:ready', {
+            room: room.name,
+            player: player.name,
+            ready: player.ready
+        });
+
+        console.log(room.isReady());
+        if (room.isReady()) {
+            this.warmupRoom(room);
+        }
     }
 };
 

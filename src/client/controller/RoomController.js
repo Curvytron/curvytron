@@ -15,7 +15,6 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
     this.$location  = $location;
     this.repository = repository;
     this.client     = client;
-    this.name       = $routeParams.name;
 
     console.log('on room %s', $routeParams.name);
 
@@ -24,18 +23,11 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
     // Binding:
     this.createUser = this.createUser.bind(this);
     this.applyScope = this.applyScope.bind(this);
+    this.onJoin     = this.onJoin.bind(this);
     this.loadRoom   = this.loadRoom.bind(this);
     this.setColor   = this.setColor.bind(this);
     this.setReady   = this.setReady.bind(this);
     this.start      = this.start.bind(this);
-
-    //this.repository.on('room:close:' + this.name, this.loadRoom);
-    this.repository.on('room:join:' + this.name, this.applyScope);
-    this.repository.on('room:leave:' + this.name, this.applyScope);
-    this.repository.on('room:player:ready:' + this.name, this.applyScope);
-    this.repository.on('room:player:color:' + this.name, this.applyScope);
-    this.repository.on('room:start:' + this.name, this.start);
-    this.repository.on('room:game:' + this.name, this.startGame);
 
     // Hydrating scope:
     this.$scope.submit   = this.createUser;
@@ -45,21 +37,25 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
     this.$scope.curvytron.bodyClass = null;
 
     if (this.repository.synced) {
-        this.loadRoom();
+        this.loadRoom($routeParams.name);
     } else {
-        this.repository.on('synced', this.loadRoom);
+        var controller = this;
+
+        this.repository.on('synced', function () { controller.loadRoom($routeParams.name); });
     }
 }
 
 /**
  * Load room into scope
  */
-RoomController.prototype.loadRoom = function(e)
+RoomController.prototype.loadRoom = function(name)
 {
-    var room = this.repository.get(this.name);
+    var room = this.repository.get(name);
 
     if (room) {
         this.$scope.room = room;
+
+        this.attachEvents(name);
 
         if (typeof(e) !== 'undefined') {
             this.applyScope();
@@ -70,12 +66,27 @@ RoomController.prototype.loadRoom = function(e)
 };
 
 /**
+ * Attach Events
+ *
+ * @param {String} name
+ */
+RoomController.prototype.attachEvents = function(name)
+{
+    //this.repository.on('room:close:' + name, this.loadRoom);
+    this.repository.on('room:join:' + name, this.onJoin);
+    this.repository.on('room:leave:' + name, this.applyScope);
+    this.repository.on('room:player:ready:' + name, this.applyScope);
+    this.repository.on('room:player:color:' + name, this.applyScope);
+    this.repository.on('room:start:' + name, this.start);
+    this.repository.on('room:game:' + name, this.startGame);
+};
+
+/**
  * Go back to the homepage
  */
 RoomController.prototype.goHome = function()
 {
     this.$location.path('/');
-    //this.$rootScope.$apply();
 };
 
 /**
@@ -93,8 +104,7 @@ RoomController.prototype.createUser = function(e)
             $scope.username,
             function (result) {
                 if (result.success) {
-                    $scope.username    = null;
-                    $scope.hasUsername = true;
+                    $scope.username = null;
                     $scope.$apply();
                 } else {
                     console.log('Error');
@@ -105,21 +115,41 @@ RoomController.prototype.createUser = function(e)
 };
 
 /**
+ * On join
+ *
+ * @param {Event} event
+ */
+RoomController.prototype.onJoin = function(event)
+{
+    var player = event.detail.player;
+
+    if (player.client === this.client.id) {
+        player.setLocal(true);
+    }
+
+    this.applyScope();
+};
+
+/**
  * Rooms action
  *
  * @return {Array}
  */
-RoomController.prototype.setColor = function(e)
+RoomController.prototype.setColor = function(player)
 {
+    if (!player.local) {
+        return;
+    }
+
     var controller = this;
 
     this.repository.setColor(
         this.$scope.room.name,
-        this.$scope.color,
+        player.name,
+        player.color,
         function (result) {
             if (result.success) {
-                console.log("setColor", result);
-                //controller.loadRoom(true);
+                //console.log("setColor", result);
             } else {
                 console.log('Error');
             }
@@ -132,17 +162,21 @@ RoomController.prototype.setColor = function(e)
  *
  * @return {Array}
  */
-RoomController.prototype.setReady = function(name)
+RoomController.prototype.setReady = function(player)
 {
+    console.log('setReady', player.name, player.local);
+    if (!player.local) {
+        return;
+    }
+
     var controller = this;
 
     this.repository.setReady(
-        name,
+        this.$scope.room.name,
+        player.name,
         function (result) {
             if (result.success) {
-                console.log("setReady", result);
-                //controller.$scope.ready = result.ready; // A finir
-                //controller.loadRoom(true);
+                //console.log("setReady", result);
             } else {
                 console.log('Error');
             }
@@ -157,9 +191,7 @@ RoomController.prototype.setReady = function(name)
  */
 RoomController.prototype.start = function(data)
 {
-    console.log("start", data);
     this.$location.path('/game/' + this.$scope.room.name);
-    this.applyScope();
 };
 
 /**

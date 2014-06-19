@@ -76,9 +76,9 @@ RoomRepository.prototype.join = function(room, player, callback)
  * @return {Array}
  * @param {Function} callback
  */
-RoomRepository.prototype.setColor = function(room, color, callback)
+RoomRepository.prototype.setColor = function(room, player, color, callback)
 {
-    return this.client.io.emit('room:color', {room: room, color: color}, callback);
+    return this.client.io.emit('room:color', {room: room, player: player, color: color}, callback);
 };
 
 /**
@@ -90,9 +90,9 @@ RoomRepository.prototype.setColor = function(room, color, callback)
  *
  * @return {Array}
  */
-RoomRepository.prototype.setReady = function(room, callback)
+RoomRepository.prototype.setReady = function(room, player, callback)
 {
-    return this.client.io.emit('room:ready', {room: room}, callback);
+    return this.client.io.emit('room:ready', {room: room, player: player}, callback);
 };
 
 // EVENTS:
@@ -129,7 +129,7 @@ RoomRepository.prototype.onNewRoom = function(data)
 RoomRepository.prototype.onJoinRoom = function(data)
 {
     var room = this.rooms.getById(data.room),
-        player = new Player(data.player.name, data.player.color);
+        player = new Player(data.player.client, data.player.name, data.player.color);
 
     if (room && room.addPlayer(player)) {
         var data = {room: room, player: player};

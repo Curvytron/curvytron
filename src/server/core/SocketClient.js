@@ -5,17 +5,16 @@
  */
 function SocketClient(socket)
 {
-    this.id     = socket.id;
-    this.socket = socket;
-    this.player = new Player(this, this.id);
-    this.room   = null;
-    this.game   = null;
-    this.avatar = null;
+    this.id      = socket.id;
+    this.socket  = socket;
+    this.players = new Collection([], 'name');
+    this.room    = null;
+    this.game    = null; // ?
 
     this.onChannel = this.onChannel.bind(this);
 
     this.socket.on('channel', this.onChannel);
-    this.socket.emit('open');
+    this.socket.emit('open', this.id);
 }
 
 SocketClient.prototype = Object.create(EventEmitter.prototype);
@@ -40,19 +39,19 @@ SocketClient.prototype.onChannel = function(channel)
  */
 SocketClient.prototype.joinRoom = function(room, name)
 {
-    if (this.room) {
+    if (this.room !== room) {
         this.leaveRoom();
     }
 
     if (room.isNameAvailable(name)) {
         this.room = room;
 
-        this.player.setName(name);
-        this.player.toggleReady(false);
+        var player = new Player(this, name);
 
-        this.room.addPlayer(this.player);
+        this.room.addPlayer(player);
+        this.players.add(player);
 
-        return true;
+        return player;
     }
 
     return false;
@@ -60,13 +59,21 @@ SocketClient.prototype.joinRoom = function(room, name)
 
 /**
  * Leave room
- *
- * @return {[type]}
  */
 SocketClient.prototype.leaveRoom = function()
 {
-    if (this.room && this.room.removePlayer(this.player)) {
-        this.player.toggleReady(false);
+    if (this.room) {
+
+        this.leaveGame();
+
+        var player;
+
+        for (var i = this.players.items.length - 1; i >= 0; i--) {
+            player = this.players.items[i];
+            this.room.removePlayer(player);
+        }
+
+        this.players.clear();
         this.room = null;
     }
 };
@@ -82,8 +89,7 @@ SocketClient.prototype.joinGame = function(game)
         this.leaveGame();
     }
 
-    this.game   = game;
-    this.avatar = game.avatars.getById(this.player.name);
+    this.game = game;
 };
 
 /**
@@ -91,8 +97,14 @@ SocketClient.prototype.joinGame = function(game)
  */
 SocketClient.prototype.leaveGame = function()
 {
-    if (this.game && this.game.removeAvatar(this.avatar)) {
-        this.game   = null;
-        this.avatar = null;
+    if (this.game) {
+        var player;
+
+        for (var i = this.players.items.length - 1; i >= 0; i--) {
+            player = this.players.items[i];
+            this.game.removeAvatar(player.avatar);
+        }
+
+        this.game = null;
     }
 };

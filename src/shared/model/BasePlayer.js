@@ -1,15 +1,18 @@
 /**
  * BasePlayer
  *
+ * @param {String} client
  * @param {String} name
  * @param {String} color
  */
-function BasePlayer(name, color, mail)
+function BasePlayer(client, name, color, mail)
 {
+    this.client = client;
     this.name   = name;
     this.color  = typeof(color) !== 'undefined' ? color : this.getRandomColor();
     this.mail   = mail;
     this.ready  = false;
+    this.avatar = null;
 }
 
 /**
@@ -43,6 +46,20 @@ BasePlayer.prototype.toggleReady = function(toggle)
 };
 
 /**
+ * Get avatar
+ *
+ * @return {Avatar}
+ */
+BasePlayer.prototype.getAvatar = function()
+{
+    if (!this.avatar) {
+        this.avatar = new Avatar(this);
+    }
+
+    return this.avatar;
+};
+
+/**
  * Serialize
  *
  * @return {Object}
@@ -50,6 +67,7 @@ BasePlayer.prototype.toggleReady = function(toggle)
 BasePlayer.prototype.serialize = function()
 {
     return {
+        client: this.client.id,
         name: this.name,
         color: this.color,
         mail: this.mail,

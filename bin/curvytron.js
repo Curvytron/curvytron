@@ -35,6 +35,19 @@ function Collection(items, key, index)
 }
 
 /**
+ * Clear
+ */
+Collection.prototype.clear = function()
+{
+    this.ids   = [];
+    this.items = [];
+
+    if (this.index) {
+        this.id = 1;
+    }
+};
+
+/**
  * Count the size of the collection
  *
  * @return {Number}
@@ -646,7 +659,7 @@ function BaseGame(room)
     this.name     = this.room.name;
     this.channel  = 'game:' + this.name;
     this.frame    = null;
-    this.avatars  = this.room.players.map(function () { return new Avatar(this); });
+    this.avatars  = this.room.players.map(function () { return this.getAvatar(); });
     this.size     = this.getSize(this.avatars.count());
     this.rendered = null;
     this.maxScore = this.getMaxScore(this.avatars.count());
@@ -843,15 +856,18 @@ BaseGame.prototype.end = function()
 /**
  * BasePlayer
  *
+ * @param {String} client
  * @param {String} name
  * @param {String} color
  */
-function BasePlayer(name, color, mail)
+function BasePlayer(client, name, color, mail)
 {
+    this.client = client;
     this.name   = name;
     this.color  = typeof(color) !== 'undefined' ? color : this.getRandomColor();
     this.mail   = mail;
     this.ready  = false;
+    this.avatar = null;
 }
 
 /**
@@ -885,6 +901,20 @@ BasePlayer.prototype.toggleReady = function(toggle)
 };
 
 /**
+ * Get avatar
+ *
+ * @return {Avatar}
+ */
+BasePlayer.prototype.getAvatar = function()
+{
+    if (!this.avatar) {
+        this.avatar = new Avatar(this);
+    }
+
+    return this.avatar;
+};
+
+/**
  * Serialize
  *
  * @return {Object}
@@ -892,6 +922,7 @@ BasePlayer.prototype.toggleReady = function(toggle)
 BasePlayer.prototype.serialize = function()
 {
     return {
+        client: this.client.id,
         name: this.name,
         color: this.color,
         mail: this.mail,
@@ -1081,7 +1112,9 @@ GameController.prototype.detach = function(client)
     this.detachEvents(client);
 
     if (client.room && client.room.game) {
-        this.io.sockets.in(client.room.game.channel).emit('game:leave', {avatar: client.avatar.name});
+        for (var i = client.players.items.length - 1; i >= 0; i--) {
+            this.io.sockets.in(client.room.game.channel).emit('game:leave', {avatar: client.players.items[i].avatar.name});
+        }
         client.leaveGame();
     }
 };
@@ -1093,17 +1126,22 @@ GameController.prototype.detach = function(client)
  */
 GameController.prototype.attachEvents = function(client)
 {
-    var controller = this;
+    var controller = this,
+        avatar;
 
     client.socket.on('loaded', function (data) { controller.onGameLoaded(client); });
     client.socket.on('player:move', function (data) { controller.onMove(client, data); });
 
-    client.avatar.on('die', function () { controller.onDie(client); });
-    client.avatar.on('angle', function (point) { controller.onAngle(client, point); });
-    client.avatar.on('position', function (point) { controller.onPosition(client, point); });
-    client.avatar.on('point', function (data) { controller.onPoint(client, data.point); });
-    client.avatar.on('score', function (data) { controller.onScore(client, data); });
-    client.avatar.trail.on('clear', function (data) { controller.onTrailClear(client); });
+    for (var i = client.players.items.length - 1; i >= 0; i--) {
+        avatar = client.players.items[i].avatar;
+
+        avatar.on('die', function () { controller.onDie(client, avatar); });
+        avatar.on('angle', function (point) { controller.onAngle(client, avatar, point); });
+        avatar.on('position', function (point) { controller.onPosition(client, avatar, point); });
+        avatar.on('point', function (data) { controller.onPoint(client, avatar, data.point); });
+        avatar.on('score', function (data) { controller.onScore(client, avatar, data); });
+        avatar.trail.on('clear', function (data) { controller.onTrailClear(client, avatar); });
+    }
 };
 
 /**
@@ -1117,11 +1155,13 @@ GameController.prototype.detachEvents = function(client)
     client.socket.removeAllListeners('channel');
     client.socket.removeAllListeners('player:move');
 
-    client.avatar.removeAllListeners('die');
-    client.avatar.removeAllListeners('position');
-    client.avatar.removeAllListeners('point');
-    client.avatar.removeAllListeners('score');
-    client.avatar.trail.removeAllListeners('clear');
+    for (var i = client.players.items.length - 1; i >= 0; i--) {
+        client.players.items[i].avatar.removeAllListeners('die');
+        client.players.items[i].avatar.removeAllListeners('position');
+        client.players.items[i].avatar.removeAllListeners('point');
+        client.players.items[i].avatar.removeAllListeners('score');
+        client.players.items[i].avatar.trail.removeAllListeners('clear');
+    }
 };
 
 /**
@@ -1131,19 +1171,14 @@ GameController.prototype.detachEvents = function(client)
  */
 GameController.prototype.onGameLoaded = function(client)
 {
-    client.avatar.ready = true;
-
     var avatar;
 
     for (var i = client.game.avatars.ids.length - 1; i >= 0; i--) {
         avatar = client.game.avatars.items[i];
+        avatar.ready = true;
         this.io.sockets.in(client.room.game.channel).emit('position', {avatar: avatar.name, point: avatar.head});
         this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: avatar.name, angle: avatar.angle});
     }
-
-    console.log("emit");
-
-    client.socket.emit('me', {avatar: client.avatar.name});
 
     if (client.room.game.isReady()) {
         client.room.game.newRound();
@@ -1156,9 +1191,13 @@ GameController.prototype.onGameLoaded = function(client)
  * @param {SocketClient} client
  * @param {Number} move
  */
-GameController.prototype.onMove = function(client, move)
+GameController.prototype.onMove = function(client, data)
 {
-    client.avatar.setAngularVelocity(move);
+    var player = client.players.getbyId(data.avatar);
+
+    if (player && player.avatar) {
+        player.avatar.setAngularVelocity(move);
+    }
 };
 
 /**
@@ -1167,9 +1206,9 @@ GameController.prototype.onMove = function(client, move)
  * @param {SocketClient} client
  * @param {Array} point
  */
-GameController.prototype.onPosition = function(client, point)
+GameController.prototype.onPosition = function(client, avatar, point)
 {
-    this.io.sockets.in(client.room.game.channel).emit('position', {avatar: client.avatar.name, point: point});
+    this.io.sockets.in(client.room.game.channel).emit('position', {avatar: avatar.name, point: point});
 };
 
 /**
@@ -1180,7 +1219,7 @@ GameController.prototype.onPosition = function(client, point)
  */
 GameController.prototype.onAngle = function(client, angle)
 {
-    this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: client.avatar.name, angle: angle});
+    this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: avatar.name, angle: angle});
 };
 
 /**
@@ -1191,7 +1230,7 @@ GameController.prototype.onAngle = function(client, angle)
  */
 GameController.prototype.onPoint = function(client, point)
 {
-    this.io.sockets.in(client.room.game.channel).emit('point', {avatar: client.avatar.name, point: point});
+    this.io.sockets.in(client.room.game.channel).emit('point', {avatar: avatar.name, point: point});
 };
 
 /**
@@ -1199,9 +1238,9 @@ GameController.prototype.onPoint = function(client, point)
  *
  * @param {SocketClient} client
  */
-GameController.prototype.onDie = function(client)
+GameController.prototype.onDie = function(client, avatar)
 {
-    this.io.sockets.in(client.room.game.channel).emit('die', {avatar: client.avatar.name});
+    this.io.sockets.in(client.room.game.channel).emit('die', {avatar: avatar.name});
 };
 
 /**
@@ -1209,9 +1248,9 @@ GameController.prototype.onDie = function(client)
  *
  * @param {SocketClient} client
  */
-GameController.prototype.onScore = function(client, data)
+GameController.prototype.onScore = function(client, avatar, data)
 {
-    this.io.sockets.in(client.room.game.channel).emit('score', {avatar: client.avatar.name, score: data.score});
+    this.io.sockets.in(client.room.game.channel).emit('score', {avatar: avatar.name, score: data.score});
 };
 
 /**
@@ -1220,9 +1259,9 @@ GameController.prototype.onScore = function(client, data)
  * @param {SocketClient} client
  * @param {Array} point
  */
-GameController.prototype.onTrailClear = function(client)
+GameController.prototype.onTrailClear = function(client, avatar)
 {
-    this.io.sockets.in(client.room.game.channel).emit('trail:clear', {avatar: client.avatar.name});
+    this.io.sockets.in(client.room.game.channel).emit('trail:clear', {avatar: avatar.name});
 };
 
 // Game events:
@@ -1370,16 +1409,14 @@ RoomController.prototype.onCreateRoom = function(client, data, callback)
 RoomController.prototype.onJoinRoom = function(client, data, callback)
 {
     var room = this.repository.get(data.room),
-        result = false;
+        player = room ? client.joinRoom(room, data.player) : null;
 
-    if (room) {
-        result = client.joinRoom(room, data.player);
-    }
+    console.log(client.players.ids);
 
-    callback({success: result});
+    callback({success: player ? true : false});
 
-    if (result) {
-        this.io.sockets.in('rooms').emit('room:join', {room: room.name, player: client.player.serialize()});
+    if (player) {
+        this.io.sockets.in('rooms').emit('room:join', {room: room.name, player: player.serialize()});
     }
 };
 
@@ -1407,15 +1444,20 @@ RoomController.prototype.onLeaveRoom = function(client, data, callback)
  */
 RoomController.prototype.onColorRoom = function(client, data, callback)
 {
-    client.player.setColor(data.color);
+    var room = client.room,
+        player = client.players.getById(data.player);
 
-    callback({success: true, color: client.player.color});
+    if (room && player) {
+        player.setColor(data.color);
 
-    this.io.sockets.in('rooms').emit('room:player:color', {
-        room: client.room.name,
-        player: client.player.name,
-        color: client.player.color
-    });
+        callback({success: true, color: player.color});
+
+        this.io.sockets.in('rooms').emit('room:player:color', {
+            room: room.name,
+            player: player.name,
+            color: player.color
+        });
+    }
 };
 
 /**
@@ -1425,18 +1467,26 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
  */
 RoomController.prototype.onReadyRoom = function(client, data, callback)
 {
-    client.player.toggleReady();
+    var room = client.room,
+        player = client.players.getById(data.player);
 
-    callback({success: true, ready: client.player.ready});
+    console.log(client.players.ids);
 
-    this.io.sockets.in('rooms').emit('room:player:ready', {
-        room: client.room.name,
-        player: client.player.name,
-        ready: client.player.ready
-    });
+    if (room && player) {
+        player.toggleReady();
 
-    if (client.room.isReady()) {
-        this.warmupRoom(client.room);
+        callback({success: true, ready: player.ready});
+
+        this.io.sockets.in('rooms').emit('room:player:ready', {
+            room: room.name,
+            player: player.name,
+            ready: player.ready
+        });
+
+        console.log(room.isReady());
+        if (room.isReady()) {
+            this.warmupRoom(room);
+        }
     }
 };
 
@@ -1644,17 +1694,16 @@ Server.prototype.onSocketDisconnection = function(client)
  */
 function SocketClient(socket)
 {
-    this.id     = socket.id;
-    this.socket = socket;
-    this.player = new Player(this, this.id);
-    this.room   = null;
-    this.game   = null;
-    this.avatar = null;
+    this.id      = socket.id;
+    this.socket  = socket;
+    this.players = new Collection([], 'name');
+    this.room    = null;
+    this.game    = null; // ?
 
     this.onChannel = this.onChannel.bind(this);
 
     this.socket.on('channel', this.onChannel);
-    this.socket.emit('open');
+    this.socket.emit('open', this.id);
 }
 
 SocketClient.prototype = Object.create(EventEmitter.prototype);
@@ -1679,19 +1728,19 @@ SocketClient.prototype.onChannel = function(channel)
  */
 SocketClient.prototype.joinRoom = function(room, name)
 {
-    if (this.room) {
+    if (this.room !== room) {
         this.leaveRoom();
     }
 
     if (room.isNameAvailable(name)) {
         this.room = room;
 
-        this.player.setName(name);
-        this.player.toggleReady(false);
+        var player = new Player(this, name);
 
-        this.room.addPlayer(this.player);
+        this.room.addPlayer(player);
+        this.players.add(player);
 
-        return true;
+        return player;
     }
 
     return false;
@@ -1699,13 +1748,21 @@ SocketClient.prototype.joinRoom = function(room, name)
 
 /**
  * Leave room
- *
- * @return {[type]}
  */
 SocketClient.prototype.leaveRoom = function()
 {
-    if (this.room && this.room.removePlayer(this.player)) {
-        this.player.toggleReady(false);
+    if (this.room) {
+
+        this.leaveGame();
+
+        var player;
+
+        for (var i = this.players.items.length - 1; i >= 0; i--) {
+            player = this.players.items[i];
+            this.room.removePlayer(player);
+        }
+
+        this.players.clear();
         this.room = null;
     }
 };
@@ -1721,8 +1778,7 @@ SocketClient.prototype.joinGame = function(game)
         this.leaveGame();
     }
 
-    this.game   = game;
-    this.avatar = game.avatars.getById(this.player.name);
+    this.game = game;
 };
 
 /**
@@ -1730,9 +1786,15 @@ SocketClient.prototype.joinGame = function(game)
  */
 SocketClient.prototype.leaveGame = function()
 {
-    if (this.game && this.game.removeAvatar(this.avatar)) {
-        this.game   = null;
-        this.avatar = null;
+    if (this.game) {
+        var player;
+
+        for (var i = this.players.items.length - 1; i >= 0; i--) {
+            player = this.players.items[i];
+            this.game.removeAvatar(player.avatar);
+        }
+
+        this.game = null;
     }
 };
 /**
@@ -2219,9 +2281,7 @@ Player.prototype.constructor = Player;
  */
 function Player(client, name, color, mail)
 {
-    BasePlayer.call(this, name, color, mail);
-
-    this.client = client;
+    BasePlayer.call(this, client, name, color, mail);
 }
 /**
  * Room

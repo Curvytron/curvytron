@@ -7,14 +7,18 @@ function Avatar(player)
 {
     BaseAvatar.call(this, player);
 
-    this.me = false;
+    this.local = player.local;
 
-    this.path = new paper.Shape.Circle({
+    this.path  = new paper.Shape.Circle({
         center: [this.head[0] * paper.sceneScale, this.head[1] * paper.sceneScale],
         radius: this.radius * paper.sceneScale,
         fillColor: this.color,
         fullySelected: false
     });
+
+    if (this.local) {
+        this.input = new PlayerInput();
+    }
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
@@ -47,17 +51,15 @@ Avatar.prototype.setAngle = function(angle)
 };
 
 /**
- * Set me
+ * Set local
  *
- * @param {Boolean} me
+ * @param {Boolean} local
  */
-Avatar.prototype.setMe = function(me)
+Avatar.prototype.setLocal = function(local)
 {
-    this.me = me;
+    /*this.local = local;
 
-    if (this.me){
-        this.setArrow(true);
-    }
+    this.setArrow(local);*/
 };
 
 /**
@@ -91,7 +93,7 @@ Avatar.prototype.setArrow = function(toggle)
         this.arrow.remove();
     }
 
-    if (this.me && toggle) {
+    if (this.local && toggle) {
         this.arrow = new paper.Group({
             children: [
                 new paper.Path([[20, -10], [30, 0], [20, 10]]),

@@ -20,9 +20,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="player in room.players.items">
+                <tr ng-repeat="player in room.players.items" ng-class="{ local: player.local }">
                     <td class="text-center">
-                        <span class="player-ready" ng-class="{ ready: player.ready }" ng-model="ready" ng-click="setReady(player.name)">
+                        <span class="player-ready" ng-class="{ ready: player.ready }" ng-click="setReady(player)">
                             <i ng-if="player.ready == true" class="icon-check success"></i>
                             <i ng-if="player.ready == false" class="icon-close success"></i>
                         </span>
@@ -32,8 +32,8 @@
                     </td>
                     <td>
                         <span class="color-preview" style="background-color: {{ player.color }};"></span>
-                        {{ player.color }}
-                        <input type="text" ng-model="color" ng-change="setColor(player.name)" class="form-control" name="color" placeholder="#CCCCCC" />
+                        <p ng-if="!player.local">{{ player.color }}</p>
+                        <input type="text" ng-if="player.local" ng-model="player.color" ng-change="setColor(player)" class="form-control" name="color" placeholder="#CCCCCC" />
                     </td>
                 </tr>
             </tbody>
