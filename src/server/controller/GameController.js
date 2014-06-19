@@ -260,9 +260,6 @@ GameController.prototype.onDie = function(data)
 };
 
 /**
-};
-
-/**
  * On bonus pop
  *
  * @param {SocketClient} game
