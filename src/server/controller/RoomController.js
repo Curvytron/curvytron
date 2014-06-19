@@ -34,11 +34,15 @@ RoomController.prototype.detach = function(client)
     this.detachEvents(client);
 
     if (client.room) {
+
         if (client.room.game) {
             this.gameController.detach(client, client.room.game);
         }
 
-        this.io.sockets.in('rooms').emit('room:leave', {room: client.room.name, player: client.player.name});
+        for (var i = client.players.items.length - 1; i >= 0; i--) {
+            this.io.sockets.in('rooms').emit('room:leave', {room: client.room.name, player: client.players.items[i].name});
+        }
+
         client.leaveRoom();
     }
 };

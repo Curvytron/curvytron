@@ -9,7 +9,7 @@ function SocketClient(socket)
     this.socket  = socket;
     this.players = new Collection([], 'name');
     this.room    = null;
-    this.game    = null; // ?
+    this.game    = null;
 
     this.onChannel = this.onChannel.bind(this);
 
