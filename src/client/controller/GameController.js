@@ -285,7 +285,7 @@ GameController.prototype.onEnd = function()
     document.getElementById('round-view').style.display = 'none';
 
     var win = createjs.Sound.play("win");
-    win.volume = 0.6;
+    win.volume = 0.3;
 
     paper.view.draw();
 };
