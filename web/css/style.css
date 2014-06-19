@@ -2930,7 +2930,7 @@ header {
   text-align: center;
   font-size: 60px;
   line-height: 60px;
-  padding: 100px 40px;
+  padding: 80px 40px;
   margin: 0 0 30px 0;
   -webkit-transition: all 0.2s ease;
   -o-transition: all 0.2s ease;
@@ -2939,7 +2939,8 @@ header {
   -o-animation: headerRainbow 20s infinite;
   animation: headerRainbow 20s infinite; }
   header a, header a:visited {
-    color: #FFF; }
+    color: #FFF;
+    line-height: 100px; }
     header a.animated:after, header a:visited.animated:after {
       height: 3px;
       background: #FFF; }
