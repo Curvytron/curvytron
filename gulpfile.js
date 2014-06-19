@@ -25,6 +25,7 @@ var gulp      = require('gulp'),
             './bower_components/tom32i-option-resolver.js/dist/option-resolver.min.js',
             './bower_components/tom32i-gamepad.js/dist/gamepad.min.js',
             './bower_components/tom32i-key-mapper.js/dist/key-mapper.min.js',
+            './bower_components/lodash/dist/lodash.min.js'
         ],
         recipes    = {
             server: require('./recipes/server.json'),
@@ -90,10 +91,8 @@ gulp.task('server', function() {
 
 gulp.task('nodemon', function () {
     nodemon({ watch: recipes.server.files, ext: 'js', script: 'bin/curvytron.js', restartable: "rs"})
-        .on('change', ['server'])
-        .on('restart', function () {
-            console.log('restarted!')
-        })
+        .on('change', ['server', 'front-expose', 'front-full'])
+        .on('restart', ['default'])
 })
 
 gulp.task('sass-full', function() {
@@ -120,4 +119,4 @@ gulp.task('watch', ['dev', 'views', 'sass-full'], function () {
 });
 
 gulp.task('default', ['jshint', 'server', 'front-expose', 'views', 'front-min', 'sass-min']);
-gulp.task('dev', ['jshint', 'server', 'views', 'front-full', 'sass-full']);
+gulp.task('dev', ['jshint', 'server', 'front-expose', 'views', 'front-full', 'sass-full']);
