@@ -31,6 +31,9 @@
             font-size: 30px;
             text-align: left;
             display: block !important;
+            a {
+                line-height: auto;
+            }
             a:hover {
                 text-decoration: none;
             }

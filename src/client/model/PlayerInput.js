@@ -1,10 +1,11 @@
 /**
  * Player input
  */
-function PlayerInput()
+function PlayerInput(avatar)
 {
     EventEmitter.call(this);
 
+    this.avatar = avatar;
     this.key    = false;
     this.active = [false, false];
     this.move   = 0;
@@ -86,5 +87,5 @@ PlayerInput.prototype.setMove = function(move)
 {
     this.move = move;
 
-    this.emit('move', move);
+    this.emit('move', {avatar: this.avatar, move: move});
 };

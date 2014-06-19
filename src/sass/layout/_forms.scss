@@ -76,7 +76,7 @@ select[size] {
   font-family: $base-font-family;
   background-color: $input-bg;
   background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
-  border: 1px solid $input-border;
+  border: 2px solid $input-border;
   border-radius: $input-border-radius;
   @include transition(border-color ease-in-out .15s, box-shadow ease-in-out .15s);
   -webkit-appearance: none; // Removed iOS inner shadow.

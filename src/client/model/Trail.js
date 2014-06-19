@@ -2,9 +2,9 @@
  * Trail
  * @constructor
  */
-function Trail(color, radius)
+function Trail(avatar)
 {
-    BaseTrail.call(this, color, radius);
+    BaseTrail.call(this, avatar);
 
     this.path  = null;
     this.paths = [];

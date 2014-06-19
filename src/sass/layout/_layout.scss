@@ -40,12 +40,13 @@ header {
   text-align: center;
   font-size: 60px;
   line-height: 60px;
-  padding: 100px 40px;
+  padding: 80px 40px;
   margin: 0 0 30px 0;
   @include transition(all 0.2s ease);
   @include animation(headerRainbow 20s infinite);
   a, a:visited {
     color: $header-color;
+    line-height: 100px;
     &.animated {
       &:after {
         height: 3px;

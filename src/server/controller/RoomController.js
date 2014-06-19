@@ -101,16 +101,12 @@ RoomController.prototype.onCreateRoom = function(client, data, callback)
 RoomController.prototype.onJoinRoom = function(client, data, callback)
 {
     var room = this.repository.get(data.room),
-        result = false;
+        player = room ? client.joinRoom(room, data.player) : null;
 
-    if (room) {
-        result = client.joinRoom(room, data.player);
-    }
+    callback({success: player ? true : false});
 
-    callback({success: result});
-
-    if (result) {
-        this.io.sockets.in('rooms').emit('room:join', {room: room.name, player: client.player.serialize()});
+    if (player) {
+        this.io.sockets.in('rooms').emit('room:join', {room: room.name, player: player.serialize()});
     }
 };
 
@@ -138,15 +134,20 @@ RoomController.prototype.onLeaveRoom = function(client, data, callback)
  */
 RoomController.prototype.onColorRoom = function(client, data, callback)
 {
-    client.player.setColor(data.color);
+    var room = client.room,
+        player = client.players.getById(data.player);
 
-    callback({success: true, color: client.player.color});
+    if (room && player) {
+        player.setColor(data.color);
 
-    this.io.sockets.in('rooms').emit('room:player:color', {
-        room: client.room.name,
-        player: client.player.name,
-        color: client.player.color
-    });
+        callback({success: true, color: player.color});
+
+        this.io.sockets.in('rooms').emit('room:player:color', {
+            room: room.name,
+            player: player.name,
+            color: player.color
+        });
+    }
 };
 
 /**
@@ -156,18 +157,23 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
  */
 RoomController.prototype.onReadyRoom = function(client, data, callback)
 {
-    client.player.toggleReady();
+    var room = client.room,
+        player = client.players.getById(data.player);
 
-    callback({success: true, ready: client.player.ready});
+    if (room && player) {
+        player.toggleReady();
 
-    this.io.sockets.in('rooms').emit('room:player:ready', {
-        room: client.room.name,
-        player: client.player.name,
-        ready: client.player.ready
-    });
+        callback({success: true, ready: player.ready});
 
-    if (client.room.isReady()) {
-        this.warmupRoom(client.room);
+        this.io.sockets.in('rooms').emit('room:player:ready', {
+            room: room.name,
+            player: player.name,
+            ready: player.ready
+        });
+
+        if (room.isReady()) {
+            this.warmupRoom(room);
+        }
     }
 };
 
@@ -182,8 +188,11 @@ RoomController.prototype.warmupRoom = function(room)
 
     this.gameController.addGame(room.newGame());
 
-    for (var i = room.players.ids.length - 1; i >= 0; i--) {
-        this.detachEvents(room.players.items[i].client);
-        this.gameController.attach(room.players.items[i].client, room.game);
+    var client;
+
+    for (var i = room.clients.items.length - 1; i >= 0; i--) {
+        client = room.clients.items[i];
+        this.detachEvents(client);
+        this.gameController.attach(client, room.game);
     }
 };

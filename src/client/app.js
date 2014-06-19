@@ -10,7 +10,7 @@ curvytronApp.controller('CurvytronController', ['$scope', function($scope) {
 
 curvytronApp.controller(
     'RoomsController',
-    ['$scope', 'RoomRepository', 'SocketClient', RoomsController]
+    ['$scope', '$location', 'RoomRepository', 'SocketClient', RoomsController]
 );
 curvytronApp.controller(
     'RoomController',
