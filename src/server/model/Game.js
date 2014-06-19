@@ -30,6 +30,9 @@ function Game(room)
 
 Game.prototype = Object.create(BaseGame.prototype);
 
+Game.prototype.bonusCap         = 10;
+Game.prototype.bonusPoppingRate = 0.1;
+
 /**
  * Trail latency
  *
@@ -46,7 +49,7 @@ Game.prototype.update = function(step)
 {
     BaseGame.prototype.update.call(this, step);
 
-    var avatar;
+    var avatar, bonus;
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
@@ -187,7 +190,7 @@ Game.prototype.endRound = function()
 Game.prototype.newRound = function()
 {
     if (!this.inRound) {
-        var avatar;
+        var avatar, bonus, position;
 
         this.world.clear();
 
@@ -200,6 +203,13 @@ Game.prototype.newRound = function()
             avatar.clear();
             avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
             avatar.setAngle(Math.random() * Math.PI * 2);
+        }
+
+        for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
+            bonus = this.bonuses.items[i];
+            bonus.clear();
+            this.emit('bonus:clear', bonus.serialize());
+            this.bonuses.removeById(bonus.id);
         }
 
         BaseGame.prototype.newRound.call(this);
@@ -222,6 +232,14 @@ Game.prototype.onStart = function()
 
     BaseGame.prototype.onStart.call(this);
 };
+
+Game.prototype.chancePercent = function (percentTrue) {
+    percentTrue = percentTrue || 100;
+    if(Math.floor(Math.random()*101) <= percentTrue) {
+        return true;
+    }
+    return false;
+}
 
 /**
  * FIN DU GAME
