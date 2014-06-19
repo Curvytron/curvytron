@@ -3,3 +3,4 @@ bower_components/*
 .idea/*
 web/css/*
 web/js/*
+bin/*
