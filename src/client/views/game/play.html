@@ -2,9 +2,9 @@
     <section id="game-wrapper">
         <aside id="game-infos">
             <header><a href="/">Curvytron</a></header>
-            <h3>{{ roomName }}</h3>
+            <h3>{{ game.name }}</h3>
             <ul id="game-players">
-                <li ng-repeat="avatar in avatars | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
+                <li ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="color-preview" style="background-color: {{ avatar.color }};"></span>
                     {{ avatar.name }}
                     <span class="score">{{ avatar.score }}</span>
@@ -28,12 +28,12 @@
                 </section>
                 <section id="game-view">
                     <i class="icon-trophy"></i>
-                    <p ng-repeat="avatar in avatars | orderBy:sortorder" ng-show="$first">
+                    <p ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-show="$first">
                         <span class="strong" style="color: {{ avatar.color }}">{{ avatar.name }}</span> won the game !
                     </p>
                     <table class="table table-hover recap">
                         <tbody>
-                            <tr ng-repeat="avatar in avatars | orderBy:sortorder">
+                            <tr ng-repeat="avatar in game.avatars.items | orderBy:sortorder">
                                 <td class="rank">{{ $index + 1 }}</td>
                                 <td class="name"><span style="color: {{ avatar.color }}">{{ avatar.name }}</span></td>
                                 <td class="points"><strong>{{ avatar.score }}</strong> points</td>

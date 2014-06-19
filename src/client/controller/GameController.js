@@ -3,26 +3,26 @@
  *
  * @param {Object} $scope
  * @param {Object} $routeParams
- * @param {RoomRepository} RoomRepository
- * @param {SocketClient} SocketClient
+ * @param {RoomRepository} repository
+ * @param {SocketClient} client
  */
-function GameController($scope, $routeParams, RoomRepository, SocketClient)
+function GameController($scope, $routeParams, repository, client)
 {
-    this.$scope           = $scope;
-    this.repository       = RoomRepository;
-    this.client           = SocketClient;
-    this.name             = $routeParams.name;
-    this.input            = new PlayerInput();
-    this.$scope.sortorder = "-score";
+    this.$scope     = $scope;
+    this.repository = repository;
+    this.client     = client;
+    this.input      = new PlayerInput();
 
-    this.audioPath = "../sounds/";
-    this.manifest = [
-        {id:"loose", src:"loose.ogg"},
-        {id:"win",   src:"win.ogg"}
-    ];
+    createjs.Sound.alternateExtensions = ["mp3"];
+    createjs.Sound.registerManifest(
+        [
+            {id:"loose", src:"loose.ogg"},
+            {id:"win", src:"win.ogg"}
+        ],
+        "../sounds/"
+    );
 
-    this.client.join('game:' + this.name);
-
+    // Binding
     this.onMove        = this.onMove.bind(this);
     this.onPosition    = this.onPosition.bind(this);
     this.onAngle       = this.onAngle.bind(this);
@@ -40,6 +40,20 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
     this.onMe          = this.onMe.bind(this);
 
     this.input.on('move', this.onMove);
+
+    this.attachSocketEvents();
+
+    // Hydrate scope:
+    this.$scope.sortorder = "-score";
+
+    this.loadGame($routeParams.name);
+}
+
+/**
+ * Attach socket Events
+ */
+GameController.prototype.attachSocketEvents = function()
+{
     this.client.io.on('me', this.onMe);
     this.client.io.on('position', this.onPosition);
     this.client.io.on('angle', this.onAngle);
@@ -52,33 +66,27 @@ function GameController($scope, $routeParams, RoomRepository, SocketClient)
     this.client.io.on('round:winner', this.onRoundWinner);
     this.client.io.on('end', this.onEnd);
     this.client.io.on('game:leave', this.onLeave);
-
-    this.loadGame();
-}
+};
 
 /**
  * Rooms action
  *
  * @return {Array}
  */
-GameController.prototype.loadGame = function()
+GameController.prototype.loadGame = function(name)
 {
-    var room = this.repository.get(this.name);
+    var room = this.repository.get(name);
 
     this.room = room;
     this.game = room.newGame();
 
     this.game.fps.setElement(document.getElementById('fps'));
 
+    // Hydrate scope:
     this.$scope.curvytron.bodyClass = "game-mode";
+    this.$scope.game = this.game;
 
-    this.$scope.game     = this.game;
-    this.$scope.avatars  = this.game.avatars.items;
-    this.$scope.roomName = this.game.name;
-
-    createjs.Sound.alternateExtensions = ["mp3"];
-    createjs.Sound.registerManifest(this.manifest, this.audioPath);
-
+    this.client.join('game:' + name);
     this.client.io.emit('loaded');
 };
 
@@ -91,7 +99,7 @@ GameController.prototype.displayWarmup = function(time)
 
     this.$scope.count       = time/1000;
     this.$scope.countFinish = false;
-    this.$scope.$apply();
+    this.applyScope();
 
     var warmupInterval = setInterval(this.onWarmup, 1000);
 
@@ -118,7 +126,9 @@ GameController.prototype.endWarmup = function(interval)
 
     if (this.warmupInterval === interval) {
         this.$scope.countFinish = true;
-        this.$scope.$apply();
+        this.applyScope();
+    } else {
+        console.log(this.warmupInterval, interval);
     }
 };
 
@@ -207,7 +217,8 @@ GameController.prototype.onDie = function(data)
 
     if (avatar) {
         avatar.die();
-        this.$scope.$apply();
+        this.applyScope();
+
         var loose = createjs.Sound.play("loose");
         loose.volume = 0.2;
     }
@@ -224,7 +235,7 @@ GameController.prototype.onScore = function(data)
 
     if (avatar) {
         avatar.setScore(data.score);
-        this.$scope.$apply();
+        this.applyScope();
     }
 };
 
@@ -252,8 +263,8 @@ GameController.prototype.onRoundNew = function()
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
 
-    document.getElementById('end').style.display = 'none';
-    document.getElementById('game-view').style.display = 'none';
+    document.getElementById('end').style.display        = 'none';
+    document.getElementById('game-view').style.display  = 'none';
     document.getElementById('round-view').style.display = 'none';
 
     paper.view.draw();
@@ -300,8 +311,9 @@ GameController.prototype.onRoundWinner = function(data)
     var avatar = this.game.avatars.getById(data.winner);
 
     if (avatar) {
-        this.$scope.roundWinner = avatar.serialize();
-        this.$scope.$apply();
+        this.$scope.roundWinner = avatar;
+        this.applyScope();
+
         document.getElementById('end').style.display = 'block';
         document.getElementById('round-view').style.display = 'block';
     }
@@ -318,6 +330,14 @@ GameController.prototype.onLeave = function(data)
 
     if (avatar) {
         this.game.removeAvatar(avatar);
-        this.$scope.$apply();
+        this.applyScope();
     }
+};
+
+/**
+ * Apply scope
+ */
+GameController.prototype.applyScope = function()
+{
+    this.$scope.$apply();
 };

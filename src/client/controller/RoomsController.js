@@ -1,61 +1,53 @@
-function RoomsController($scope, RoomRepository, SocketClient)
+/**
+ * Rooms Controller
+ *
+ * @param {Object} $scope
+ * @param {Object} $location
+ * @param {RoomRepository} repository
+ * @param {SocketClient} client
+ */
+function RoomsController($scope, $location, repository, client)
 {
+    console.log("on rooms");
+
     this.$scope     = $scope;
-    this.repository = RoomRepository;
-    this.client     = SocketClient;
+    this.$location  = $location;
+    this.repository = repository;
+    this.client     = client;
 
     this.client.join('rooms');
 
-    this.loadRooms = this.loadRooms.bind(this);
+    // Binding:
     this.createRoom = this.createRoom.bind(this);
-    this.joinRoom = this.joinRoom.bind(this);
+    this.joinRoom   = this.joinRoom.bind(this);
+    this.applyScope = this.applyScope.bind(this);
 
-    this.repository.on('room:new', this.loadRooms);
-    this.repository.on('room:close', this.loadRooms);
-    this.repository.on('room:join', this.loadRooms);
-    this.repository.on('room:leave', this.loadRooms);
-    this.repository.on('room:player:ready', this.loadRooms);
-    this.repository.on('room:player:color', this.loadRooms);
+    this.repository.on('room:new', this.applyScope);
+    this.repository.on('room:close', this.applyScope);
+    this.repository.on('room:join', this.applyScope);
+    this.repository.on('room:leave', this.applyScope);
 
+    // Hydrating the scope:
+    this.$scope.rooms  = this.repository.rooms;
     this.$scope.submit = this.createRoom;
     this.$scope.join   = this.joinRoom;
 
-    this.loadRooms();
+    this.$scope.curvytron.bodyClass = null;
 }
 
 /**
- * Rooms action
- *
- * @return {Array}
- */
-RoomsController.prototype.loadRooms = function(e)
-{
-    this.$scope.rooms = this.repository.all().map(function () {
-        return this.serialize();
-    }).items;
-
-    this.$scope.curvytron.bodyClass = null;
-
-    if (typeof(e) !== 'undefined') {
-        this.$scope.$apply();
-    }
-};
-
-/**
- * Rooms action
- *
- * @return {Array}
+ * Create a room
  */
 RoomsController.prototype.createRoom = function(e)
 {
     if (this.$scope.name) {
-        var $scope = this.$scope;
+        var $scope = this.$scope,
+            controller = this;
 
         this.repository.create(this.$scope.name, function (result) {
             if (result.success) {
                 $scope.name = null;
-                $scope.$apply();
-                window.location = "/#/room/" + result.room;
+                controller.joinRoom({name: result.room});
             } else {
                 console.log('Error');
             }
@@ -64,11 +56,17 @@ RoomsController.prototype.createRoom = function(e)
 };
 
 /**
- * Join room
- *
- * @return {Array}
+ * Join a room
  */
 RoomsController.prototype.joinRoom = function(room)
 {
-    window.location = "/#/room/" + room.name;
+    this.$location.path('/room/' + room.name);
+};
+
+/**
+ * Apply scope
+ */
+RoomsController.prototype.applyScope = function()
+{
+    this.$scope.$apply();
 };

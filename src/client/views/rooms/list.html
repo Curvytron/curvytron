@@ -16,17 +16,17 @@
         </h1>
         <table id="rooms" class="table table-striped table-hover v-align-middle">
             <tbody>
-                <tr ng-repeat="room in rooms" ng-click="join(room)">
+                <tr ng-repeat="room in rooms.items" ng-click="join(room)">
                     <td><h3><a href="#/room/{{ room.name }}">{{ room.name }}</a></h3></td>
                     <td>
                         <h4>
-                            <ng-pluralize count="room.players.length "
+                            <ng-pluralize count="room.players.items.length "
                                              when="{'0': 'No player',
                                                  'one': '1 player',
                                                  'other': '{} players'}">
                         </h4>
                         <ul class="no-bullet inline">
-                            <li class="player-row" ng-repeat="player in room.players">
+                            <li class="player-row" ng-repeat="player in room.players.items">
                                 <span class="mr20">{{ player.name }}</span>
                             </li>
                         </ul>

@@ -57,12 +57,6 @@ gulp.task('front-full', function() {
         .pipe(concat(recipes.client.name))
         .pipe(header(banner, meta))
         .pipe(gulp.dest(recipes.client.path));
-
-    gulp.src('src/client/fixtures/*.json')
-        .pipe(gulp.dest(jsDir + 'fixtures'));
-
-    gulp.src('src/client/views/**/*')
-        .pipe(gulp.dest(jsDir + 'views'));
 });
 
 gulp.task('front-min', function(){
@@ -71,10 +65,9 @@ gulp.task('front-min', function(){
         .pipe(uglify())
         .pipe(header(banner, meta))
         .pipe(gulp.dest(recipes.client.path));
+});
 
-    gulp.src('src/client/fixtures/*.json')
-        .pipe(gulp.dest(jsDir + 'fixtures'));
-
+gulp.task('views', function(){
     gulp.src('src/client/views/**/*')
         .pipe(gulp.dest(jsDir + 'views'));
 });
@@ -116,10 +109,11 @@ gulp.task('sass-min', function() {
     .pipe(gulp.dest(cssDir));
 });
 
-gulp.task('watch', ['dev', 'sass-full'], function () {
+gulp.task('watch', ['dev', 'views', 'sass-full'], function () {
     gulp.watch('src/**/*.js', ['dev']);
+    gulp.watch('src/client/views/**/*', ['views']);
     gulp.watch('src/**/*.scss', ['sass-full']);
 });
 
-gulp.task('default', ['jshint', 'server', 'front-expose', 'front-min', 'sass-min']);
-gulp.task('dev', ['jshint', 'server', 'front-full', 'sass-full']);
+gulp.task('default', ['jshint', 'server', 'front-expose', 'views', 'front-min', 'sass-min']);
+gulp.task('dev', ['jshint', 'server', 'views', 'front-full', 'sass-full']);
