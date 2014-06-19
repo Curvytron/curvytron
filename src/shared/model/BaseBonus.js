@@ -16,11 +16,17 @@ function BaseBonus(name, color, radius)
     this.positive        = true;
 
     this.position        = [this.radius, this.radius];
+
+    this.printing        = false;
+    this.printingTimeout = null;
+    this.mask            = 0;
 }
 
 BaseBonus.prototype = Object.create(EventEmitter.prototype);
 
 BaseBonus.prototype.precision      = 1;
+BaseBonus.prototype.noPrintingTime = 200;
+BaseBonus.prototype.printingTime   = 3000;
 BaseBonus.prototype.defaultName    = 'Bonus';
 BaseBonus.prototype.defaultColor   = '#7CFC00';
 BaseBonus.prototype.defaultRadius  = 1.2;
