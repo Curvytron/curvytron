@@ -2940,6 +2940,9 @@ header {
   animation: headerRainbow 20s infinite; }
   header a, header a:visited {
     color: #FFF; }
+    header a.animated:after, header a:visited.animated:after {
+      height: 3px;
+      background: #FFF; }
   header .game-copy {
     display: none; }
 
@@ -2952,6 +2955,9 @@ footer {
     cursor: pointer; }
     footer a, footer a:visited {
       color: #919ea3; }
+    footer a.animated:after {
+      height: 1px;
+      background: #919ea3; }
 
 body.game-mode header, body.game-mode footer {
   display: none; }
@@ -4038,6 +4044,22 @@ a, a:visited {
   text-decoration: none; }
 a:hover {
   text-decoration: underline; }
+a.animated {
+  text-decoration: none;
+  display: inline-block; }
+  a.animated:after {
+    content: '';
+    display: block;
+    height: 1px;
+    width: 0;
+    margin-left: 50%;
+    background-color: #75858C;
+    -webkit-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease; }
+  a.animated:hover:after, a.animated.active:after {
+    width: 100%;
+    margin-left: 0; }
 
 .btn-default:hover, .btn-default.active {
   background: #75858C;

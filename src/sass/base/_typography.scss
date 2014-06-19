@@ -118,4 +118,24 @@ a {
   &:hover {
     text-decoration: underline;
   }
+
+  &.animated {
+    text-decoration: none;
+    display: inline-block;
+    &:after {
+      content: '';
+      display: block;
+      height: 1px;
+      width: 0;
+      margin-left: 50%;
+      background-color: $link-color;
+      @include transition(all 0.2s ease);
+    }
+    &:hover, &.active {
+      &:after {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+  }
 }

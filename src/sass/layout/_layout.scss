@@ -46,6 +46,12 @@ header {
   @include animation(headerRainbow 20s infinite);
   a, a:visited {
     color: $header-color;
+    &.animated {
+      &:after {
+        height: 3px;
+        background: $header-color;
+      }
+    }
   }
   .game-copy {
     display: none;
@@ -62,6 +68,12 @@ footer {
     cursor: pointer;
     &, &:visited {
       color: $footer-color;
+    }
+    &.animated {
+      &:after {
+        height: 1px;
+        background: $footer-color;
+      }
     }
   }
 }
