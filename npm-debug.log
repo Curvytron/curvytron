@@ -1,0 +1,151 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'install' ]
+2 info using npm@1.4.9
+3 info using node@v0.10.28
+4 warn package.json curvytron@0.0.1 No repository field.
+5 verbose readDependencies using package.json deps
+6 verbose install where, deps [ '/Volumes/Elao/workspace/misc/curvytron',
+6 verbose install   [ 'socket.io',
+6 verbose install     'express',
+6 verbose install     'gulp',
+6 verbose install     'gulp-concat',
+6 verbose install     'gulp-header',
+6 verbose install     'gulp-jshint',
+6 verbose install     'gulp-uglify',
+6 verbose install     'gulp-plumber',
+6 verbose install     'gulp-rename',
+6 verbose install     'gulp-sass',
+6 verbose install     'gulp-util',
+6 verbose install     'gulp-minify-css',
+6 verbose install     'gulp-nodemon' ] ]
+7 info preinstall curvytron@0.0.1
+8 verbose readDependencies using package.json deps
+9 verbose already installed skipping gulp-header@^1.0.* /Volumes/Elao/workspace/misc/curvytron
+10 verbose already installed skipping socket.io@^1.0.4 /Volumes/Elao/workspace/misc/curvytron
+11 verbose already installed skipping express@~4.4.2 /Volumes/Elao/workspace/misc/curvytron
+12 verbose already installed skipping gulp-jshint@^1.6.* /Volumes/Elao/workspace/misc/curvytron
+13 verbose already installed skipping gulp@^3.7.* /Volumes/Elao/workspace/misc/curvytron
+14 verbose already installed skipping gulp-concat@^2.2.* /Volumes/Elao/workspace/misc/curvytron
+15 verbose already installed skipping gulp-uglify@^0.3.* /Volumes/Elao/workspace/misc/curvytron
+16 verbose already installed skipping gulp-plumber@^0.5.6 /Volumes/Elao/workspace/misc/curvytron
+17 verbose already installed skipping gulp-rename@^1.2.0 /Volumes/Elao/workspace/misc/curvytron
+18 verbose already installed skipping gulp-sass@^0.7.1 /Volumes/Elao/workspace/misc/curvytron
+19 verbose already installed skipping gulp-util@^2.2.14 /Volumes/Elao/workspace/misc/curvytron
+20 verbose already installed skipping gulp-minify-css@~0.3.4 /Volumes/Elao/workspace/misc/curvytron
+21 verbose already installed skipping gulp-nodemon@~1.0.4 /Volumes/Elao/workspace/misc/curvytron
+22 silly resolved []
+23 info build /Volumes/Elao/workspace/misc/curvytron
+24 verbose linkStuff [ false, false, false, '/Volumes/Elao/workspace/misc' ]
+25 info linkStuff curvytron@0.0.1
+26 verbose linkBins curvytron@0.0.1
+27 verbose linkMans curvytron@0.0.1
+28 verbose rebuildBundles curvytron@0.0.1
+29 verbose rebuildBundles [ '.bin',
+29 verbose rebuildBundles   'bower',
+29 verbose rebuildBundles   'express',
+29 verbose rebuildBundles   'gulp',
+29 verbose rebuildBundles   'gulp-concat',
+29 verbose rebuildBundles   'gulp-header',
+29 verbose rebuildBundles   'gulp-jshint',
+29 verbose rebuildBundles   'gulp-minify-css',
+29 verbose rebuildBundles   'gulp-nodemon',
+29 verbose rebuildBundles   'gulp-plumber',
+29 verbose rebuildBundles   'gulp-rename',
+29 verbose rebuildBundles   'gulp-sass',
+29 verbose rebuildBundles   'gulp-uglify',
+29 verbose rebuildBundles   'gulp-util',
+29 verbose rebuildBundles   'gulp-watch',
+29 verbose rebuildBundles   'socket.io' ]
+30 verbose rebuild bundle /Volumes/Elao/workspace/misc/curvytron/node_modules/bower
+31 info build /Volumes/Elao/workspace/misc/curvytron/node_modules/bower
+32 info preinstall bower@1.3.5
+33 verbose linkStuff [ false,
+33 verbose linkStuff   false,
+33 verbose linkStuff   false,
+33 verbose linkStuff   '/Volumes/Elao/workspace/misc/curvytron/node_modules' ]
+34 info linkStuff bower@1.3.5
+35 warn prefer global bower@1.3.5 should be installed with -g
+36 verbose linkBins bower@1.3.5
+37 verbose link bins [ { bower: 'bin/bower' },
+37 verbose link bins   '/Volumes/Elao/workspace/misc/curvytron/node_modules/.bin',
+37 verbose link bins   false ]
+38 verbose linkMans bower@1.3.5
+39 verbose rebuildBundles bower@1.3.5
+40 verbose rebuildBundles [ '.bin',
+40 verbose rebuildBundles   'abbrev',
+40 verbose rebuildBundles   'archy',
+40 verbose rebuildBundles   'bower-config',
+40 verbose rebuildBundles   'bower-endpoint-parser',
+40 verbose rebuildBundles   'bower-json',
+40 verbose rebuildBundles   'bower-logger',
+40 verbose rebuildBundles   'bower-registry-client',
+40 verbose rebuildBundles   'cardinal',
+40 verbose rebuildBundles   'chalk',
+40 verbose rebuildBundles   'chmodr',
+40 verbose rebuildBundles   'decompress-zip',
+40 verbose rebuildBundles   'fstream',
+40 verbose rebuildBundles   'fstream-ignore',
+40 verbose rebuildBundles   'glob',
+40 verbose rebuildBundles   'graceful-fs',
+40 verbose rebuildBundles   'handlebars',
+40 verbose rebuildBundles   'inquirer',
+40 verbose rebuildBundles   'insight',
+40 verbose rebuildBundles   'is-root',
+40 verbose rebuildBundles   'junk',
+40 verbose rebuildBundles   'lockfile',
+40 verbose rebuildBundles   'lru-cache',
+40 verbose rebuildBundles   'mkdirp',
+40 verbose rebuildBundles   'mout',
+40 verbose rebuildBundles   'nopt',
+40 verbose rebuildBundles   'opn',
+40 verbose rebuildBundles   'osenv',
+40 verbose rebuildBundles   'p-throttler',
+40 verbose rebuildBundles   'promptly',
+40 verbose rebuildBundles   'q',
+40 verbose rebuildBundles   'request',
+40 verbose rebuildBundles   'request-progress',
+40 verbose rebuildBundles   'retry',
+40 verbose rebuildBundles   'rimraf',
+40 verbose rebuildBundles   'semver',
+40 verbose rebuildBundles   'shell-quote',
+40 verbose rebuildBundles   'stringify-object',
+40 verbose rebuildBundles   'tar',
+40 verbose rebuildBundles   'tmp',
+40 verbose rebuildBundles   'update-notifier',
+40 verbose rebuildBundles   'which' ]
+41 info install bower@1.3.5
+42 info postinstall bower@1.3.5
+43 verbose rebuild bundle /Volumes/Elao/workspace/misc/curvytron/node_modules/gulp-watch
+44 info build /Volumes/Elao/workspace/misc/curvytron/node_modules/gulp-watch
+45 info preinstall gulp-watch@0.5.4
+46 verbose linkStuff [ false,
+46 verbose linkStuff   false,
+46 verbose linkStuff   false,
+46 verbose linkStuff   '/Volumes/Elao/workspace/misc/curvytron/node_modules' ]
+47 info linkStuff gulp-watch@0.5.4
+48 verbose linkBins gulp-watch@0.5.4
+49 verbose linkMans gulp-watch@0.5.4
+50 verbose rebuildBundles gulp-watch@0.5.4
+51 verbose rebuildBundles [ 'gaze', 'glob2base', 'gulp-batch', 'minimatch', 'vinyl-fs' ]
+52 info install gulp-watch@0.5.4
+53 info postinstall gulp-watch@0.5.4
+54 info install curvytron@0.0.1
+55 verbose unsafe-perm in lifecycle true
+56 info curvytron@0.0.1 Failed to exec install script
+57 error curvytron@0.0.1 install: `bower install`
+57 error Exit status 8
+58 error Failed at the curvytron@0.0.1 install script.
+58 error This is most likely a problem with the curvytron package,
+58 error not with npm itself.
+58 error Tell the author that this fails on your system:
+58 error     bower install
+58 error You can get their info via:
+58 error     npm owner ls curvytron
+58 error There is likely additional logging output above.
+59 error System Darwin 13.0.0
+60 error command "node" "/usr/local/bin/npm" "install"
+61 error cwd /Volumes/Elao/workspace/misc/curvytron
+62 error node -v v0.10.28
+63 error npm -v 1.4.9
+64 error code ELIFECYCLE
+65 verbose exit [ 1, true ]

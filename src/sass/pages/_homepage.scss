@@ -92,8 +92,7 @@ li.player-row {
                 margin-right: 5px;
             }
             &.ready {
-                color: $color-success;
-                &:hover {
+                &, &:hover {
                     color: #FFF;
                     background: $color-success;
                 }
