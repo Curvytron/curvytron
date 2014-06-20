@@ -24,7 +24,7 @@ li.player-row {
     background: red;
     @extend .rounded;
     vertical-align: -6%;
-    @include transition(all 0.2s linear);
+    // @include transition(all 0.2s linear);
 }
 
 .top-right-form {
@@ -164,4 +164,8 @@ li.player-row {
             font-size: 22px;
         }
     }
+}
+
+.player-color {
+    @include transition(none);
 }
