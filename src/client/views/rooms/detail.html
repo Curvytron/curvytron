@@ -38,7 +38,7 @@
                     <td>
                         <button class="btn btn-default control"
                             ng-repeat="control in player.controls"
-                            ng-click="control.mapper.start()"
+                            ng-click="control.toggle()"
                             ng-class="{ 'active': control.mapper.listening }"
                         >
                             {{ control.mapper.view }}
