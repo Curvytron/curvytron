@@ -39,7 +39,7 @@
                         <button class="btn btn-default control"
                             ng-repeat="control in player.controls"
                             ng-click="control.mapper.start()"
-                            ng-class="{ 'btn-primary': control.mapper.listening }"
+                            ng-class="{ 'active': control.mapper.listening }"
                         >
                             {{ control.mapper.view }}
                         </button>
