@@ -16,27 +16,7 @@ function PlayerInput(avatar, binding)
     this.onAxis    = this.onAxis.bind(this);
     this.onButton  = this.onButton.bind(this);
 
-    var types = [
-        this.getBindingType(this.binding[0]),
-        this.getBindingType(this.binding[1])
-    ];
-
-    console.log(this.binding, types);
-
-    if (types.indexOf('axis') >= 0) {
-        gamepadListener.on('gamepad:axis', this.onAxis);
-        this.gamepadRegex = new RegExp('^gamepad:\\d+:axis:(\\d+):(-?\\d+)');
-    }
-
-    if (types.indexOf('button') >= 0) {
-        gamepadListener.on('gamepad:button', this.onButton);
-    }
-
-    if (types.indexOf('keyboard') >= 0) {
-        window.addEventListener('keydown', this.onKeyDown);
-        window.addEventListener('keyup', this.onKeyUp);
-    }
-
+    this.attachEvents();
 }
 
 PlayerInput.prototype = Object.create(EventEmitter.prototype);
@@ -49,6 +29,33 @@ PlayerInput.prototype = Object.create(EventEmitter.prototype);
 PlayerInput.prototype.defaultBinding = [37, 39];
 
 /**
+ * Attach events
+ */
+PlayerInput.prototype.attachEvents = function()
+{
+    var listening = [],
+        binding, type;
+
+    for (var i = this.binding.length - 1; i >= 0; i--) {
+        binding = this.binding[i];
+        type = this.getBindingType(binding);
+
+        if (listening.indexOf(type) < 0) {
+            listening.push(type);
+
+            if (type == 'keyboard') {
+                window.addEventListener('keydown', this.onKeyDown);
+                window.addEventListener('keyup', this.onKeyUp);
+            } else if (new RegExp('^gamepad:\\d+:button').test(type)) {
+                gamepadListener.on(type, this.onButton);
+            } else {
+                gamepadListener.on(type, this.onAxis);
+            }
+        }
+    }
+};
+
+/**
  * Get binding type
  *
  * @param {String} binding
@@ -57,11 +64,9 @@ PlayerInput.prototype.defaultBinding = [37, 39];
  */
 PlayerInput.prototype.getBindingType = function(binding)
 {
-    if (new RegExp('^gamepad:').test(binding)) {
-        return new RegExp('^gamepad:\\d+:button').test(binding) ? 'button' : 'axis';
-    }
+    var matches = new RegExp('^(gamepad:(\\d+):(button|axis):(\\d+))').exec(binding);
 
-    return 'keyboard';
+    return matches ? matches[1] : 'keyboard';
 };
 
 /**
@@ -99,12 +104,15 @@ PlayerInput.prototype.onKeyUp = function(e)
  */
 PlayerInput.prototype.onAxis = function(e)
 {
-    var axis;
+    var index = this.binding.indexOf('gamepad:' + e.detail.gamepad.index + ':axis:' + e.detail.axis + ':' + e.detail.value);
 
-    for (var i = this.binding.length - 1; i >= 0; i--) {
-        axis = this.gamepadRegex.exec(this.binding[i]);
-        if (axis && e.detail.axis == axis[1]) {
-            this.setActive(i, e.detail.value == axis[2]);
+    if (index >= 0) {
+        this.setActive(index, true);
+    } else {
+        for (var i = this.binding.length - 1; i >= 0; i--) {
+            if (new RegExp('^gamepad:' + e.detail.gamepad.index + ':axis:' + e.detail.axis).test(this.binding[i])) {
+                this.setActive(i, false);
+            }
         }
     }
 };

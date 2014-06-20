@@ -35,7 +35,6 @@ PlayerControl.prototype = Object.create(EventEmitter.prototype);
  */
 PlayerControl.prototype.onKeyboardChange = function(e)
 {
-    console.log('onKeyboardChange', e);
     this.mapper = this.keyboardMapper;
     this.emit('change');
 };
@@ -47,9 +46,17 @@ PlayerControl.prototype.onKeyboardChange = function(e)
  */
 PlayerControl.prototype.onGamepadChange = function(e)
 {
-    console.log('onGamepadChange', e);
     this.mapper = this.gamepadMapper;
     this.emit('change');
+};
+
+PlayerControl.prototype.toggle = function()
+{
+    if (this.mapper.listening) {
+        this.stop();
+    } else {
+        this.start();
+    }
 };
 
 /**
