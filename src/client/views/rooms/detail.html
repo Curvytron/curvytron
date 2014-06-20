@@ -37,8 +37,14 @@
                         <input type="text" ng-if="player.local" ng-model="player.color" ng-change="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" />
                     </td>
                     <td>
-                        <button class="btn btn-default" ng-if="player.local"><i class="icon-left-dir"></i></button>
-                        <button class="btn btn-default" ng-if="player.local"><i class="icon-right-dir"></i></button>
+                        <button class="btn btn-default"
+                            ng-if="player.local"
+                            ng-repeat="control in player.controls"
+                            ng-click="control.mapper.start()"
+                            ng-class="{ 'btn-primary': control.mapper.listening }"
+                        >
+                            {{ control.mapper.view }}
+                        </button>
                     </td>
                 </tr>
             </tbody>

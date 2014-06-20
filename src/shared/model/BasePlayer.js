@@ -7,6 +7,8 @@
  */
 function BasePlayer(client, name, color, mail)
 {
+    EventEmitter.call(this);
+
     this.client = client;
     this.name   = name;
     this.color  = typeof(color) !== 'undefined' ? color : this.getRandomColor();
@@ -14,6 +16,8 @@ function BasePlayer(client, name, color, mail)
     this.ready  = false;
     this.avatar = null;
 }
+
+BasePlayer.prototype = Object.create(EventEmitter.prototype);
 
 /**
  * Set name

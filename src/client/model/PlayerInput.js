@@ -1,14 +1,15 @@
 /**
  * Player input
  */
-function PlayerInput(avatar)
+function PlayerInput(avatar, binding)
 {
     EventEmitter.call(this);
 
-    this.avatar = avatar;
-    this.key    = false;
-    this.active = [false, false];
-    this.move   = 0;
+    this.avatar  = avatar;
+    this.key     = false;
+    this.active  = [false, false];
+    this.move    = 0;
+    this.binding = typeof(binding) != 'undefined' ? binding : this.defaultBinding;
 
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp   = this.onKeyUp.bind(this);
@@ -24,7 +25,7 @@ PlayerInput.prototype = Object.create(EventEmitter.prototype);
  *
  * @type {Object}
  */
-PlayerInput.prototype.binding = [37, 39];
+PlayerInput.prototype.defaultBinding = [37, 39];
 
 /**
  * On Key Down
