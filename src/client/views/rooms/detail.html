@@ -21,7 +21,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="player in room.players.items" ng-class="{ local: player.local }">
+                <tr ng-repeat="player in room.players.items" ng-if="player.local" class="local">
                     <td class="text-center">
                         <button class="player-ready btn btn-default" ng-class="{ ready: player.ready }" ng-click="setReady(player)">
                             <i ng-if="player.ready == true" class="icon-check success"></i>
@@ -33,12 +33,10 @@
                     </td>
                     <td class="player-color-col">
                         <span class="color-preview" style="background-color: {{ player.color }};"></span>
-                        <p ng-if="!player.local">{{ player.color }}</p>
-                        <input type="text" ng-if="player.local" ng-model="player.color" ng-change="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" />
+                        <input type="text" ng-model="player.color" ng-change="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" />
                     </td>
                     <td>
-                        <button class="btn btn-default"
-                            ng-if="player.local"
+                        <button class="btn btn-default control"
                             ng-repeat="control in player.controls"
                             ng-click="control.mapper.start()"
                             ng-class="{ 'btn-primary': control.mapper.listening }"
@@ -46,6 +44,22 @@
                             {{ control.mapper.view }}
                         </button>
                     </td>
+                </tr>
+                <tr ng-repeat="player in room.players.items" ng-if="!player.local">
+                    <td class="text-center">
+                        <span class="player-ready" ng-class="{ ready: player.ready }">
+                            <i ng-if="player.ready == true" class="icon-check success"></i>
+                            <i ng-if="player.ready == false" class="icon-close success"></i>
+                        </span>
+                    </td>
+                    <td>
+                        {{ player.name }}
+                    </td>
+                    <td class="player-color-col">
+                        <span class="color-preview" style="background-color: {{ player.color }};"></span>
+                        <p>{{ player.color }}</p>
+                    </td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>

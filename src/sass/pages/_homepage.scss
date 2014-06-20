@@ -82,38 +82,52 @@ li.player-row {
     tr.local {
         .player-ready {
             cursor: pointer;
+            width: auto !important;
+            height: auto !important;
+            padding: 0 15px 0 10px !important;
+            font-size: $base-font-size !important;
+            text-transform: uppercase;
+            background: transparentize($color-danger, 1);
+            i {
+                margin-right: 5px;
+            }
+            &.ready {
+                color: $color-success;
+                &:hover {
+                    color: #FFF;
+                    background: $color-success;
+                }
+            }
+            &:hover {
+                background: $color-danger;
+            }
         }
     }
 }
 
 .player-ready {
-    width: auto !important;
-    height: auto !important;
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    @extend .rounded;
+    @include transition(all 0.2s linear);
     border: 2px solid $color-danger;
-    padding: 0 15px 0 10px !important;
     color: $color-danger;
     text-align: center;
-    font-size: $base-font-size !important;
-    text-transform: uppercase;
-    background: transparentize($color-danger, 1);
-    @include transition(all 0.2s linear);
     i {
         font-size: 20px;
         line-height: 37px;
         vertical-align: middle;
-        margin-right: 5px;
     }
     &.ready {
         color: #FFF;
         border-color: $color-success;
         background: $color-success;
-        &:hover {
-            background: $color-success;
-        }
     }
-    &:hover {
-        background: $color-danger;
-    }
+}
+
+.control {
+    margin: 0 5px;
 }
 
 .room-players {
