@@ -1,4 +1,5 @@
-var curvytronApp = angular.module('curvytronApp', ['ngRoute', 'colorpicker.module']);
+var curvytronApp = angular.module('curvytronApp', ['ngRoute', 'colorpicker.module']),
+    gamepadListener = new GamepadListener({analog: false, deadZone: 0.4});
 
 curvytronApp.service('SocketClient', SocketClient);
 curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);
