@@ -7,9 +7,10 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
-    this.world  = new World(this.size);
-    this.end    = false;
-    this.deaths = [];
+    this.world   = new World(this.size);
+    this.inRound = false;
+    this.deaths  = [];
+    this.clients = new Collection();
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -109,14 +110,14 @@ Game.prototype.onDie = function(data)
  */
 Game.prototype.checkRoundEnd = function()
 {
-    if (this.end) {
+    if (!this.inRound) {
         return;
     }
 
     var alivePlayers = this.avatars.filter(function () { return this.alive; });
 
     if (alivePlayers.count() <= 1) {
-        this.end = true;
+        this.inRound = false;
         this.setScores();
         setTimeout(this.endRound, this.warmdownTime);
     }
@@ -146,9 +147,10 @@ Game.prototype.setScores = function()
         }
 
         if (deaths < total) {
-            var victor = this.avatars.match(function () { return this.alive; });
+            var winner = this.avatars.match(function () { return this.alive; });
 
-            victor.addScore(total);
+            winner.addScore(total);
+            this.emit('round:winner', {game: this, winner: winner});
         }
 
         this.deaths = [];
@@ -162,7 +164,7 @@ Game.prototype.endRound = function()
 {
     BaseGame.prototype.endRound.call(this);
 
-    this.emit('round:end');
+    this.emit('round:end', {game: this});
 
     if (this.isWon()) {
         this.end();
@@ -176,23 +178,26 @@ Game.prototype.endRound = function()
  */
 Game.prototype.newRound = function()
 {
-    var avatar;
+    if (!this.inRound) {
+        var avatar, position;
 
-    this.emit('round:new');
+        this.emit('round:new', {game: this});
 
-    this.world.clear();
+        this.world.clear();
 
-    this.end    = false;
-    this.deaths = [];
+        this.inRound = true;
+        this.deaths  = [];
 
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
-        avatar = this.avatars.items[i];
-        avatar.clear();
-        avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
-        avatar.setAngle(Math.random() * Math.PI * 2);
+        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+            avatar = this.avatars.items[i];
+
+            avatar.clear();
+            avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+            avatar.setAngle(Math.random() * Math.PI * 2);
+        }
+
+        BaseGame.prototype.newRound.call(this);
     }
-
-    BaseGame.prototype.newRound.call(this);
 };
 
 /**
@@ -216,7 +221,7 @@ Game.prototype.end = function()
 {
     this.world.clear();
 
-    this.emit('end');
+    this.emit('end', {game: this});
 
     BaseGame.prototype.end.call(this);
 };

@@ -35,7 +35,7 @@ Avatar.prototype.update = function(step)
 Avatar.prototype.setPosition = function(point)
 {
     BaseAvatar.prototype.setPosition.call(this, point);
-    this.emit('position', point);
+    this.emit('position', {avatar: this, point: point});
 };
 
 /**
@@ -46,7 +46,7 @@ Avatar.prototype.setPosition = function(point)
 Avatar.prototype.setAngle = function(angle)
 {
     BaseAvatar.prototype.setAngle.call(this, angle);
-    this.emit('angle', angle);
+    this.emit('angle', {avatar: this, angle: angle});
 };
 
 /**
@@ -57,7 +57,7 @@ Avatar.prototype.setAngle = function(angle)
 Avatar.prototype.addPoint = function(point)
 {
     BaseAvatar.prototype.addPoint.call(this, point);
-    this.emit('point', {point: point, avatar: this});
+    this.emit('point', {avatar: this, point: point});
 };
 
 /**

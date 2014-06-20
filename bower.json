@@ -29,10 +29,12 @@
     "paper": "~0.9.18",
     "tom32i-event-emitter.js": "~0.0.*",
     "tom32i-option-resolver.js": "~0.0.*",
+    "tom32i-gamepad.js": "~0.0.*",
+    "tom32i-key-mapper.js": "~0.0.*",
     "html5-boilerplate": "~4.3.0",
     "angular": "~1.2.*",
     "angular-route": "~1.2.x",
-    "createjs-soundjs": "release_v0.5.2"
+    "createjs-soundjs": "*"
   },
   "ignore": [
     "**/.*",

@@ -24,6 +24,19 @@ function Collection(items, key, index)
 }
 
 /**
+ * Clear
+ */
+Collection.prototype.clear = function()
+{
+    this.ids   = [];
+    this.items = [];
+
+    if (this.index) {
+        this.id = 1;
+    }
+};
+
+/**
  * Count the size of the collection
  *
  * @return {Number}
@@ -195,6 +208,18 @@ Collection.prototype.getByIndex = function(index)
 Collection.prototype.exists = function(element)
 {
     return this.getElementIndex(element) >= 0;
+};
+
+/**
+ * Test if the given index exists is in the collection
+ *
+ * @param {String} index
+ *
+ * @return {Boolean}
+ */
+Collection.prototype.indexExists = function(index)
+{
+    return this.ids.indexOf(index) >= 0;
 };
 
 /**

@@ -3,7 +3,9 @@
  */
 function SocketClient()
 {
-    this.io = io();
+    this.io        = io();
+    this.connected = false;
+    this.id        = null;
 
     this.onSocketConnection    = this.onSocketConnection.bind(this);
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
@@ -19,7 +21,6 @@ function SocketClient()
  */
 SocketClient.prototype.join = function(channel)
 {
-    console.log("Joinning channel %s", channel);
     this.io.emit('channel', channel);
 };
 
@@ -28,9 +29,11 @@ SocketClient.prototype.join = function(channel)
  *
  * @param {Socket} socket
  */
-SocketClient.prototype.onSocketConnection = function()
+SocketClient.prototype.onSocketConnection = function(id)
 {
     console.log('Connected');
+    this.connected = true;
+    this.id        = id;
 };
 
 /**
@@ -41,4 +44,5 @@ SocketClient.prototype.onSocketConnection = function()
 SocketClient.prototype.onSocketDisconnection = function(e)
 {
     console.log('Disconnect', e);
+    this.connected = false;
 };

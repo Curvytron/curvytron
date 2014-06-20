@@ -1,19 +1,22 @@
 /**
  * Player input
  */
-function PlayerInput()
+function PlayerInput(avatar, binding)
 {
     EventEmitter.call(this);
 
-    this.key    = false;
-    this.active = [false, false];
-    this.move   = 0;
+    this.avatar  = avatar;
+    this.key     = false;
+    this.active  = [false, false];
+    this.move    = 0;
+    this.binding = typeof(binding) != 'undefined' ? binding : this.defaultBinding;
 
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp   = this.onKeyUp.bind(this);
+    this.onAxis    = this.onAxis.bind(this);
+    this.onButton  = this.onButton.bind(this);
 
-    window.addEventListener('keydown', this.onKeyDown);
-    window.addEventListener('keyup', this.onKeyUp);
+    this.attachEvents();
 }
 
 PlayerInput.prototype = Object.create(EventEmitter.prototype);
@@ -23,7 +26,48 @@ PlayerInput.prototype = Object.create(EventEmitter.prototype);
  *
  * @type {Object}
  */
-PlayerInput.prototype.binding = [37, 39];
+PlayerInput.prototype.defaultBinding = [37, 39];
+
+/**
+ * Attach events
+ */
+PlayerInput.prototype.attachEvents = function()
+{
+    var listening = [],
+        binding, type;
+
+    for (var i = this.binding.length - 1; i >= 0; i--) {
+        binding = this.binding[i];
+        type = this.getBindingType(binding);
+
+        if (listening.indexOf(type) < 0) {
+            listening.push(type);
+
+            if (type == 'keyboard') {
+                window.addEventListener('keydown', this.onKeyDown);
+                window.addEventListener('keyup', this.onKeyUp);
+            } else if (new RegExp('^gamepad:\\d+:button').test(type)) {
+                gamepadListener.on(type, this.onButton);
+            } else {
+                gamepadListener.on(type, this.onAxis);
+            }
+        }
+    }
+};
+
+/**
+ * Get binding type
+ *
+ * @param {String} binding
+ *
+ * @return {String}
+ */
+PlayerInput.prototype.getBindingType = function(binding)
+{
+    var matches = new RegExp('^(gamepad:(\\d+):(button|axis):(\\d+))').exec(binding);
+
+    return matches ? matches[1] : 'keyboard';
+};
 
 /**
  * On Key Down
@@ -50,6 +94,40 @@ PlayerInput.prototype.onKeyUp = function(e)
 
     if (index >= 0) {
         this.setActive(index, false);
+    }
+};
+
+/**
+ * On axis
+ *
+ * @param {Event} e
+ */
+PlayerInput.prototype.onAxis = function(e)
+{
+    var index = this.binding.indexOf('gamepad:' + e.detail.gamepad.index + ':axis:' + e.detail.axis + ':' + e.detail.value);
+
+    if (index >= 0) {
+        this.setActive(index, true);
+    } else {
+        for (var i = this.binding.length - 1; i >= 0; i--) {
+            if (new RegExp('^gamepad:' + e.detail.gamepad.index + ':axis:' + e.detail.axis).test(this.binding[i])) {
+                this.setActive(i, false);
+            }
+        }
+    }
+};
+
+/**
+ * On button
+ *
+ * @param {Event} e
+ */
+PlayerInput.prototype.onButton = function(e)
+{
+    var index = this.binding.indexOf('gamepad:' + e.detail.gamepad.index + ':button:' + e.detail.index);
+
+    if (index >= 0) {
+        this.setActive(index, e.detail.pressed);
     }
 };
 
@@ -86,5 +164,5 @@ PlayerInput.prototype.setMove = function(move)
 {
     this.move = move;
 
-    this.emit('move', move);
+    this.emit('move', {avatar: this.avatar, move: move});
 };

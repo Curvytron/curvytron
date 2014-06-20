@@ -11,10 +11,10 @@ function BaseGame(room)
     this.name     = this.room.name;
     this.channel  = 'game:' + this.name;
     this.frame    = null;
-    this.avatars  = this.room.players.map(function () { return new Avatar(this); });
+    this.avatars  = this.room.players.map(function () { return this.getAvatar(); });
     this.size     = this.getSize(this.avatars.count());
     this.rendered = null;
-    this.maxScore = this.size * 10;
+    this.maxScore = this.getMaxScore(this.avatars.count());
     this.fps      = new FPSLogger();
 
     this.start    = this.start.bind(this);
@@ -57,7 +57,6 @@ BaseGame.prototype.removeAvatar = function(avatar)
 BaseGame.prototype.start = function()
 {
     if (!this.frame) {
-        console.log("Game started!");
         this.onStart();
         this.rendered = new Date().getTime();
         this.loop();
@@ -120,7 +119,7 @@ BaseGame.prototype.newFrame = function()
 BaseGame.prototype.onFrame = function(step)
 {
     this.update(step);
-    this.fps.update();
+    this.fps.update(step);
 };
 
 /**
@@ -142,6 +141,18 @@ BaseGame.prototype.getSize = function(players)
     var baseSquareSize = this.perPlayerSize * this.perPlayerSize;
 
     return Math.sqrt(baseSquareSize + ((players - 1) * baseSquareSize / 5.0));
+};
+
+/**
+ * Get max score
+ *
+ * @param {Number} players
+ *
+ * @return {Number}
+ */
+BaseGame.prototype.getMaxScore = function(players)
+{
+    return players * 10 - 10;
 };
 
 /**

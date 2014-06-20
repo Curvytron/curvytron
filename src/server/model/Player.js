@@ -10,7 +10,5 @@ Player.prototype.constructor = Player;
  */
 function Player(client, name, color, mail)
 {
-    BasePlayer.call(this, name, color, mail);
-
-    this.client = client;
+    BasePlayer.call(this, client, name, color, mail);
 }

@@ -24,6 +24,7 @@ li.player-row {
     background: red;
     @extend .rounded;
     vertical-align: -6%;
+    // @include transition(all 0.2s linear);
 }
 
 .top-right-form {
@@ -45,7 +46,7 @@ li.player-row {
 
 
 
-#rooms {
+#rooms, #room {
     margin-top: 30px;
     h3 {
         margin: 0;
@@ -63,12 +64,41 @@ li.player-row {
         }
     }
     tr {
-        cursor: pointer;
         &:hover {
             .room-enter {
                 padding-right: 0;
                 padding-left: 5px;
                 @include opacity(50);
+            }
+        }
+    }
+}
+#rooms {
+    tr {
+        cursor: pointer;
+    }
+}
+#room {
+    tr.local {
+        .player-ready {
+            cursor: pointer;
+            width: auto !important;
+            height: auto !important;
+            padding: 0 15px 0 10px !important;
+            font-size: $base-font-size !important;
+            text-transform: uppercase;
+            background: transparentize($color-danger, 1);
+            i {
+                margin-right: 5px;
+            }
+            &.ready {
+                &, &:hover {
+                    color: #FFF;
+                    background: $color-success;
+                }
+            }
+            &:hover {
+                background: $color-danger;
             }
         }
     }
@@ -79,12 +109,13 @@ li.player-row {
     height: 40px;
     display: inline-block;
     @extend .rounded;
+    @include transition(all 0.2s linear);
     border: 2px solid $color-danger;
     color: $color-danger;
     text-align: center;
     i {
         font-size: 20px;
-        line-height: 35px;
+        line-height: 37px;
         vertical-align: middle;
     }
     &.ready {
@@ -94,251 +125,47 @@ li.player-row {
     }
 }
 
-#game-wrapper {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background: $game-background;
-    aside, #col-right {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-    }
-    aside {
-        width: 300px;
-        min-width: 300px;
-        max-width: 300px;
-        background: lighten($game-background, 5%);
-        color: #EEE;
-        font-weight: 300;
-        left: 0;
-        border-right: 4px solid #000;
-        @include animation(gameBorder 20s infinite);
-        header {
-            background: red;
-            height: $game-header-height;
-            overflow: hidden;
-            padding: 10px 20px;
-            margin: 0;
-            font-size: 30px;
-            text-align: left;
-            display: block !important;
-            a:hover {
-                text-decoration: none;
+.control {
+    margin: 0 5px;
+}
+
+.room-players {
+    tr {
+        td.player-color-col {
+            position: relative;
+            .color-preview {
+                display: inline-block;
+                margin-left: 10px;
+            }
+            p {
+                margin: 0 0 0 5px;
+                display: inline-block;
             }
         }
-        h3 {
-            margin: 0;
-            color: #FFF;
-            padding: 10px 20px;
-            // background: lighten($game-background, 10%);
-        }
-        #game-players {
-            @extend .no-bullet;
-            li {
-                border-bottom: 2px solid lighten($game-background, 10%);
-                padding: 10px 20px;
-                position: relative;
-                .score {
-                    display: block;
-                    text-align: center;
+        &.local {
+            td.player-color-col {
+                .color-preview {
                     position: absolute;
-                    top: 0;
-                    right: 0;
-                    bottom: 0;
-                    width: 50px;
-                    line-height: 44px;
-                    font-size: 24px;
-                    border-left: 2px solid lighten($game-background, 10%);
+                    left: 23px;
+                    top: 22px;
+                    margin-left: 0;
                 }
-                &:first-child {
-                    border-top: 2px solid lighten($game-background, 10%);
-                }
-                &.dead {
-                    @include animation(deadAnim 1s);
-                    @include transition(all 0.2s ease);
+                input.form-control {
+                    width: 140px;
+                    padding-left: 35px;
                 }
             }
         }
-        #radio {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-        }
-        footer {
-            display: block !important;
-            position: fixed;
-            left: 0;
-            bottom: 90px;
-            width: 300px;
-            min-width: 300px;
-            max-width: 300px;
-            background: transparent;
-            padding: 10px 20px;
-            margin: 0;
-            .game-copy {
-                color: #FFF;
-                display: block;
-                text-align: left;
-                font-size: 14px;
-                text-transform: none;
-                cursor: pointer;
-                @include opacity(70);
-                @include transition(all 0.2s ease);
-                &:hover {
-                    @include opacity(100);
-                    text-decoration: none;
-                }
-            }
-        }
-    }
-    #col-right {
-        bottom: 0;
-        right: 0;
-        left: 300px;
-        text-align: center;
-        .countdown {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-top: -100px;
-            margin-left: -100px;
-            width: 200px;
-            height: 200px;
-            z-index: 100;
-            padding: 20px;
-            font-size: 100px;
-            line-height: 140px;
-            font-weight: 300;
-            text-align: center;
-            color: #FFF;
-            background: transparent;
-            @extend .rounded;
-        }
-        .countdown-anim {
-            width: 250px;
-            height: 250px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-top: -125px;
-            margin-left: -125px;
-            background: transparentize(lighten($game-background, 10%), 0.8);
-            border: 4px solid lighten($game-background, 10%);
-            @include animation(countdownAnim 1s infinite);
-            z-index: 90;
-            @extend .rounded;
-        }
-        #game {
-            z-index: 50;
-            border: 4px solid lighten($game-background, 10%);
-            margin-top: -4px;
+        .btn {
+            width: 44px;
+            height: 44px;
+            line-height: 40px;
+            padding: 0;
+            font-size: 22px;
         }
     }
 }
 
-@mixin countdownAnim {
-  0% {
-    width: 280px;
-    height: 280px;
-    margin-top: -140px;
-    margin-left: -140px;
-    border-width: 8px;
-    border-color: lighten($game-background, 30%);
-  }
-  50% {
-    width: 200px;
-    height: 200px;
-    margin-top: -100px;
-    margin-left: -100px;
-    border-width: 4px;
-    border-color: lighten($game-background, 10%);
-  }
-  100% {
-    width: 280px;
-    height: 280px;
-    margin-top: -140px;
-    margin-left: -140px;
-    border-width: 8px;
-    border-color: lighten($game-background, 30%);
-  }
-}
-@-webkit-keyframes countdownAnim {
-    @include countdownAnim;
-}
-@-moz-keyframes countdownAnim {
-    @include countdownAnim;
-}
-@-o-keyframes countdownAnim {
-    @include countdownAnim;
-}
-@keyframes countdownAnim {
-    @include countdownAnim;
-}
-
-
-@mixin gameBorder {
-  0%   { border-color: $header-background; }
-  20%  { border-color: #16a085; }
-  40%  { border-color: #2C3E50; }
-  60%  { border-color: #95A5A6; }
-  80%  { border-color: #913D88; }
-  100% { border-color: $header-background; }
-}
-@-webkit-keyframes gameBorder {
-    @include gameBorder;
-}
-@-moz-keyframes gameBorder {
-    @include gameBorder;
-}
-@-o-keyframes gameBorder {
-    @include gameBorder;
-}
-@keyframes gameBorder {
-    @include gameBorder;
-}
-
-
-@mixin headerRainbow {
-  0%   { background-color: $header-background; }
-  20%  { background-color: #16a085; }
-  40%  { background-color: #2C3E50; }
-  60%  { background-color: #95A5A6; }
-  80%  { background-color: #913D88; }
-  100% { background-color: $header-background; }
-}
-@-webkit-keyframes headerRainbow {
-    @include headerRainbow;
-}
-@-moz-keyframes headerRainbow {
-    @include headerRainbow;
-}
-@-o-keyframes headerRainbow {
-    @include headerRainbow;
-}
-@keyframes headerRainbow {
-    @include headerRainbow;
-}
-
-
-@mixin deadAnim {
-  0%   { background-color: transparent; }
-  50%  { background-color: transparentize($color-danger, 0.5); }
-  100% { background-color: transparent; @include opacity(50); }
-}
-@-webkit-keyframes deadAnim {
-    @include deadAnim;
-}
-@-moz-keyframes deadAnim {
-    @include deadAnim;
-}
-@-o-keyframes deadAnim {
-    @include deadAnim;
-}
-@keyframes deadAnim {
-    @include deadAnim;
+.player-color {
+    @include transition(none);
 }

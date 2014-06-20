@@ -1,4 +1,7 @@
-var curvytronApp = angular.module('curvytronApp', ['ngRoute']);
+var curvytronApp = angular.module('curvytronApp', ['ngRoute', 'colorpicker.module']),
+    gamepadListener = new GamepadListener({analog: false, deadZone: 0.4});
+
+gamepadListener.start();
 
 curvytronApp.service('SocketClient', SocketClient);
 curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);
@@ -10,7 +13,7 @@ curvytronApp.controller('CurvytronController', ['$scope', function($scope) {
 
 curvytronApp.controller(
     'RoomsController',
-    ['$scope', 'RoomRepository', 'SocketClient', RoomsController]
+    ['$scope', '$location', 'RoomRepository', 'SocketClient', RoomsController]
 );
 curvytronApp.controller(
     'RoomController',
@@ -27,6 +30,9 @@ curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvi
         .when('/', {
             templateUrl: '/js/views/rooms/list.html',
             controller: 'RoomsController'
+        })
+        .when('/about', {
+            templateUrl: '/js/views/pages/about.html'
         })
         .when('/room/:name', {
             templateUrl: '/js/views/rooms/detail.html',

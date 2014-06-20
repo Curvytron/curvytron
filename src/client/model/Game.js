@@ -85,9 +85,6 @@ Game.prototype.newRound = function()
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
     }
-
-    paper.view.update();
-    paper.view.draw();
 };
 /**
  * FIN DU GAME
@@ -108,9 +105,10 @@ Game.prototype.onResize = function()
 {
     var w=window,d=document,e=d.documentElement,g=d.getElementsByTagName('body')[0],x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
 
-    var width = Math.min(x - 300 - 8, y);
+    var width = Math.min(x - 300 - 8, y - 8);
 
-    paper.view.viewSize.width = width;
+    paper.view.viewSize.width  = width;
     paper.view.viewSize.height = width;
+
     paper.sceneScale = width / this.size;
 };

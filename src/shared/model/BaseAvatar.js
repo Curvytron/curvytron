@@ -12,7 +12,7 @@ function BaseAvatar(player, position)
     this.player          = player;
     this.radius          = this.defaultRadius;
     this.head            = [this.radius, this.radius];
-    this.trail           = new Trail(this.color, this.radius, this.head.slice(0));
+    this.trail           = new Trail(this);
     this.angle           = 0;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
@@ -101,15 +101,15 @@ BaseAvatar.prototype.update = function(step)
  */
 BaseAvatar.prototype.updateAngle = function(step)
 {
-    this.setAngle(this.angle + this.angularVelocity * step);
+    if (this.angularVelocity) {
+        this.setAngle(this.angle + this.angularVelocity * step);
+    }
 };
 
 /**
  * Update position
  *
  * @param {Number} step
- *
- * @return {[type]}
  */
 BaseAvatar.prototype.updatePosition = function(step)
 {

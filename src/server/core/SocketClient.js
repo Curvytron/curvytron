@@ -5,17 +5,16 @@
  */
 function SocketClient(socket)
 {
-    this.id     = socket.id;
-    this.socket = socket;
-    this.player = new Player(this, this.id);
-    this.room   = null;
-    this.game   = null;
-    this.avatar = null;
+    this.id      = socket.id;
+    this.socket  = socket;
+    this.players = new Collection([], 'name');
+    this.room    = null;
+    this.game    = null;
 
     this.onChannel = this.onChannel.bind(this);
 
     this.socket.on('channel', this.onChannel);
-    this.socket.emit('open');
+    this.socket.emit('open', this.id);
 }
 
 SocketClient.prototype = Object.create(EventEmitter.prototype);
@@ -27,7 +26,6 @@ SocketClient.prototype = Object.create(EventEmitter.prototype);
  */
 SocketClient.prototype.onChannel = function(channel)
 {
-    console.log("%s switching to channel: %s", this.socket.id, channel);
     this.socket.join(channel);
 };
 
@@ -41,27 +39,46 @@ SocketClient.prototype.onChannel = function(channel)
  */
 SocketClient.prototype.joinRoom = function(room, name)
 {
-    if (this.room) {
+    if (this.room && this.room !== room) {
         this.leaveRoom();
     }
 
-    this.room = room;
+    if (room.isNameAvailable(name)) {
 
-    this.player.setName(name);
-    this.player.toggleReady(false);
+        if (!this.room) {
+            this.room = room;
+            this.room.clients.add(this);
+        }
 
-    return this.room.addPlayer(this.player);
+        var player = new Player(this, name);
+
+        this.room.addPlayer(player);
+        this.players.add(player);
+
+        return player;
+    }
+
+    return false;
 };
 
 /**
  * Leave room
- *
- * @return {[type]}
  */
 SocketClient.prototype.leaveRoom = function()
 {
-    if (this.room && this.room.removePlayer(this.player)) {
-        this.player.toggleReady(false);
+    if (this.room) {
+
+        this.leaveGame();
+
+        var player;
+
+        for (var i = this.players.items.length - 1; i >= 0; i--) {
+            player = this.players.items[i];
+            this.room.removePlayer(player);
+        }
+
+        this.players.clear();
+        this.room.clients.remove(this);
         this.room = null;
     }
 };
@@ -73,12 +90,14 @@ SocketClient.prototype.leaveRoom = function()
  */
 SocketClient.prototype.joinGame = function(game)
 {
-    if (this.game) {
+    if (this.game && this.game !== game) {
         this.leaveGame();
     }
 
-    this.game   = game;
-    this.avatar = game.avatars.getById(this.player.name);
+    if (!this.game) {
+        this.game = game;
+        this.game.clients.add(this);
+    }
 };
 
 /**
@@ -86,8 +105,15 @@ SocketClient.prototype.joinGame = function(game)
  */
 SocketClient.prototype.leaveGame = function()
 {
-    if (this.game && this.game.removeAvatar(this.avatar)) {
-        this.game   = null;
-        this.avatar = null;
+    if (this.game) {
+        var player;
+
+        for (var i = this.players.items.length - 1; i >= 0; i--) {
+            player = this.players.items[i];
+            this.game.removeAvatar(player.avatar);
+        }
+
+        this.game.clients.remove(this);
+        this.game = null;
     }
 };
