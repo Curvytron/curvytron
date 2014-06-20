@@ -14,16 +14,40 @@
         <table class="room-players table table-hover table-striped v-align-middle">
             <thead>
                 <tr>
-                    <th class="pct-10">Ready ?</th>
+                    <th class="pct-15"> </th>
                     <th class="pct-50">Name</th>
-                    <th class="pct-25">Color</th>
+                    <th class="pct-20">Color</th>
                     <th class="pct-15">Keys</th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="player in room.players.items" ng-class="{ local: player.local }">
+                <tr ng-repeat="player in room.players.items" ng-if="player.local" class="local">
+                    <td class="text-center">
+                        <button class="player-ready btn btn-default" ng-class="{ ready: player.ready }" ng-click="setReady(player)">
+                            <i ng-if="player.ready == true" class="icon-check success"></i>
+                            <i ng-if="player.ready == false" class="icon-close success"></i> Ready ?
+                        </button>
+                    </td>
                     <td>
-                        <span class="player-ready" ng-class="{ ready: player.ready }" ng-click="setReady(player)">
+                        {{ player.name }}
+                    </td>
+                    <td class="player-color-col">
+                        <span class="color-preview" style="background-color: {{ player.color }};"></span>
+                        <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-change="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" />
+                    </td>
+                    <td>
+                        <button class="btn btn-default control"
+                            ng-repeat="control in player.controls"
+                            ng-click="control.mapper.start()"
+                            ng-class="{ 'active': control.mapper.listening }"
+                        >
+                            {{ control.mapper.view }}
+                        </button>
+                    </td>
+                </tr>
+                <tr ng-repeat="player in room.players.items" ng-if="!player.local">
+                    <td class="text-center">
+                        <span class="player-ready" ng-class="{ ready: player.ready }">
                             <i ng-if="player.ready == true" class="icon-check success"></i>
                             <i ng-if="player.ready == false" class="icon-close success"></i>
                         </span>
@@ -33,13 +57,9 @@
                     </td>
                     <td class="player-color-col">
                         <span class="color-preview" style="background-color: {{ player.color }};"></span>
-                        <p ng-if="!player.local">{{ player.color }}</p>
-                        <input type="text" ng-if="player.local" ng-model="player.color" ng-change="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" />
+                        <p>{{ player.color }}</p>
                     </td>
-                    <td>
-                        <button class="btn btn-default" ng-if="player.local"><i class="icon-left-dir"></i></button>
-                        <button class="btn btn-default" ng-if="player.local"><i class="icon-right-dir"></i></button>
-                    </td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>

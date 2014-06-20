@@ -24,7 +24,7 @@ li.player-row {
     background: red;
     @extend .rounded;
     vertical-align: -6%;
-    @include transition(all 0.2s linear);
+    // @include transition(all 0.2s linear);
 }
 
 .top-right-form {
@@ -82,6 +82,24 @@ li.player-row {
     tr.local {
         .player-ready {
             cursor: pointer;
+            width: auto !important;
+            height: auto !important;
+            padding: 0 15px 0 10px !important;
+            font-size: $base-font-size !important;
+            text-transform: uppercase;
+            background: transparentize($color-danger, 1);
+            i {
+                margin-right: 5px;
+            }
+            &.ready {
+                &, &:hover {
+                    color: #FFF;
+                    background: $color-success;
+                }
+            }
+            &:hover {
+                background: $color-danger;
+            }
         }
     }
 }
@@ -91,6 +109,7 @@ li.player-row {
     height: 40px;
     display: inline-block;
     @extend .rounded;
+    @include transition(all 0.2s linear);
     border: 2px solid $color-danger;
     color: $color-danger;
     text-align: center;
@@ -104,6 +123,10 @@ li.player-row {
         border-color: $color-success;
         background: $color-success;
     }
+}
+
+.control {
+    margin: 0 5px;
 }
 
 .room-players {
@@ -124,7 +147,7 @@ li.player-row {
                 .color-preview {
                     position: absolute;
                     left: 23px;
-                    top: 21px;
+                    top: 22px;
                     margin-left: 0;
                 }
                 input.form-control {
@@ -141,4 +164,8 @@ li.player-row {
             font-size: 22px;
         }
     }
+}
+
+.player-color {
+    @include transition(none);
 }

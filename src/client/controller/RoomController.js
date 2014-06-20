@@ -123,6 +123,7 @@ RoomController.prototype.onJoin = function(event)
 
     if (player.client === this.client.id) {
         player.setLocal(true);
+        player.on('control:change', this.applyScope);
     }
 
     this.applyScope();
@@ -197,5 +198,7 @@ RoomController.prototype.start = function(data)
  */
 RoomController.prototype.applyScope = function()
 {
-    this.$scope.$apply();
+    if (this.$scope.$root.$$phase !== '$apply') {
+        this.$scope.$apply();
+    }
 };

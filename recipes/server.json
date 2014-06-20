@@ -3,7 +3,6 @@
     "path": "bin/",
     "files": [
         "src/server/dependencies.js",
-        "bower_components/tom32i-option-resolver.js/dist/option-resolver.min.js",
         "src/shared/**/*.js",
         "src/server/*/**/*.js",
         "src/server/launcher.js"
