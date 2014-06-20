@@ -2,8 +2,6 @@
     "name": "curvytron.js",
     "path": "web/js/",
     "files": [
-        "bower_components/tom32i-event-emitter.js/dist/event-emitter.min.js",
-        "bower_components/tom32i-option-resolver.js/dist/option-resolver.min.js",
         "src/shared/**/*.js",
         "src/client/*/**/*.js",
         "src/client/*.js"
