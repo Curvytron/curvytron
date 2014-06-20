@@ -1,4 +1,4 @@
-var curvytronApp = angular.module('curvytronApp', ['ngRoute']);
+var curvytronApp = angular.module('curvytronApp', ['ngRoute', 'colorpicker.module']);
 
 curvytronApp.service('SocketClient', SocketClient);
 curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);

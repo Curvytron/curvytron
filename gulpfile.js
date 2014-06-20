@@ -25,6 +25,7 @@ var gulp      = require('gulp'),
             './bower_components/tom32i-option-resolver.js/dist/option-resolver.min.js',
             './bower_components/tom32i-gamepad.js/dist/gamepad.min.js',
             './bower_components/tom32i-key-mapper.js/dist/key-mapper.min.js',
+            './bower_components/colpick/js/colpick.js'
         ],
         recipes    = {
             server: require('./recipes/server.json'),
