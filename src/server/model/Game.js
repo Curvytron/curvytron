@@ -16,6 +16,7 @@ function Game(room)
     this.onDie    = this.onDie.bind(this);
 
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        this.avatars.items[i].clear();
         this.avatars.items[i].on('point', this.addPoint);
         this.avatars.items[i].on('die', this.onDie);
         this.avatars.items[i].setMask(i+1);
@@ -219,9 +220,11 @@ Game.prototype.start = function()
  */
 Game.prototype.end = function()
 {
-    this.world.clear();
+    if (BaseGame.prototype.end.call(this)) {
+        this.world.clear();
 
-    this.emit('end', {game: this});
+        return true;
+    }
 
-    BaseGame.prototype.end.call(this);
+    return false;
 };

@@ -121,6 +121,8 @@ Avatar.prototype.setArrow = function(toggle)
  */
 Avatar.prototype.clear = function()
 {
+    console.log('client clear');
+
     BaseAvatar.prototype.clear.call(this);
 
     this.trail.clearPaths();

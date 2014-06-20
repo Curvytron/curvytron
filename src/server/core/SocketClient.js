@@ -108,10 +108,7 @@ SocketClient.prototype.leaveGame = function()
     if (this.game) {
         var player;
 
-        for (var i = this.players.items.length - 1; i >= 0; i--) {
-            player = this.players.items[i];
-            this.game.removeAvatar(player.avatar);
-        }
+        console.log('leaveGame');
 
         this.game.clients.remove(this);
         this.game = null;

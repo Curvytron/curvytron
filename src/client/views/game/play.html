@@ -31,6 +31,11 @@
                     <p ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-show="$first">
                         <span class="strong" style="color: {{ avatar.color }}">{{ avatar.name }}</span> won the game !
                     </p>
+                    <div>
+                        <a href="#/room/{{ game.name }}" class="btn">
+                            Back to the room
+                        </a>
+                    </div>
                     <table class="table table-hover recap">
                         <tbody>
                             <tr ng-repeat="avatar in game.avatars.items | orderBy:sortorder">
@@ -40,6 +45,11 @@
                             </tr>
                         </tbody>
                     </table>
+                    <div>
+                        <a href="#/room/{{ game.name }}" class="btn">
+                            Back to the room
+                        </a>
+                    </div>
                 </section>
             </section>
             <canvas id="game" class="game"></canvas>

@@ -52,6 +52,7 @@ RoomController.prototype.loadRoom = function(name)
 
     if (room) {
         this.$scope.room = room;
+        console.log(room);
 
         this.attachEvents(name);
 

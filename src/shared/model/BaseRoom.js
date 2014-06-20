@@ -68,6 +68,18 @@ BaseRoom.prototype.newGame = function()
 };
 
 /**
+ * Close game
+ */
+BaseRoom.prototype.closeGame = function()
+{
+    this.game = null;
+
+    for (var i = this.players.items.length - 1; i >= 0; i--) {
+        this.players.items[i].ready = false;
+    };
+};
+
+/**
  * Serialize
  *
  * @return {Object}

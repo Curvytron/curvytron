@@ -16,6 +16,7 @@ function BaseGame(room)
     this.rendered = null;
     this.maxScore = this.getMaxScore(this.avatars.count());
     this.fps      = new FPSLogger();
+    this.started  = false;
 
     this.start    = this.start.bind(this);
     this.stop     = this.stop.bind(this);
@@ -46,9 +47,16 @@ BaseGame.prototype.update = function(step) {};
  */
 BaseGame.prototype.removeAvatar = function(avatar)
 {
+    console.log('removeAvatar', avatar.name);
     avatar.clear();
 
-    return this.avatars.remove(avatar);
+    var result = this.avatars.remove(avatar)
+
+    if (this.avatars.isEmpty()) {
+        this.end();
+    }
+
+    return result;
 };
 
 /**
@@ -56,6 +64,8 @@ BaseGame.prototype.removeAvatar = function(avatar)
  */
 BaseGame.prototype.start = function()
 {
+    this.started = true;
+
     if (!this.frame) {
         this.onStart();
         this.rendered = new Date().getTime();
@@ -175,7 +185,7 @@ BaseGame.prototype.serialize = function()
  */
 BaseGame.prototype.isStarted = function()
 {
-    return this.rendered !== null;
+    return this.started;
 };
 
 /**
@@ -193,11 +203,31 @@ BaseGame.prototype.newRound = function()
 BaseGame.prototype.endRound = function()
 {
     this.stop();
+
 };
+
 /**
  * FIN DU GAME
  */
 BaseGame.prototype.end = function()
 {
-    this.stop();
+    if (this.started) {
+
+        this.started = false;
+
+        this.stop();
+        this.fps.stop();
+
+        console.log('end', this.avatars.ids);
+
+        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+            this.removeAvatar(this.avatars.items[i]);
+        }
+
+        this.emit('end', {game: this});
+
+        return true;
+    }
+
+    return false;
 };

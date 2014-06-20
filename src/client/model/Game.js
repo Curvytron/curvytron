@@ -86,6 +86,7 @@ Game.prototype.newRound = function()
         this.avatars.items[i].clear();
     }
 };
+
 /**
  * FIN DU GAME
  */

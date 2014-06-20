@@ -229,6 +229,8 @@ BaseAvatar.prototype.setMask = function(mask)
  */
 BaseAvatar.prototype.clear = function()
 {
+    console.log('clear');
+
     this.stopPrinting();
 
     this.head            = [this.radius, this.radius];
@@ -239,6 +241,8 @@ BaseAvatar.prototype.clear = function()
     this.printing        = false;
 
     this.updateVelocities();
+
+    console.log(this);
 };
 
 /**

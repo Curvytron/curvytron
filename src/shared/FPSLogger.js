@@ -7,9 +7,9 @@ function FPSLogger(element)
     this.element = typeof(element) != 'undefined' ? element : null;
 
     this.update = this.update.bind(this);
-    this.clear  = this.clear.bind(this);
+    this.log    = this.log.bind(this);
 
-    setInterval(this.clear, 1000);
+    this.start();
 }
 
 /**
@@ -25,9 +25,9 @@ FPSLogger.prototype.update = function(step)
 };
 
 /**
- * Clear
+ * Log
  */
-FPSLogger.prototype.clear = function()
+FPSLogger.prototype.log = function()
 {
     this.draw();
 
@@ -53,5 +53,26 @@ FPSLogger.prototype.draw = function()
         this.element.innerHTML = this.fps;
     } else {
         console.log('FPS: %s', this.fps);
+    }
+};
+
+/**
+ * Start
+ */
+FPSLogger.prototype.start = function()
+{
+    if (!this.interval) {
+        this.interval = setInterval(this.log, 1000);
+    }
+};
+
+/**
+ * Stop
+ */
+FPSLogger.prototype.stop = function()
+{
+    if (this.interval) {
+        clearInterval(this.interval);
+        this.interval = null;
     }
 };

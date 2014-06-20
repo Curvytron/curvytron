@@ -6,6 +6,8 @@ function RoomController(io, repository, gameController)
     this.io             = io;
     this.repository     = repository;
     this.gameController = gameController;
+
+    this.endGame = this.endGame.bind(this);
 }
 
 /**
@@ -176,7 +178,7 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
         });
 
         if (room.isReady()) {
-            this.warmupRoom(room);
+            this.startGame(room);
         }
     }
 };
@@ -186,11 +188,16 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
  *
  * @param {Room} room
  */
-RoomController.prototype.warmupRoom = function(room)
+RoomController.prototype.startGame = function(room)
 {
+    var game = room.newGame(),
+        client;
+
     this.io.sockets.in('rooms').emit('room:start', {room: room.name});
 
-    this.gameController.addGame(room.newGame());
+    game.on('end', this.endGame);
+
+    this.gameController.addGame(game);
 
     var client;
 
@@ -199,4 +206,32 @@ RoomController.prototype.warmupRoom = function(room)
         this.detachEvents(client);
         this.gameController.attach(client, room.game);
     }
+};
+
+/**
+ * End game
+ *
+ * @param {Object} data
+ */
+RoomController.prototype.endGame = function(data)
+{
+    console.log("endGame", data);
+
+    var game = data.game,
+        room = game.room,
+        client;
+
+    this.io.sockets.in(game.channel).emit('end');
+
+    this.gameController.removeGame(game);
+
+    console.log('clients:', room.clients.items.length);
+
+    for (var i = room.clients.items.length - 1; i >= 0; i--) {
+        client = room.clients.items[i];
+        this.gameController.detach(client);
+        this.attachEvents(client);
+    }
+
+    room.closeGame();
 };

@@ -86,5 +86,8 @@ BasePlayer.prototype.serialize = function()
  */
 BasePlayer.prototype.getRandomColor = function()
 {
-    return '#' + Math.floor(Math.random()*16777215).toString(16);
+    var code = Math.floor(Math.random()*16777215).toString(16),
+        miss = 6 - code.length;
+
+    return '#' + code + (miss ? Array(miss +1).join("0") : '');
 };
