@@ -14,19 +14,19 @@
         <table class="room-players table table-hover table-striped v-align-middle">
             <thead>
                 <tr>
-                    <th class="pct-10">Ready ?</th>
+                    <th class="pct-15"> </th>
                     <th class="pct-50">Name</th>
-                    <th class="pct-25">Color</th>
+                    <th class="pct-20">Color</th>
                     <th class="pct-15">Keys</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="player in room.players.items" ng-class="{ local: player.local }">
-                    <td>
-                        <span class="player-ready" ng-class="{ ready: player.ready }" ng-click="setReady(player)">
+                    <td class="text-center">
+                        <button class="player-ready btn btn-default" ng-class="{ ready: player.ready }" ng-click="setReady(player)">
                             <i ng-if="player.ready == true" class="icon-check success"></i>
-                            <i ng-if="player.ready == false" class="icon-close success"></i>
-                        </span>
+                            <i ng-if="player.ready == false" class="icon-close success"></i> Ready ?
+                        </button>
                     </td>
                     <td>
                         {{ player.name }}

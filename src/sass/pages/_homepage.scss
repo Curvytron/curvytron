@@ -87,22 +87,32 @@ li.player-row {
 }
 
 .player-ready {
-    width: 40px;
-    height: 40px;
-    display: inline-block;
-    @extend .rounded;
+    width: auto !important;
+    height: auto !important;
     border: 2px solid $color-danger;
+    padding: 0px 10px !important;
     color: $color-danger;
     text-align: center;
+    font-size: $base-font-size !important;
+    text-transform: uppercase;
+    background: transparentize($color-danger, 1);
+    @include transition(all 0.2s linear);
     i {
         font-size: 20px;
         line-height: 37px;
         vertical-align: middle;
+        margin-right: 5px;
     }
     &.ready {
         color: #FFF;
         border-color: $color-success;
         background: $color-success;
+        &:hover {
+            background: $color-success;
+        }
+    }
+    &:hover {
+        background: $color-danger;
     }
 }
 
@@ -124,7 +134,7 @@ li.player-row {
                 .color-preview {
                     position: absolute;
                     left: 23px;
-                    top: 21px;
+                    top: 22px;
                     margin-left: 0;
                 }
                 input.form-control {
