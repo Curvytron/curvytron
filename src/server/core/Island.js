@@ -48,9 +48,9 @@ Island.prototype.testCircle = function(circle)
  *
  * @return {Boolean}
  */
-Island.prototype.circlesTouch = function(circleA, circleB)
+Island.circlesTouch = function(circleA, circleB)
 {
-    return this.getDistance(circleA, circleB) < (circleA[2] + circleB[2]) &&
+    return Island.getDistance(circleA, circleB) < (circleA[2] + circleB[2]) &&
         (circleA[3] && circleB[3] ? circleA[3] !== circleB[3] : true);
 };
 
@@ -79,7 +79,7 @@ Island.prototype.circleInBound = function(circle, from, to)
  *
  * @return {Boolean}
  */
-Island.prototype.getDistance = function(from, to)
+Island.getDistance = function(from, to)
 {
     return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
 };
