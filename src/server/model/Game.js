@@ -314,9 +314,9 @@ Game.prototype.chancePercent = function (percentTrue) {
 Game.prototype.getRandomPrintingTime = function()
 {
     if (this.bonusPrinting) {
-        return this.printingTime * (0.2 + Math.random() * 0.8);
+        return this.bonusPrintingTime * (0.2 + Math.random() * 0.8);
     } else {
-        return this.noPrintingTime * (0.8 + Math.random() * 0.5);
+        return this.noBonusPrintingTime * (0.8 + Math.random() * 0.5);
     }
 };
 
