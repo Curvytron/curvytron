@@ -13,30 +13,23 @@ function Game(room)
     this.clients = this.room.clients;
     this.client  = new SocketGroup(this.clients);
 
-    this.addPoint                   = this.addPoint.bind(this);
-    this.onDie                      = this.onDie.bind(this);
-    this.bonusPrinting              = false;
-    this.bonusPrintingTimeout       = null;
-    this.timeouts                   = [];
-
-    this.toggleBonusPrinting = this.toggleBonusPrinting.bind(this);
+    this.addPoint = this.addPoint.bind(this);
+    this.onDie    = this.onDie.bind(this);
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        avatar = this.avatars.items[i];
-        avatar.game = this;
-        avatar.clear();
-        avatar.on('point', this.addPoint);
-        avatar.on('die', this.onDie);
-        avatar.setMask(i+1);
+        var avatar = this.avatars.items[i];
+            avatar.game = this;
+            avatar.clear();
+            avatar.on('point', this.addPoint);
+            avatar.on('die', this.onDie);
+            avatar.setMask(i+1);
     }
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
 
-Game.prototype.bonusCap            = 20;
-Game.prototype.bonusPoppingRate    = 0.2;
-Game.prototype.noBonusPrintingTime = 200;
-Game.prototype.bonusPrintingTime   = 3000;
+Game.prototype.bonusCap         = 10;
+Game.prototype.bonusPoppingRate = 0.1;
 
 /**
  * Trail latency
@@ -61,6 +54,29 @@ Game.prototype.update = function(step)
 
         if (avatar.alive && !this.world.testCircle(avatar.update(step))) {
             avatar.die();
+        }
+
+        // check if a bonus has been taken
+        for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
+            bonus = this.bonuses.items[i];
+            if (bonus.active &&
+                Island.circlesTouch(
+                    [avatar.head[0], avatar.head[1], avatar.radius, avatar.mask],
+                    [bonus.position[0], bonus.position[1], bonus.radius, 0]
+                )
+            ) {
+                    // sample speed bonus test
+                    bonus.clear();
+                    this.emit('bonus:clear', bonus.serialize());
+                    avatar.upVelocity();
+                    setTimeout(
+                        function() {
+                            avatar.downVelocity()
+                        },
+                        3333
+                    );
+
+            }
         }
     }
 };
@@ -161,7 +177,7 @@ Game.prototype.setScores = function()
         for (var i = this.deaths.items.length - 1; i >= 0; i--) {
             this.deaths.items[i].addScore(i + 1);
         }
-        
+
         if (this.deaths.count() < total) {
             var winner = this.avatars.match(function () { return this.alive; });
 
@@ -230,6 +246,27 @@ Game.prototype.onStart = function()
    
     BaseGame.prototype.start.call(this);
 };
+
+// test
+Game.prototype.popRandomBonus = function () {
+    if (this.bonuses.count() < this.bonusCap) {
+        if (this.chancePercent(this.bonusPoppingRate)) {
+            var bonus = new Bonus('test', '#7CFC00');
+                bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
+                bonus.pop();
+            this.emit('bonus:pop', bonus.serialize());
+            this.bonuses.add(bonus);
+        }
+    }
+}
+
+Game.prototype.chancePercent = function (percentTrue) {
+    percentTrue = percentTrue || 100;
+    if(Math.floor(Math.random()*101) <= percentTrue) {
+        return true;
+    }
+    return false;
+}
 
 /**
  * FIN DU GAME
