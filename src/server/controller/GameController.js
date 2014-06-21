@@ -262,7 +262,7 @@ GameController.prototype.onVelocityDown = function(data)
  *
  * @param {SocketClient} game
  */
-GameController.prototype.onBonusPop = function(client, data)
+GameController.prototype.onBonusPop = function(data)
 {
     var game = data.game,
         channel = data.game.channel;
@@ -276,7 +276,7 @@ GameController.prototype.onBonusPop = function(client, data)
  * @param {SocketClient}client
  * @param data
  */
-GameController.prototype.onBonusClear = function(client, data)
+GameController.prototype.onBonusClear = function(data)
 {
     var game = data.game,
         channel = data.game.channel;
