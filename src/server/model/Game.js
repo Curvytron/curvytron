@@ -56,28 +56,11 @@ Game.prototype.update = function(step)
 
     var avatar, bonus;
 
-    if (this.bonusPrinting) {
-        this.popBonus();
-    }
-
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
         if (avatar.alive && !this.world.testCircle(avatar.update(step))) {
             avatar.die();
-        }
-
-        // check if a bonus has been taken
-        for (var j = this.bonuses.ids.length - 1; j >= 0; j--) {
-            bonus = this.bonuses.items[j];
-
-            if (bonus.isTakenBy(avatar)) {
-                // sample speed bonus test
-                bonus.clear();
-                this.emit('bonus:clear', { game: this, bonus: bonus });
-                avatar.upVelocity();
-                this.timeouts.push(setTimeout(function() { avatar.downVelocity(); }, 3333));
-            }
         }
     }
 };
@@ -219,7 +202,7 @@ Game.prototype.newRound = function()
         this.inRound = true;
         this.deaths.clear();
 
-        for (i = this.avatars.items.length - 1; i >= 0; i--) {
+        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
             avatar = this.avatars.items[i];
 
             avatar.clear();
