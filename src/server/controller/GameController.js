@@ -37,8 +37,10 @@ GameController.prototype.addGame = function(game)
         game.on('round:new', this.onRoundNew);
         game.on('round:end', this.onRoundEnd);
         game.on('round:winner', this.onRoundWinner);
-<<<<<<< refs/heads/develop
 
+        game.on('bonus:pop', this.onBonusPop);
+        game.on('bonus:clear', this.onBonusClear);
+        
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
             this.attach(game.clients.items[i], game);
         }
@@ -57,16 +59,12 @@ GameController.prototype.removeGame = function(game)
         game.removeListener('round:new', this.onRoundNew);
         game.removeListener('round:end', this.onRoundEnd);
         game.removeListener('round:winner', this.onRoundWinner);
-
+        game.removeListener('bonus:pop', this.onBonusPop);
+        game.removeListener('bonus:clear', this.onBonusClear);
+        
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
             this.detach(game.clients.items[i], game);
         }
-=======
-        game.on('end', this.onEnd);
-
-        game.on('bonus:pop', this.onBonusPop);
-        game.on('bonus:clear', this.onBonusClear);
->>>>>>> HEAD~28
     }
 };
 
