@@ -57,7 +57,32 @@ Game.prototype.update = function(step)
         if (avatar.alive && !this.world.testCircle(avatar.update(step))) {
             avatar.die();
         }
+
+        // check if a bonus has been taken
+        for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
+            bonus = this.bonuses.items[i];
+            if (bonus.active &&
+                Island.circlesTouch(
+                    [avatar.head[0], avatar.head[1], avatar.radius, avatar.mask],
+                    [bonus.position[0], bonus.position[1], bonus.radius, 0]
+                )
+            ) {
+                    // sample speed bonus test
+                    bonus.clear();
+                    this.emit('bonus:clear', bonus.serialize());
+                    avatar.upVelocity();
+                    setTimeout(
+                        function() {
+                            avatar.downVelocity()
+                        },
+                        3333
+                    );
+
+            }
+        }
     }
+
+    this.popRandomBonus();
 };
 
 /**
@@ -232,6 +257,19 @@ Game.prototype.onStart = function()
 
     BaseGame.prototype.onStart.call(this);
 };
+
+// test
+Game.prototype.popRandomBonus = function () {
+    if (this.bonuses.count() < this.bonusCap) {
+        if (this.chancePercent(this.bonusPoppingRate)) {
+            var bonus = new Bonus('test', '#7CFC00');
+                bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
+                bonus.pop();
+            this.emit('bonus:pop', bonus.serialize());
+            this.bonuses.add(bonus);
+        }
+    }
+}
 
 Game.prototype.chancePercent = function (percentTrue) {
     percentTrue = percentTrue || 100;
