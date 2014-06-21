@@ -73,7 +73,7 @@ Game.prototype.update = function(step)
             if (bonus.isTakenBy(avatar)) {
                 // sample speed bonus test
                 bonus.clear();
-                this.emit('bonus:clear', bonus.serialize());
+                this.emit('bonus:clear', { game: this, bonus: bonus.serialize() });
                 avatar.upVelocity();
                 setTimeout(function() { avatar.downVelocity() }, 3333);
             }
@@ -286,9 +286,9 @@ Game.prototype.popBonus = function () {
     if (this.bonuses.count() < this.bonusCap) {
         if (this.chancePercent(this.bonusPoppingRate)) {
             var bonus = new Bonus('test', '#7CFC00');
-                bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
-                bonus.pop();
-            this.emit('bonus:pop', bonus.serialize());
+            bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
+            bonus.pop();
+            this.emit('bonus:pop', { game: this, bonus: bonus.serialize() });
             this.bonuses.add(bonus);
         }
     }
