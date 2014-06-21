@@ -59,23 +59,13 @@ Game.prototype.update = function(step)
         // check if a bonus has been taken
         for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
             bonus = this.bonuses.items[i];
-            if (bonus.active &&
-                Island.circlesTouch(
-                    [avatar.head[0], avatar.head[1], avatar.radius, avatar.mask],
-                    [bonus.position[0], bonus.position[1], bonus.radius, 0]
-                )
-            ) {
-                    // sample speed bonus test
-                    bonus.clear();
-                    this.emit('bonus:clear', bonus.serialize());
-                    avatar.upVelocity();
-                    setTimeout(
-                        function() {
-                            avatar.downVelocity()
-                        },
-                        3333
-                    );
 
+            if (bonus.isTakenBy(avatar)) {
+                // sample speed bonus test
+                bonus.clear();
+                this.emit('bonus:clear', { game: this, bonus: bonus.serialize() });
+                avatar.upVelocity();
+                setTimeout(function() { avatar.downVelocity() }, 3333);
             }
         }
     }
@@ -260,6 +250,11 @@ Game.prototype.popRandomBonus = function () {
     }
 }
 
+/**
+ *
+ * @param percentTrue
+ * @returns {boolean}
+ */
 Game.prototype.chancePercent = function (percentTrue) {
     percentTrue = percentTrue || 100;
     if(Math.floor(Math.random()*101) <= percentTrue) {
