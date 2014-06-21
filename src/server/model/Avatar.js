@@ -108,3 +108,21 @@ Avatar.prototype.setScore = function(score)
     BaseAvatar.prototype.setScore.call(this, score);
     this.emit('score', {avatar: this, score: this.score});
 };
+
+/**
+ * Upgrade velocity
+ */
+Avatar.prototype.upVelocity = function()
+{
+    BaseAvatar.prototype.upVelocity.call(this);
+    this.emit('velocity:up');
+};
+
+/**
+ * Downgrade velocity
+ */
+Avatar.prototype.downVelocity = function()
+{
+    BaseAvatar.prototype.downVelocity.call(this);
+    this.emit('velocity:down');
+};
