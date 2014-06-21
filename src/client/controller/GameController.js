@@ -44,7 +44,7 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.onLeave       = this.onLeave.bind(this);
 
     this.attachSocketEvents();
-
+    
     // Hydrate scope:
     this.$scope.sortorder = '-score';
 
@@ -271,6 +271,34 @@ GameController.prototype.onDie = function(e)
 
         var loose = createjs.Sound.play('loose');
         loose.volume = 0.2;
+    }
+};
+
+/**
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onVelocityUp = function(data)
+{
+    var avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.upVelocity();
+        this.$scope.$apply();
+    }
+};
+
+/**
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onVelocityDown = function(data)
+{
+    var avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.downVelocity();
+        this.$scope.$apply();
     }
 };
 
