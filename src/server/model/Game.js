@@ -13,10 +13,12 @@ function Game(room)
     this.clients = this.room.clients;
     this.client  = new SocketGroup(this.clients);
 
-    this.addPoint = this.addPoint.bind(this);
-    this.onDie    = this.onDie.bind(this);
+    this.addPoint             = this.addPoint.bind(this);
+    this.onDie                = this.onDie.bind(this);
+    this.bonusPrinting        = false;
+    this.bonusPrintingTimeout = null;
 
-    var avatar;
+    this.toggleBonusPrinting = this.toggleBonusPrinting.bind(this);
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
@@ -30,8 +32,10 @@ function Game(room)
 
 Game.prototype = Object.create(BaseGame.prototype);
 
-Game.prototype.bonusCap         = 10;
-Game.prototype.bonusPoppingRate = 0.1;
+Game.prototype.bonusCap            = 20;
+Game.prototype.bonusPoppingRate    = 0.2;
+Game.prototype.noBonusPrintingTime = 200;
+Game.prototype.bonusPrintingTime   = 3000;
 
 /**
  * Trail latency
@@ -58,31 +62,23 @@ Game.prototype.update = function(step)
             avatar.die();
         }
 
+        if (this.bonusPrinting) {
+            this.popBonus();
+        }
+
         // check if a bonus has been taken
         for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
             bonus = this.bonuses.items[i];
-            if (bonus.active &&
-                Island.circlesTouch(
-                    [avatar.head[0], avatar.head[1], avatar.radius, avatar.mask],
-                    [bonus.position[0], bonus.position[1], bonus.radius, 0]
-                )
-            ) {
-                    // sample speed bonus test
-                    bonus.clear();
-                    this.emit('bonus:clear', bonus.serialize());
-                    avatar.upVelocity();
-                    setTimeout(
-                        function() {
-                            avatar.downVelocity()
-                        },
-                        3333
-                    );
 
+            if (bonus.isTakenBy(avatar)) {
+                // sample speed bonus test
+                bonus.clear();
+                this.emit('bonus:clear', bonus.serialize());
+                avatar.upVelocity();
+                setTimeout(function() { avatar.downVelocity() }, 3333);
             }
         }
     }
-
-    this.popRandomBonus();
 };
 
 /**
@@ -200,6 +196,8 @@ Game.prototype.endRound = function()
 {
     BaseGame.prototype.endRound.call(this);
 
+    this.stopBonusPrinting();
+
     this.emit('round:end', {game: this});
 
     if (this.isWon()) {
@@ -254,12 +252,37 @@ Game.prototype.onStart = function()
     }
 
     this.world.activate();
+   
+    // toggle bonuses printing
+    setTimeout(this.toggleBonusPrinting, 3000);
 
-    BaseGame.prototype.onStart.call(this);
+    BaseGame.prototype.start.call(this);
 };
 
-// test
-Game.prototype.popRandomBonus = function () {
+/**
+ *
+ */
+Game.prototype.toggleBonusPrinting = function () {
+    this.bonusPrinting = !this.bonusPrinting;
+
+    clearTimeout(this.bonusPrintingTimeout);
+    this.printingTimeout = setTimeout(this.toggleBonusPrinting, this.getRandomPrintingTime());
+}
+
+/**
+ * Stop printing
+ */
+Game.prototype.stopBonusPrinting = function()
+{
+    clearTimeout(this.printingTimeout);
+
+    this.printing = false;
+};
+
+/**
+ *
+ */
+Game.prototype.popBonus = function () {
     if (this.bonuses.count() < this.bonusCap) {
         if (this.chancePercent(this.bonusPoppingRate)) {
             var bonus = new Bonus('test', '#7CFC00');
@@ -271,6 +294,11 @@ Game.prototype.popRandomBonus = function () {
     }
 }
 
+/**
+ *
+ * @param percentTrue
+ * @returns {boolean}
+ */
 Game.prototype.chancePercent = function (percentTrue) {
     percentTrue = percentTrue || 100;
     if(Math.floor(Math.random()*101) <= percentTrue) {
@@ -278,6 +306,20 @@ Game.prototype.chancePercent = function (percentTrue) {
     }
     return false;
 }
+
+/**
+ * Get random printing time
+ *
+ * @return {Number}
+ */
+Game.prototype.getRandomPrintingTime = function()
+{
+    if (this.bonusPrinting) {
+        return this.printingTime * (0.2 + Math.random() * 0.8);
+    } else {
+        return this.noPrintingTime * (0.8 + Math.random() * 0.5);
+    }
+};
 
 /**
  * FIN DU GAME
