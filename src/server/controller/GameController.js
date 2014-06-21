@@ -28,8 +28,10 @@ GameController.prototype.addGame = function(game)
         game.on('round:new', this.onRoundNew);
         game.on('round:end', this.onRoundEnd);
         game.on('round:winner', this.onRoundWinner);
-<<<<<<< refs/heads/develop
 
+        game.on('bonus:pop', this.onBonusPop);
+        game.on('bonus:clear', this.onBonusClear);
+        
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
             this.attach(game.clients.items[i], game);
         }
@@ -47,16 +49,12 @@ GameController.prototype.removeGame = function(game)
         game.removeListener('round:new', this.onRoundNew);
         game.removeListener('round:end', this.onRoundEnd);
         game.removeListener('round:winner', this.onRoundWinner);
-
+        game.removeListener('bonus:pop', this.onBonusPop);
+        game.removeListener('bonus:clear', this.onBonusClear);
+        
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
             this.detach(game.clients.items[i], game);
         }
-=======
-        game.on('end', this.onEnd);
-
-        game.on('bonus:pop', this.onBonusPop);
-        game.on('bonus:clear', this.onBonusClear);
->>>>>>> HEAD~28
     }
 };
 
@@ -110,6 +108,8 @@ GameController.prototype.attachEvents = function(client)
         avatar.on('die', this.onDie);
         avatar.on('angle', this.onAngle);
         avatar.on('position', this.onPosition);
+        avatar.on('velocity:up', this.onVelocityUp);
+        avatar.on('velocity:down', this.onVelocityDown);
         avatar.on('point', this.onPoint);
         avatar.on('score', this.onScore);
         avatar.trail.on('clear', this.onTrailClear);
@@ -136,6 +136,8 @@ GameController.prototype.detachEvents = function(client)
         avatar.removeAllListeners('position');
         avatar.removeAllListeners('point');
         avatar.removeAllListeners('score');
+        avatar.removeAllListeners('velocity:up');
+        avatar.removeAllListeners('velocity:down');
         avatar.trail.removeAllListeners('clear');
     }
 };
@@ -229,6 +231,30 @@ GameController.prototype.onDie = function(data)
         channel = avatar.player.client.room.game.channel;
 
     this.io.sockets.in(channel).emit('die', {avatar: avatar.name});
+};
+
+/**
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.onVelocityUp = function(data)
+{
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel;
+    
+    this.io.sockets.in(channel).emit('velocity:up', {avatar: avatar.name});
+};
+
+/**
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.onVelocityDown = function(data)
+{
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel;
+
+    this.io.sockets.in(channel).emit('velocity:down', {avatar: avatar.name});
 };
 
 /**
