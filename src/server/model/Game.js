@@ -244,7 +244,7 @@ Game.prototype.popRandomBonus = function () {
             var bonus = new Bonus('test', '#7CFC00');
                 bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
                 bonus.pop();
-            this.emit('bonus:pop', bonus.serialize());
+            this.emit('bonus:pop', bonus);
             this.bonuses.add(bonus);
         }
     }
@@ -262,6 +262,20 @@ Game.prototype.chancePercent = function (percentTrue) {
     }
     return false;
 }
+
+/**
+ * Get random printing time
+ *
+ * @return {Number}
+ */
+Game.prototype.getRandomPrintingTime = function()
+{
+    if (this.bonusPrinting) {
+        return this.printingTime * (0.2 + Math.random() * 0.8);
+    } else {
+        return this.noPrintingTime * (0.8 + Math.random() * 0.5);
+    }
+};
 
 /**
  * FIN DU GAME
