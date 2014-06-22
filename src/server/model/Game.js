@@ -132,7 +132,7 @@ Game.prototype.checkRoundEnd = function()
  */
 Game.prototype.isReady = function()
 {
-    return this.avatars.filter(function () { return !this.ready; }).isEmpty();
+    return this.avatars.filter(function () { return !this.ready; }).isEmpty();
 };
 
 /**
@@ -148,7 +148,7 @@ Game.prototype.setScores = function()
         }
 
         if (this.deaths.count() < total) {
-            var winner = this.avatars.match(function () { return this.alive; });
+            var winner = this.avatars.match(function () { return this.alive; });
 
             winner.addScore(total);
             this.emit('round:winner', {game: this, winner: winner});

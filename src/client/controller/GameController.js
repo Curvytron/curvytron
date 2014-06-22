@@ -13,13 +13,13 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.repository = repository;
     this.client     = client;
 
-    createjs.Sound.alternateExtensions = ["mp3"];
+    createjs.Sound.alternateExtensions = ['mp3'];
     createjs.Sound.registerManifest(
         [
-            {id:"loose", src:"loose.ogg"},
-            {id:"win", src:"win.ogg"}
+            {id:'loose', src:'loose.ogg'},
+            {id:'win', src:'win.ogg'}
         ],
-        "../sounds/"
+        '../sounds/'
     );
 
     // Binding
@@ -41,7 +41,7 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.attachSocketEvents();
 
     // Hydrate scope:
-    this.$scope.sortorder = "-score";
+    this.$scope.sortorder = '-score';
 
     this.loadGame($routeParams.name);
 }
@@ -90,7 +90,7 @@ GameController.prototype.detachSocketEvents = function()
 GameController.prototype.loadGame = function(name)
 {
     var room = this.repository.get(name),
-        avatars, avatar;
+        avatars;
 
     if (room) {
         this.room = room;
@@ -105,7 +105,7 @@ GameController.prototype.loadGame = function(name)
         this.game.fps.setElement(document.getElementById('fps'));
 
         // Hydrate scope:
-        this.$scope.curvytron.bodyClass = "game-mode";
+        this.$scope.curvytron.bodyClass = 'game-mode';
         this.$scope.game = this.game;
 
         this.client.io.emit('loaded');
@@ -223,7 +223,7 @@ GameController.prototype.onDie = function(data)
         avatar.die();
         this.applyScope();
 
-        var loose = createjs.Sound.play("loose");
+        var loose = createjs.Sound.play('loose');
         loose.volume = 0.2;
     }
 };
@@ -312,9 +312,7 @@ GameController.prototype.onEnd = function()
     document.getElementById('game-view').style.display = 'block';
     document.getElementById('round-view').style.display = 'none';
 
-    var win = createjs.Sound.play("win");
-
-    win.volume = 0.3;
+    createjs.Sound.play('win').volume = 0.3;
 
     paper.view.draw();
 };

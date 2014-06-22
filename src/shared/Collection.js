@@ -9,8 +9,8 @@ function Collection(items, key, index)
 {
     this.ids   = [];
     this.items = [];
-    this.key   = typeof(key) != 'undefined' && key ? key : 'id';
-    this.index = typeof(index) != 'undefined' && index;
+    this.key   = typeof(key) !== 'undefined' && key ? key : 'id';
+    this.index = typeof(index) !== 'undefined' && index;
 
     if (this.index) {
         this.id = 1;
@@ -131,7 +131,7 @@ Collection.prototype.removeById = function(id)
  */
 Collection.prototype.setId = function(element)
 {
-    if (this.index && (typeof(element[this.key]) == 'undefined' || element[this.key] === null)) {
+    if (this.index && (typeof(element[this.key]) === 'undefined' || element[this.key] === null)) {
         element[this.key] = this.id;
         this.id++;
     }
@@ -195,7 +195,7 @@ Collection.prototype.getById = function(id)
  */
 Collection.prototype.getByIndex = function(index)
 {
-    return typeof(this.items[index]) != 'undefined' ? this.items[index] : null;
+    return typeof(this.items[index]) !== 'undefined' ? this.items[index] : null;
 };
 
 /**

@@ -58,7 +58,7 @@ Avatar.prototype.updateArrowPosition = function()
     if (this.arrow !== null) {
         this.setArrow(true);
     }
-}
+};
 
 /**
  * Set started
@@ -92,7 +92,7 @@ Avatar.prototype.setArrow = function(toggle)
                 this.path.position.y
             ],
             strokeColor: this.color,
-            strokeWidth: 2,
+            strokeWidth: 2
         });
 
         this.arrow.rotate(this.angle * 180 / Math.PI, [this.path.position.x, this.path.position.y]);
