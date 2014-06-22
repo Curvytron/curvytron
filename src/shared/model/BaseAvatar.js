@@ -121,6 +121,7 @@ BaseAvatar.prototype.updatePosition = function(step)
 BaseAvatar.prototype.upVelocity = function()
 {
     this.velocity = this.velocity + ((this.defaultVelocity * 33)/100);
+    this.updateVelocities();
 };
 
 /**
@@ -129,6 +130,16 @@ BaseAvatar.prototype.upVelocity = function()
 BaseAvatar.prototype.downVelocity = function()
 {
     this.velocity = this.velocity - ((this.defaultVelocity * 33)/100);
+    this.updateVelocities();
+};
+
+/**
+ * Reset velocity
+ */
+BaseAvatar.prototype.resetVelocity = function()
+{
+    this.velocity = this.defaultVelocity;
+    this.updateVelocities();
 };
 
 /**
