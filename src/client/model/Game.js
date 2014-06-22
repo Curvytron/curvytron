@@ -5,8 +5,6 @@
  */
 function Game(room)
 {
-    var game = this;
-
     this.canvas = document.getElementById('game');
     this.size   = this.getSize(room.players.count());
 
