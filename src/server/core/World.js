@@ -129,9 +129,10 @@ World.prototype.circleInBound = function(circle, from, to)
 /**
  * Random Position
  *
- * @param {Number} radius
+ * @param radius
+ * @param border
  *
- * @return {Array}
+ * @returns {Array}
  */
 World.prototype.getRandomPosition = function(radius, border)
 {
@@ -148,7 +149,7 @@ World.prototype.getRandomPosition = function(radius, border)
 /**
  * Get random point
  *
- * @param {Number} radius
+ * @param {Number} margin
  *
  * @return {Array}
  */
