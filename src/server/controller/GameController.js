@@ -10,6 +10,8 @@ function GameController()
     this.onDie         = this.onDie.bind(this);
     this.onAngle       = this.onAngle.bind(this);
     this.onPosition    = this.onPosition.bind(this);
+    this.onBonusPop    = this.onBonusPop.bind(this);
+    this.onBonusClear  = this.onBonusClear.bind(this);
     this.onPrinting    = this.onPrinting.bind(this);
     this.onPoint       = this.onPoint.bind(this);
     this.onScore       = this.onScore.bind(this);
