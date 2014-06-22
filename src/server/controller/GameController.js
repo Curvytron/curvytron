@@ -15,6 +15,8 @@ function GameController(io)
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
     this.onRoundWinner = this.onRoundWinner.bind(this);
+    this.onBonusPop     = this.onBonusPop.bind(this);
+    this.onBonusClear   = this.onBonusClear.bind(this);
 }
 
 /**
@@ -108,8 +110,6 @@ GameController.prototype.attachEvents = function(client)
         avatar.on('die', this.onDie);
         avatar.on('angle', this.onAngle);
         avatar.on('position', this.onPosition);
-        avatar.on('velocity:up', this.onVelocityUp);
-        avatar.on('velocity:down', this.onVelocityDown);
         avatar.on('point', this.onPoint);
         avatar.on('score', this.onScore);
         avatar.trail.on('clear', this.onTrailClear);
@@ -136,8 +136,6 @@ GameController.prototype.detachEvents = function(client)
         avatar.removeAllListeners('position');
         avatar.removeAllListeners('point');
         avatar.removeAllListeners('score');
-        avatar.removeAllListeners('velocity:up');
-        avatar.removeAllListeners('velocity:down');
         avatar.trail.removeAllListeners('clear');
     }
 };
