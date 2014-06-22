@@ -317,7 +317,7 @@ GameController.prototype.onEnd = function()
     document.getElementById('game-view').style.display = 'block';
     document.getElementById('round-view').style.display = 'none';
 
-    createjs.Sound.play('win').volume = 0.3;
+    createjs.Sound.play('win').volume = 0.2;
 
     paper.view.pause();
 };
