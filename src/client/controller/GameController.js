@@ -273,12 +273,12 @@ GameController.prototype.onTrailClear = function(data)
  */
 GameController.prototype.onRoundNew = function()
 {
-    this.displayWarmup(this.game.warmupTime);
-    this.game.newRound();
-
     document.getElementById('end').style.display        = 'none';
     document.getElementById('game-view').style.display  = 'none';
     document.getElementById('round-view').style.display = 'none';
+
+    this.displayWarmup(this.game.warmupTime);
+    this.game.newRound();
 };
 
 /**

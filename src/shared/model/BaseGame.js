@@ -203,7 +203,6 @@ BaseGame.prototype.newRound = function()
 BaseGame.prototype.endRound = function()
 {
     this.stop();
-
 };
 
 /**

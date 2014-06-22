@@ -182,8 +182,6 @@ Game.prototype.newRound = function()
     if (!this.inRound) {
         var avatar, position;
 
-        this.emit('round:new', {game: this});
-
         this.world.clear();
 
         this.inRound = true;
@@ -198,24 +196,22 @@ Game.prototype.newRound = function()
         }
 
         BaseGame.prototype.newRound.call(this);
+
+        this.emit('round:new', {game: this});
     }
 };
 
 /**
- * Start
+ * On start
  */
-Game.prototype.start = function()
+Game.prototype.onStart = function()
 {
-    if (!this.frame) {
-        var avatar;
-
-        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-            avatar = this.avatars.items[i];
-            avatar.printingTimeout = setTimeout(avatar.togglePrinting, 3000);
-        }
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        avatar.printingTimeout = setTimeout(avatar.togglePrinting, 3000);
     }
 
-    BaseGame.prototype.start.call(this);
+    BaseGame.prototype.onStart.call(this);
 };
 
 /**
