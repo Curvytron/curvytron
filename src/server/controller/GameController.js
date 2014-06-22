@@ -152,12 +152,6 @@ GameController.prototype.onGameLoaded = function(client, callback)
     }
 
     if (game.isReady()) {
-        for (var i = game.avatars.items.length - 1; i >= 0; i--) {
-            avatar = game.avatars.items[i];
-            this.io.sockets.in(game.channel).emit('position', {avatar: avatar.name, point: avatar.head});
-            this.io.sockets.in(game.channel).emit('angle', {avatar: avatar.name, angle: avatar.angle});
-        }
-
         game.newRound();
     }
 };

@@ -70,7 +70,7 @@ Island.prototype.circleInBound = function(circle, from, to)
     return circle[0] + circle[2] >= from[0]
         && circle[0] - circle[2] <= to[0]
         && circle[1] + circle[2] >= from[1]
-        && circle[1] - circle[2] <= to[1]
+        && circle[1] - circle[2] <= to[1];
 };
 
 /**
@@ -117,7 +117,7 @@ Island.prototype.getRandomPoint = function(margin)
     return [
         margin + Math.random() * (this.size - margin * 2),
         margin + Math.random() * (this.size - margin * 2)
-    ]
+    ];
 };
 
 /**

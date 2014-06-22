@@ -119,6 +119,7 @@ colorpicker-preview {
   width: 87px;
   height: 30px;
   margin: 0 0 3px 0;
+  float: left;
   clear: both;
   background-position: 0 100%;
   @include border-radius(4px);
