@@ -20,7 +20,7 @@ RoomRepository.prototype.create = function(name)
     var room = new Room(name);
 
     return this.rooms.add(room) ? room : null;
-}
+};
 
 /**
  * Delete a room

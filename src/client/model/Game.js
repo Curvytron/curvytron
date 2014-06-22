@@ -79,7 +79,7 @@ Game.prototype.stop = function()
  */
 Game.prototype.onFrame = function(e)
 {
-    BaseGame.prototype.onFrame.call(this, e.delta * 1000)
+    BaseGame.prototype.onFrame.call(this, e.delta * 1000);
 };
 
 /**
