@@ -16,17 +16,11 @@ function BaseBonus(name, color, radius)
     this.positive        = true;
 
     this.position        = [this.radius, this.radius];
-
-    this.printing        = false;
-    this.printingTimeout = null;
-    this.mask            = 0;
 }
 
 BaseBonus.prototype = Object.create(EventEmitter.prototype);
 
 BaseBonus.prototype.precision      = 1;
-BaseBonus.prototype.noPrintingTime = 200;
-BaseBonus.prototype.printingTime   = 3000;
 BaseBonus.prototype.defaultName    = 'Bonus';
 BaseBonus.prototype.defaultColor   = '#7CFC00';
 BaseBonus.prototype.defaultRadius  = 1.2;
@@ -40,19 +34,6 @@ BaseBonus.prototype.setPosition = function(point)
 {
     this.position[0] = point[0];
     this.position[1] = point[1];
-};
-
-/**
- * Get distance
- *
- * @param {Array} from
- * @param {Array} to
- *
- * @return {Number}
- */
-BaseBonus.prototype.getDistance = function(from, to)
-{
-    return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
 };
 
 /**
@@ -101,6 +82,11 @@ BaseBonus.prototype.generateUUID = function () {
     return uuid.join('');
 };
 
+/**
+ * Serialize
+ *
+ * @returns {{id: *, name: *, color: *, radius: *, active: *, position: *}}
+ */
 BaseBonus.prototype.serialize = function () {
     return {
         id: this.id,
@@ -112,6 +98,11 @@ BaseBonus.prototype.serialize = function () {
     };
 };
 
+/**
+ * Unserialize
+ *
+ * @param bonus
+ */
 BaseBonus.prototype.unserialize = function (bonus) {
     _.extend(this, bonus);
 };

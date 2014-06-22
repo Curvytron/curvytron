@@ -128,7 +128,7 @@ Game.prototype.isWon = function()
 };
 
 /**
- * Add point
+ * On die
  *
  * @param {Object} data
  */
@@ -231,6 +231,7 @@ Game.prototype.newRound = function()
             avatar.setAngle(Math.random() * Math.PI * 2);
         }
 
+        // clear the bonuses stack
         for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
             bonus = this.bonuses.items[i];
             bonus.clear();
@@ -263,7 +264,7 @@ Game.prototype.onStart = function()
 };
 
 /**
- *
+ * Toggle bonus printing
  */
 Game.prototype.toggleBonusPrinting = function () {
     this.bonusPrinting = !this.bonusPrinting;
@@ -273,7 +274,7 @@ Game.prototype.toggleBonusPrinting = function () {
 }
 
 /**
- * Stop printing
+ * Stop bonus printing
  */
 Game.prototype.stopBonusPrinting = function()
 {
@@ -283,7 +284,7 @@ Game.prototype.stopBonusPrinting = function()
 };
 
 /**
- *
+ * Make a bonus `pop'
  */
 Game.prototype.popBonus = function () {
     if (this.bonuses.count() < this.bonusCap) {
@@ -295,9 +296,10 @@ Game.prototype.popBonus = function () {
             this.bonuses.add(bonus);
         }
     }
-}
+};
 
 /**
+ * Has a percent of chance to return true
  *
  * @param percentTrue
  * @returns {boolean}

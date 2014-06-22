@@ -9,7 +9,6 @@ function Bonus(name, color, radius)
     BaseBonus.call(this, name, color, radius);
 
     this.path = null;
-
 }
 
 Bonus.prototype = Object.create(BaseBonus.prototype);
@@ -29,8 +28,6 @@ Bonus.prototype.createPath = function()
 
 /**
  * Pop
- *
- * @param {Array} point
  */
 Bonus.prototype.pop = function()
 {
