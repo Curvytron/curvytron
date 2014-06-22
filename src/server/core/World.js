@@ -56,7 +56,7 @@ World.prototype.getIslandsByCircle = function(circle)
             this.getIslandByPoint([circle[0] - circle[2], circle[1] - circle[2]]),
             this.getIslandByPoint([circle[0] + circle[2], circle[1] - circle[2]]),
             this.getIslandByPoint([circle[0] - circle[2], circle[1] + circle[2]]),
-            this.getIslandByPoint([circle[0] + circle[2], circle[1] + circle[2]]),
+            this.getIslandByPoint([circle[0] + circle[2], circle[1] + circle[2]])
         ];
 
     for (var i = sources.length - 1; i >= 0; i--) {
@@ -118,15 +118,16 @@ World.prototype.circleInBound = function(circle, from, to)
     return circle[0] - circle[2] >= from[0]
         && circle[0] + circle[2] <= to[0]
         && circle[1] - circle[2] >= from[1]
-        && circle[1] + circle[2] <= to[1]
+        && circle[1] + circle[2] <= to[1];
 };
 
 /**
  * Random Position
  *
- * @param {Number} radius
+ * @param radius
+ * @param border
  *
- * @return {Array}
+ * @returns {Array}
  */
 World.prototype.getRandomPosition = function(radius, border)
 {
@@ -143,7 +144,7 @@ World.prototype.getRandomPosition = function(radius, border)
 /**
  * Get random point
  *
- * @param {Number} radius
+ * @param {Number} margin
  *
  * @return {Array}
  */
@@ -152,7 +153,7 @@ World.prototype.getRandomPoint = function(margin)
     return [
         margin + Math.random() * (this.size - margin * 2),
         margin + Math.random() * (this.size - margin * 2)
-    ]
+    ];
 };
 
 /**
