@@ -40,5 +40,5 @@ BaseTrail.prototype.getLast = function()
  */
 BaseTrail.prototype.clear = function()
 {
-    this.points = [];
+    this.points = [];
 };

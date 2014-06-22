@@ -13,13 +13,13 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.repository = repository;
     this.client     = client;
 
-    createjs.Sound.alternateExtensions = ["mp3"];
+    createjs.Sound.alternateExtensions = ['mp3'];
     createjs.Sound.registerManifest(
         [
-            {id:"loose", src:"loose.ogg"},
-            {id:"win", src:"win.ogg"}
+            {id:'loose', src:'loose.ogg'},
+            {id:'win', src:'win.ogg'}
         ],
-        "../sounds/"
+        '../sounds/'
     );
 
     // Binding
@@ -41,7 +41,7 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.attachSocketEvents();
 
     // Hydrate scope:
-    this.$scope.sortorder = "-score";
+    this.$scope.sortorder = '-score';
 
     this.loadGame($routeParams.name);
 }
@@ -90,7 +90,7 @@ GameController.prototype.detachSocketEvents = function()
 GameController.prototype.loadGame = function(name)
 {
     var room = this.repository.get(name),
-        avatars, avatar;
+        avatars;
 
     if (room) {
         this.room = room;
@@ -105,7 +105,7 @@ GameController.prototype.loadGame = function(name)
         this.game.fps.setElement(document.getElementById('fps'));
 
         // Hydrate scope:
-        this.$scope.curvytron.bodyClass = "game-mode";
+        this.$scope.curvytron.bodyClass = 'game-mode';
         this.$scope.game = this.game;
 
         this.client.io.emit('loaded');
@@ -171,10 +171,6 @@ GameController.prototype.onPosition = function(data)
 
     if (avatar) {
         avatar.setPosition(data.point);
-
-        if (!this.game.isStarted()) {
-            paper.view.draw();
-        }
     }
 };
 
@@ -189,10 +185,6 @@ GameController.prototype.onAngle = function(data)
 
     if (avatar) {
         avatar.setAngle(data.angle);
-
-        if (!this.game.isStarted()) {
-            paper.view.draw();
-        }
     }
 };
 
@@ -223,7 +215,7 @@ GameController.prototype.onDie = function(data)
         avatar.die();
         this.applyScope();
 
-        var loose = createjs.Sound.play("loose");
+        var loose = createjs.Sound.play('loose');
         loose.volume = 0.2;
     }
 };
@@ -270,8 +262,6 @@ GameController.prototype.onRoundNew = function()
     document.getElementById('end').style.display        = 'none';
     document.getElementById('game-view').style.display  = 'none';
     document.getElementById('round-view').style.display = 'none';
-
-    paper.view.draw();
 };
 
 /**
@@ -282,8 +272,6 @@ GameController.prototype.onRoundNew = function()
 GameController.prototype.onRoundEnd = function()
 {
     this.game.endRound();
-
-    paper.view.draw();
 };
 
 /**
@@ -306,17 +294,13 @@ GameController.prototype.onEnd = function()
 
     this.game = null;
 
-    this.client.join('rooms');
-
     document.getElementById('end').style.display = 'block';
     document.getElementById('game-view').style.display = 'block';
     document.getElementById('round-view').style.display = 'none';
 
-    var win = createjs.Sound.play("win");
+    createjs.Sound.play('win').volume = 0.3;
 
-    win.volume = 0.3;
-
-    paper.view.draw();
+    paper.view.pause();
 };
 
 /**

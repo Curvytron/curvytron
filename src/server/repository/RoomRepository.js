@@ -23,6 +23,16 @@ RoomRepository.prototype.create = function(name)
 }
 
 /**
+ * Delete a room
+ *
+ * @param {Room} room
+ */
+RoomRepository.prototype.remove = function(room)
+{
+    return room.clients.isEmpty() && this.rooms.remove(room);
+};
+
+/**
  * Get by name
  *
  * @param {String} name

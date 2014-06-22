@@ -11,7 +11,7 @@ function BaseGame(room)
     this.name     = this.room.name;
     this.channel  = 'game:' + this.name;
     this.frame    = null;
-    this.avatars  = this.room.players.map(function () { return this.getAvatar(); });
+    this.avatars  = this.room.players.map(function () { return this.getAvatar(); });
     this.size     = this.getSize(this.avatars.count());
     this.rendered = null;
     this.maxScore = this.getMaxScore(this.avatars.count());
@@ -24,6 +24,7 @@ function BaseGame(room)
     this.newRound = this.newRound.bind(this);
     this.endRound = this.endRound.bind(this);
     this.end      = this.end.bind(this);
+    this.onFrame  = this.onFrame.bind(this);
 }
 
 BaseGame.prototype = Object.create(EventEmitter.prototype);

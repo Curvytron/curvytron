@@ -9,7 +9,7 @@ function PlayerInput(avatar, binding)
     this.key     = false;
     this.active  = [false, false];
     this.move    = 0;
-    this.binding = typeof(binding) != 'undefined' ? binding : this.defaultBinding;
+    this.binding = typeof(binding) !== 'undefined' ? binding : this.defaultBinding;
 
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp   = this.onKeyUp.bind(this);
@@ -43,7 +43,7 @@ PlayerInput.prototype.attachEvents = function()
         if (listening.indexOf(type) < 0) {
             listening.push(type);
 
-            if (type == 'keyboard') {
+            if (type === 'keyboard') {
                 window.addEventListener('keydown', this.onKeyDown);
                 window.addEventListener('keyup', this.onKeyUp);
             } else if (new RegExp('^gamepad:\\d+:button').test(type)) {

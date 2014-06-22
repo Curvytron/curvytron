@@ -4,7 +4,7 @@
 function FPSLogger(element)
 {
     this.fps     = 0;
-    this.element = typeof(element) != 'undefined' ? element : null;
+    this.element = typeof(element) !== 'undefined' ? element : null;
 
     this.update = this.update.bind(this);
     this.log    = this.log.bind(this);

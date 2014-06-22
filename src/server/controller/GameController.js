@@ -50,8 +50,6 @@ GameController.prototype.removeGame = function(game)
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
             this.detach(game.clients.items[i], game);
         }
-
-        console.log('game removed', this.games.ids);
     }
 };
 
@@ -132,8 +130,6 @@ GameController.prototype.detachEvents = function(client)
         avatar.removeAllListeners('point');
         avatar.removeAllListeners('score');
         avatar.trail.removeAllListeners('clear');
-
-        console.log("avatar detached");
     }
 };
 
