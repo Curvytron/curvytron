@@ -14,6 +14,9 @@ Avatar.prototype = Object.create(BaseAvatar.prototype);
 
 /**
  * Update
+ *
+ * @param step
+ * @returns {*}
  */
 Avatar.prototype.update = function(step)
 {
@@ -41,7 +44,7 @@ Avatar.prototype.setPosition = function(point)
 };
 
 /**
- * Set position
+ * Set angle
  *
  * @param {Array} point
  */
