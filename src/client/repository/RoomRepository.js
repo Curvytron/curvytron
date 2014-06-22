@@ -62,12 +62,34 @@ RoomRepository.prototype.create = function(name, callback)
 /**
  * Join
  *
+ * @param {String} room
+ * @param {Function} callback
+ */
+RoomRepository.prototype.join = function(room, callback)
+{
+    return this.client.io.emit('room:join', {room: room}, callback);
+};
+
+/**
+ * Add player
+ *
+ * @param {String} name
+ * @param {Function} callback
+ */
+RoomRepository.prototype.addPlayer = function(name, callback)
+{
+    return this.client.io.emit('room:player:add', {name: name}, callback);
+};
+
+/**
+ * Leave
+ *
  * @return {Array}
  * @param {Function} callback
  */
-RoomRepository.prototype.join = function(room, player, callback)
+RoomRepository.prototype.leave = function(callback)
 {
-    return this.client.io.emit('room:join', {room: room, player: player}, callback);
+    return this.client.io.emit('room:leave', callback);
 };
 
 /**
@@ -221,4 +243,15 @@ RoomRepository.prototype.setSynced = function()
         this.synced = true;
         this.emit('synced');
     }
+};
+
+/**
+ * Refresh
+ */
+RoomRepository.prototype.refresh = function()
+{
+    this.synced = false;
+    this.rooms  = new Collection([], 'name');
+
+    return this.client.io.emit('room:join', {room: room}, callback);
 };

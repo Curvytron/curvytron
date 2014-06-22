@@ -16,51 +16,64 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
     this.repository = repository;
     this.client     = client;
 
-    this.client.join('rooms');
-
     // Binding:
-    this.createUser = this.createUser.bind(this);
+    this.addPlayer  = this.addPlayer.bind(this);
     this.applyScope = this.applyScope.bind(this);
     this.onJoin     = this.onJoin.bind(this);
-    this.loadRoom   = this.loadRoom.bind(this);
+    this.joinRoom   = this.joinRoom.bind(this);
+    this.leaveRoom  = this.leaveRoom.bind(this);
     this.setColor   = this.setColor.bind(this);
     this.setReady   = this.setReady.bind(this);
     this.start      = this.start.bind(this);
 
+    this.$scope.$on("$destroy", this.leaveRoom);
+
     // Hydrating scope:
-    this.$scope.submit   = this.createUser;
+    this.$scope.submit   = this.addPlayer;
     this.$scope.setColor = this.setColor;
     this.$scope.setReady = this.setReady;
 
     this.$scope.curvytron.bodyClass = null;
 
     if (this.repository.synced) {
-        this.loadRoom($routeParams.name);
+        this.joinRoom($routeParams.name);
     } else {
         var controller = this;
 
-        this.repository.on('synced', function () { controller.loadRoom($routeParams.name); });
+        this.repository.on('synced', function () { controller.joinRoom($routeParams.name); });
     }
 }
 
 /**
- * Load room into scope
+ * Join room and load scope
  */
-RoomController.prototype.loadRoom = function(name)
+RoomController.prototype.joinRoom = function(name)
 {
-    var room = this.repository.get(name);
+    var controller = this;
 
-    if (room) {
-        this.$scope.room = room;
-
-        this.attachEvents(name);
-
-        if (typeof(e) !== 'undefined') {
-            this.applyScope();
+    this.repository.join(
+        name,
+        function (result) {
+            if (result.success) {
+                controller.$scope.room = controller.repository.get(name);
+                controller.attachEvents(name);
+            } else {
+                console.log('Error');
+                controller.goHome();
+            }
+            controller.applyScope();
         }
-    } else {
-        this.goHome();
-    }
+    );
+};
+
+/**
+ * Leave room
+ */
+RoomController.prototype.leaveRoom = function(name)
+{
+    var controller = this;
+
+    this.repository.leave();
 };
 
 /**
@@ -70,7 +83,7 @@ RoomController.prototype.loadRoom = function(name)
  */
 RoomController.prototype.attachEvents = function(name)
 {
-    //this.repository.on('room:close:' + name, this.loadRoom);
+    //this.repository.on('room:close:' + name, this.joinRoom);
     this.repository.on('room:join:' + name, this.onJoin);
     this.repository.on('room:leave:' + name, this.applyScope);
     this.repository.on('room:player:ready:' + name, this.applyScope);
@@ -88,19 +101,17 @@ RoomController.prototype.goHome = function()
 };
 
 /**
- * Rooms action
- *
- * @return {Array}
+ * Add player
  */
-RoomController.prototype.createUser = function(e)
+RoomController.prototype.addPlayer = function()
 {
     var $scope = this.$scope;
 
     if ($scope.username) {
-        this.repository.join(
-            $scope.room.name,
+        this.repository.addPlayer(
             $scope.username,
             function (result) {
+                console.log(result);
                 if (result.success) {
                     $scope.username = null;
                     $scope.$apply();
@@ -198,7 +209,7 @@ RoomController.prototype.start = function(data)
  */
 RoomController.prototype.applyScope = function()
 {
-    if (this.$scope.$root.$$phase !== '$apply') {
+    if (typeof(this.$scope.$root.$$phase) == 'undefined' || this.$scope.$root.$$phase !== '$apply') {
         this.$scope.$apply();
     }
 };

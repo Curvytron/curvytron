@@ -86,6 +86,7 @@ Game.prototype.newRound = function()
         this.avatars.items[i].clear();
     }
 };
+
 /**
  * FIN DU GAME
  */
@@ -97,6 +98,19 @@ Game.prototype.end = function()
         this.avatars.items[i].clear();
     }
 };
+
+/**
+ * Remove a avatar from the game
+ *
+ * @param {Avatar} avatar
+ */
+Game.prototype.removeAvatar = function(avatar)
+{
+    avatar.path.remove();
+
+    return BaseGame.prototype.removeAvatar.call(this, avatar);
+};
+
 
 /**
  * On resize

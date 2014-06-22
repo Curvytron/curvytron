@@ -12,6 +12,11 @@ function BaseRoom(name)
 
 BaseRoom.prototype = Object.create(EventEmitter.prototype);
 
+/**
+ * Warmup time
+ *
+ * @type {Number}
+ */
 BaseRoom.prototype.warmupTime = 5000;
 
 /**
@@ -51,7 +56,7 @@ BaseRoom.prototype.removePlayer = function(player)
  */
 BaseRoom.prototype.isReady = function()
 {
-    return /*this.players.count() > 1 &&*/ this.players.filter(function () { return !this.ready; }).isEmpty();
+    return this.players.count() > 1 && this.players.filter(function () { return !this.ready; }).isEmpty();
 };
 
 /**
@@ -65,6 +70,18 @@ BaseRoom.prototype.newGame = function()
     }
 
     return this.game;
+};
+
+/**
+ * Close game
+ */
+BaseRoom.prototype.closeGame = function()
+{
+    this.game = null;
+
+    for (var i = this.players.items.length - 1; i >= 0; i--) {
+        this.players.items[i].reset();
+    }
 };
 
 /**

@@ -15,7 +15,6 @@ function GameController(io)
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
     this.onRoundWinner = this.onRoundWinner.bind(this);
-    this.onEnd         = this.onEnd.bind(this);
 }
 
 /**
@@ -29,7 +28,30 @@ GameController.prototype.addGame = function(game)
         game.on('round:new', this.onRoundNew);
         game.on('round:end', this.onRoundEnd);
         game.on('round:winner', this.onRoundWinner);
-        game.on('end', this.onEnd);
+
+        for (var i = game.clients.items.length - 1; i >= 0; i--) {
+            this.attach(game.clients.items[i], game);
+        }
+    }
+};
+
+/**
+ * Remove game
+ *
+ * @param {Game} game
+ */
+GameController.prototype.removeGame = function(game)
+{
+    if (this.games.remove(game)) {
+        game.on('round:new', this.onRoundNew);
+        game.on('round:end', this.onRoundEnd);
+        game.on('round:winner', this.onRoundWinner);
+
+        for (var i = game.clients.items.length - 1; i >= 0; i--) {
+            this.detach(game.clients.items[i], game);
+        }
+
+        console.log('game removed', this.games.ids);
     }
 };
 
@@ -40,10 +62,8 @@ GameController.prototype.addGame = function(game)
  */
 GameController.prototype.attach = function(client, game)
 {
-    if (!game.clients.exists(client)) {
-        client.joinGame(game);
-        this.attachEvents(client);
-    }
+    this.attachEvents(client);
+    client.joinChannel('game:' + game.name);
 };
 
 /**
@@ -55,11 +75,14 @@ GameController.prototype.detach = function(client)
 {
     this.detachEvents(client);
 
-    if (client.room && client.room.game) {
+    var avatar;
+
+    if (client.room.game) {
         for (var i = client.players.items.length - 1; i >= 0; i--) {
-            this.io.sockets.in(client.room.game.channel).emit('game:leave', {avatar: client.players.items[i].avatar.name});
+            avatar = client.players.items[i].avatar;
+            this.io.sockets.in(client.room.game.channel).emit('game:leave', {avatar: avatar.name});
+            client.room.game.removeAvatar(avatar);
         }
-        client.leaveGame();
     }
 };
 
@@ -95,16 +118,22 @@ GameController.prototype.attachEvents = function(client)
  */
 GameController.prototype.detachEvents = function(client)
 {
+    var avatar;
+
     client.socket.removeAllListeners('loaded');
     client.socket.removeAllListeners('channel');
     client.socket.removeAllListeners('player:move');
 
     for (var i = client.players.items.length - 1; i >= 0; i--) {
-        client.players.items[i].avatar.removeAllListeners('die');
-        client.players.items[i].avatar.removeAllListeners('position');
-        client.players.items[i].avatar.removeAllListeners('point');
-        client.players.items[i].avatar.removeAllListeners('score');
-        client.players.items[i].avatar.trail.removeAllListeners('clear');
+        avatar = client.players.items[i].avatar;
+
+        avatar.removeAllListeners('die');
+        avatar.removeAllListeners('position');
+        avatar.removeAllListeners('point');
+        avatar.removeAllListeners('score');
+        avatar.trail.removeAllListeners('clear');
+
+        console.log("avatar detached");
     }
 };
 
@@ -256,14 +285,4 @@ GameController.prototype.onRoundEnd = function(data)
 GameController.prototype.onRoundWinner = function(data)
 {
     this.io.sockets.in(data.game.channel).emit('round:winner', {winner: data.winner.name});
-};
-
-/**
- * On round new
- *
- * @param {Object} data
- */
-GameController.prototype.onEnd = function(data)
-{
-    this.io.sockets.in(data.game.channel).emit('end');
 };

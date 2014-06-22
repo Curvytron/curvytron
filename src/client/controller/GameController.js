@@ -6,9 +6,10 @@
  * @param {RoomRepository} repository
  * @param {SocketClient} client
  */
-function GameController($scope, $routeParams, repository, client)
+function GameController($scope, $routeParams, $location, repository, client)
 {
     this.$scope     = $scope;
+    this.$location  = $location;
     this.repository = repository;
     this.client     = client;
 
@@ -64,6 +65,24 @@ GameController.prototype.attachSocketEvents = function()
 };
 
 /**
+ * Attach socket Events
+ */
+GameController.prototype.detachSocketEvents = function()
+{
+    this.client.io.off('position', this.onPosition);
+    this.client.io.off('angle', this.onAngle);
+    this.client.io.off('point', this.onPoint);
+    this.client.io.off('die', this.onDie);
+    this.client.io.off('score', this.onScore);
+    this.client.io.off('trail:clear', this.onTrailClear);
+    this.client.io.off('round:new', this.onRoundNew);
+    this.client.io.off('round:end', this.onRoundEnd);
+    this.client.io.off('round:winner', this.onRoundWinner);
+    this.client.io.off('end', this.onEnd);
+    this.client.io.off('game:leave', this.onLeave);
+};
+
+/**
  * Rooms action
  *
  * @return {Array}
@@ -73,24 +92,26 @@ GameController.prototype.loadGame = function(name)
     var room = this.repository.get(name),
         avatars, avatar;
 
-    this.room = room;
-    this.game = room.newGame();
+    if (room) {
+        this.room = room;
+        this.game = room.newGame();
 
-    avatars = this.game.avatars.filter(function () { return this.local; }).items;
+        avatars = this.game.avatars.filter(function () { return this.local; }).items;
 
-    for (var i = avatars.length - 1; i >= 0; i--) {
-        avatar = avatars[i];
-        avatar.input.on('move', this.onMove);
+        for (var i = avatars.length - 1; i >= 0; i--) {
+            avatars[i].input.on('move', this.onMove);
+        }
+
+        this.game.fps.setElement(document.getElementById('fps'));
+
+        // Hydrate scope:
+        this.$scope.curvytron.bodyClass = "game-mode";
+        this.$scope.game = this.game;
+
+        this.client.io.emit('loaded');
+    } else {
+        this.goHome();
     }
-
-    this.game.fps.setElement(document.getElementById('fps'));
-
-    // Hydrate scope:
-    this.$scope.curvytron.bodyClass = "game-mode";
-    this.$scope.game = this.game;
-
-    this.client.join('game:' + name);
-    this.client.io.emit('loaded');
 };
 
 /**
@@ -272,13 +293,27 @@ GameController.prototype.onRoundEnd = function()
  */
 GameController.prototype.onEnd = function()
 {
+    this.detachSocketEvents();
+
+    avatars = this.game.avatars.filter(function () { return this.local; }).items;
+
+    for (var i = avatars.length - 1; i >= 0; i--) {
+        avatars[i].input.off('move', this.onMove);
+    }
+
     this.game.end();
+    this.room.closeGame();
+
+    this.game = null;
+
+    this.client.join('rooms');
 
     document.getElementById('end').style.display = 'block';
     document.getElementById('game-view').style.display = 'block';
     document.getElementById('round-view').style.display = 'none';
 
     var win = createjs.Sound.play("win");
+
     win.volume = 0.3;
 
     paper.view.draw();
@@ -315,6 +350,14 @@ GameController.prototype.onLeave = function(data)
         this.game.removeAvatar(avatar);
         this.applyScope();
     }
+};
+
+/**
+ * Go back to the homepage
+ */
+GameController.prototype.goHome = function()
+{
+    this.$location.path('/');
 };
 
 /**
