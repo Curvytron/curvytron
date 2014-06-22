@@ -111,7 +111,6 @@ RoomController.prototype.addPlayer = function()
         this.repository.addPlayer(
             $scope.username,
             function (result) {
-                console.log(result);
                 if (result.success) {
                     $scope.username = null;
                     $scope.$apply();

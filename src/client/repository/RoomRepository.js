@@ -12,6 +12,7 @@ function RoomRepository(SocketClient, PlayerRepository)
     this.rooms  = new Collection([], 'name');
 
     this.onNewRoom     = this.onNewRoom.bind(this);
+    this.onCloseRoom   = this.onCloseRoom.bind(this);
     this.onJoinRoom    = this.onJoinRoom.bind(this);
     this.onLeaveRoom   = this.onLeaveRoom.bind(this);
     this.onWarmupRoom  = this.onWarmupRoom.bind(this);
@@ -19,6 +20,7 @@ function RoomRepository(SocketClient, PlayerRepository)
     this.onPlayerColor = this.onPlayerColor.bind(this);
 
     this.client.io.on('room:new', this.onNewRoom);
+    this.client.io.on('room:close', this.onCloseRoom);
     this.client.io.on('room:join', this.onJoinRoom);
     this.client.io.on('room:leave', this.onLeaveRoom);
     this.client.io.on('room:start', this.onWarmupRoom);
@@ -139,6 +141,22 @@ RoomRepository.prototype.onNewRoom = function(data)
     }
 
     this.setSynced();
+};
+
+/**
+ * On close room
+ *
+ * @param {Object} data
+ *
+ * @return {Boolean}
+ */
+RoomRepository.prototype.onCloseRoom = function(data)
+{
+    var room = this.get(data.room);
+
+    if(room && this.rooms.remove(room)) {
+        this.emit('room:close', {room: room});
+    }
 };
 
 /**

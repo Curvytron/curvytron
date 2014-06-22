@@ -125,21 +125,37 @@ RoomController.prototype.onJoinRoom = function(client, data, callback)
  */
 RoomController.prototype.onLeaveRoom = function(client)
 {
-    if (client.room) {
+    var room = client.room;
+
+    if (room) {
 
         if (client.room.game) {
             this.gameController.detach(client);
         }
 
-        // Todo in Room.removeClient?
         for (var i = client.players.items.length - 1; i >= 0; i--) {
             player = client.players.items[i];
-            this.io.sockets.in('rooms').emit('room:leave', {room: client.room.name, player: player.name});
-            client.room.removePlayer(player);
+            this.io.sockets.in('rooms').emit('room:leave', {room: room.name, player: player.name});
+            room.removePlayer(player);
         }
 
         client.players.clear();
-        client.room.removeClient(client);
+        room.removeClient(client);
+        this.checkRoomClose(room);
+    }
+};
+
+/**
+ * Check room closing
+ *
+ * @param {Room} room
+ */
+RoomController.prototype.checkRoomClose = function(room)
+{
+    var name = room.name;
+
+    if (room.clients.isEmpty() && this.repository.remove(room)) {
+        this.io.sockets.in('rooms').emit('room:close', {room: room.name});
     }
 };
 
