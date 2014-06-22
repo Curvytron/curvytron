@@ -15,7 +15,7 @@ function Game(room)
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
 
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
         this.avatars.items[i].on('point', this.addPoint);
         this.avatars.items[i].on('die', this.onDie);
@@ -43,7 +43,7 @@ Game.prototype.update = function(step)
 
     var avatar;
 
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
         if (avatar.alive && !this.world.testCircle(avatar.update(step))) {
@@ -207,7 +207,7 @@ Game.prototype.newRound = function()
 Game.prototype.start = function()
 {
     if (!this.frame) {
-        for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
             setTimeout(this.avatars.items[i].togglePrinting, 3000);
         }
     }

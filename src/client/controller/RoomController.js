@@ -81,7 +81,7 @@ RoomController.prototype.leaveRoom = function()
  */
 RoomController.prototype.attachEvents = function(name)
 {
-    //this.repository.on('room:close:' + name, this.joinRoom);
+    this.repository.on('room:close:' + name, this.goHome);
     this.repository.on('room:join:' + name, this.onJoin);
     this.repository.on('room:leave:' + name, this.applyScope);
     this.repository.on('room:player:ready:' + name, this.applyScope);

@@ -171,10 +171,6 @@ GameController.prototype.onPosition = function(data)
 
     if (avatar) {
         avatar.setPosition(data.point);
-
-        if (!this.game.isStarted()) {
-            paper.view.draw();
-        }
     }
 };
 
@@ -189,10 +185,6 @@ GameController.prototype.onAngle = function(data)
 
     if (avatar) {
         avatar.setAngle(data.angle);
-
-        if (!this.game.isStarted()) {
-            paper.view.draw();
-        }
     }
 };
 
@@ -270,8 +262,6 @@ GameController.prototype.onRoundNew = function()
     document.getElementById('end').style.display        = 'none';
     document.getElementById('game-view').style.display  = 'none';
     document.getElementById('round-view').style.display = 'none';
-
-    paper.view.draw();
 };
 
 /**
@@ -282,8 +272,6 @@ GameController.prototype.onRoundNew = function()
 GameController.prototype.onRoundEnd = function()
 {
     this.game.endRound();
-
-    paper.view.draw();
 };
 
 /**
@@ -306,15 +294,13 @@ GameController.prototype.onEnd = function()
 
     this.game = null;
 
-    this.client.join('rooms');
-
     document.getElementById('end').style.display = 'block';
     document.getElementById('game-view').style.display = 'block';
     document.getElementById('round-view').style.display = 'none';
 
     createjs.Sound.play('win').volume = 0.3;
 
-    paper.view.draw();
+    paper.view.pause();
 };
 
 /**

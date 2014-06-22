@@ -96,9 +96,6 @@ Avatar.prototype.setArrow = function(toggle)
         });
 
         this.arrow.rotate(this.angle * 180 / Math.PI, [this.path.position.x, this.path.position.y]);
-
-        paper.view.update();
-        paper.view.draw();
     } else {
         this.arrow = null;
     }

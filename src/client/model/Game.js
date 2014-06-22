@@ -5,16 +5,21 @@
  */
 function Game(room)
 {
+    var game = this;
+
     this.canvas = document.getElementById('game');
     this.size   = this.getSize(room.players.count());
 
     paper.setup(this.canvas);
+
     this.onResize();
 
     BaseGame.call(this, room);
 
     window.addEventListener('error', this.stop);
     window.addEventListener('resize', this.onResize);
+
+    paper.view.onFrame = this.onFrame;
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
@@ -43,6 +48,18 @@ Game.prototype.onStop = function()
     }
 };
 
+/**
+ * Start loop
+ */
+Game.prototype.start = function()
+{
+    this.started = true;
+
+    if (!this.frame) {
+        this.frame = true;
+        this.onStart();
+    }
+};
 
 /**
  * Stop loop
@@ -50,9 +67,19 @@ Game.prototype.onStop = function()
 Game.prototype.stop = function()
 {
     if (this.frame) {
-        window.cancelAnimationFrame(this.frame);
+        this.frame = null;
         this.onStop();
     }
+};
+
+/**
+ * On frame
+ *
+ * @param {Event} e
+ */
+Game.prototype.onFrame = function(e)
+{
+    BaseGame.prototype.onFrame.call(this, e.delta * 1000)
 };
 
 /**
@@ -60,19 +87,7 @@ Game.prototype.stop = function()
  */
 Game.prototype.newFrame = function()
 {
-    this.frame = window.requestAnimationFrame(this.loop);
-};
-
-/**
- * On frame
- *
- * @param {Number} step
- */
-Game.prototype.onFrame = function(step)
-{
-    BaseGame.prototype.onFrame.call(this, step);
-
-    paper.view.draw();
+    this.frame = true;
 };
 
 /**

@@ -24,6 +24,7 @@ function BaseGame(room)
     this.newRound = this.newRound.bind(this);
     this.endRound = this.endRound.bind(this);
     this.end      = this.end.bind(this);
+    this.onFrame  = this.onFrame.bind(this);
 }
 
 BaseGame.prototype = Object.create(EventEmitter.prototype);

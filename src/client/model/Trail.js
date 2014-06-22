@@ -35,7 +35,7 @@ Trail.prototype.createPath = function()
  */
 Trail.prototype.addPoint = function(point)
 {
-    this.path.add(new paper.Point(point[0] * paper.sceneScale, point[1] * paper.sceneScale));
+    this.path.add(point[0] * paper.sceneScale, point[1] * paper.sceneScale);
 };
 
 /**
