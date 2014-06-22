@@ -15,8 +15,8 @@ function GameController(io)
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
     this.onRoundWinner = this.onRoundWinner.bind(this);
-    this.onBonusPop     = this.onBonusPop.bind(this);
-    this.onBonusClear   = this.onBonusClear.bind(this);
+    this.onBonusPop    = this.onBonusPop.bind(this);
+    this.onBonusClear  = this.onBonusClear.bind(this);
 }
 
 /**
@@ -130,13 +130,11 @@ GameController.prototype.detachEvents = function(client)
     client.socket.removeAllListeners('player:move');
 
     for (var i = client.players.items.length - 1; i >= 0; i--) {
-        avatar = client.players.items[i].avatar;
-
-        avatar.removeAllListeners('die');
-        avatar.removeAllListeners('position');
-        avatar.removeAllListeners('point');
-        avatar.removeAllListeners('score');
-        avatar.trail.removeAllListeners('clear');
+        client.players.items[i].avatar.removeAllListeners('die');
+        client.players.items[i].avatar.removeAllListeners('position');
+        client.players.items[i].avatar.removeAllListeners('point');
+        client.players.items[i].avatar.removeAllListeners('score');
+        client.players.items[i].avatar.trail.removeAllListeners('clear');
     }
 };
 
@@ -232,30 +230,6 @@ GameController.prototype.onDie = function(data)
 };
 
 /**
- *
- * @param {SocketClient} client
- */
-GameController.prototype.onVelocityUp = function(data)
-{
-    var avatar = data.avatar,
-        channel = avatar.player.client.room.game.channel;
-    
-    this.io.sockets.in(channel).emit('velocity:up', {avatar: avatar.name});
-};
-
-/**
- *
- * @param {SocketClient} client
- */
-GameController.prototype.onVelocityDown = function(data)
-{
-    var avatar = data.avatar,
-        channel = avatar.player.client.room.game.channel;
-
-    this.io.sockets.in(channel).emit('velocity:down', {avatar: avatar.name});
-};
-
-/**
  * On bonus pop
  *
  * @param {SocketClient} game
@@ -265,7 +239,7 @@ GameController.prototype.onBonusPop = function(data)
     var game = data.game,
         channel = data.game.channel;
     
-    this.io.sockets.in(channel).emit('bonus:pop', data.bonus);
+    this.io.sockets.in(channel).emit('bonus:pop', data.bonus.serialize());
 };
 
 /**
@@ -279,7 +253,7 @@ GameController.prototype.onBonusClear = function(data)
     var game = data.game,
         channel = data.game.channel;
 
-    this.io.sockets.in(channel).emit('bonus:clear', data.bonus);
+    this.io.sockets.in(channel).emit('bonus:clear', data.bonus.serialize());
 };
 
 
