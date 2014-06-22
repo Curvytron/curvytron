@@ -1,4 +1,54 @@
+@media (max-width: $screen-xs - 1) {
+  #small-screen {
+    display: block;
+  }
+}
+
 @media (max-width: $screen-sm - 1) {
+  header {
+    font-size: 20px;
+    line-height: 40px;
+    padding: 20px 20px;
+    #logo {
+      width: 100px;
+    }
+  }
+  .top-right-form {
+    float: none;
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+  #room tr.local .player-ready {
+    width: 44px !important;
+    height: 44px !important;
+    line-height: 40px;
+    padding: 0 !important;
+    i {
+      margin: 0;
+    }
+    span {
+      display: none;
+    }
+  }
+  .col-ready { width: 80px; }
+  .col-player { width: auto; }
+  .col-color { width: 140px; }
+  .col-keys { width: 122px; }
+  .room-players tr .btn {
+    margin: 0 2px;
+  }
+  .room-players tr.local td.player-color-col input.form-control {
+    width: 120px;
+  }
+
+  body {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
 
 }
 

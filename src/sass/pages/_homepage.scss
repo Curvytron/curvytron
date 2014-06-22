@@ -169,3 +169,9 @@ li.player-row {
 .player-color {
     @include transition(none);
 }
+
+.col-ready { width: 160px; }
+.col-player { width: auto; }
+.col-color { width: 200px; }
+.col-keys { width: 140px; }
+
