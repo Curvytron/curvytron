@@ -180,7 +180,7 @@ Game.prototype.endRound = function()
 Game.prototype.newRound = function()
 {
     if (!this.inRound) {
-        var avatar, position;
+        var avatar;
 
         this.world.clear();
 

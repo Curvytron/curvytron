@@ -56,7 +56,7 @@ World.prototype.getIslandsByCircle = function(circle)
             this.getIslandByPoint([circle[0] - circle[2], circle[1] - circle[2]]),
             this.getIslandByPoint([circle[0] + circle[2], circle[1] - circle[2]]),
             this.getIslandByPoint([circle[0] - circle[2], circle[1] + circle[2]]),
-            this.getIslandByPoint([circle[0] + circle[2], circle[1] + circle[2]]),
+            this.getIslandByPoint([circle[0] + circle[2], circle[1] + circle[2]])
         ];
 
     for (var i = sources.length - 1; i >= 0; i--) {
@@ -115,10 +115,10 @@ World.prototype.testCircle = function(circle)
  */
 World.prototype.circleInBound = function(circle, from, to)
 {
-    return circle[0] - circle[2] >= from[0]
-        && circle[0] + circle[2] <= to[0]
-        && circle[1] - circle[2] >= from[1]
-        && circle[1] + circle[2] <= to[1];
+    return circle[0] - circle[2] >= from[0] &&
+           circle[0] + circle[2] <= to[0]   &&
+           circle[1] - circle[2] >= from[1] &&
+           circle[1] + circle[2] <= to[1];
 };
 
 /**

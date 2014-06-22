@@ -242,7 +242,7 @@ RoomRepository.prototype.onWarmupRoom = function(data)
     var room = this.rooms.getById(data.room);
 
     if (room) {
-        var data = {room: room};
+        data = {room: room};
         this.emit('room:start', data);
         this.emit('room:start:' + room.name, data);
     }
