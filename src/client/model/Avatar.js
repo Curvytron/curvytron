@@ -51,18 +51,6 @@ Avatar.prototype.setAngle = function(angle)
 };
 
 /**
- * Set local
- *
- * @param {Boolean} local
- */
-Avatar.prototype.setLocal = function(local)
-{
-    /*this.local = local;
-
-    this.setArrow(local);*/
-};
-
-/**
  * Update arrow position
  */
 Avatar.prototype.updateArrowPosition = function()

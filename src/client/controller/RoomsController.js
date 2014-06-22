@@ -13,8 +13,6 @@ function RoomsController($scope, $location, repository, client)
     this.repository = repository;
     this.client     = client;
 
-    this.client.join('rooms');
-
     // Binding:
     this.createRoom = this.createRoom.bind(this);
     this.joinRoom   = this.joinRoom.bind(this);
