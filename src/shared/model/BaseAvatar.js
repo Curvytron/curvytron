@@ -65,8 +65,6 @@ BaseAvatar.prototype.addPoint = function(point)
  */
 BaseAvatar.prototype.setAngularVelocity = function(factor)
 {
-    if (!this.alive) { return; }
-
     this.angularVelocity = factor * this.angularVelocityBase;
 };
 
@@ -77,10 +75,7 @@ BaseAvatar.prototype.setAngularVelocity = function(factor)
  */
 BaseAvatar.prototype.setAngle = function(angle)
 {
-    if (!this.alive) { return; }
-
     this.angle = angle;
-
     this.updateVelocities();
 };
 
