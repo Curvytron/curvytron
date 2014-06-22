@@ -13,6 +13,8 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.repository = repository;
     this.client     = client;
 
+    this.repository.pause();
+
     createjs.Sound.alternateExtensions = ['mp3'];
     createjs.Sound.registerManifest(
         [

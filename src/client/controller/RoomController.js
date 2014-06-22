@@ -189,6 +189,7 @@ RoomController.prototype.setReady = function(player)
  */
 RoomController.prototype.start = function(e)
 {
+    this.repository.pause();
     this.$location.path('/game/' + e.detail.room.name);
     this.applyScope();
 };

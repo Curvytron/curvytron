@@ -131,6 +131,9 @@ li.player-row {
 
 .room-players {
     tr {
+        td {
+            vertical-align: top;
+        }
         td.player-color-col {
             position: relative;
             .color-preview {
@@ -156,11 +159,11 @@ li.player-row {
                 }
             }
         }
-        .btn {
-            width: 44px;
+        .control {
+            width: auto;
             height: 44px;
             line-height: 40px;
-            padding: 0;
+            padding: 0 10px;
             font-size: 22px;
         }
     }
@@ -169,3 +172,9 @@ li.player-row {
 .player-color {
     @include transition(none);
 }
+
+.col-ready { width: 160px; }
+.col-player { width: auto; }
+.col-color { width: 200px; }
+.col-keys { width: 290px; }
+

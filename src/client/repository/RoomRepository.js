@@ -266,12 +266,19 @@ RoomRepository.prototype.setSynced = function()
 };
 
 /**
+ * Pause
+ */
+RoomRepository.prototype.pause = function()
+{
+    this.synced = false;
+};
+
+/**
  * Refresh
  */
 RoomRepository.prototype.refresh = function()
 {
-    this.synced = false;
-    this.rooms  = new Collection([], 'name');
-
-    return this.client.io.emit('room:join', {room: room}, callback);
+    if (!this.synced) {
+        this.client.io.emit('room:fetch');
+    }
 };
