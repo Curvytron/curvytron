@@ -237,31 +237,52 @@ Game.prototype.onStart = function()
     BaseGame.prototype.start.call(this);
 };
 
-// test
-Game.prototype.popRandomBonus = function () {
-    if (this.bonuses.count() < this.bonusCap) {
-        if (this.chancePercent(this.bonusPoppingRate)) {
-            var bonus = new Bonus('test', '#7CFC00');
-                bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
-                bonus.pop();
-            this.emit('bonus:pop', bonus);
-            this.bonuses.add(bonus);
-        }
-    }
+/**
+ * Toggle bonus printing
+ */
+Game.prototype.toggleBonusPrinting = function () {
+    this.bonusPrinting = !this.bonusPrinting;
+
+    clearTimeout(this.bonusPrintingTimeout);
+    this.printingTimeout = setTimeout(this.toggleBonusPrinting, this.getRandomPrintingTime());
 }
 
 /**
+ * Stop bonus printing
+ */
+Game.prototype.stopBonusPrinting = function()
+{
+    clearTimeout(this.bonusPrintingTimeout);
+
+    this.printing = false;
+};
+
+/**
+ * Make a bonus `pop'
+ */
+Game.prototype.popBonus = function () {
+    if (this.bonuses.count() < this.bonusCap) {
+        if (this.percentChance(this.bonusPoppingRate)) {
+            var bonus = new Bonus('test', '#7CFC00');
+                bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
+                bonus.pop();
+            this.emit('bonus:pop', { game: this, bonus: bonus });
+            this.bonuses.add(bonus);
+        }
+    }
+};
+
+/**
+ * Has a percent of chance to return true
  *
  * @param percentTrue
  * @returns {boolean}
  */
-Game.prototype.chancePercent = function (percentTrue) {
+Game.prototype.percentChance = function (percentTrue) {
     percentTrue = percentTrue || 100;
-    if(Math.floor(Math.random()*101) <= percentTrue) {
-        return true;
-    }
-    return false;
-}
+
+    return (Math.floor(Math.random()*101) <= percentTrue);
+};
 
 /**
  * Get random printing time
@@ -271,9 +292,9 @@ Game.prototype.chancePercent = function (percentTrue) {
 Game.prototype.getRandomPrintingTime = function()
 {
     if (this.bonusPrinting) {
-        return this.printingTime * (0.2 + Math.random() * 0.8);
+        return this.bonusPrintingTime * (0.2 + Math.random() * 0.8);
     } else {
-        return this.noPrintingTime * (0.8 + Math.random() * 0.5);
+        return this.noBonusPrintingTime * (0.8 + Math.random() * 0.5);
     }
 };
 
