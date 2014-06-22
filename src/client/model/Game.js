@@ -29,11 +29,11 @@ Game.prototype = Object.create(BaseGame.prototype);
  */
 Game.prototype.onStart = function()
 {
-    BaseGame.prototype.onStart.call(this);
-
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         this.avatars.items[i].setStarted(true);
     }
+
+    BaseGame.prototype.onStart.call(this);
 };
 
 /**
@@ -41,12 +41,13 @@ Game.prototype.onStart = function()
  */
 Game.prototype.onStop = function()
 {
-    BaseGame.prototype.onStop.call(this);
-
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         this.avatars.items[i].setStarted(false);
     }
+
+    BaseGame.prototype.onStop.call(this);
 };
+
 
 /**
  * Start loop
@@ -80,14 +81,6 @@ Game.prototype.stop = function()
 Game.prototype.onFrame = function(e)
 {
     BaseGame.prototype.onFrame.call(this, e.delta * 1000);
-};
-
-/**
- * Get new frame
- */
-Game.prototype.newFrame = function()
-{
-    this.frame = true;
 };
 
 /**
