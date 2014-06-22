@@ -260,6 +260,9 @@ GameController.prototype.onDie = function(data)
 };
 
 /**
+};
+
+/**
  * On bonus pop
  *
  * @param {SocketClient} game
@@ -269,7 +272,7 @@ GameController.prototype.onBonusPop = function(data)
     var game = data.game,
         channel = data.game.channel;
     
-    this.io.sockets.in(channel).emit('bonus:pop', data.bonus);
+    this.io.sockets.in(channel).emit('bonus:pop', data.bonus.serialize());
 };
 
 /**
@@ -283,7 +286,7 @@ GameController.prototype.onBonusClear = function(data)
     var game = data.game,
         channel = data.game.channel;
 
-    this.io.sockets.in(channel).emit('bonus:clear', data.bonus);
+    this.io.sockets.in(channel).emit('bonus:clear', data.bonus.serialize());
 };
 
 
