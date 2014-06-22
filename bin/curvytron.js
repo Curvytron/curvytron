@@ -13,8 +13,8 @@ function Collection(items, key, index)
 {
     this.ids   = [];
     this.items = [];
-    this.key   = typeof(key) != 'undefined' && key ? key : 'id';
-    this.index = typeof(index) != 'undefined' && index;
+    this.key   = typeof(key) !== 'undefined' && key ? key : 'id';
+    this.index = typeof(index) !== 'undefined' && index;
 
     if (this.index) {
         this.id = 1;
@@ -135,7 +135,7 @@ Collection.prototype.removeById = function(id)
  */
 Collection.prototype.setId = function(element)
 {
-    if (this.index && (typeof(element[this.key]) == 'undefined' || element[this.key] === null)) {
+    if (this.index && (typeof(element[this.key]) === 'undefined' || element[this.key] === null)) {
         element[this.key] = this.id;
         this.id++;
     }
@@ -199,7 +199,7 @@ Collection.prototype.getById = function(id)
  */
 Collection.prototype.getByIndex = function(index)
 {
-    return typeof(this.items[index]) != 'undefined' ? this.items[index] : null;
+    return typeof(this.items[index]) !== 'undefined' ? this.items[index] : null;
 };
 
 /**
@@ -333,12 +333,12 @@ Collection.prototype.getLast = function()
 function FPSLogger(element)
 {
     this.fps     = 0;
-    this.element = typeof(element) != 'undefined' ? element : null;
+    this.element = typeof(element) !== 'undefined' ? element : null;
 
     this.update = this.update.bind(this);
-    this.clear  = this.clear.bind(this);
+    this.log    = this.log.bind(this);
 
-    setInterval(this.clear, 1000);
+    this.start();
 }
 
 /**
@@ -354,9 +354,9 @@ FPSLogger.prototype.update = function(step)
 };
 
 /**
- * Clear
+ * Log
  */
-FPSLogger.prototype.clear = function()
+FPSLogger.prototype.log = function()
 {
     this.draw();
 
@@ -382,6 +382,27 @@ FPSLogger.prototype.draw = function()
         this.element.innerHTML = this.fps;
     } else {
         console.log('FPS: %s', this.fps);
+    }
+};
+
+/**
+ * Start
+ */
+FPSLogger.prototype.start = function()
+{
+    if (!this.interval) {
+        this.interval = setInterval(this.log, 1000);
+    }
+};
+
+/**
+ * Stop
+ */
+FPSLogger.prototype.stop = function()
+{
+    if (this.interval) {
+        clearInterval(this.interval);
+        this.interval = null;
     }
 };
 /**
@@ -797,6 +818,7 @@ function BaseGame(room)
     this.rendered = null;
     this.maxScore = this.getMaxScore(this.avatars.count());
     this.fps      = new FPSLogger();
+    this.started  = false;
 
     this.start    = this.start.bind(this);
     this.stop     = this.stop.bind(this);
@@ -804,6 +826,7 @@ function BaseGame(room)
     this.newRound = this.newRound.bind(this);
     this.endRound = this.endRound.bind(this);
     this.end      = this.end.bind(this);
+    this.onFrame  = this.onFrame.bind(this);
 }
 
 BaseGame.prototype = Object.create(EventEmitter.prototype);
@@ -829,7 +852,13 @@ BaseGame.prototype.removeAvatar = function(avatar)
 {
     avatar.clear();
 
-    return this.avatars.remove(avatar);
+    var result = this.avatars.remove(avatar);
+
+    if (this.avatars.isEmpty()) {
+        this.end();
+    }
+
+    return result;
 };
 
 /**
@@ -837,6 +866,8 @@ BaseGame.prototype.removeAvatar = function(avatar)
  */
 BaseGame.prototype.start = function()
 {
+    this.started = true;
+
     if (!this.frame) {
         this.onStart();
         this.rendered = new Date().getTime();
@@ -956,7 +987,7 @@ BaseGame.prototype.serialize = function()
  */
 BaseGame.prototype.isStarted = function()
 {
-    return this.rendered !== null;
+    return this.started;
 };
 
 /**
@@ -975,12 +1006,29 @@ BaseGame.prototype.endRound = function()
 {
     this.stop();
 };
+
 /**
  * FIN DU GAME
  */
 BaseGame.prototype.end = function()
 {
-    this.stop();
+    if (this.started) {
+
+        this.started = false;
+
+        this.stop();
+        this.fps.stop();
+
+        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+            this.removeAvatar(this.avatars.items[i]);
+        }
+
+        this.emit('end', {game: this});
+
+        return true;
+    }
+
+    return false;
 };
 
 /**
@@ -1049,6 +1097,15 @@ BasePlayer.prototype.getAvatar = function()
 };
 
 /**
+ * Reset player after a game
+ */
+BasePlayer.prototype.reset = function()
+{
+    this.ready  = false;
+    this.avatar = null;
+};
+
+/**
  * Serialize
  *
  * @return {Object}
@@ -1071,7 +1128,10 @@ BasePlayer.prototype.serialize = function()
  */
 BasePlayer.prototype.getRandomColor = function()
 {
-    return '#' + Math.floor(Math.random()*16777215).toString(16);
+    var code = Math.floor(Math.random()*16777215).toString(16),
+        miss = 6 - code.length;
+
+    return '#' + code + (miss ? Array(miss +1).join("0") : '');
 };
 /**
  * Base Room
@@ -1087,6 +1147,11 @@ function BaseRoom(name)
 
 BaseRoom.prototype = Object.create(EventEmitter.prototype);
 
+/**
+ * Warmup time
+ *
+ * @type {Number}
+ */
 BaseRoom.prototype.warmupTime = 5000;
 
 /**
@@ -1126,7 +1191,7 @@ BaseRoom.prototype.removePlayer = function(player)
  */
 BaseRoom.prototype.isReady = function()
 {
-    return /*this.players.count() > 1 &&*/ this.players.filter(function () { return !this.ready; }).isEmpty();
+    return this.players.count() > 1 && this.players.filter(function () { return !this.ready; }).isEmpty();
 };
 
 /**
@@ -1140,6 +1205,18 @@ BaseRoom.prototype.newGame = function()
     }
 
     return this.game;
+};
+
+/**
+ * Close game
+ */
+BaseRoom.prototype.closeGame = function()
+{
+    this.game = null;
+
+    for (var i = this.players.items.length - 1; i >= 0; i--) {
+        this.players.items[i].reset();
+    }
 };
 
 /**
@@ -1208,19 +1285,17 @@ function GameController(io)
     this.io    = io;
     this.games = new Collection([], 'name');
 
-    this.onDie           = this.onDie.bind(this);
-    this.onAngle         = this.onAngle.bind(this);
-    this.onPosition      = this.onPosition.bind(this);
-    this.onPoint         = this.onPoint.bind(this);
-    this.onScore         = this.onScore.bind(this);
-    this.onTrailClear    = this.onTrailClear.bind(this);
-    this.onRoundNew      = this.onRoundNew.bind(this);
-    this.onRoundEnd      = this.onRoundEnd.bind(this);
-
-    this.onBonusPop      = this.onBonusPop.bind(this);
-    this.onBonusClear    = this.onBonusClear.bind(this);
-    this.onRoundWinner   = this.onRoundWinner.bind(this);
-    this.onEnd           = this.onEnd.bind(this);
+    this.onDie         = this.onDie.bind(this);
+    this.onAngle       = this.onAngle.bind(this);
+    this.onPosition    = this.onPosition.bind(this);
+    this.onPoint       = this.onPoint.bind(this);
+    this.onScore       = this.onScore.bind(this);
+    this.onTrailClear  = this.onTrailClear.bind(this);
+    this.onRoundNew    = this.onRoundNew.bind(this);
+    this.onRoundEnd    = this.onRoundEnd.bind(this);
+    this.onRoundWinner = this.onRoundWinner.bind(this);
+    this.onBonusPop    = this.onBonusPop.bind(this);
+    this.onBonusClear  = this.onBonusClear.bind(this);
 }
 
 /**
@@ -1234,10 +1309,33 @@ GameController.prototype.addGame = function(game)
         game.on('round:new', this.onRoundNew);
         game.on('round:end', this.onRoundEnd);
         game.on('round:winner', this.onRoundWinner);
-        game.on('end', this.onEnd);
 
         game.on('bonus:pop', this.onBonusPop);
         game.on('bonus:clear', this.onBonusClear);
+        
+        for (var i = game.clients.items.length - 1; i >= 0; i--) {
+            this.attach(game.clients.items[i], game);
+        }
+    }
+};
+
+/**
+ * Remove game
+ *
+ * @param {Game} game
+ */
+GameController.prototype.removeGame = function(game)
+{
+    if (this.games.remove(game)) {
+        game.removeListener('round:new', this.onRoundNew);
+        game.removeListener('round:end', this.onRoundEnd);
+        game.removeListener('round:winner', this.onRoundWinner);
+        game.removeListener('bonus:pop', this.onBonusPop);
+        game.removeListener('bonus:clear', this.onBonusClear);
+        
+        for (var i = game.clients.items.length - 1; i >= 0; i--) {
+            this.detach(game.clients.items[i], game);
+        }
     }
 };
 
@@ -1248,10 +1346,8 @@ GameController.prototype.addGame = function(game)
  */
 GameController.prototype.attach = function(client, game)
 {
-    if (!game.clients.exists(client)) {
-        client.joinGame(game);
-        this.attachEvents(client);
-    }
+    this.attachEvents(client);
+    client.joinChannel('game:' + game.name);
 };
 
 /**
@@ -1263,11 +1359,14 @@ GameController.prototype.detach = function(client)
 {
     this.detachEvents(client);
 
-    if (client.room && client.room.game) {
+    var avatar;
+
+    if (client.room.game) {
         for (var i = client.players.items.length - 1; i >= 0; i--) {
-            this.io.sockets.in(client.room.game.channel).emit('game:leave', {avatar: client.players.items[i].avatar.name});
+            avatar = client.players.items[i].avatar;
+            this.io.sockets.in(client.room.game.channel).emit('game:leave', {avatar: avatar.name});
+            client.room.game.removeAvatar(avatar);
         }
-        client.leaveGame();
     }
 };
 
@@ -1303,6 +1402,8 @@ GameController.prototype.attachEvents = function(client)
  */
 GameController.prototype.detachEvents = function(client)
 {
+    var avatar;
+
     client.socket.removeAllListeners('loaded');
     client.socket.removeAllListeners('channel');
     client.socket.removeAllListeners('player:move');
@@ -1495,16 +1596,6 @@ GameController.prototype.onRoundWinner = function(data)
 };
 
 /**
- * On round new
- *
- * @param {Object} data
- */
-GameController.prototype.onEnd = function(data)
-{
-    this.io.sockets.in(data.game.channel).emit('end');
-};
-
-/**
  * Room Controller
  */
 function RoomController(io, repository, gameController)
@@ -1512,6 +1603,8 @@ function RoomController(io, repository, gameController)
     this.io             = io;
     this.repository     = repository;
     this.gameController = gameController;
+
+    this.endGame = this.endGame.bind(this);
 }
 
 /**
@@ -1523,11 +1616,9 @@ RoomController.prototype.attach = function(client)
 {
     var rooms = this.repository.all();
 
+    client.joinChannel('rooms');
     this.attachEvents(client);
-
-    for (var i = rooms.length - 1; i >= 0; i--) {
-        client.socket.emit('room:new', rooms[i].serialize());
-    }
+    this.emitAllRooms(client);
 };
 
 /**
@@ -1538,19 +1629,7 @@ RoomController.prototype.attach = function(client)
 RoomController.prototype.detach = function(client)
 {
     this.detachEvents(client);
-
-    if (client.room) {
-
-        if (client.room.game) {
-            this.gameController.detach(client, client.room.game);
-        }
-
-        for (var i = client.players.items.length - 1; i >= 0; i--) {
-            this.io.sockets.in('rooms').emit('room:leave', {room: client.room.name, player: client.players.items[i].name});
-        }
-
-        client.leaveRoom();
-    }
+    this.onLeaveRoom(client);
 };
 
 /**
@@ -1562,9 +1641,11 @@ RoomController.prototype.attachEvents = function(client)
 {
     var controller = this;
 
+    client.socket.on('room:fetch', function () { controller.emitAllRooms(client); });
     client.socket.on('room:create', function (data, callback) { controller.onCreateRoom(client, data, callback); });
     client.socket.on('room:join', function (data, callback) { controller.onJoinRoom(client, data, callback); });
-    client.socket.on('room:leave', function (data, callback) { controller.onLeaveRoom(client, data, callback); });
+    client.socket.on('room:leave', function () { controller.onLeaveRoom(client); });
+    client.socket.on('room:player:add', function (data, callback) { controller.onAddPlayer(client, data, callback); });
     client.socket.on('room:ready', function (data, callback) { controller.onReadyRoom(client, data, callback); });
     client.socket.on('room:color', function (data, callback) { controller.onColorRoom(client, data, callback); });
 };
@@ -1576,11 +1657,25 @@ RoomController.prototype.attachEvents = function(client)
  */
 RoomController.prototype.detachEvents = function(client)
 {
+    client.socket.removeAllListeners('room:fetch');
     client.socket.removeAllListeners('room:create');
     client.socket.removeAllListeners('room:join');
+    client.socket.removeAllListeners('room:player:add');
     client.socket.removeAllListeners('room:leave');
     client.socket.removeAllListeners('room:ready');
     client.socket.removeAllListeners('room:color');
+};
+
+/**
+ * Emit all rooms to the given client
+ *
+ * @param {SocketClient} client
+ */
+RoomController.prototype.emitAllRooms = function(client)
+{
+    for (var i = this.repository.rooms.items.length - 1; i >= 0; i--) {
+        client.socket.emit('room:new', this.repository.rooms.items[i].serialize());
+    }
 };
 
 // Events:
@@ -1610,30 +1705,79 @@ RoomController.prototype.onCreateRoom = function(client, data, callback)
  */
 RoomController.prototype.onJoinRoom = function(client, data, callback)
 {
-    var room = this.repository.get(data.room),
-        player = room ? client.joinRoom(room, data.player) : null;
+    var room = this.repository.get(data.room);
 
-    callback({success: player ? true : false});
-
-    if (player) {
-        this.io.sockets.in('rooms').emit('room:join', {room: room.name, player: player.serialize()});
+    if (room) {
+        room.addClient(client);
+        callback({success: true});
+    } else {
+        callback({success: false});
     }
 };
 
 /**
  * On leave room
  *
+ * @param {SocketClient} client
+ */
+RoomController.prototype.onLeaveRoom = function(client)
+{
+    var room = client.room;
+
+    if (room) {
+
+        if (client.room.game) {
+            this.gameController.detach(client);
+        }
+
+        for (var i = client.players.items.length - 1; i >= 0; i--) {
+            player = client.players.items[i];
+            this.io.sockets.in('rooms').emit('room:leave', {room: room.name, player: player.name});
+            room.removePlayer(player);
+        }
+
+        client.players.clear();
+        room.removeClient(client);
+        this.checkRoomClose(room);
+    }
+};
+
+/**
+ * Check room closing
+ *
+ * @param {Room} room
+ */
+RoomController.prototype.checkRoomClose = function(room)
+{
+    var name = room.name;
+
+    if (room.clients.isEmpty() && this.repository.remove(room)) {
+        this.io.sockets.in('rooms').emit('room:close', {room: room.name});
+    }
+};
+
+/**
+ * On add player to room
+ *
  * @param {Object} data
  * @param {Function} callback
  */
-RoomController.prototype.onLeaveRoom = function(client, data, callback)
+RoomController.prototype.onAddPlayer = function(client, data, callback)
 {
-    var result = client.leaveRoom();
+    var name = data.name;
 
-    callback({success: result});
+    if (client.room && client.room.isNameAvailable(name)) {
 
-    if (result) {
-        this.io.sockets.in('rooms').emit('room:leave', {room: room.name, player: player.name});
+        var player = new Player(client, name);
+
+        client.room.addPlayer(player);
+        client.players.add(player);
+
+        callback({success: true});
+
+        this.io.sockets.in('rooms').emit('room:join', {room: client.room.name, player: player.serialize()});
+    } else {
+        callback({success: false});
     }
 };
 
@@ -1682,7 +1826,7 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
         });
 
         if (room.isReady()) {
-            this.warmupRoom(room);
+            this.startGame(room);
         }
     }
 };
@@ -1692,19 +1836,45 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
  *
  * @param {Room} room
  */
-RoomController.prototype.warmupRoom = function(room)
+RoomController.prototype.startGame = function(room)
 {
+    var game = room.newGame(),
+        client;
+
     this.io.sockets.in('rooms').emit('room:start', {room: room.name});
 
-    this.gameController.addGame(room.newGame());
+    game.on('end', this.endGame);
 
-    var client;
+    this.gameController.addGame(game);
+
+    for (var i = room.clients.items.length - 1; i >= 0; i--) {
+        this.detachEvents(room.clients.items[i]);
+    }
+};
+
+/**
+ * End game
+ *
+ * @param {Object} data
+ */
+RoomController.prototype.endGame = function(data)
+{
+    var game = data.game,
+        room = game.room,
+        client;
+
+    this.io.sockets.in(game.channel).emit('end');
+
+    this.gameController.removeGame(game);
 
     for (var i = room.clients.items.length - 1; i >= 0; i--) {
         client = room.clients.items[i];
-        this.detachEvents(client);
-        this.gameController.attach(client, room.game);
+        client.joinChannel('rooms');
+        this.attachEvents(client);
+        this.emitAllRooms(client);
     }
+
+    room.closeGame();
 };
 
 
@@ -1899,11 +2069,9 @@ function SocketClient(socket)
     this.socket  = socket;
     this.players = new Collection([], 'name');
     this.room    = null;
-    this.game    = null;
 
-    this.onChannel = this.onChannel.bind(this);
+    this.joinChannel = this.joinChannel.bind(this);
 
-    this.socket.on('channel', this.onChannel);
     this.socket.emit('open', this.id);
 }
 
@@ -1914,98 +2082,9 @@ SocketClient.prototype = Object.create(EventEmitter.prototype);
  *
  * @param {String} channel
  */
-SocketClient.prototype.onChannel = function(channel)
+SocketClient.prototype.joinChannel = function(channel)
 {
     this.socket.join(channel);
-};
-
-/**
- * Join room
- *
- * @param {Room} room
- * @param {String} name
- *
- * @return {Boolean}
- */
-SocketClient.prototype.joinRoom = function(room, name)
-{
-    if (this.room && this.room !== room) {
-        this.leaveRoom();
-    }
-
-    if (room.isNameAvailable(name)) {
-
-        if (!this.room) {
-            this.room = room;
-            this.room.clients.add(this);
-        }
-
-        var player = new Player(this, name);
-
-        this.room.addPlayer(player);
-        this.players.add(player);
-
-        return player;
-    }
-
-    return false;
-};
-
-/**
- * Leave room
- */
-SocketClient.prototype.leaveRoom = function()
-{
-    if (this.room) {
-
-        this.leaveGame();
-
-        var player;
-
-        for (var i = this.players.items.length - 1; i >= 0; i--) {
-            player = this.players.items[i];
-            this.room.removePlayer(player);
-        }
-
-        this.players.clear();
-        this.room.clients.remove(this);
-        this.room = null;
-    }
-};
-
-/**
- * Join game
- *
- * @param {Game} game
- */
-SocketClient.prototype.joinGame = function(game)
-{
-    if (this.game && this.game !== game) {
-        this.leaveGame();
-    }
-
-    if (!this.game) {
-        this.game = game;
-        this.game.clients.add(this);
-    }
-};
-
-/**
- * Leave room
- */
-SocketClient.prototype.leaveGame = function()
-{
-    if (this.game) {
-        var player;
-
-        for (var i = this.players.items.length - 1; i >= 0; i--) {
-            player = this.players.items[i];
-            this.game.removeAvatar(player.avatar);
-        }
-
-        this.game.clients.remove(this);
-        this.game = null;
-    }
 };
 /**
  * World
@@ -2363,8 +2442,8 @@ function Game(room)
 
     this.world   = new World(this.size);
     this.inRound = false;
-    this.deaths  = [];
-    this.clients = new Collection();
+    this.deaths  = new Collection([], 'name');
+    this.clients = this.room.clients;
 
     this.addPoint                   = this.addPoint.bind(this);
     this.onDie                      = this.onDie.bind(this);
@@ -2374,12 +2453,13 @@ function Game(room)
 
     this.toggleBonusPrinting = this.toggleBonusPrinting.bind(this);
 
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        this.avatars.items[i].clear();
         this.avatars.items[i].on('point', this.addPoint);
         this.avatars.items[i].on('die', this.onDie);
         this.avatars.items[i].setMask(i+1);
     }
-};
+}
 
 Game.prototype = Object.create(BaseGame.prototype);
 
@@ -2410,7 +2490,7 @@ Game.prototype.update = function(step)
         this.popBonus();
     }
 
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
         if (avatar.alive && !this.world.testCircle(avatar.update(step))) {
@@ -2426,7 +2506,7 @@ Game.prototype.update = function(step)
                 bonus.clear();
                 this.emit('bonus:clear', { game: this, bonus: bonus });
                 avatar.upVelocity();
-                this.timeouts.push(setTimeout(function() { avatar.downVelocity() }, 3333));
+                this.timeouts.push(setTimeout(function() { avatar.downVelocity(); }, 3333));
             }
         }
     }
@@ -2441,6 +2521,7 @@ Game.prototype.removeAvatar = function(avatar)
 {
     var result = BaseGame.prototype.removeAvatar.call(this, avatar);
 
+    this.deaths.remove(avatar);
     this.checkRoundEnd();
 
     return result;
@@ -2481,7 +2562,7 @@ Game.prototype.isWon = function()
  */
 Game.prototype.onDie = function(data)
 {
-    this.deaths.push(data.avatar);
+    this.deaths.add(data.avatar);
 
     this.checkRoundEnd();
 };
@@ -2520,21 +2601,20 @@ Game.prototype.isReady = function()
 Game.prototype.setScores = function()
 {
     if (this.end) {
-        var deaths = this.deaths.length,
-            total = this.avatars.count();
+        var total = this.avatars.count();
 
-        for (var i = deaths - 1; i >= 0; i--) {
-            this.deaths[i].addScore(i + 1);
+        for (var i = this.deaths.items.length - 1; i >= 0; i--) {
+            this.deaths.items[i].addScore(i + 1);
         }
-
-        if (deaths < total) {
+        
+        if (this.deaths.count() < total) {
             var winner = this.avatars.match(function () { return this.alive; });
 
             winner.addScore(total);
             this.emit('round:winner', {game: this, winner: winner});
         }
 
-        this.deaths = [];
+        this.deaths.clear();
     }
 };
 
@@ -2571,7 +2651,7 @@ Game.prototype.newRound = function()
         this.world.clear();
 
         this.inRound = true;
-        this.deaths  = [];
+        this.deaths.clear();
 
         for (i = this.avatars.items.length - 1; i >= 0; i--) {
             avatar = this.avatars.items[i];
@@ -2599,7 +2679,7 @@ Game.prototype.newRound = function()
 Game.prototype.start = function()
 {
     if (!this.frame) {
-        for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
             setTimeout(this.avatars.items[i].togglePrinting, 3000);
         }
     }
@@ -2697,11 +2777,13 @@ Game.prototype.clearTimeouts = function()
  */
 Game.prototype.end = function()
 {
-    this.world.clear();
+    if (BaseGame.prototype.end.call(this)) {
+        this.world.clear();
 
-    this.emit('end', {game: this});
+        return true;
+    }
 
-    BaseGame.prototype.end.call(this);
+    return false;
 };
 
 Player.prototype = Object.create(BasePlayer.prototype);
@@ -2729,6 +2811,30 @@ function Room(name)
 }
 
 Room.prototype = Object.create(BaseRoom.prototype);
+
+/**
+ * Add client
+ *
+ * @param {Client} client
+ */
+Room.prototype.addClient = function(client)
+{
+    if (this.clients.add(client)) {
+        client.room = this;
+    }
+};
+
+/**
+ * Remove client
+ *
+ * @param {Client} client
+ */
+Room.prototype.removeClient = function(client)
+{
+    if (this.clients.remove(client)) {
+        client.room = null;
+    }
+};
 /**
  * Trail
  */
@@ -2770,6 +2876,16 @@ RoomRepository.prototype.create = function(name)
 
     return this.rooms.add(room) ? room : null;
 }
+
+/**
+ * Delete a room
+ *
+ * @param {Room} room
+ */
+RoomRepository.prototype.remove = function(room)
+{
+    return room.clients.isEmpty() && this.rooms.remove(room);
+};
 
 /**
  * Get by name

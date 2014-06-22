@@ -75,7 +75,7 @@ Game.prototype.update = function(step)
                 bonus.clear();
                 this.emit('bonus:clear', { game: this, bonus: bonus });
                 avatar.upVelocity();
-                this.timeouts.push(setTimeout(function() { avatar.downVelocity() }, 3333));
+                this.timeouts.push(setTimeout(function() { avatar.downVelocity(); }, 3333));
             }
         }
     }

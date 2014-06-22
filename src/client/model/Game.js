@@ -88,11 +88,13 @@ Game.prototype.newRound = function()
 {
     BaseGame.prototype.newRound.call(this);
 
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+    var i;
+
+    for (i = this.avatars.ids.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
     }
 
-    for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
+    for (i = this.bonuses.ids.length - 1; i >= 0; i--) {
         this.bonuses.items[i].clear();
     }
 };
