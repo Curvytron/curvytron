@@ -77,7 +77,7 @@ Island.prototype.circleInBound = function(circle, from, to)
  * @param {Array} from
  * @param {Array} to
  *
- * @returns {number}
+ * @return {number}
  */
 Island.prototype.getDistance = function(from, to)
 {
@@ -90,7 +90,7 @@ Island.prototype.getDistance = function(from, to)
  * @param {Number} radius
  * @param border
  *
- * @return {Array}
+ * @returns {Array}
  */
 Island.prototype.getRandomPosition = function(radius, border)
 {
