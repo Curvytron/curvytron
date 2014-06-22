@@ -157,15 +157,11 @@ BaseAvatar.prototype.die = function()
  */
 BaseAvatar.prototype.togglePrinting = function(e)
 {
-    this.printing = !this.printing;
-
     clearTimeout(this.printingTimeout);
 
-    this.printingTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
+    this.setPrinting(!this.printing);
 
-    if (!this.printing) {
-        this.trail.clear();
-    }
+    this.printingTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
 };
 
 /**
@@ -175,9 +171,17 @@ BaseAvatar.prototype.stopPrinting = function()
 {
     clearTimeout(this.printingTimeout);
 
-    this.printing = false;
+    this.setPrinting(false);
+};
 
-    this.trail.clear();
+/**
+ * Set printing
+ *
+ * @param {Boolean} printing
+ */
+BaseAvatar.prototype.setPrinting = function(printing)
+{
+    this.printing = printing;
 };
 
 /**

@@ -183,9 +183,9 @@ BaseGame.prototype.serialize = function()
  *
  * @return {Boolean}
  */
-BaseGame.prototype.isStarted = function()
+BaseGame.prototype.isPlaying = function()
 {
-    return this.started;
+    return this.frame !== null;
 };
 
 /**
@@ -203,7 +203,6 @@ BaseGame.prototype.newRound = function()
 BaseGame.prototype.endRound = function()
 {
     this.stop();
-
 };
 
 /**

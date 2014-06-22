@@ -35,6 +35,10 @@ Avatar.prototype.setPosition = function(point)
     this.path.position.x = this.head[0] * paper.sceneScale;
     this.path.position.y = this.head[1] * paper.sceneScale;
 
+    if (this.printing) {
+        this.trail.setPosition(point);
+    }
+
     this.updateArrowPosition();
 };
 
