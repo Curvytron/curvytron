@@ -115,7 +115,7 @@ Avatar.prototype.setScore = function(score)
 Avatar.prototype.upVelocity = function()
 {
     BaseAvatar.prototype.upVelocity.call(this);
-    this.emit('velocity:up');
+    this.emit('velocity:up', {avatar: this});
 };
 
 /**
@@ -124,5 +124,5 @@ Avatar.prototype.upVelocity = function()
 Avatar.prototype.downVelocity = function()
 {
     BaseAvatar.prototype.downVelocity.call(this);
-    this.emit('velocity:down');
+    this.emit('velocity:down', {avatar: this});
 };
