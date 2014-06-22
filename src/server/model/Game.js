@@ -26,7 +26,7 @@ function Game(room)
         this.avatars.items[i].on('die', this.onDie);
         this.avatars.items[i].setMask(i+1);
     }
-}
+};
 
 Game.prototype = Object.create(BaseGame.prototype);
 
@@ -211,7 +211,7 @@ Game.prototype.endRound = function()
 Game.prototype.newRound = function()
 {
     if (!this.inRound) {
-        var avatar, bonus, position;
+        var avatar, bonus, i;
 
         this.emit('round:new', {game: this});
 
@@ -220,7 +220,7 @@ Game.prototype.newRound = function()
         this.inRound = true;
         this.deaths.clear();
 
-        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        for (i = this.avatars.items.length - 1; i >= 0; i--) {
             avatar = this.avatars.items[i];
 
             avatar.clear();
@@ -229,7 +229,7 @@ Game.prototype.newRound = function()
         }
 
         // clear the bonuses stack
-        for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
+        for (i = this.bonuses.ids.length - 1; i >= 0; i--) {
             bonus = this.bonuses.items[i];
             bonus.clear();
             this.emit('bonus:clear', { game: this, bonus: bonus});
@@ -265,7 +265,7 @@ Game.prototype.toggleBonusPrinting = function () {
 
     clearTimeout(this.bonusPrintingTimeout);
     this.printingTimeout = setTimeout(this.toggleBonusPrinting, this.getRandomPrintingTime());
-}
+};
 
 /**
  * Stop bonus printing
@@ -283,7 +283,7 @@ Game.prototype.stopBonusPrinting = function()
 Game.prototype.popBonus = function () {
     if (this.bonuses.count() < this.bonusCap) {
 
-        if (this.chancePercent(this.bonusPoppingRate)) {
+        if (this.percentChance(this.bonusPoppingRate)) {
             var bonus = new Bonus('test', '#7CFC00');
                 bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
                 bonus.pop();
@@ -299,12 +299,10 @@ Game.prototype.popBonus = function () {
  * @param percentTrue
  * @returns {boolean}
  */
-Game.prototype.chancePercent = function (percentTrue) {
+Game.prototype.percentChance = function (percentTrue) {
     percentTrue = percentTrue || 100;
-    if(Math.floor(Math.random()*101) <= percentTrue) {
-        return true;
-    }
-    return false;
+
+    return (Math.floor(Math.random()*101) <= percentTrue);
 };
 
 /**
