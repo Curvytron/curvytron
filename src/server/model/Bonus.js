@@ -41,6 +41,12 @@ Bonus.prototype.clear = function()
     this.emit('clear');
 };
 
+/**
+ * Check if a bonus has been taken by given avatar
+ *
+ * @param avatar
+ * @returns {boolean}
+ */
 Bonus.prototype.isTakenBy = function (avatar) {
     if (
         this.active &&
