@@ -146,8 +146,8 @@ GameController.prototype.detachEvents = function(client)
         avatar.removeListener('printing', this.onPrinting);
         avatar.removeListener('point', this.onPoint);
         avatar.removeListener('score', this.onScore);
-        avatar.removeAllListeners('velocity:up');
-        avatar.removeAllListeners('velocity:down');
+        avatar.removeListener('velocity:up', this.onVelocityUp);
+        avatar.removeListener('velocity:down', this.onVelocityDown);
         avatar.trail.removeListener('clear', this.onTrailClear);
     }
 };
