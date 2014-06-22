@@ -250,34 +250,6 @@ GameController.prototype.onDie = function(data)
 };
 
 /**
- *
- * @param {Object} data
- */
-GameController.prototype.onVelocityUp = function(data)
-{
-    var avatar = this.game.avatars.getById(data.avatar);
-
-    if (avatar) {
-        avatar.upVelocity();
-        this.$scope.$apply();
-    }
-};
-
-/**
- *
- * @param {Object} data
- */
-GameController.prototype.onVelocityDown = function(data)
-{
-    var avatar = this.game.avatars.getById(data.avatar);
-
-    if (avatar) {
-        avatar.downVelocity();
-        this.$scope.$apply();
-    }
-};
-
-/**
  * On score
  *
  * @param {Object} data
