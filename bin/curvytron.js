@@ -1204,16 +1204,21 @@ function GameController(io)
     this.io    = io;
     this.games = new Collection([], 'name');
 
-    this.onDie         = this.onDie.bind(this);
-    this.onAngle       = this.onAngle.bind(this);
-    this.onPosition    = this.onPosition.bind(this);
-    this.onPoint       = this.onPoint.bind(this);
-    this.onScore       = this.onScore.bind(this);
-    this.onTrailClear  = this.onTrailClear.bind(this);
-    this.onRoundNew    = this.onRoundNew.bind(this);
-    this.onRoundEnd    = this.onRoundEnd.bind(this);
-    this.onRoundWinner = this.onRoundWinner.bind(this);
-    this.onEnd         = this.onEnd.bind(this);
+    this.onDie          = this.onDie.bind(this);
+    this.onAngle        = this.onAngle.bind(this);
+    this.onPosition     = this.onPosition.bind(this);
+    this.onPoint        = this.onPoint.bind(this);
+    this.onScore        = this.onScore.bind(this);
+    this.onTrailClear   = this.onTrailClear.bind(this);
+    this.onRoundNew     = this.onRoundNew.bind(this);
+    this.onRoundEnd     = this.onRoundEnd.bind(this);
+    this.onVelocityUp   = this.onVelocityUp.bind(this);
+    this.onVelocityDown = this.onVelocityDown.bind(this);
+
+    this.onBonusPop     = this.onBonusPop.bind(this);
+    this.onBonusClear   = this.onBonusClear.bind(this);
+    this.onRoundWinner  = this.onRoundWinner.bind(this);
+    this.onEnd          = this.onEnd.bind(this);
 }
 
 /**
@@ -2282,7 +2287,7 @@ Avatar.prototype.setScore = function(score)
 Avatar.prototype.upVelocity = function()
 {
     BaseAvatar.prototype.upVelocity.call(this);
-    this.emit('velocity:up');
+    this.emit('velocity:up', {avatar: this});
 };
 
 /**
@@ -2291,7 +2296,7 @@ Avatar.prototype.upVelocity = function()
 Avatar.prototype.downVelocity = function()
 {
     BaseAvatar.prototype.downVelocity.call(this);
-    this.emit('velocity:down');
+    this.emit('velocity:down', {avatar: this});
 };
 /**
  * Bonus
