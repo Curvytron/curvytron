@@ -26,7 +26,7 @@ function Game(room)
         this.avatars.items[i].on('die', this.onDie);
         this.avatars.items[i].setMask(i+1);
     }
-};
+}
 
 Game.prototype = Object.create(BaseGame.prototype);
 
@@ -73,7 +73,7 @@ Game.prototype.update = function(step)
                 bonus.clear();
                 this.emit('bonus:clear', { game: this, bonus: bonus });
                 avatar.upVelocity();
-                this.timeouts.push(setTimeout(function() { avatar.downVelocity() }, 3333));
+                this.timeouts.push(setTimeout(function() { avatar.downVelocity(); }, 3333));
             }
         }
     }

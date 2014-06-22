@@ -51,7 +51,7 @@ BaseGame.prototype.removeAvatar = function(avatar)
 {
     avatar.clear();
 
-    var result = this.avatars.remove(avatar)
+    var result = this.avatars.remove(avatar);
 
     if (this.avatars.isEmpty()) {
         this.end();

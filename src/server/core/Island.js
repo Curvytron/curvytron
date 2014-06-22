@@ -118,7 +118,7 @@ Island.prototype.getRandomPoint = function(margin)
     return [
         margin + Math.random() * (this.size - margin * 2),
         margin + Math.random() * (this.size - margin * 2)
-    ]
+    ];
 };
 
 /**
