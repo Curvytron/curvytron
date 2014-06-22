@@ -29,13 +29,31 @@ Trail.prototype.createPath = function()
 };
 
 /**
+ * Set position
+ */
+Trail.prototype.setPosition = function(point)
+{
+    if (this.path.lastSegment) {
+        this.path.lastSegment.point.x = point[0] * paper.sceneScale;
+        this.path.lastSegment.point.y = point[1] * paper.sceneScale;
+    }
+};
+
+/**
  * Add point
  *
  * @param {Array} point
  */
 Trail.prototype.addPoint = function(point)
 {
-    this.path.add(point[0] * paper.sceneScale, point[1] * paper.sceneScale);
+    var x = point[0] * paper.sceneScale,
+        y = point[1] * paper.sceneScale;
+
+    if (!this.path.length) {
+        this.path.add(x, y);
+    }
+
+    this.path.add(x, y);
 };
 
 /**
@@ -45,7 +63,7 @@ Trail.prototype.addPoint = function(point)
  */
 Trail.prototype.clear = function()
 {
-    this.path.simplify();
+    this.path.simplify(1);
     this.paths.push(this.path);
     this.createPath();
 };

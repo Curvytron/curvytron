@@ -207,8 +207,11 @@ Game.prototype.newRound = function()
 Game.prototype.start = function()
 {
     if (!this.frame) {
+        var avatar;
+
         for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-            setTimeout(this.avatars.items[i].togglePrinting, 3000);
+            avatar = this.avatars.items[i];
+            avatar.printingTimeout = setTimeout(avatar.togglePrinting, 3000);
         }
     }
 

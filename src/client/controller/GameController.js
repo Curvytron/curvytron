@@ -25,6 +25,7 @@ function GameController($scope, $routeParams, $location, repository, client)
     // Binding
     this.onMove        = this.onMove.bind(this);
     this.onPosition    = this.onPosition.bind(this);
+    this.onPrinting    = this.onPrinting.bind(this);
     this.onAngle       = this.onAngle.bind(this);
     this.onPoint       = this.onPoint.bind(this);
     this.onDie         = this.onDie.bind(this);
@@ -52,6 +53,7 @@ function GameController($scope, $routeParams, $location, repository, client)
 GameController.prototype.attachSocketEvents = function()
 {
     this.client.io.on('position', this.onPosition);
+    this.client.io.on('printing', this.onPrinting);
     this.client.io.on('angle', this.onAngle);
     this.client.io.on('point', this.onPoint);
     this.client.io.on('die', this.onDie);
@@ -70,6 +72,7 @@ GameController.prototype.attachSocketEvents = function()
 GameController.prototype.detachSocketEvents = function()
 {
     this.client.io.off('position', this.onPosition);
+    this.client.io.off('printing', this.onPrinting);
     this.client.io.off('angle', this.onAngle);
     this.client.io.off('point', this.onPoint);
     this.client.io.off('die', this.onDie);
@@ -171,6 +174,20 @@ GameController.prototype.onPosition = function(data)
 
     if (avatar) {
         avatar.setPosition(data.point);
+    }
+};
+
+/**
+ * On printing
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onPrinting = function(data)
+{
+    var avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.setPrinting(data.printing);
     }
 };
 

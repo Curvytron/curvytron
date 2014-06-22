@@ -9,6 +9,7 @@ function GameController(io)
     this.onDie         = this.onDie.bind(this);
     this.onAngle       = this.onAngle.bind(this);
     this.onPosition    = this.onPosition.bind(this);
+    this.onPrinting    = this.onPrinting.bind(this);
     this.onPoint       = this.onPoint.bind(this);
     this.onScore       = this.onScore.bind(this);
     this.onTrailClear  = this.onTrailClear.bind(this);
@@ -103,6 +104,7 @@ GameController.prototype.attachEvents = function(client)
         avatar.on('die', this.onDie);
         avatar.on('angle', this.onAngle);
         avatar.on('position', this.onPosition);
+        avatar.on('printing', this.onPrinting);
         avatar.on('point', this.onPoint);
         avatar.on('score', this.onScore);
         avatar.trail.on('clear', this.onTrailClear);
@@ -127,6 +129,7 @@ GameController.prototype.detachEvents = function(client)
 
         avatar.removeAllListeners('die');
         avatar.removeAllListeners('position');
+        avatar.removeAllListeners('printing');
         avatar.removeAllListeners('point');
         avatar.removeAllListeners('score');
         avatar.trail.removeAllListeners('clear');
@@ -184,6 +187,20 @@ GameController.prototype.onPosition = function(data)
 };
 
 /**
+ * On printing
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onPrinting = function(data)
+{
+    var avatar = data.avatar,
+        channel = avatar.player.client.room.game.channel,
+        printing = data.printing;
+
+    this.io.sockets.in(channel).emit('printing', {avatar: avatar.name, printing: printing});
+};
+
+/**
  * On angle
  *
  * @param {Object} data
@@ -194,7 +211,9 @@ GameController.prototype.onAngle = function(data)
         channel = avatar.player.client.room.game.channel,
         angle = data.angle;
 
-    this.io.sockets.in(channel).emit('angle', {avatar: avatar.name, angle: angle});
+    if(!avatar.player.client.room.game.isPlaying()) {
+        this.io.sockets.in(channel).emit('angle', {avatar: avatar.name, angle: angle});
+    }
 };
 
 /**
@@ -208,7 +227,9 @@ GameController.prototype.onPoint = function(data)
         channel = avatar.player.client.room.game.channel,
         point = data.point;
 
-    this.io.sockets.in(channel).emit('point', {avatar: avatar.name, point: point});
+    if (data.important) {
+        this.io.sockets.in(channel).emit('point', {avatar: avatar.name, point: point});
+    }
 };
 
 /**
