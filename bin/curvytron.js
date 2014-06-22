@@ -686,17 +686,11 @@ function BaseBonus(name, color, radius)
     this.positive        = true;
 
     this.position        = [this.radius, this.radius];
-
-    this.printing        = false;
-    this.printingTimeout = null;
-    this.mask            = 0;
 }
 
 BaseBonus.prototype = Object.create(EventEmitter.prototype);
 
 BaseBonus.prototype.precision      = 1;
-BaseBonus.prototype.noPrintingTime = 200;
-BaseBonus.prototype.printingTime   = 3000;
 BaseBonus.prototype.defaultName    = 'Bonus';
 BaseBonus.prototype.defaultColor   = '#7CFC00';
 BaseBonus.prototype.defaultRadius  = 1.2;
@@ -710,19 +704,6 @@ BaseBonus.prototype.setPosition = function(point)
 {
     this.position[0] = point[0];
     this.position[1] = point[1];
-};
-
-/**
- * Get distance
- *
- * @param {Array} from
- * @param {Array} to
- *
- * @return {Number}
- */
-BaseBonus.prototype.getDistance = function(from, to)
-{
-    return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
 };
 
 /**
@@ -756,21 +737,28 @@ BaseBonus.prototype.generateUUID = function () {
     var uuid = new Array(36), rnd = 0, r;
 
     for ( var i = 0; i < 36; i ++ ) {
-        if ( i == 8 || i == 13 || i == 18 || i == 23 ) {
+        if ( i === 8 || i === 13 || i === 18 || i === 23 ) {
             uuid[ i ] = '-';
-        } else if ( i == 14 ) {
+        } else if ( i === 14 ) {
             uuid[ i ] = '4';
         } else {
-            if (rnd <= 0x02) rnd = 0x2000000 + (Math.random()*0x1000000)|0;
+            if (rnd <= 0x02) {
+                rnd = 0x2000000 + (Math.random()*0x1000000)|0;
+            }
             r = rnd & 0xf;
             rnd = rnd >> 4;
-            uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+            uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
         }
     }
 
     return uuid.join('');
 };
 
+/**
+ * Serialize
+ *
+ * @returns {{id: *, name: *, color: *, radius: *, active: *, position: *}}
+ */
 BaseBonus.prototype.serialize = function () {
     return {
         id: this.id,
@@ -782,6 +770,11 @@ BaseBonus.prototype.serialize = function () {
     };
 };
 
+/**
+ * Unserialize
+ *
+ * @param bonus
+ */
 BaseBonus.prototype.unserialize = function (bonus) {
     _.extend(this, bonus);
 };
@@ -798,7 +791,7 @@ function BaseGame(room)
     this.name     = this.room.name;
     this.channel  = 'game:' + this.name;
     this.frame    = null;
-    this.avatars  = this.room.players.map(function () { return this.getAvatar(); });
+    this.avatars  = this.room.players.map(function () { return this.getAvatar(); });
     this.bonuses  = new Collection([], 'id');
     this.size     = this.getSize(this.avatars.count());
     this.rendered = null;
@@ -1205,7 +1198,7 @@ BaseTrail.prototype.getLast = function()
  */
 BaseTrail.prototype.clear = function()
 {
-    this.points = [];
+    this.points = [];
 };
 /**
  * Game Controller
@@ -1786,7 +1779,7 @@ Island.prototype.circleInBound = function(circle, from, to)
     return circle[0] + circle[2] >= from[0]
         && circle[0] - circle[2] <= to[0]
         && circle[1] + circle[2] >= from[1]
-        && circle[1] - circle[2] <= to[1]
+        && circle[1] - circle[2] <= to[1];
 };
 
 /**
@@ -1795,7 +1788,7 @@ Island.prototype.circleInBound = function(circle, from, to)
  * @param {Array} from
  * @param {Array} to
  *
- * @return {Boolean}
+ * @returns {number}
  */
 Island.getDistance = function(from, to)
 {
@@ -1806,8 +1799,9 @@ Island.getDistance = function(from, to)
  * Random Position
  *
  * @param {Number} radius
+ * @param border
  *
- * @return {Array}
+ * @returns {Array}
  */
 Island.prototype.getRandomPosition = function(radius, border)
 {
@@ -1824,7 +1818,7 @@ Island.prototype.getRandomPosition = function(radius, border)
 /**
  * Get random point
  *
- * @param {Number} radius
+ * @param {Number} margin
  *
  * @return {Array}
  */
@@ -2071,7 +2065,7 @@ World.prototype.getIslandsByCircle = function(circle)
             this.getIslandByPoint([circle[0] - circle[2], circle[1] - circle[2]]),
             this.getIslandByPoint([circle[0] + circle[2], circle[1] - circle[2]]),
             this.getIslandByPoint([circle[0] - circle[2], circle[1] + circle[2]]),
-            this.getIslandByPoint([circle[0] + circle[2], circle[1] + circle[2]]),
+            this.getIslandByPoint([circle[0] + circle[2], circle[1] + circle[2]])
         ];
 
     for (var i = sources.length - 1; i >= 0; i--) {
@@ -2133,15 +2127,16 @@ World.prototype.circleInBound = function(circle, from, to)
     return circle[0] - circle[2] >= from[0]
         && circle[0] + circle[2] <= to[0]
         && circle[1] - circle[2] >= from[1]
-        && circle[1] + circle[2] <= to[1]
+        && circle[1] + circle[2] <= to[1];
 };
 
 /**
  * Random Position
  *
- * @param {Number} radius
+ * @param radius
+ * @param border
  *
- * @return {Array}
+ * @returns {Array}
  */
 World.prototype.getRandomPosition = function(radius, border)
 {
@@ -2158,7 +2153,7 @@ World.prototype.getRandomPosition = function(radius, border)
 /**
  * Get random point
  *
- * @param {Number} radius
+ * @param {Number} margin
  *
  * @return {Array}
  */
@@ -2167,7 +2162,7 @@ World.prototype.getRandomPoint = function(margin)
     return [
         margin + Math.random() * (this.size - margin * 2),
         margin + Math.random() * (this.size - margin * 2)
-    ]
+    ];
 };
 
 /**
@@ -2193,6 +2188,9 @@ Avatar.prototype = Object.create(BaseAvatar.prototype);
 
 /**
  * Update
+ *
+ * @param step
+ * @returns {*}
  */
 Avatar.prototype.update = function(step)
 {
@@ -2220,7 +2218,7 @@ Avatar.prototype.setPosition = function(point)
 };
 
 /**
- * Set position
+ * Set angle
  *
  * @param {Array} point
  */
@@ -2265,26 +2263,6 @@ Avatar.prototype.setScore = function(score)
 /**
  * Upgrade velocity
  */
-Avatar.prototype.resetVelocity = function()
-{
-    BaseAvatar.prototype.resetVelocity.call(this);
-
-    this.emit('velocity:reset', {avatar: this});
-};
-
-/**
- * Downgrade velocity
- */
-Avatar.prototype.downVelocity = function()
-{
-    BaseAvatar.prototype.downVelocity.call(this);
-
-    this.emit('velocity:down', {avatar: this});
-};
-
-/**
- * Upgrade velocity
- */
 Avatar.prototype.upVelocity = function()
 {
     BaseAvatar.prototype.upVelocity.call(this);
@@ -2300,6 +2278,16 @@ Avatar.prototype.downVelocity = function()
     BaseAvatar.prototype.downVelocity.call(this);
 
     this.emit('velocity:down', {avatar: this});
+};
+
+/**
+ * Reset velocity
+ */
+Avatar.prototype.resetVelocity = function()
+{
+    BaseAvatar.prototype.resetVelocity.call(this);
+
+    this.emit('velocity:reset', {avatar: this});
 };
 /**
  * Bonus
@@ -2344,6 +2332,12 @@ Bonus.prototype.clear = function()
     this.emit('clear');
 };
 
+/**
+ * Check if a bonus has been taken by given avatar
+ *
+ * @param avatar
+ * @returns {boolean}
+ */
 Bonus.prototype.isTakenBy = function (avatar) {
     if (
         this.active &&
@@ -2385,7 +2379,7 @@ function Game(room)
         this.avatars.items[i].on('die', this.onDie);
         this.avatars.items[i].setMask(i+1);
     }
-}
+};
 
 Game.prototype = Object.create(BaseGame.prototype);
 
@@ -2481,7 +2475,7 @@ Game.prototype.isWon = function()
 };
 
 /**
- * Add point
+ * On die
  *
  * @param {Object} data
  */
@@ -2517,7 +2511,7 @@ Game.prototype.checkRoundEnd = function()
  */
 Game.prototype.isReady = function()
 {
-    return this.avatars.filter(function () { return !this.ready; }).isEmpty();
+    return this.avatars.filter(function () { return !this.ready; }).isEmpty();
 };
 
 /**
@@ -2534,7 +2528,7 @@ Game.prototype.setScores = function()
         }
 
         if (deaths < total) {
-            var winner = this.avatars.match(function () { return this.alive; });
+            var winner = this.avatars.match(function () { return this.alive; });
 
             winner.addScore(total);
             this.emit('round:winner', {game: this, winner: winner});
@@ -2570,7 +2564,7 @@ Game.prototype.endRound = function()
 Game.prototype.newRound = function()
 {
     if (!this.inRound) {
-        var avatar, bonus, position;
+        var avatar, bonus, i;
 
         this.emit('round:new', {game: this});
 
@@ -2579,7 +2573,7 @@ Game.prototype.newRound = function()
         this.inRound = true;
         this.deaths  = [];
 
-        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        for (i = this.avatars.items.length - 1; i >= 0; i--) {
             avatar = this.avatars.items[i];
 
             avatar.clear();
@@ -2587,7 +2581,8 @@ Game.prototype.newRound = function()
             avatar.setAngle(Math.random() * Math.PI * 2);
         }
 
-        for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
+        // clear the bonuses stack
+        for (i = this.bonuses.ids.length - 1; i >= 0; i--) {
             bonus = this.bonuses.items[i];
             bonus.clear();
             this.emit('bonus:clear', { game: this, bonus: bonus});
@@ -2616,17 +2611,17 @@ Game.prototype.start = function()
 };
 
 /**
- *
+ * Toggle bonus printing
  */
 Game.prototype.toggleBonusPrinting = function () {
     this.bonusPrinting = !this.bonusPrinting;
 
     clearTimeout(this.bonusPrintingTimeout);
     this.printingTimeout = setTimeout(this.toggleBonusPrinting, this.getRandomPrintingTime());
-}
+};
 
 /**
- * Stop printing
+ * Stop bonus printing
  */
 Game.prototype.stopBonusPrinting = function()
 {
@@ -2636,12 +2631,12 @@ Game.prototype.stopBonusPrinting = function()
 };
 
 /**
- *
+ * Make a bonus `pop'
  */
 Game.prototype.popBonus = function () {
     if (this.bonuses.count() < this.bonusCap) {
 
-        if (this.chancePercent(this.bonusPoppingRate)) {
+        if (this.percentChance(this.bonusPoppingRate)) {
             var bonus = new Bonus('test', '#7CFC00');
                 bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
                 bonus.pop();
@@ -2649,19 +2644,18 @@ Game.prototype.popBonus = function () {
             this.bonuses.add(bonus);
         }
     }
-}
+};
 
 /**
+ * Has a percent of chance to return true
  *
  * @param percentTrue
  * @returns {boolean}
  */
-Game.prototype.chancePercent = function (percentTrue) {
+Game.prototype.percentChance = function (percentTrue) {
     percentTrue = percentTrue || 100;
-    if(Math.floor(Math.random()*101) <= percentTrue) {
-        return true;
-    }
-    return false;
+
+    return (Math.floor(Math.random()*101) <= percentTrue);
 };
 
 /**
