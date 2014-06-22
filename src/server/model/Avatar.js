@@ -54,10 +54,35 @@ Avatar.prototype.setAngle = function(angle)
  *
  * @param {Array} point
  */
-Avatar.prototype.addPoint = function(point)
+Avatar.prototype.addPoint = function(point, important)
 {
     BaseAvatar.prototype.addPoint.call(this, point);
-    this.emit('point', {avatar: this, point: point});
+    important = important || this.angularVelocity;
+    this.emit('point', {avatar: this, point: point, important: important});
+};
+
+/**
+ * Set printing
+ *
+ * @param {Boolean} printing
+ */
+Avatar.prototype.setPrinting = function(printing)
+{
+    if (!printing) {
+        this.addPoint(this.head.slice(0), true);
+    }
+
+    BaseAvatar.prototype.setPrinting.call(this, printing);
+
+    if (!this.printing) {
+        this.trail.clear();
+    }
+
+    this.emit('printing', {avatar: this, printing: printing});
+
+    if (printing) {
+        this.addPoint(this.head.slice(0), true);
+    }
 };
 
 /**
@@ -77,6 +102,5 @@ Avatar.prototype.die = function()
 Avatar.prototype.setScore = function(score)
 {
     BaseAvatar.prototype.setScore.call(this, score);
-
     this.emit('score', {avatar: this, score: this.score});
 };
