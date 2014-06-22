@@ -18,12 +18,13 @@ var gulp      = require('gulp'),
         expose     = [
             './bower_components/angular/angular.min.js',
             './bower_components/angular-route/angular-route.min.js',
+            './bower_components/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.js',
             './bower_components/paper/dist/paper-full.js',
             './bower_components/createjs-soundjs/lib/soundjs-0.5.2.min.js',
             './bower_components/tom32i-event-emitter.js/dist/event-emitter.min.js',
             './bower_components/tom32i-option-resolver.js/dist/option-resolver.min.js',
             './bower_components/tom32i-gamepad.js/dist/gamepad.min.js',
-            './bower_components/tom32i-key-mapper.js/dist/key-mapper.min.js',
+            './bower_components/tom32i-key-mapper.js/dist/key-mapper.min.js'
         ],
         recipes    = {
             server: require('./recipes/server.json'),
