@@ -16,7 +16,6 @@ var gulp      = require('gulp'),
         cssDir     = './web/css/',
         sassDir    = './src/sass/',
         expose     = [
-            './bower_components/almond/almond.js',
             './bower_components/angular/angular.min.js',
             './bower_components/angular-route/angular-route.min.js',
             './bower_components/paper/dist/paper-full.js',
