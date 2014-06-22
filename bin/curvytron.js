@@ -512,6 +512,7 @@ BaseAvatar.prototype.updatePosition = function(step)
 BaseAvatar.prototype.upVelocity = function()
 {
     this.velocity = this.velocity + ((this.defaultVelocity * 33)/100);
+    this.updateVelocities();
 };
 
 /**
@@ -520,6 +521,16 @@ BaseAvatar.prototype.upVelocity = function()
 BaseAvatar.prototype.downVelocity = function()
 {
     this.velocity = this.velocity - ((this.defaultVelocity * 33)/100);
+    this.updateVelocities();
+};
+
+/**
+ * Reset velocity
+ */
+BaseAvatar.prototype.resetVelocity = function()
+{
+    this.velocity = this.defaultVelocity;
+    this.updateVelocities();
 };
 
 /**
@@ -1204,21 +1215,19 @@ function GameController(io)
     this.io    = io;
     this.games = new Collection([], 'name');
 
-    this.onDie          = this.onDie.bind(this);
-    this.onAngle        = this.onAngle.bind(this);
-    this.onPosition     = this.onPosition.bind(this);
-    this.onPoint        = this.onPoint.bind(this);
-    this.onScore        = this.onScore.bind(this);
-    this.onTrailClear   = this.onTrailClear.bind(this);
-    this.onRoundNew     = this.onRoundNew.bind(this);
-    this.onRoundEnd     = this.onRoundEnd.bind(this);
-    this.onVelocityUp   = this.onVelocityUp.bind(this);
-    this.onVelocityDown = this.onVelocityDown.bind(this);
+    this.onDie           = this.onDie.bind(this);
+    this.onAngle         = this.onAngle.bind(this);
+    this.onPosition      = this.onPosition.bind(this);
+    this.onPoint         = this.onPoint.bind(this);
+    this.onScore         = this.onScore.bind(this);
+    this.onTrailClear    = this.onTrailClear.bind(this);
+    this.onRoundNew      = this.onRoundNew.bind(this);
+    this.onRoundEnd      = this.onRoundEnd.bind(this);
 
-    this.onBonusPop     = this.onBonusPop.bind(this);
-    this.onBonusClear   = this.onBonusClear.bind(this);
-    this.onRoundWinner  = this.onRoundWinner.bind(this);
-    this.onEnd          = this.onEnd.bind(this);
+    this.onBonusPop      = this.onBonusPop.bind(this);
+    this.onBonusClear    = this.onBonusClear.bind(this);
+    this.onRoundWinner   = this.onRoundWinner.bind(this);
+    this.onEnd           = this.onEnd.bind(this);
 }
 
 /**
@@ -1288,8 +1297,6 @@ GameController.prototype.attachEvents = function(client)
         avatar.on('die', this.onDie);
         avatar.on('angle', this.onAngle);
         avatar.on('position', this.onPosition);
-        avatar.on('velocity:up', this.onVelocityUp);
-        avatar.on('velocity:down', this.onVelocityDown);
         avatar.on('point', this.onPoint);
         avatar.on('score', this.onScore);
         avatar.trail.on('clear', this.onTrailClear);
@@ -1310,8 +1317,6 @@ GameController.prototype.detachEvents = function(client)
     for (var i = client.players.items.length - 1; i >= 0; i--) {
         client.players.items[i].avatar.removeAllListeners('die');
         client.players.items[i].avatar.removeAllListeners('position');
-        client.players.items[i].avatar.removeAllListeners('velocity:up');
-        client.players.items[i].avatar.removeAllListeners('velocity:down');
         client.players.items[i].avatar.removeAllListeners('point');
         client.players.items[i].avatar.removeAllListeners('score');
         client.players.items[i].avatar.trail.removeAllListeners('clear');
@@ -1410,30 +1415,6 @@ GameController.prototype.onDie = function(data)
 };
 
 /**
- *
- * @param {SocketClient} client
- */
-GameController.prototype.onVelocityUp = function(data)
-{
-    var avatar = data.avatar,
-        channel = avatar.player.client.room.game.channel;
-    
-    this.io.sockets.in(channel).emit('velocity:up', {avatar: avatar.name});
-};
-
-/**
- *
- * @param {SocketClient} client
- */
-GameController.prototype.onVelocityDown = function(data)
-{
-    var avatar = data.avatar,
-        channel = avatar.player.client.room.game.channel;
-
-    this.io.sockets.in(channel).emit('velocity:down', {avatar: avatar.name});
-};
-
-/**
  * On bonus pop
  *
  * @param {SocketClient} game
@@ -1443,7 +1424,7 @@ GameController.prototype.onBonusPop = function(data)
     var game = data.game,
         channel = data.game.channel;
     
-    this.io.sockets.in(channel).emit('bonus:pop', data.bonus);
+    this.io.sockets.in(channel).emit('bonus:pop', data.bonus.serialize());
 };
 
 /**
@@ -1457,7 +1438,7 @@ GameController.prototype.onBonusClear = function(data)
     var game = data.game,
         channel = data.game.channel;
 
-    this.io.sockets.in(channel).emit('bonus:clear', data.bonus);
+    this.io.sockets.in(channel).emit('bonus:clear', data.bonus.serialize());
 };
 
 
@@ -2284,9 +2265,30 @@ Avatar.prototype.setScore = function(score)
 /**
  * Upgrade velocity
  */
+Avatar.prototype.resetVelocity = function()
+{
+    BaseAvatar.prototype.resetVelocity.call(this);
+
+    this.emit('velocity:reset', {avatar: this});
+};
+
+/**
+ * Downgrade velocity
+ */
+Avatar.prototype.downVelocity = function()
+{
+    BaseAvatar.prototype.downVelocity.call(this);
+
+    this.emit('velocity:down', {avatar: this});
+};
+
+/**
+ * Upgrade velocity
+ */
 Avatar.prototype.upVelocity = function()
 {
     BaseAvatar.prototype.upVelocity.call(this);
+
     this.emit('velocity:up', {avatar: this});
 };
 
@@ -2296,6 +2298,7 @@ Avatar.prototype.upVelocity = function()
 Avatar.prototype.downVelocity = function()
 {
     BaseAvatar.prototype.downVelocity.call(this);
+
     this.emit('velocity:down', {avatar: this});
 };
 /**
@@ -2369,10 +2372,11 @@ function Game(room)
     this.deaths  = [];
     this.clients = new Collection();
 
-    this.addPoint             = this.addPoint.bind(this);
-    this.onDie                = this.onDie.bind(this);
-    this.bonusPrinting        = false;
-    this.bonusPrintingTimeout = null;
+    this.addPoint                   = this.addPoint.bind(this);
+    this.onDie                      = this.onDie.bind(this);
+    this.bonusPrinting              = false;
+    this.bonusPrintingTimeout       = null;
+    this.timeouts                   = [];
 
     this.toggleBonusPrinting = this.toggleBonusPrinting.bind(this);
 
@@ -2408,6 +2412,10 @@ Game.prototype.update = function(step)
 
     var avatar, bonus;
 
+    if (this.bonusPrinting) {
+        this.popBonus();
+    }
+
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
@@ -2415,20 +2423,16 @@ Game.prototype.update = function(step)
             avatar.die();
         }
 
-        if (this.bonusPrinting) {
-            this.popBonus();
-        }
-
         // check if a bonus has been taken
-        for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
-            bonus = this.bonuses.items[i];
+        for (var j = this.bonuses.ids.length - 1; j >= 0; j--) {
+            bonus = this.bonuses.items[j];
 
             if (bonus.isTakenBy(avatar)) {
                 // sample speed bonus test
                 bonus.clear();
-                this.emit('bonus:clear', { game: this, bonus: bonus.serialize() });
+                this.emit('bonus:clear', { game: this, bonus: bonus });
                 avatar.upVelocity();
-                setTimeout(function() { avatar.downVelocity() }, 3333);
+                this.timeouts.push(setTimeout(function() { avatar.downVelocity() }, 3333));
             }
         }
     }
@@ -2548,6 +2552,8 @@ Game.prototype.endRound = function()
     BaseGame.prototype.endRound.call(this);
 
     this.stopBonusPrinting();
+    this.resetBonusEffects();
+    this.clearTimeouts();
 
     this.emit('round:end', {game: this});
 
@@ -2584,7 +2590,7 @@ Game.prototype.newRound = function()
         for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
             bonus = this.bonuses.items[i];
             bonus.clear();
-            this.emit('bonus:clear', bonus.serialize());
+            this.emit('bonus:clear', { game: this, bonus: bonus});
             this.bonuses.removeById(bonus.id);
         }
 
@@ -2604,7 +2610,7 @@ Game.prototype.start = function()
     }
 
     // toggle bonuses printing
-    setTimeout(this.toggleBonusPrinting, 3000);
+    this.timeouts.push(setTimeout(this.toggleBonusPrinting, 3000));
 
     BaseGame.prototype.start.call(this);
 };
@@ -2624,7 +2630,7 @@ Game.prototype.toggleBonusPrinting = function () {
  */
 Game.prototype.stopBonusPrinting = function()
 {
-    clearTimeout(this.printingTimeout);
+    clearTimeout(this.bonusPrintingTimeout);
 
     this.printing = false;
 };
@@ -2637,9 +2643,9 @@ Game.prototype.popBonus = function () {
 
         if (this.chancePercent(this.bonusPoppingRate)) {
             var bonus = new Bonus('test', '#7CFC00');
-            bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
-            bonus.pop();
-            this.emit('bonus:pop', { game: this, bonus: bonus.serialize() });
+                bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
+                bonus.pop();
+            this.emit('bonus:pop', { game: this, bonus: bonus });
             this.bonuses.add(bonus);
         }
     }
@@ -2656,7 +2662,7 @@ Game.prototype.chancePercent = function (percentTrue) {
         return true;
     }
     return false;
-}
+};
 
 /**
  * Get random printing time
@@ -2669,6 +2675,26 @@ Game.prototype.getRandomPrintingTime = function()
         return this.bonusPrintingTime * (0.2 + Math.random() * 0.8);
     } else {
         return this.noBonusPrintingTime * (0.8 + Math.random() * 0.5);
+    }
+};
+
+/**
+ * Reset bonus effects
+ * Only velocity for now
+ */
+Game.prototype.resetBonusEffects = function () {
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        this.avatars.items[i].resetVelocity();
+    }
+};
+
+/**
+ * Clear timeouts
+ */
+Game.prototype.clearTimeouts = function()
+{
+    for (var i = this.timeouts.length - 1; i >= 0; i--) {
+        clearTimeout(this.timeouts[i]);
     }
 };
 
