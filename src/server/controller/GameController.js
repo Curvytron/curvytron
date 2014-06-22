@@ -43,9 +43,9 @@ GameController.prototype.addGame = function(game)
 GameController.prototype.removeGame = function(game)
 {
     if (this.games.remove(game)) {
-        game.off('round:new', this.onRoundNew);
-        game.off('round:end', this.onRoundEnd);
-        game.off('round:winner', this.onRoundWinner);
+        game.removeListener('round:new', this.onRoundNew);
+        game.removeListener('round:end', this.onRoundEnd);
+        game.removeListener('round:winner', this.onRoundWinner);
 
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
             this.detach(game.clients.items[i], game);
