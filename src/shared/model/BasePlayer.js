@@ -64,6 +64,15 @@ BasePlayer.prototype.getAvatar = function()
 };
 
 /**
+ * Reset player after a game
+ */
+BasePlayer.prototype.reset = function()
+{
+    this.ready  = false;
+    this.avatar = null;
+};
+
+/**
  * Serialize
  *
  * @return {Object}

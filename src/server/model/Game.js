@@ -9,8 +9,8 @@ function Game(room)
 
     this.world   = new World(this.size);
     this.inRound = false;
-    this.deaths  = [];
-    this.clients = new Collection();
+    this.deaths  = new Collection([], 'name');
+    this.clients = this.room.clients;
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -61,6 +61,7 @@ Game.prototype.removeAvatar = function(avatar)
 {
     var result = BaseGame.prototype.removeAvatar.call(this, avatar);
 
+    this.deaths.remove(avatar);
     this.checkRoundEnd();
 
     return result;
@@ -101,7 +102,7 @@ Game.prototype.isWon = function()
  */
 Game.prototype.onDie = function(data)
 {
-    this.deaths.push(data.avatar);
+    this.deaths.add(data.avatar);
 
     this.checkRoundEnd();
 };
@@ -140,21 +141,20 @@ Game.prototype.isReady = function()
 Game.prototype.setScores = function()
 {
     if (this.end) {
-        var deaths = this.deaths.length,
-            total = this.avatars.count();
+        var total = this.avatars.count();
 
-        for (var i = deaths - 1; i >= 0; i--) {
-            this.deaths[i].addScore(i + 1);
+        for (var i = this.deaths.items.length - 1; i >= 0; i--) {
+            this.deaths.items[i].addScore(i + 1);
         }
 
-        if (deaths < total) {
+        if (this.deaths.count() < total) {
             var winner = this.avatars.match(function () { return this.alive; });
 
             winner.addScore(total);
             this.emit('round:winner', {game: this, winner: winner});
         }
 
-        this.deaths = [];
+        this.deaths.clear();
     }
 };
 
@@ -187,7 +187,7 @@ Game.prototype.newRound = function()
         this.world.clear();
 
         this.inRound = true;
-        this.deaths  = [];
+        this.deaths.clear();
 
         for (var i = this.avatars.items.length - 1; i >= 0; i--) {
             avatar = this.avatars.items[i];

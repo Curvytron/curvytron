@@ -100,6 +100,19 @@ Game.prototype.end = function()
 };
 
 /**
+ * Remove a avatar from the game
+ *
+ * @param {Avatar} avatar
+ */
+Game.prototype.removeAvatar = function(avatar)
+{
+    avatar.path.remove();
+
+    return BaseGame.prototype.removeAvatar.call(this, avatar);
+};
+
+
+/**
  * On resize
  */
 Game.prototype.onResize = function()

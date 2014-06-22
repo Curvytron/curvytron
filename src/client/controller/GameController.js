@@ -8,7 +8,6 @@
  */
 function GameController($scope, $routeParams, $location, repository, client)
 {
-    console.log("GameController");
     this.$scope     = $scope;
     this.$location  = $location;
     this.repository = repository;
@@ -109,7 +108,6 @@ GameController.prototype.loadGame = function(name)
         this.$scope.curvytron.bodyClass = "game-mode";
         this.$scope.game = this.game;
 
-        this.client.join('game:' + name);
         this.client.io.emit('loaded');
     } else {
         this.goHome();

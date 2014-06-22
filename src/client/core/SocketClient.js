@@ -15,16 +15,6 @@ function SocketClient()
 }
 
 /**
- * Join a channel
- *
- * @param {String} channel
- */
-SocketClient.prototype.join = function(channel)
-{
-    this.io.emit('channel', channel);
-};
-
-/**
  * On socket connection
  *
  * @param {Socket} socket

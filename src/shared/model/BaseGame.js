@@ -47,7 +47,6 @@ BaseGame.prototype.update = function(step) {};
  */
 BaseGame.prototype.removeAvatar = function(avatar)
 {
-    console.log('removeAvatar', avatar.name);
     avatar.clear();
 
     var result = this.avatars.remove(avatar)
@@ -217,8 +216,6 @@ BaseGame.prototype.end = function()
 
         this.stop();
         this.fps.stop();
-
-        console.log('end', this.avatars.ids);
 
         for (var i = this.avatars.items.length - 1; i >= 0; i--) {
             this.removeAvatar(this.avatars.items[i]);
