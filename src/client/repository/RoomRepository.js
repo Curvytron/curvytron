@@ -1,9 +1,9 @@
 /**
  * RoomRepository
  *
- * @param {Object} config
+ * @param SocketClient
  */
-function RoomRepository(SocketClient, PlayerRepository)
+function RoomRepository(SocketClient)
 {
     EventEmitter.call(this);
 
@@ -53,8 +53,9 @@ RoomRepository.prototype.get = function(name)
 /**
  * Create
  *
- * @return {Array}
+ * @param name
  * @param {Function} callback
+ * @returns {*|Emitter|Namespace|Socket}
  */
 RoomRepository.prototype.create = function(name, callback)
 {
@@ -155,7 +156,7 @@ RoomRepository.prototype.onCloseRoom = function(data)
     var room = this.get(data.room);
 
     if(room && this.rooms.remove(room)) {
-        var data = {room: room};
+        data = {room: room};
         this.emit('room:close', emit);
         this.emit('room:close:' + room.name, data);
     }
@@ -174,7 +175,7 @@ RoomRepository.prototype.onJoinRoom = function(data)
         player = new Player(data.player.client, data.player.name, data.player.color);
 
     if (room && room.addPlayer(player)) {
-        var data = {room: room, player: player};
+        data = {room: room, player: player};
         this.emit('room:join', data);
         this.emit('room:join:' + room.name, data);
     }
@@ -193,7 +194,7 @@ RoomRepository.prototype.onLeaveRoom = function(data)
         player = room ? room.players.getById(data.player) : null;
 
     if (room && player && room.removePlayer(player)) {
-        var data = {room: room, player: player};
+        data = {room: room, player: player};
         this.emit('room:leave', data);
         this.emit('room:leave:' + room.name, data);
     }
@@ -203,8 +204,6 @@ RoomRepository.prototype.onLeaveRoom = function(data)
  * On player change color
  *
  * @param {Object} data
- *
- * @return {Boolean}
  */
 RoomRepository.prototype.onPlayerColor = function(data)
 {
@@ -221,8 +220,6 @@ RoomRepository.prototype.onPlayerColor = function(data)
  * On player toggle ready
  *
  * @param {Object} data
- *
- * @return {Boolean}
  */
 RoomRepository.prototype.onPlayerReady = function(data)
 {
@@ -239,13 +236,10 @@ RoomRepository.prototype.onPlayerReady = function(data)
  * On join room
  *
  * @param {Object} data
- *
- * @return {Boolean}
  */
 RoomRepository.prototype.onWarmupRoom = function(data)
 {
-    var room = this.rooms.getById(data.room),
-        repository = this;
+    var room = this.rooms.getById(data.room);
 
     if (room) {
         var data = {room: room};
