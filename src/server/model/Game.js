@@ -30,7 +30,7 @@ Game.prototype = Object.create(BaseGame.prototype);
  *
  * @type {Number}
  */
-Game.prototype.trailLatency = 150;
+Game.prototype.trailLatency = 300;
 
 /**
  * Update
