@@ -13,10 +13,11 @@ function Game(room)
     this.clients = this.room.clients;
     this.client  = new SocketGroup(this.clients);
 
-    this.addPoint             = this.addPoint.bind(this);
-    this.onDie                = this.onDie.bind(this);
-    this.bonusPrinting        = false;
-    this.bonusPrintingTimeout = null;
+    this.addPoint                   = this.addPoint.bind(this);
+    this.onDie                      = this.onDie.bind(this);
+    this.bonusPrinting              = false;
+    this.bonusPrintingTimeout       = null;
+    this.timeouts                   = [];
 
     this.toggleBonusPrinting = this.toggleBonusPrinting.bind(this);
 
@@ -55,6 +56,10 @@ Game.prototype.update = function(step)
 
     var avatar, bonus;
 
+    if (this.bonusPrinting) {
+        this.popBonus();
+    }
+
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
@@ -62,20 +67,16 @@ Game.prototype.update = function(step)
             avatar.die();
         }
 
-        if (this.bonusPrinting) {
-            this.popBonus();
-        }
-
         // check if a bonus has been taken
-        for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
-            bonus = this.bonuses.items[i];
+        for (var j = this.bonuses.ids.length - 1; j >= 0; j--) {
+            bonus = this.bonuses.items[j];
 
             if (bonus.isTakenBy(avatar)) {
                 // sample speed bonus test
                 bonus.clear();
-                this.emit('bonus:clear', { game: this, bonus: bonus.serialize() });
+                this.emit('bonus:clear', { game: this, bonus: bonus });
                 avatar.upVelocity();
-                setTimeout(function() { avatar.downVelocity() }, 3333);
+                this.timeouts.push(setTimeout(function() { avatar.downVelocity() }, 3333));
             }
         }
     }
@@ -197,6 +198,8 @@ Game.prototype.endRound = function()
     BaseGame.prototype.endRound.call(this);
 
     this.stopBonusPrinting();
+    this.resetBonusEffects();
+    this.clearTimeouts();
 
     this.emit('round:end', {game: this});
 
@@ -231,7 +234,7 @@ Game.prototype.newRound = function()
         for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
             bonus = this.bonuses.items[i];
             bonus.clear();
-            this.emit('bonus:clear', bonus.serialize());
+            this.emit('bonus:clear', { game: this, bonus: bonus});
             this.bonuses.removeById(bonus.id);
         }
 
@@ -254,7 +257,7 @@ Game.prototype.onStart = function()
     this.world.activate();
    
     // toggle bonuses printing
-    setTimeout(this.toggleBonusPrinting, 3000);
+    this.timeouts.push(setTimeout(this.toggleBonusPrinting, 3000));
 
     BaseGame.prototype.start.call(this);
 };
@@ -274,7 +277,7 @@ Game.prototype.toggleBonusPrinting = function () {
  */
 Game.prototype.stopBonusPrinting = function()
 {
-    clearTimeout(this.printingTimeout);
+    clearTimeout(this.bonusPrintingTimeout);
 
     this.printing = false;
 };
@@ -286,9 +289,9 @@ Game.prototype.popBonus = function () {
     if (this.bonuses.count() < this.bonusCap) {
         if (this.chancePercent(this.bonusPoppingRate)) {
             var bonus = new Bonus('test', '#7CFC00');
-            bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
-            bonus.pop();
-            this.emit('bonus:pop', { game: this, bonus: bonus.serialize() });
+                bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
+                bonus.pop();
+            this.emit('bonus:pop', { game: this, bonus: bonus });
             this.bonuses.add(bonus);
         }
     }
@@ -305,7 +308,7 @@ Game.prototype.chancePercent = function (percentTrue) {
         return true;
     }
     return false;
-}
+};
 
 /**
  * Get random printing time
@@ -318,6 +321,26 @@ Game.prototype.getRandomPrintingTime = function()
         return this.bonusPrintingTime * (0.2 + Math.random() * 0.8);
     } else {
         return this.noBonusPrintingTime * (0.8 + Math.random() * 0.5);
+    }
+};
+
+/**
+ * Reset bonus effects
+ * Only velocity for now
+ */
+Game.prototype.resetBonusEffects = function () {
+    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+        this.avatars.items[i].resetVelocity();
+    }
+};
+
+/**
+ * Clear timeouts
+ */
+Game.prototype.clearTimeouts = function()
+{
+    for (var i = this.timeouts.length - 1; i >= 0; i--) {
+        clearTimeout(this.timeouts[i]);
     }
 };
 
