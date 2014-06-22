@@ -63,8 +63,9 @@ Trail.prototype.addPoint = function(point)
  */
 Trail.prototype.clear = function()
 {
-    this.path.simplify(1);
-    this.paths.push(this.path);
+    this.paths.push(this.path.rasterize());
+    this.path.remove();
+
     this.createPath();
 };
 
