@@ -167,7 +167,7 @@ Game.prototype.setScores = function()
         for (var i = this.deaths.items.length - 1; i >= 0; i--) {
             this.deaths.items[i].addScore(i + 1);
         }
-
+        
         if (this.deaths.count() < total) {
             var winner = this.avatars.match(function () { return this.alive; });
 
