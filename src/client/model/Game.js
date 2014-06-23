@@ -46,7 +46,6 @@ Game.prototype.onStop = function()
     BaseGame.prototype.onStop.call(this);
 };
 
-
 /**
  * Start loop
  */
@@ -79,6 +78,14 @@ Game.prototype.stop = function()
 Game.prototype.onFrame = function(e)
 {
     BaseGame.prototype.onFrame.call(this, e.delta * 1000);
+};
+
+/**
+ * Get new frame
+ */
+Game.prototype.newFrame = function()
+{
+    this.frame = true;
 };
 
 /**

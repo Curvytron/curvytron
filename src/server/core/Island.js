@@ -90,7 +90,7 @@ Island.getDistance = function(from, to)
  * @param {Number} radius
  * @param border
  *
- * @returns {Array}
+ * @return {Array}
  */
 Island.prototype.getRandomPosition = function(radius, border)
 {

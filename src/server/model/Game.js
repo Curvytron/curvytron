@@ -65,7 +65,7 @@ Game.prototype.update = function(step)
         if (avatar.alive && !this.world.testCircle(avatar.update(step))) {
             avatar.die();
         }
-
+        
         // check if a bonus has been taken
         for (var j = this.bonuses.ids.length - 1; j >= 0; j--) {
             bonus = this.bonuses.items[j];
