@@ -141,7 +141,7 @@ GameController.prototype.detachEvents = function(client)
  *
  * @param {SocketClient} client
  */
-GameController.prototype.onGameLoaded = function(client, callback)
+GameController.prototype.onGameLoaded = function(client)
 {
     var game = client.room.game,
         avatar;

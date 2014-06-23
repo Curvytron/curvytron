@@ -6,6 +6,8 @@
 function Avatar(player)
 {
     BaseAvatar.call(this, player);
+
+    this.game = null;
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
@@ -56,9 +58,11 @@ Avatar.prototype.setAngle = function(angle)
  */
 Avatar.prototype.addPoint = function(point, important)
 {
-    BaseAvatar.prototype.addPoint.call(this, point);
-    important = important || this.angularVelocity;
-    this.emit('point', {avatar: this, point: point, important: important});
+    if (this.game.isPlaying()) {
+        BaseAvatar.prototype.addPoint.call(this, point);
+        important = important || this.angularVelocity;
+        this.emit('point', {avatar: this, point: point, important: important});
+    }
 };
 
 /**

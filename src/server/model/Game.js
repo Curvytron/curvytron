@@ -15,11 +15,15 @@ function Game(room)
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
 
+    var avatar;
+
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        this.avatars.items[i].clear();
-        this.avatars.items[i].on('point', this.addPoint);
-        this.avatars.items[i].on('die', this.onDie);
-        this.avatars.items[i].setMask(i+1);
+        avatar = this.avatars.items[i];
+        avatar.game = this;
+        avatar.clear();
+        avatar.on('point', this.addPoint);
+        avatar.on('die', this.onDie);
+        avatar.setMask(i+1);
     }
 }
 
@@ -74,12 +78,14 @@ Game.prototype.removeAvatar = function(avatar)
  */
 Game.prototype.addPoint = function(data)
 {
-    var world = this.world,
-        circle = [data.point[0], data.point[1], data.avatar.radius, data.avatar.mask];
+    if (this.world.active) {
+        var world = this.world,
+            circle = [data.point[0], data.point[1], data.avatar.radius, data.avatar.mask];
 
-    setTimeout(function () { circle[3] = 0; }, this.trailLatency);
+        setTimeout(function () { circle[3] = 0; }, this.trailLatency);
 
-    world.addCircle(circle);
+        world.addCircle(circle);
+    }
 };
 
 /**
@@ -180,7 +186,7 @@ Game.prototype.endRound = function()
 Game.prototype.newRound = function()
 {
     if (!this.inRound) {
-        var avatar, position;
+        var avatar;
 
         this.world.clear();
 
@@ -210,6 +216,8 @@ Game.prototype.onStart = function()
         avatar = this.avatars.items[i];
         avatar.printingTimeout = setTimeout(avatar.togglePrinting, 3000);
     }
+
+    this.world.activate();
 
     BaseGame.prototype.onStart.call(this);
 };

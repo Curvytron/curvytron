@@ -17,8 +17,6 @@ function RoomController(io, repository, gameController)
  */
 RoomController.prototype.attach = function(client)
 {
-    var rooms = this.repository.all();
-
     client.joinChannel('rooms');
     this.attachEvents(client);
     this.emitAllRooms(client);
@@ -152,8 +150,6 @@ RoomController.prototype.onLeaveRoom = function(client)
  */
 RoomController.prototype.checkRoomClose = function(room)
 {
-    var name = room.name;
-
     if (room.clients.isEmpty() && this.repository.remove(room)) {
         this.io.sockets.in('rooms').emit('room:close', {room: room.name});
     }
@@ -162,6 +158,7 @@ RoomController.prototype.checkRoomClose = function(room)
 /**
  * On add player to room
  *
+ * @param client
  * @param {Object} data
  * @param {Function} callback
  */
@@ -187,7 +184,9 @@ RoomController.prototype.onAddPlayer = function(client, data, callback)
 /**
  * On new room
  *
- * @param {Object} data
+ * @param client
+ * @param data
+ * @param callback
  */
 RoomController.prototype.onColorRoom = function(client, data, callback)
 {
@@ -210,7 +209,9 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
 /**
  * On new room
  *
+ * @param client
  * @param {Object} data
+ * @param callback
  */
 RoomController.prototype.onReadyRoom = function(client, data, callback)
 {
@@ -241,8 +242,7 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
  */
 RoomController.prototype.startGame = function(room)
 {
-    var game = room.newGame(),
-        client;
+    var game = room.newGame();
 
     this.io.sockets.in('rooms').emit('room:start', {room: room.name});
 

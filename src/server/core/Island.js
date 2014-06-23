@@ -28,14 +28,12 @@ Island.prototype.addCircle = function(circle)
  */
 Island.prototype.testCircle = function(circle)
 {
-    if (!this.circleInBound(circle, this.from, this.to)) {
-        return false;
-    }
-
-    for (var i = this.circles.length - 1; i >= 0; i--)
-    {
-        if (this.circlesTouch(this.circles[i], circle)) {
-            return false;
+    if (this.circleInBound(circle, this.from, this.to)) {
+        for (var i = this.circles.length - 1; i >= 0; i--)
+        {
+            if (this.circlesTouch(this.circles[i], circle)) {
+                return false;
+            }
         }
     }
 
@@ -52,8 +50,8 @@ Island.prototype.testCircle = function(circle)
  */
 Island.prototype.circlesTouch = function(circleA, circleB)
 {
-    return this.getDistance(circleA, circleB) < (circleA[2] + circleB[2])
-        && (circleA[3] && circleB[3] ? circleA[3] !== circleB[3] : true);
+    return this.getDistance(circleA, circleB) < (circleA[2] + circleB[2]) &&
+        (circleA[3] && circleB[3] ? circleA[3] !== circleB[3] : true);
 };
 
 /**
@@ -67,10 +65,10 @@ Island.prototype.circlesTouch = function(circleA, circleB)
  */
 Island.prototype.circleInBound = function(circle, from, to)
 {
-    return circle[0] + circle[2] >= from[0]
-        && circle[0] - circle[2] <= to[0]
-        && circle[1] + circle[2] >= from[1]
-        && circle[1] - circle[2] <= to[1];
+    return circle[0] + circle[2] >= from[0] &&
+           circle[0] - circle[2] <= to[0]   &&
+           circle[1] + circle[2] >= from[1] &&
+           circle[1] - circle[2] <= to[1];
 };
 
 /**
