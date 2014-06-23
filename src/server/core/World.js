@@ -8,6 +8,7 @@ function World(size)
     this.to         = [size, size];
     this.islands    = new Collection();
     this.islandSize = this.size / this.islandGridSize;
+    this.active     = false;
 
     var x, y, id;
 
@@ -75,6 +76,10 @@ World.prototype.getIslandsByCircle = function(circle)
  */
 World.prototype.addCircle = function(circle)
 {
+    if (!this.active) {
+        return;
+    }
+
     var islands = this.getIslandsByCircle(circle);
 
     for (var i = islands.length - 1; i >= 0; i--) {
@@ -163,4 +168,14 @@ World.prototype.clear = function()
     for (var i = this.islands.items.length - 1; i >= 0; i--) {
         this.islands.items[i].clear();
     }
+
+    this.active = false;
+};
+
+/**
+ * Activate
+ */
+World.prototype.activate = function()
+{
+    this.active = true;
 };

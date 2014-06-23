@@ -28,14 +28,12 @@ Island.prototype.addCircle = function(circle)
  */
 Island.prototype.testCircle = function(circle)
 {
-    if (!this.circleInBound(circle, this.from, this.to)) {
-        return false;
-    }
-
-    for (var i = this.circles.length - 1; i >= 0; i--)
-    {
-        if (this.circlesTouch(this.circles[i], circle)) {
-            return false;
+    if (this.circleInBound(circle, this.from, this.to)) {
+        for (var i = this.circles.length - 1; i >= 0; i--)
+        {
+            if (this.circlesTouch(this.circles[i], circle)) {
+                return false;
+            }
         }
     }
 
