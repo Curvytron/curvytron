@@ -15,11 +15,15 @@ function Game(room)
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
 
+    var avatar;
+
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        this.avatars.items[i].clear();
-        this.avatars.items[i].on('point', this.addPoint);
-        this.avatars.items[i].on('die', this.onDie);
-        this.avatars.items[i].setMask(i+1);
+        avatar = this.avatars.items[i];
+        avatar.game = this;
+        avatar.clear();
+        avatar.on('point', this.addPoint);
+        avatar.on('die', this.onDie);
+        avatar.setMask(i+1);
     }
 }
 
