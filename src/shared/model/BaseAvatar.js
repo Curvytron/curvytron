@@ -3,7 +3,7 @@
  *
  * @param {Player} player
  */
-function BaseAvatar(player, position)
+function BaseAvatar(player)
 {
     EventEmitter.call(this);
 
@@ -150,7 +150,7 @@ BaseAvatar.prototype.die = function()
 /**
  * Start printing
  */
-BaseAvatar.prototype.togglePrinting = function(e)
+BaseAvatar.prototype.togglePrinting = function()
 {
     clearTimeout(this.printingTimeout);
 
