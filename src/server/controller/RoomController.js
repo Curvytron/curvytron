@@ -19,7 +19,6 @@ RoomController.prototype.attach = function(client)
 {
     client.joinChannel('rooms');
     this.attachEvents(client);
-    this.emitAllRooms(client);
 };
 
 /**
@@ -108,7 +107,7 @@ RoomController.prototype.onJoinRoom = function(client, data, callback)
 {
     var room = this.repository.get(data.room);
 
-    if (room) {
+    if (room && !room.game) {
         room.addClient(client);
         callback({success: true});
     } else {
@@ -244,7 +243,7 @@ RoomController.prototype.startGame = function(room)
 {
     var game = room.newGame();
 
-    this.io.sockets.in('rooms').emit('room:start', {room: room.name});
+    this.io.sockets.in('rooms').emit('room:game:start', {room: room.name});
 
     game.on('end', this.endGame);
 
@@ -267,6 +266,7 @@ RoomController.prototype.endGame = function(data)
         client;
 
     this.io.sockets.in(game.channel).emit('end');
+    this.io.sockets.in('rooms').emit('room:game:end', {room: room.name});
 
     this.gameController.removeGame(game);
 

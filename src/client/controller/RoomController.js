@@ -17,14 +17,14 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
     this.client     = client;
 
     // Binding:
-    this.addPlayer  = this.addPlayer.bind(this);
-    this.applyScope = this.applyScope.bind(this);
-    this.onJoin     = this.onJoin.bind(this);
-    this.joinRoom   = this.joinRoom.bind(this);
-    this.leaveRoom  = this.leaveRoom.bind(this);
-    this.setColor   = this.setColor.bind(this);
-    this.setReady   = this.setReady.bind(this);
-    this.start      = this.start.bind(this);
+    this.addPlayer    = this.addPlayer.bind(this);
+    this.applyScope   = this.applyScope.bind(this);
+    this.onJoin       = this.onJoin.bind(this);
+    this.joinRoom     = this.joinRoom.bind(this);
+    this.leaveRoom    = this.leaveRoom.bind(this);
+    this.setColor     = this.setColor.bind(this);
+    this.setReady     = this.setReady.bind(this);
+    this.start        = this.start.bind(this);
 
     this.$scope.$on('$destroy', this.leaveRoom);
 
@@ -41,6 +41,7 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
         var controller = this;
 
         this.repository.on('synced', function () { controller.joinRoom($routeParams.name); });
+        this.repository.start();
     }
 }
 
@@ -72,6 +73,7 @@ RoomController.prototype.joinRoom = function(name)
 RoomController.prototype.leaveRoom = function()
 {
     this.repository.leave();
+    this.detachEvents();
 };
 
 /**
@@ -86,8 +88,22 @@ RoomController.prototype.attachEvents = function(name)
     this.repository.on('room:leave:' + name, this.applyScope);
     this.repository.on('room:player:ready:' + name, this.applyScope);
     this.repository.on('room:player:color:' + name, this.applyScope);
-    this.repository.on('room:start:' + name, this.start);
-    this.repository.on('room:game:' + name, this.startGame);
+    this.repository.on('room:game:start:' + name, this.start);
+};
+
+/**
+ * Attach Events
+ *
+ * @param {String} name
+ */
+RoomController.prototype.detachEvents = function(name)
+{
+    this.repository.on('room:close:' + name, this.goHome);
+    this.repository.on('room:join:' + name, this.onJoin);
+    this.repository.on('room:leave:' + name, this.applyScope);
+    this.repository.on('room:player:ready:' + name, this.applyScope);
+    this.repository.on('room:player:color:' + name, this.applyScope);
+    this.repository.on('room:game:start:' + name, this.start);
 };
 
 /**
@@ -189,7 +205,7 @@ RoomController.prototype.setReady = function(player)
  */
 RoomController.prototype.start = function(e)
 {
-    this.repository.pause();
+    this.repository.stop();
     this.$location.path('/game/' + e.detail.room.name);
     this.applyScope();
 };

@@ -227,11 +227,6 @@ Game.prototype.onStart = function()
  */
 Game.prototype.end = function()
 {
-    if (BaseGame.prototype.end.call(this)) {
-        this.world.clear();
-
-        return true;
-    }
-
-    return false;
+    BaseGame.prototype.end.call(this)
+    this.world.clear();
 };

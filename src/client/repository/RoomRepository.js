@@ -11,24 +11,47 @@ function RoomRepository(SocketClient)
     this.client = SocketClient;
     this.rooms  = new Collection([], 'name');
 
-    this.onNewRoom     = this.onNewRoom.bind(this);
-    this.onCloseRoom   = this.onCloseRoom.bind(this);
-    this.onJoinRoom    = this.onJoinRoom.bind(this);
-    this.onLeaveRoom   = this.onLeaveRoom.bind(this);
-    this.onWarmupRoom  = this.onWarmupRoom.bind(this);
-    this.onPlayerReady = this.onPlayerReady.bind(this);
-    this.onPlayerColor = this.onPlayerColor.bind(this);
+    this.onNewRoom       = this.onNewRoom.bind(this);
+    this.onCloseRoom     = this.onCloseRoom.bind(this);
+    this.onJoinRoom      = this.onJoinRoom.bind(this);
+    this.onLeaveRoom     = this.onLeaveRoom.bind(this);
+    this.onRoomGameStart = this.onRoomGameStart.bind(this);
+    this.onRoomGameEnd   = this.onRoomGameEnd.bind(this);
+    this.onPlayerReady   = this.onPlayerReady.bind(this);
+    this.onPlayerColor   = this.onPlayerColor.bind(this);
+}
 
+RoomRepository.prototype = Object.create(EventEmitter.prototype);
+
+/**
+ * Attach events
+ */
+RoomRepository.prototype.attachEvents = function()
+{
     this.client.io.on('room:new', this.onNewRoom);
     this.client.io.on('room:close', this.onCloseRoom);
     this.client.io.on('room:join', this.onJoinRoom);
     this.client.io.on('room:leave', this.onLeaveRoom);
-    this.client.io.on('room:start', this.onWarmupRoom);
+    this.client.io.on('room:game:start', this.onRoomGameStart);
+    this.client.io.on('room:game:end', this.onRoomGameEnd);
     this.client.io.on('room:player:ready', this.onPlayerReady);
     this.client.io.on('room:player:color', this.onPlayerColor);
-}
+};
 
-RoomRepository.prototype = Object.create(EventEmitter.prototype);
+/**
+ * Attach events
+ */
+RoomRepository.prototype.detachEvents = function()
+{
+    this.client.io.off('room:new', this.onNewRoom);
+    this.client.io.off('room:close', this.onCloseRoom);
+    this.client.io.off('room:join', this.onJoinRoom);
+    this.client.io.off('room:leave', this.onLeaveRoom);
+    this.client.io.off('room:game:start', this.onRoomGameStart);
+    this.client.io.off('room:game:end', this.onRoomGameEnd);
+    this.client.io.off('room:player:ready', this.onPlayerReady);
+    this.client.io.off('room:player:color', this.onPlayerColor);
+};
 
 /**
  * Get all
@@ -133,6 +156,8 @@ RoomRepository.prototype.onNewRoom = function(data)
 {
     var room = new Room(data.name);
 
+    room.inGame = data.game;
+
     for (var i = data.players.length - 1; i >= 0; i--) {
         room.addPlayer(new Player(data.players[i].client, data.players[i].name, data.players[i].color));
     }
@@ -233,18 +258,37 @@ RoomRepository.prototype.onPlayerReady = function(data)
 };
 
 /**
- * On join room
+ * On room game start
  *
  * @param {Object} data
  */
-RoomRepository.prototype.onWarmupRoom = function(data)
+RoomRepository.prototype.onRoomGameStart = function(data)
+{
+    var room = this.rooms.getById(data.room);
+    if (room) {
+        room.inGame = true;
+
+        data = {room: room};
+        this.emit('room:game:start', data);
+        this.emit('room:game:start:' + room.name, data);
+    }
+};
+
+/**
+ * On room game end
+ *
+ * @param {Object} data
+ */
+RoomRepository.prototype.onRoomGameEnd = function(data)
 {
     var room = this.rooms.getById(data.room);
 
     if (room) {
+        room.inGame = false;
+
         data = {room: room};
-        this.emit('room:start', data);
-        this.emit('room:start:' + room.name, data);
+        this.emit('room:game:end', data);
+        this.emit('room:game:end:' + room.name, data);
     }
 };
 
@@ -260,19 +304,21 @@ RoomRepository.prototype.setSynced = function()
 };
 
 /**
- * Pause
+ * Start
  */
-RoomRepository.prototype.pause = function()
+RoomRepository.prototype.start = function()
 {
-    this.synced = false;
+    if (!this.synced) {
+        this.attachEvents();
+        this.client.io.emit('room:fetch');
+    }
 };
 
 /**
- * Refresh
+ * Pause
  */
-RoomRepository.prototype.refresh = function()
+RoomRepository.prototype.stop = function()
 {
-    if (!this.synced) {
-        this.client.io.emit('room:fetch');
-    }
+    this.synced = false;
+    this.detachEvents();
 };
