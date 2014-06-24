@@ -6,13 +6,11 @@ function BaseBonusManager(game)
     EventEmitter.call(this);
 
     this.game       = game;
-    this.world      = new World(this.game.size, 1);
     this.bonuses    = new Collection([], 'id', true);
     this.popingTimeout = null;
     this.timeouts   = [];
 
-    this.popBonus = this.popBonus.bind(this);
-    this.clear    = this.clear.bind(this);
+    this.clear = this.clear.bind(this);
 }
 
 BaseBonusManager.prototype = Object.create(EventEmitter.prototype);
@@ -53,49 +51,6 @@ BaseBonusManager.prototype.clear = function()
         bonus.clear();
         //this.emit('bonus:clear', { game: this, bonus: bonus});
         this.bonuses.remove(bonus);
-    }
-};
-
-/**
- * Make a bonus 'pop'
- */
-BaseBonusManager.prototype.popBonus = function ()
-{
-    if (this.bonuses.count() < this.bonusCap) {
-        //if (this.percentChance(this.bonusPoppingRate)) {
-        var bonus;
-
-        if (this.percentChance(50)) {
-            bonus = new RabbitBonus('test');
-        } else {
-            bonus = new TurtleBonus('test');
-        }
-
-        bonus.setPosition(this.game.world.getRandomPosition(bonus.radius, 0.1));
-        bonus.pop();
-
-        this.bonuses.add(bonus);
-
-        this.emit('bonus:pop', { game: this.game, bonus: bonus });
-        //}
-    }
-
-    this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
-};
-
-/**
- * Test if an avatar catches a bonus
- *
- * @param {Avaatr} avatar
- */
-BaseBonusManager.prototype.testCatch = function(avatar)
-{
-    var bonus = this.world.getCircle(position);
-
-    if (bonus) {
-        bonus.clear();
-        this.emit('bonus:clear', {game: this, bonus: bonus});
-        this.timeouts.push(bonus.apply(avatar));
     }
 };
 

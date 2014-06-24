@@ -94,6 +94,30 @@ World.prototype.addCircle = function(circle)
  *
  * @param {Array} circle
  */
+World.prototype.getCircle = function(circle)
+{
+    if (!this.circleInBound(circle, this.from, this.to)) {
+        return null;
+    }
+
+    var islands = this.getIslandsByCircle(circle),
+        circle;
+
+    for (var i = islands.length - 1; i >= 0; i--) {
+        circle = islands[i].getCircle(circle);
+        if (circle) {
+            return circle;
+        }
+    }
+
+    return null;
+};
+
+/**
+ * Add circle
+ *
+ * @param {Array} circle
+ */
 World.prototype.testCircle = function(circle)
 {
     if (!this.circleInBound(circle, this.from, this.to)) {

@@ -9,7 +9,7 @@ function Game(room)
 
     this.world        = new World(this.size);
     this.inRound      = false;
-    this.deaths        = new Collection([], 'name');
+    this.deaths       = new Collection([], 'name');
     this.clients      = this.room.clients;
     this.client       = new SocketGroup(this.clients);
     this.bonusManager = new BonusManager(this);
@@ -48,10 +48,6 @@ Game.prototype.update = function(step)
 
     var avatar, position;
 
-    if (this.bonusPrinting) {
-        this.popBonus();
-    }
-
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         position = avatar.update(step);
@@ -60,7 +56,7 @@ Game.prototype.update = function(step)
             if (!this.world.testCircle(position)) {
                 avatar.die();
             } else {
-                this.bonusManager.test(avatar);
+                this.bonusManager.testCatch(avatar);
             }
         }
     }

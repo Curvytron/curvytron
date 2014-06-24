@@ -7,18 +7,17 @@ function BaseGame(room)
 {
     EventEmitter.call(this);
 
-    console.log(room.players.count());
-
-    this.room     = room;
-    this.name     = this.room.name;
-    this.channel  = 'game:' + this.name;
-    this.frame    = null;
-    this.avatars  = this.room.players.map(function () { return this.getAvatar(); });
-    this.size     = this.getSize(this.avatars.count());
-    this.rendered = null;
-    this.maxScore = this.getMaxScore(this.avatars.count());
-    this.fps      = new FPSLogger();
-    this.started  = false;
+    this.room         = room;
+    this.name         = this.room.name;
+    this.channel      = 'game:' + this.name;
+    this.frame        = null;
+    this.avatars      = this.room.players.map(function () { return this.getAvatar(); });
+    this.size         = this.getSize(this.avatars.count());
+    this.rendered     = null;
+    this.maxScore     = this.getMaxScore(this.avatars.count());
+    this.fps          = new FPSLogger();
+    this.started      = false;
+    this.bonusManager = new BonusManager(this);
 
     this.start    = this.start.bind(this);
     this.stop     = this.stop.bind(this);
@@ -66,7 +65,6 @@ BaseGame.prototype.removeAvatar = function(avatar)
  */
 BaseGame.prototype.start = function()
 {
-    console.log("start");
     this.started = true;
 
     if (!this.frame) {
@@ -196,6 +194,10 @@ BaseGame.prototype.isPlaying = function()
  */
 BaseGame.prototype.newRound = function()
 {
+    for (var i = this.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
+        this.bonusManager.bonuses.items[i].clear();
+    }
+
     setTimeout(this.start, this.warmupTime);
 };
 
