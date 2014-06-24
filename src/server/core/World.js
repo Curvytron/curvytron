@@ -1,13 +1,15 @@
 /**
  * World
  */
-function World(size)
+function World(size, islands)
 {
+    islands = typeof(islands) === 'number' ? islands : this.islandGridSize;
+
     this.size       = size;
     this.from       = [0, 0];
     this.to         = [size, size];
     this.islands    = new Collection();
-    this.islandSize = this.size / this.islandGridSize;
+    this.islandSize = this.size / islands;
     this.active     = false;
 
     var x, y, id;

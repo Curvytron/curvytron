@@ -134,15 +134,6 @@ BaseAvatar.prototype.downVelocity = function()
 };
 
 /**
- * Reset velocity
- */
-BaseAvatar.prototype.resetVelocity = function()
-{
-    this.velocity = this.defaultVelocity;
-    this.updateVelocities();
-};
-
-/**
  * Update velocities
  */
 BaseAvatar.prototype.updateVelocities = function()
@@ -262,6 +253,7 @@ BaseAvatar.prototype.clear = function()
     this.angle           = Math.random() * Math.PI;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
+    this.velocity        = this.defaultVelocity;
     this.alive           = true;
     this.printing        = false;
 

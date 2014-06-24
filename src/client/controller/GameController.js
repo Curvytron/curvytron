@@ -44,7 +44,7 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.onLeave       = this.onLeave.bind(this);
 
     this.attachSocketEvents();
-    
+
     // Hydrate scope:
     this.$scope.sortorder = '-score';
 
@@ -196,7 +196,7 @@ GameController.prototype.onBonusPop = function(data)
         bonus.unserialize(data);
         bonus.pop();
 
-    this.game.bonuses.add(bonus);
+    this.game.bonusManager.bonuses.add(bonus);
 };
 
 /**
@@ -206,7 +206,7 @@ GameController.prototype.onBonusPop = function(data)
  */
 GameController.prototype.onBonusClear = function(data)
 {
-    var bonus = this.game.bonuses.getById(data.id);
+    var bonus = this.game.bonusManager.bonuses.getById(data.id);
         bonus.clear();
 };
 

@@ -8,28 +8,23 @@
 function BaseBonus(name, color, radius)
 {
     EventEmitter.call(this);
-    this.id              = this.generateUUID();
-    this.name            = name || this.defaultName;
-    this.color           = color || this.defaultColor;
-    this.radius          = radius || this.defaultRadius;
-    this.active          = false;
-    this.positive        = true;
 
-    this.position        = [this.radius, this.radius];
+    this.id       = this.generateUUID();
+    this.name     = name || this.defaultName;
+    this.color    = color || this.defaultColor;
+    this.radius   = radius || this.defaultRadius;
+    this.active   = false;
+    this.positive = true;
 
-    this.printing        = false;
-    this.printingTimeout = null;
-    this.mask            = 0;
+    this.position = [this.radius, this.radius];
 }
 
 BaseBonus.prototype = Object.create(EventEmitter.prototype);
 
-BaseBonus.prototype.precision      = 1;
-BaseBonus.prototype.noPrintingTime = 200;
-BaseBonus.prototype.printingTime   = 3000;
-BaseBonus.prototype.defaultName    = 'Bonus';
-BaseBonus.prototype.defaultColor   = '#7CFC00';
-BaseBonus.prototype.defaultRadius  = 1.2;
+BaseBonus.prototype.precision     = 1;
+BaseBonus.prototype.defaultName   = 'Bonus';
+BaseBonus.prototype.defaultColor  = '#7CFC00';
+BaseBonus.prototype.defaultRadius = 1.2;
 
 /**
  * Set Point
@@ -45,7 +40,8 @@ BaseBonus.prototype.setPosition = function(point)
 /**
  * Pop
  */
-BaseBonus.prototype.pop = function() {
+BaseBonus.prototype.pop = function()
+{
     this.active = true;
 };
 
