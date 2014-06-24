@@ -57,15 +57,13 @@ Game.prototype.update = function(step)
         }
 
         // check if a bonus has been taken
-        for (var i = this.bonuses.ids.length - 1; i >= 0; i--) {
-            bonus = this.bonuses.items[i];
+        for (var j = this.bonuses.ids.length - 1; j >= 0; j--) {
+            bonus = this.bonuses.items[j];
 
             if (bonus.isTakenBy(avatar)) {
-                // sample speed bonus test
                 bonus.clear();
-                this.emit('bonus:clear', { game: this, bonus: bonus.serialize() });
-                avatar.upVelocity();
-                setTimeout(function() { avatar.downVelocity() }, 3333);
+                this.timeouts.push(bonus.apply(avatar));
+                this.emit('bonus:clear', { game: this, bonus: bonus });
             }
         }
     }
@@ -245,7 +243,7 @@ Game.prototype.toggleBonusPrinting = function () {
 
     clearTimeout(this.bonusPrintingTimeout);
     this.printingTimeout = setTimeout(this.toggleBonusPrinting, this.getRandomPrintingTime());
-}
+};
 
 /**
  * Stop bonus printing
@@ -263,9 +261,15 @@ Game.prototype.stopBonusPrinting = function()
 Game.prototype.popBonus = function () {
     if (this.bonuses.count() < this.bonusCap) {
         if (this.percentChance(this.bonusPoppingRate)) {
-            var bonus = new Bonus('test', '#7CFC00');
-                bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
-                bonus.pop();
+            var bonus;
+            if (this.percentChance(50)) {
+                bonus = new RabbitBonus('test');
+            } else {
+                bonus = new TurtleBonus('test');
+            }
+            bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
+            bonus.pop();
+
             this.emit('bonus:pop', { game: this, bonus: bonus });
             this.bonuses.add(bonus);
         }
