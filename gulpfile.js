@@ -15,6 +15,10 @@ var gulp      = require('gulp'),
         jsDir      = './web/js/',
         cssDir     = './web/css/',
         sassDir    = './src/sass/',
+        maps       = [
+            './bower_components/angular/angular.min.js.map',
+            './bower_components/angular-route/angular-route.min.js.map',
+        ],
         expose     = [
             './bower_components/angular/angular.min.js',
             './bower_components/angular-route/angular-route.min.js',
@@ -54,6 +58,10 @@ gulp.task('front-expose', function() {
     gulp.src(expose)
         .pipe(concat('dependencies.js'))
         .pipe(gulp.dest(recipes.client.path));
+
+    for (var i = maps.length - 1; i >= 0; i--) {
+        gulp.src(maps[i]).pipe(gulp.dest(recipes.client.path));
+    }
 });
 
 gulp.task('front-full', function() {
