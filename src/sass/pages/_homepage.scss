@@ -74,8 +74,12 @@ li.player-row {
     }
 }
 #rooms {
-    tr {
+    .room {
         cursor: pointer;
+    }
+    .in-game {
+        @include opacity(70);
+        cursor: wait;
     }
 }
 #room {

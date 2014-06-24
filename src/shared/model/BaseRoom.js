@@ -56,7 +56,7 @@ BaseRoom.prototype.removePlayer = function(player)
  */
 BaseRoom.prototype.isReady = function()
 {
-    return this.players.count() > 1 && this.players.filter(function () { return !this.ready; }).isEmpty();
+    return /*this.players.count() > 1 &&*/ this.players.filter(function () { return !this.ready; }).isEmpty();
 };
 
 /**

@@ -222,9 +222,5 @@ BaseGame.prototype.end = function()
         }
 
         this.emit('end', {game: this});
-
-        return true;
     }
-
-    return false;
 };

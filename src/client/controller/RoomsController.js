@@ -14,22 +14,52 @@ function RoomsController($scope, $location, repository, client)
     this.client     = client;
 
     // Binding:
-    this.createRoom = this.createRoom.bind(this);
-    this.joinRoom   = this.joinRoom.bind(this);
-    this.applyScope = this.applyScope.bind(this);
+    this.createRoom   = this.createRoom.bind(this);
+    this.joinRoom     = this.joinRoom.bind(this);
+    this.spectateRoom = this.spectateRoom.bind(this);
+    this.detachEvents = this.detachEvents.bind(this);
+    this.applyScope   = this.applyScope.bind(this);
 
+    this.$scope.$on('$destroy', this.detachEvents);
+
+    this.attachEvents();
+
+    // Hydrating the scope:
+    this.$scope.rooms    = this.repository.rooms;
+    this.$scope.submit   = this.createRoom;
+    this.$scope.join     = this.joinRoom;
+    this.$scope.spectate = this.spectateRoom;
+
+    this.$scope.curvytron.bodyClass = null;
+
+    this.repository.start();
+}
+
+/**
+ * Attach Events
+ */
+RoomsController.prototype.attachEvents = function()
+{
     this.repository.on('room:new', this.applyScope);
     this.repository.on('room:close', this.applyScope);
     this.repository.on('room:join', this.applyScope);
     this.repository.on('room:leave', this.applyScope);
+    this.repository.on('room:game:start', this.applyScope);
+    this.repository.on('room:game:end', this.applyScope);
+};
 
-    // Hydrating the scope:
-    this.$scope.rooms  = this.repository.rooms;
-    this.$scope.submit = this.createRoom;
-    this.$scope.join   = this.joinRoom;
-
-    this.$scope.curvytron.bodyClass = null;
-}
+/**
+ * Attach Events
+ */
+RoomsController.prototype.detachEvents = function()
+{
+    this.repository.off('room:new', this.applyScope);
+    this.repository.off('room:close', this.applyScope);
+    this.repository.off('room:join', this.applyScope);
+    this.repository.off('room:leave', this.applyScope);
+    this.repository.off('room:game:start', this.applyScope);
+    this.repository.off('room:game:end', this.applyScope);
+};
 
 /**
  * Create a room
@@ -57,6 +87,14 @@ RoomsController.prototype.createRoom = function(e)
 RoomsController.prototype.joinRoom = function(room)
 {
     this.$location.path('/room/' + room.name);
+};
+
+/**
+ * Spectact a room
+ */
+RoomsController.prototype.spectateRoom = function(room)
+{
+    this.$location.path('/game/' + room.name);
 };
 
 /**

@@ -13,8 +13,6 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.repository = repository;
     this.client     = client;
 
-    this.repository.pause();
-
     createjs.Sound.alternateExtensions = ['mp3'];
     createjs.Sound.registerManifest(
         [
@@ -318,6 +316,8 @@ GameController.prototype.onEnd = function()
     document.getElementById('round-view').style.display = 'none';
 
     createjs.Sound.play('win').volume = 0.2;
+
+    this.repository.start();
 
     paper.view.pause();
 };
