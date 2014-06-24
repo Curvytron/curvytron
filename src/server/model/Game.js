@@ -71,11 +71,9 @@ Game.prototype.update = function(step)
             bonus = this.bonuses.items[j];
 
             if (bonus.isTakenBy(avatar)) {
-                // sample speed bonus test
                 bonus.clear();
+                this.timeouts.push(bonus.apply(avatar));
                 this.emit('bonus:clear', { game: this, bonus: bonus });
-                avatar.upVelocity();
-                this.timeouts.push(setTimeout(function() { avatar.downVelocity(); }, 3333));
             }
         }
     }
@@ -287,11 +285,16 @@ Game.prototype.stopBonusPrinting = function()
  */
 Game.prototype.popBonus = function () {
     if (this.bonuses.count() < this.bonusCap) {
-
         if (this.percentChance(this.bonusPoppingRate)) {
-            var bonus = new Bonus('test', '#7CFC00');
-                bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
-                bonus.pop();
+            var bonus;
+            if (this.percentChance(50)) {
+                bonus = new RabbitBonus('test');
+            } else {
+                bonus = new TurtleBonus('test');
+            }
+            bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
+            bonus.pop();
+
             this.emit('bonus:pop', { game: this, bonus: bonus });
             this.bonuses.add(bonus);
         }
