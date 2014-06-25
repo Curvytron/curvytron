@@ -136,13 +136,13 @@ GameController.prototype.detachEvents = function(client)
     for (var i = client.players.items.length - 1; i >= 0; i--) {
         avatar = client.players.items[i].avatar;
 
-        avatar.removeListener('die', this.removeListenerDie);
-        avatar.removeListener('angle', this.removeListenerAngle);
-        avatar.removeListener('position', this.removeListenerPosition);
-        avatar.removeListener('printing', this.removeListenerPrinting);
-        avatar.removeListener('point', this.removeListenerPoint);
-        avatar.removeListener('score', this.removeListenerScore);
-        avatar.trail.removeListener('clear', this.removeListenerTrailClear);
+        avatar.removeListener('die', this.onDie);
+        avatar.removeListener('angle', this.onAngle);
+        avatar.removeListener('position', this.onPosition);
+        avatar.removeListener('printing', this.onPrinting);
+        avatar.removeListener('point', this.onPoint);
+        avatar.removeListener('score', this.onScore);
+        avatar.trail.removeListener('clear', this.onTrailClear);
     }
 };
 

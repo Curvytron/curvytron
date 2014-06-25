@@ -11,6 +11,7 @@ function RoomRepository(client)
     this.client = client;
     this.rooms  = new Collection([], 'name');
 
+    this.start           = this.start.bind(this);
     this.onNewRoom       = this.onNewRoom.bind(this);
     this.onCloseRoom     = this.onCloseRoom.bind(this);
     this.onJoinRoom      = this.onJoinRoom.bind(this);
@@ -19,6 +20,12 @@ function RoomRepository(client)
     this.onRoomGameEnd   = this.onRoomGameEnd.bind(this);
     this.onPlayerReady   = this.onPlayerReady.bind(this);
     this.onPlayerColor   = this.onPlayerColor.bind(this);
+
+    if (this.client.connected) {
+        this.start();
+    } else {
+        this.client.on('connected', this.start);
+    }
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);

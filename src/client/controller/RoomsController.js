@@ -31,8 +31,6 @@ function RoomsController($scope, $location, repository, client)
     this.$scope.spectate = this.spectateRoom;
 
     this.$scope.curvytron.bodyClass = null;
-
-    this.repository.start();
 }
 
 /**

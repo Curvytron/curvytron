@@ -265,13 +265,12 @@ RoomController.prototype.startGame = function(room)
 
     this.socketGroup.addEvent('room:game:start', {room: room.name});
 
-    game.on('end', this.endGame);
-
     for (var i = room.clients.items.length - 1; i >= 0; i--) {
         this.detach(room.clients.items[i]);
     }
 
     this.gameController.addGame(game);
+    game.on('end', this.endGame);
 };
 
 /**
@@ -293,7 +292,7 @@ RoomController.prototype.endGame = function(data)
         client = room.clients.items[i];
         //client.joinChannel('rooms');
         this.attach(client);
-        //this.emitAllRooms(client);
+        this.emitAllRooms(client);
     }
 
     room.closeGame();

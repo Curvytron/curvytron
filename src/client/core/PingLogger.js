@@ -13,8 +13,10 @@ function PingLogger(callback, interval)
     this.queue        = [];
     this.value        = 0;
 
-    this.ping = this.ping.bind(this);
-    this.pong = this.pong.bind(this);
+    this.start = this.start.bind(this);
+    this.stop  = this.stop.bind(this);
+    this.ping  = this.ping.bind(this);
+    this.pong  = this.pong.bind(this);
 }
 
 /**
@@ -52,12 +54,12 @@ PingLogger.prototype.ping = function()
 /**
  * Pong response
  *
- * @param {Number} ping
+ * @param {Event} e
  */
-PingLogger.prototype.pong = function(ping)
+PingLogger.prototype.pong = function(e)
 {
     var pong = new Date().getTime(),
-        index = this.queue.indexOf(ping);
+        index = this.queue.indexOf(e.detail);
 
     if (index >= 0) {
         this.setPing(pong - this.queue[index]);
@@ -73,8 +75,17 @@ PingLogger.prototype.pong = function(ping)
 PingLogger.prototype.setPing = function(ping)
 {
     this.value = ping;
-
     this.draw();
+};
+
+/**
+ * Set element
+ *
+ * @param {Element} element
+ */
+PingLogger.prototype.setElement = function(element)
+{
+    this.element = element;
 };
 
 /**
@@ -84,7 +95,7 @@ PingLogger.prototype.draw = function()
 {
     if (this.element) {
         this.element.innerHTML   = this.value + 'ms';
-        this.element.style.color = this.getColor(ping);
+        this.element.style.color = this.getColor(this.value);
     } else {
         console.log(this.value + 'ms');
     }

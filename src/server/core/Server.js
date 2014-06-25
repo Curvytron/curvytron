@@ -69,10 +69,8 @@ Server.prototype.onSocketDisconnection = function(client)
     console.log('Client disconnected', client.socket.id);
 
     this.roomController.onLeaveRoom(client);
-    this.gameController.detach(client);
     this.roomController.detach(client);
 
-    client.close();
     this.clients.remove(client);
     client = null;
 };

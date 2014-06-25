@@ -13,10 +13,3 @@ function SocketClient(socket, interval)
 }
 
 SocketClient.prototype = Object.create(BaseSocketClient.prototype);
-
-/**
- * Always connected
- *
- * @type {Boolean}
- */
-SocketClient.prototype.connected = true;

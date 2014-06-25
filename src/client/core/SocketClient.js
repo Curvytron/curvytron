@@ -5,8 +5,6 @@ function SocketClient()
 {
     this.connected  = false;
     this.id         = null;
-    this.sendEvents = this.wait;
-    this.flush      = this.wait;
 
     this.sendPing              = this.sendPing.bind(this);
     this.onError               = this.onError.bind(this);
@@ -42,9 +40,6 @@ SocketClient.prototype.onSocketConnection = function(e)
     this.connected = true;
     this.start();
 
-    this.sendEvents = BaseSocketClient.prototype.sendEvents;
-    this.flush      = BaseSocketClient.prototype.flush;
-
     this.pingLogger.start();
 
     this.emit('connected');
@@ -62,20 +57,12 @@ SocketClient.prototype.onSocketDisconnection = function(e)
     this.connected = false;
     this.id        = null;
 
-    this.sendEvents = this.wait;
-    this.flush      = this.wait;
-
     this.pingLogger.stop();
 
     this.emit('disconnected');
 
     throw 'Connexion lost';
 };
-
-/**
- * Wait for connection
- */
-SocketClient.prototype.wait = function () {};
 
 /**
  * On open

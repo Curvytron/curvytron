@@ -137,7 +137,7 @@ BaseSocketClient.prototype.addEvents = function (sources, force)
         event;
 
     for (var i = 0; i < length; i++) {
-        event = [sources[i][0]];
+        event = [this.eventPrefix + sources[i][0]];
 
         if (typeof(sources[i][1]) != 'undefined') {
             event[1] = sources[i][1];

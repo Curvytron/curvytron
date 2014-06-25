@@ -106,6 +106,7 @@ GameController.prototype.loadGame = function(name)
         }
 
         this.game.fps.setElement(document.getElementById('fps'));
+        this.client.pingLogger.setElement(document.getElementById('ping'));
 
         // Hydrate scope:
         this.$scope.curvytron.bodyClass = 'game-mode';
@@ -306,6 +307,8 @@ GameController.prototype.onRoundEnd = function(e)
 GameController.prototype.onEnd = function(e)
 {
     this.detachSocketEvents();
+    paper.view.pause();
+    //this.repository.start();
 
     avatars = this.game.avatars.filter(function () { return this.local; }).items;
 
@@ -315,7 +318,6 @@ GameController.prototype.onEnd = function(e)
 
     this.game.end();
     this.room.closeGame();
-
     this.game = null;
 
     document.getElementById('end').style.display = 'block';
@@ -323,10 +325,6 @@ GameController.prototype.onEnd = function(e)
     document.getElementById('round-view').style.display = 'none';
 
     createjs.Sound.play('win').volume = 0.2;
-
-    this.repository.start();
-
-    paper.view.pause();
 };
 
 /**
