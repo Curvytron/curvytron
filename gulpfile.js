@@ -15,13 +15,10 @@ var gulp      = require('gulp'),
         jsDir   = './web/js/',
         cssDir  = './web/css/',
         sassDir = './src/sass/',
-        expose  = [
-            './bower_components/angular/angular.min.js',
-            './bower_components/angular-route/angular-route.min.js',
-            './bower_components/angular/angular.min.js.map',
-            './bower_components/angular-route/angular-route.min.js.map',
-        ],
+        expose  = [],
         dependencies = [
+            './bower_components/angular/angular.js',
+            './bower_components/angular-route/angular-route.js',
             './bower_components/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.js',
             './bower_components/paper/dist/paper-full.js',
             './bower_components/createjs-soundjs/lib/soundjs-0.5.2.min.js',
@@ -57,6 +54,7 @@ gulp.task('jshint', function() {
 gulp.task('front-expose', function() {
     gulp.src(dependencies)
         .pipe(concat('dependencies.js'))
+        .pipe(uglify())
         .pipe(gulp.dest(recipes.client.path));
 
     for (var i = expose.length - 1; i >= 0; i--) {
@@ -73,7 +71,7 @@ gulp.task('front-full', function() {
 
 gulp.task('front-min', function(){
     gulp.src(recipes.client.files)
-        .pipe(concat(recipes.client.name ))
+        .pipe(concat(recipes.client.name))
         .pipe(uglify())
         .pipe(header(banner, meta))
         .pipe(gulp.dest(recipes.client.path));

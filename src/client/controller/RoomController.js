@@ -17,14 +17,14 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
     this.client     = client;
 
     // Binding:
-    this.addPlayer    = this.addPlayer.bind(this);
-    this.applyScope   = this.applyScope.bind(this);
-    this.onJoin       = this.onJoin.bind(this);
-    this.joinRoom     = this.joinRoom.bind(this);
-    this.leaveRoom    = this.leaveRoom.bind(this);
-    this.setColor     = this.setColor.bind(this);
-    this.setReady     = this.setReady.bind(this);
-    this.start        = this.start.bind(this);
+    this.addPlayer  = this.addPlayer.bind(this);
+    this.applyScope = this.applyScope.bind(this);
+    this.onJoin     = this.onJoin.bind(this);
+    this.joinRoom   = this.joinRoom.bind(this);
+    this.leaveRoom  = this.leaveRoom.bind(this);
+    this.setColor   = this.setColor.bind(this);
+    this.setReady   = this.setReady.bind(this);
+    this.start      = this.start.bind(this);
 
     this.$scope.$on('$destroy', this.leaveRoom);
 
