@@ -1,11 +1,10 @@
 /**
  * Game Controller
  */
-function GameController(io)
+function GameController()
 {
     var controller = this;
 
-    this.io    = io;
     this.games = new Collection([], 'name');
 
     this.onDie         = this.onDie.bind(this);

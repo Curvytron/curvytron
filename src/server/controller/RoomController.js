@@ -1,7 +1,6 @@
 /**
  * Room Controller
  *
- * @param {SocketGroup} client
  * @param {RoomRepository} repository
  * @param {GameController} gameController
  */
