@@ -71,7 +71,6 @@ GameController.prototype.removeGame = function(game)
 GameController.prototype.attach = function(client, game)
 {
     this.attachEvents(client);
-    //client.joinChannel('game:' + game.name);
 };
 
 /**

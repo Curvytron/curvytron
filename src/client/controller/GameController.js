@@ -8,6 +8,8 @@
  */
 function GameController($scope, $routeParams, $location, repository, client)
 {
+    gamepadListener.start();
+
     this.$scope     = $scope;
     this.$location  = $location;
     this.repository = repository;
@@ -308,7 +310,7 @@ GameController.prototype.onEnd = function(e)
 {
     this.detachSocketEvents();
     paper.view.pause();
-    //this.repository.start();
+    this.repository.start();
 
     avatars = this.game.avatars.filter(function () { return this.local; }).items;
 
@@ -375,5 +377,7 @@ GameController.prototype.goHome = function()
  */
 GameController.prototype.applyScope = function()
 {
-    this.$scope.$apply();
+    try {
+        this.$scope.$apply();
+    }
 };

@@ -10,6 +10,8 @@
  */
 function RoomController($scope, $rootScope, $routeParams, $location, repository, client)
 {
+    gamepadListener.start();
+
     this.$scope     = $scope;
     this.$rootScope = $rootScope;
     this.$location  = $location;
@@ -205,7 +207,7 @@ RoomController.prototype.setReady = function(player)
  */
 RoomController.prototype.start = function(e)
 {
-    //this.repository.stop();
+    this.repository.stop();
     this.$location.path('/game/' + e.detail.room.name);
     this.applyScope();
 };
@@ -215,7 +217,7 @@ RoomController.prototype.start = function(e)
  */
 RoomController.prototype.applyScope = function()
 {
-    if (typeof(this.$scope.$root.$$phase) === 'undefined' || this.$scope.$root.$$phase !== '$apply') {
+    try {
         this.$scope.$apply();
     }
 };

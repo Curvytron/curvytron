@@ -289,7 +289,6 @@ RoomController.prototype.endGame = function(data)
 
     for (var i = room.clients.items.length - 1; i >= 0; i--) {
         client = room.clients.items[i];
-        //client.joinChannel('rooms');
         this.attach(client);
         this.emitAllRooms(client);
     }

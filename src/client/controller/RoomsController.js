@@ -100,5 +100,7 @@ RoomsController.prototype.spectateRoom = function(room)
  */
 RoomsController.prototype.applyScope = function()
 {
-    this.$scope.$apply();
+    try {
+        this.$scope.$apply();
+    }
 };
