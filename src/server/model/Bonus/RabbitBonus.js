@@ -16,7 +16,7 @@ RabbitBonus.prototype = Object.create(BaseBonus.prototype);
 /**
  * Aplly bonus callback
  */
-RabbitBonus.prototype.callback = function(avatar)
+RabbitBonus.prototype.applyTo = function(avatar)
 {
     avatar.upVelocity();
     return setTimeout(function() { avatar.downVelocity(); }, 3333);

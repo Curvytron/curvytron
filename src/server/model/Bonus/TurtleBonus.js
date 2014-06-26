@@ -16,7 +16,7 @@ TurtleBonus.prototype = Object.create(BaseBonus.prototype);
 /**
  * Aplly bonus callback
  */
-TurtleBonus.prototype.callback = function(avatar)
+TurtleBonus.prototype.applyTo = function(avatar)
 {
     avatar.downVelocity();
     return setTimeout(function() { avatar.upVelocity(); }, 3333);

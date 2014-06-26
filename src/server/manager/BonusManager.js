@@ -64,6 +64,6 @@ BonusManager.prototype.testCatch = function(avatar)
     if (bonus) {
         bonus.clear();
         this.emit('bonus:clear', {game: this, bonus: bonus});
-        this.timeouts.push(bonus.apply(avatar));
+        this.timeouts.push(bonus.applyTo(avatar));
     }
 };
