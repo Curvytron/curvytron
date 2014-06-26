@@ -22,6 +22,7 @@ function BaseAvatar(player)
     this.printingTimeout = null;
     this.ready           = false;
     this.mask            = 0;
+    this.velocityStepNumber = 0;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
@@ -32,6 +33,7 @@ BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
 BaseAvatar.prototype.precision           = 1;
 BaseAvatar.prototype.velocity            = 18/1000;
+BaseAvatar.prototype.velocityStep        = 6/1000;
 BaseAvatar.prototype.defaultVelocity     = 18/1000;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 200;
@@ -120,8 +122,8 @@ BaseAvatar.prototype.updatePosition = function(step)
  */
 BaseAvatar.prototype.upVelocity = function()
 {
-    this.velocity = this.velocity + ((this.defaultVelocity * 33)/100);
-    this.updateVelocities();
+    this.velocityStepNumber+=1;
+    this.updateVelocity();
 };
 
 /**
@@ -129,9 +131,30 @@ BaseAvatar.prototype.upVelocity = function()
  */
 BaseAvatar.prototype.downVelocity = function()
 {
-    this.velocity = this.velocity - ((this.defaultVelocity * 33)/100);
+    this.velocityStepNumber-=1;
+    this.updateVelocity();
+
+};
+
+/**
+ * Update velocity
+ */
+BaseAvatar.prototype.updateVelocity = function()
+{
+    // ((x-vmin)/10)³+vmin =
+    // or something else?
+
+    if (this.velocityStepNumber > 0) {
+        this.velocity = this.defaultVelocity * (log10(this.velocityStepNumber)+1.25);
+    } else if (this.velocityStepNumber < 0) {
+        this.velocity = this.defaultVelocity * (1/(log10(Math.abs(this.velocityStepNumber))+1.25));
+    } else {
+        this.velocity = this.defaultVelocity;
+    }
+
     this.updateVelocities();
 };
+
 
 /**
  * Update velocities
