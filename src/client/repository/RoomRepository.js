@@ -191,7 +191,7 @@ RoomRepository.prototype.onCloseRoom = function(e)
 
     if(room && this.rooms.remove(room)) {
         data = {room: room};
-        this.emit('room:close', emit);
+        this.emit('room:close', data);
         this.emit('room:close:' + room.name, data);
     }
 };

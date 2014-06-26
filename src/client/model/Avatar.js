@@ -120,6 +120,8 @@ Avatar.prototype.clear = function()
  */
 Avatar.prototype.destroy = function()
 {
+    this.trail.clearPaths();
+    this.trail.path.remove();
     this.path.remove();
 
     if (this.arrow) {
