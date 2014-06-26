@@ -25,7 +25,7 @@ BaseBonus.prototype = Object.create(EventEmitter.prototype);
 BaseBonus.prototype.precision     = 1;
 BaseBonus.prototype.defaultName   = 'Bonus';
 BaseBonus.prototype.defaultColor  = '#7CFC00';
-BaseBonus.prototype.defaultRadius = 1.2;
+BaseBonus.prototype.defaultRadius = 2.4;
 
 /**
  * Set Point
