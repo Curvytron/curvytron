@@ -219,5 +219,7 @@ RoomController.prototype.applyScope = function()
 {
     try {
         this.$scope.$apply();
+    } catch (e) {
+
     }
 };
