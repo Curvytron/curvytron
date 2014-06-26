@@ -91,6 +91,10 @@ RoomController.prototype.attachEvents = function(name)
     this.repository.on('room:player:ready:' + name, this.applyScope);
     this.repository.on('room:player:color:' + name, this.applyScope);
     this.repository.on('room:game:start:' + name, this.start);
+
+    for (var i = this.$scope.room.players.items.length - 1; i >= 0; i--) {
+        this.$scope.room.players.items[i].on('control:change', this.applyScope);
+    }
 };
 
 /**
@@ -106,6 +110,10 @@ RoomController.prototype.detachEvents = function(name)
     this.repository.on('room:player:ready:' + name, this.applyScope);
     this.repository.on('room:player:color:' + name, this.applyScope);
     this.repository.on('room:game:start:' + name, this.start);
+
+    for (var i = this.$scope.room.players.items.length - 1; i >= 0; i--) {
+        this.$scope.room.players.items[i].off('control:change', this.applyScope);
+    }
 };
 
 /**

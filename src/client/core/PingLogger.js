@@ -96,8 +96,6 @@ PingLogger.prototype.draw = function()
     if (this.element) {
         this.element.innerHTML   = this.value + 'ms';
         this.element.style.color = this.getColor(this.value);
-    } else {
-        console.log(this.value + 'ms');
     }
 };
 
