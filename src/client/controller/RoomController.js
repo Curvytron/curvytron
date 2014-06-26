@@ -10,6 +10,8 @@
  */
 function RoomController($scope, $rootScope, $routeParams, $location, repository, client)
 {
+    gamepadListener.start();
+
     this.$scope     = $scope;
     this.$rootScope = $rootScope;
     this.$location  = $location;
@@ -17,14 +19,14 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
     this.client     = client;
 
     // Binding:
-    this.addPlayer    = this.addPlayer.bind(this);
-    this.applyScope   = this.applyScope.bind(this);
-    this.onJoin       = this.onJoin.bind(this);
-    this.joinRoom     = this.joinRoom.bind(this);
-    this.leaveRoom    = this.leaveRoom.bind(this);
-    this.setColor     = this.setColor.bind(this);
-    this.setReady     = this.setReady.bind(this);
-    this.start        = this.start.bind(this);
+    this.addPlayer  = this.addPlayer.bind(this);
+    this.applyScope = this.applyScope.bind(this);
+    this.onJoin     = this.onJoin.bind(this);
+    this.joinRoom   = this.joinRoom.bind(this);
+    this.leaveRoom  = this.leaveRoom.bind(this);
+    this.setColor   = this.setColor.bind(this);
+    this.setReady   = this.setReady.bind(this);
+    this.start      = this.start.bind(this);
 
     this.$scope.$on('$destroy', this.leaveRoom);
 
@@ -89,6 +91,10 @@ RoomController.prototype.attachEvents = function(name)
     this.repository.on('room:player:ready:' + name, this.applyScope);
     this.repository.on('room:player:color:' + name, this.applyScope);
     this.repository.on('room:game:start:' + name, this.start);
+
+    for (var i = this.$scope.room.players.items.length - 1; i >= 0; i--) {
+        this.$scope.room.players.items[i].on('control:change', this.applyScope);
+    }
 };
 
 /**
@@ -104,6 +110,10 @@ RoomController.prototype.detachEvents = function(name)
     this.repository.on('room:player:ready:' + name, this.applyScope);
     this.repository.on('room:player:color:' + name, this.applyScope);
     this.repository.on('room:game:start:' + name, this.start);
+
+    for (var i = this.$scope.room.players.items.length - 1; i >= 0; i--) {
+        this.$scope.room.players.items[i].off('control:change', this.applyScope);
+    }
 };
 
 /**
@@ -215,7 +225,9 @@ RoomController.prototype.start = function(e)
  */
 RoomController.prototype.applyScope = function()
 {
-    if (typeof(this.$scope.$root.$$phase) === 'undefined' || this.$scope.$root.$$phase !== '$apply') {
+    try {
         this.$scope.$apply();
+    } catch (e) {
+
     }
 };

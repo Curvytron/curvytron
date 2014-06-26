@@ -241,6 +241,14 @@ BaseAvatar.prototype.clear = function()
 };
 
 /**
+ * Destroy
+ */
+BaseAvatar.prototype.destroy = function()
+{
+    this.stopPrinting();
+};
+
+/**
  * Serialize
  *
  * @return {Object}

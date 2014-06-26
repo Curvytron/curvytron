@@ -1,13 +1,28 @@
 /**
  * Room Controller
+ *
+ * @param {RoomRepository} repository
+ * @param {GameController} gameController
  */
-function RoomController(io, repository, gameController)
+function RoomController(repository, gameController)
 {
-    this.io             = io;
+    var controller = this;
+
+    this.socketGroup    = new SocketGroup();
     this.repository     = repository;
     this.gameController = gameController;
 
     this.endGame = this.endGame.bind(this);
+
+    this.callbacks = {
+        emitAllRooms: function () { controller.emitAllRooms(this); },
+        onCreateRoom: function (data) { controller.onCreateRoom(this, data.data, data.callback); },
+        onJoinRoom: function (data) { controller.onJoinRoom(this, data.data, data.callback); },
+        onLeaveRoom: function () { controller.onLeaveRoom(this); },
+        onAddPlayer: function (data) { controller.onAddPlayer(this, data.data, data.callback); },
+        onReadyRoom: function (data) { controller.onReadyRoom(this, data.data, data.callback); },
+        onColorRoom: function (data) { controller.onColorRoom(this, data.data, data.callback); }
+    };
 }
 
 /**
@@ -17,8 +32,9 @@ function RoomController(io, repository, gameController)
  */
 RoomController.prototype.attach = function(client)
 {
-    client.joinChannel('rooms');
-    this.attachEvents(client);
+    if (this.socketGroup.clients.add(client)) {
+        this.attachEvents(client);
+    }
 };
 
 /**
@@ -28,8 +44,9 @@ RoomController.prototype.attach = function(client)
  */
 RoomController.prototype.detach = function(client)
 {
-    this.detachEvents(client);
-    this.onLeaveRoom(client);
+    if (this.socketGroup.clients.remove(client)) {
+        this.detachEvents(client);
+    }
 };
 
 /**
@@ -39,15 +56,13 @@ RoomController.prototype.detach = function(client)
  */
 RoomController.prototype.attachEvents = function(client)
 {
-    var controller = this;
-
-    client.socket.on('room:fetch', function () { controller.emitAllRooms(client); });
-    client.socket.on('room:create', function (data, callback) { controller.onCreateRoom(client, data, callback); });
-    client.socket.on('room:join', function (data, callback) { controller.onJoinRoom(client, data, callback); });
-    client.socket.on('room:leave', function () { controller.onLeaveRoom(client); });
-    client.socket.on('room:player:add', function (data, callback) { controller.onAddPlayer(client, data, callback); });
-    client.socket.on('room:ready', function (data, callback) { controller.onReadyRoom(client, data, callback); });
-    client.socket.on('room:color', function (data, callback) { controller.onColorRoom(client, data, callback); });
+    client.on('room:fetch', this.callbacks.emitAllRooms);
+    client.on('room:create', this.callbacks.onCreateRoom);
+    client.on('room:join', this.callbacks.onJoinRoom);
+    client.on('room:leave', this.callbacks.onLeaveRoom);
+    client.on('room:player:add', this.callbacks.onAddPlayer);
+    client.on('room:ready', this.callbacks.onReadyRoom);
+    client.on('room:color', this.callbacks.onColorRoom);
 };
 
 /**
@@ -57,13 +72,13 @@ RoomController.prototype.attachEvents = function(client)
  */
 RoomController.prototype.detachEvents = function(client)
 {
-    client.socket.removeAllListeners('room:fetch');
-    client.socket.removeAllListeners('room:create');
-    client.socket.removeAllListeners('room:join');
-    client.socket.removeAllListeners('room:player:add');
-    client.socket.removeAllListeners('room:leave');
-    client.socket.removeAllListeners('room:ready');
-    client.socket.removeAllListeners('room:color');
+    client.removeListener('room:fetch', this.callbacks.emitAllRooms);
+    client.removeListener('room:create', this.callbacks.onCreateRoom);
+    client.removeListener('room:join', this.callbacks.onJoinRoom);
+    client.removeListener('room:leave', this.callbacks.onLeaveRoom);
+    client.removeListener('room:player:add', this.callbacks.onAddPlayer);
+    client.removeListener('room:ready', this.callbacks.onReadyRoom);
+    client.removeListener('room:color', this.callbacks.onColorRoom);
 };
 
 /**
@@ -73,9 +88,13 @@ RoomController.prototype.detachEvents = function(client)
  */
 RoomController.prototype.emitAllRooms = function(client)
 {
+    var events = [];
+
     for (var i = this.repository.rooms.items.length - 1; i >= 0; i--) {
-        client.socket.emit('room:new', this.repository.rooms.items[i].serialize());
+        events.push(['room:new', this.repository.rooms.items[i].serialize()]);
     }
+
+    client.addEvents(events);
 };
 
 // Events:
@@ -93,7 +112,7 @@ RoomController.prototype.onCreateRoom = function(client, data, callback)
     callback({success: room ? true : false, room: room? room.name : null});
 
     if (room) {
-        this.io.sockets.in('rooms').emit('room:new', room.serialize());
+        this.socketGroup.addEvent('room:new', room.serialize());
     }
 };
 
@@ -132,7 +151,7 @@ RoomController.prototype.onLeaveRoom = function(client)
 
         for (var i = client.players.items.length - 1; i >= 0; i--) {
             player = client.players.items[i];
-            this.io.sockets.in('rooms').emit('room:leave', {room: room.name, player: player.name});
+            this.socketGroup.addEvent('room:leave', {room: room.name, player: player.name});
             room.removePlayer(player);
         }
 
@@ -150,7 +169,7 @@ RoomController.prototype.onLeaveRoom = function(client)
 RoomController.prototype.checkRoomClose = function(room)
 {
     if (room.clients.isEmpty() && this.repository.remove(room)) {
-        this.io.sockets.in('rooms').emit('room:close', {room: room.name});
+        this.socketGroup.addEvent('room:close', {room: room.name});
     }
 };
 
@@ -174,7 +193,7 @@ RoomController.prototype.onAddPlayer = function(client, data, callback)
 
         callback({success: true});
 
-        this.io.sockets.in('rooms').emit('room:join', {room: client.room.name, player: player.serialize()});
+        this.socketGroup.addEvent('room:join', {room: client.room.name, player: player.serialize()});
     } else {
         callback({success: false});
     }
@@ -197,7 +216,7 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
 
         callback({success: true, color: player.color});
 
-        this.io.sockets.in('rooms').emit('room:player:color', {
+        this.socketGroup.addEvent('room:player:color', {
             room: room.name,
             player: player.name,
             color: player.color
@@ -222,7 +241,7 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
 
         callback({success: true, ready: player.ready});
 
-        this.io.sockets.in('rooms').emit('room:player:ready', {
+        this.socketGroup.addEvent('room:player:ready', {
             room: room.name,
             player: player.name,
             ready: player.ready
@@ -243,15 +262,14 @@ RoomController.prototype.startGame = function(room)
 {
     var game = room.newGame();
 
-    this.io.sockets.in('rooms').emit('room:game:start', {room: room.name});
-
-    game.on('end', this.endGame);
-
-    this.gameController.addGame(game);
+    this.socketGroup.addEvent('room:game:start', {room: room.name});
 
     for (var i = room.clients.items.length - 1; i >= 0; i--) {
-        this.detachEvents(room.clients.items[i]);
+        this.detach(room.clients.items[i]);
     }
+
+    this.gameController.addGame(game);
+    game.on('end', this.endGame);
 };
 
 /**
@@ -265,15 +283,13 @@ RoomController.prototype.endGame = function(data)
         room = game.room,
         client;
 
-    this.io.sockets.in(game.channel).emit('end');
-    this.io.sockets.in('rooms').emit('room:game:end', {room: room.name});
+    this.socketGroup.addEvent('room:game:end', {room: room.name});
 
     this.gameController.removeGame(game);
 
     for (var i = room.clients.items.length - 1; i >= 0; i--) {
         client = room.clients.items[i];
-        client.joinChannel('rooms');
-        this.attachEvents(client);
+        this.attach(client);
         this.emitAllRooms(client);
     }
 

@@ -11,6 +11,7 @@ function Game(room)
     this.inRound = false;
     this.deaths  = new Collection([], 'name');
     this.clients = this.room.clients;
+    this.client  = new SocketGroup(this.clients);
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);

@@ -114,3 +114,22 @@ Avatar.prototype.clear = function()
 
     this.trail.clearPaths();
 };
+
+/**
+ * Destroy
+ */
+Avatar.prototype.destroy = function()
+{
+    this.path.remove();
+
+    if (this.arrow) {
+        this.arrow.remove();
+    }
+
+    if (this.input) {
+        this.input.detachEvents();
+        this.input = null;
+    }
+
+    BaseAvatar.prototype.destroy.call(this);
+};

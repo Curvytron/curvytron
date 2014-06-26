@@ -68,8 +68,10 @@ BasePlayer.prototype.getAvatar = function()
  */
 BasePlayer.prototype.reset = function()
 {
-    this.ready  = false;
+    this.avatar.destroy();
+
     this.avatar = null;
+    this.ready  = false;
 };
 
 /**
