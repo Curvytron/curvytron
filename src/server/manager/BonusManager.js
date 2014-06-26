@@ -23,6 +23,7 @@ BonusManager.prototype.start = function()
 {
     BaseBonusManager.prototype.start.call(this);
 
+    this.world.activate();
     this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
 };
 
