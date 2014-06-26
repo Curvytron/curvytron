@@ -60,7 +60,7 @@ BonusManager.prototype.popBonus = function ()
             bonus.position[0],
             bonus.position[1],
             bonus.radius,
-            1,
+            0,
             bonus
         ]);
 
@@ -79,14 +79,16 @@ BonusManager.prototype.popBonus = function ()
  */
 BonusManager.prototype.testCatch = function(avatar)
 {
-    var bonus = this.world.getCircle([
+    var circle = this.world.getCircle([
         avatar.head[0],
         avatar.head[1],
         avatar.radius,
-        1,
+        0,
     ]);
 
-    if (bonus) {
+
+    if (circle) {
+        var bonus = circle[4];
         console.log('bonus', bonus);
         bonus.clear();
         this.emit('bonus:clear', {game: this.game, bonus: bonus});
