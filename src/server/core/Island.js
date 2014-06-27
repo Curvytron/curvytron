@@ -41,7 +41,7 @@ Island.prototype.getCircle = function(circle)
     if (this.circleInBound(circle, this.from, this.to)) {
         for (var i = this.circles.length - 1; i >= 0; i--)
         {
-            if (Island.circlesTouch(this.circles[i], circle)) {
+            if (this.circlesTouch(this.circles[i], circle)) {
                 return this.circles[i];
             }
         }
