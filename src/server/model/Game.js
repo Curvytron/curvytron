@@ -7,17 +7,17 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
-    this.world        = new World(this.size);
-    this.inRound      = false;
-    this.deaths       = new Collection([], 'name');
-    this.clients      = this.room.clients;
-    this.client       = new SocketGroup(this.clients);
+    this.world   = new World(this.size);
+    this.inRound = false;
+    this.deaths  = new Collection([], 'name');
+    this.clients = this.room.clients;
+    this.client  = new SocketGroup(this.clients);
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
     
-    var avatar;
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+    var avatar, i;
+    for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.game = this;
         avatar.clear();

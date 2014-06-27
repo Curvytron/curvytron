@@ -1,5 +1,9 @@
 /**
  * Room
+ *
+ * @param name
+ *
+ * @constructor
  */
 function Room(name)
 {

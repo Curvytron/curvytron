@@ -1,8 +1,11 @@
 /**
  * Bonus
  *
+ * @param name
  * @param color
  * @param radius
+ *
+ * @constructor
  */
 function TurtleBonus(name, color, radius)
 {

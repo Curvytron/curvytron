@@ -1,12 +1,16 @@
 /**
  * Base Bonus Manager
+ *
+ * @param {Game} game
+ *
+ * @constructor
  */
 function BaseBonusManager(game)
 {
     EventEmitter.call(this);
 
-    this.game       = game;
-    this.bonuses    = new Collection([], 'id', true);
+    this.game    = game;
+    this.bonuses = new Collection([], 'id', true);
 
     this.clear = this.clear.bind(this);
 }
@@ -25,12 +29,15 @@ BaseBonusManager.prototype.start = function() {};
 /**
  * Stop
  */
-BaseBonusManager.prototype.stop = function() {
+BaseBonusManager.prototype.stop = function()
+{
     this.clear();
 };
 
 /**
- * Clear bonuses
+ * Clear given bonus
+ *
+ * @param {Bonus} bonus
  */
 BaseBonusManager.prototype.remove = function(bonus)
 {

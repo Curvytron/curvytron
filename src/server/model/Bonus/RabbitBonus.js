@@ -1,8 +1,11 @@
 /**
  * RabbitBonus
  *
+ * @param name
  * @param color
  * @param radius
+ *
+ * @constructor
  */
 function RabbitBonus(name, color, radius)
 {

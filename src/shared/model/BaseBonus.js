@@ -4,6 +4,8 @@
  * @param name
  * @param color
  * @param radius
+ *
+ * @constructor
  */
 function BaseBonus(name, color, radius)
 {

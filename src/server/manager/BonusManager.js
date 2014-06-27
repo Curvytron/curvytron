@@ -38,7 +38,6 @@ BonusManager.prototype.stop = function()
     this.popingTimeout = null;
 
     this.clearTimeouts();
-
     this.world.clear();
 };
 
@@ -109,7 +108,7 @@ BonusManager.prototype.remove = function(bonus)
     BaseBonusManager.prototype.remove.call(this, bonus);
 
     this.emit('bonus:clear', {game: this.game, bonus: bonus});
-}
+};
 
 /**
  * Clear timeouts
