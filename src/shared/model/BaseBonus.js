@@ -3,26 +3,24 @@
  *
  * @param name
  * @param color
- * @param radius
  */
-function BaseBonus(name, color, radius)
+function BaseBonus(position)
 {
     EventEmitter.call(this);
+
+    this.position = typeof(position) != 'undefined' ? position : [this.radius, this.radius];
     this.id       = null;
-    this.name     = name || this.defaultName;
-    this.color    = color || this.defaultColor;
-    this.radius   = radius || this.defaultRadius;
     this.active   = false;
-    this.positive = true;
-    this.position = [this.radius, this.radius];
 }
 
 BaseBonus.prototype = Object.create(EventEmitter.prototype);
 
-BaseBonus.prototype.precision     = 1;
-BaseBonus.prototype.defaultName   = 'Bonus';
-BaseBonus.prototype.defaultColor  = '#7CFC00';
-BaseBonus.prototype.defaultRadius = 2.4;
+BaseBonus.prototype.precision = 1;
+BaseBonus.prototype.name      = 'Bonus';
+BaseBonus.prototype.color     = '#7CFC00';
+BaseBonus.prototype.radius    = 2.4;
+BaseBonus.prototype.duration  = 3333;
+BaseBonus.prototype.positive  = true;
 
 /**
  * Set Point

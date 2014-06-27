@@ -5,8 +5,8 @@ function BaseBonusManager(game)
 {
     EventEmitter.call(this);
 
-    this.game       = game;
-    this.bonuses    = new Collection([], 'id', true);
+    this.game    = game;
+    this.bonuses = new Collection([], 'id', true);
 
     this.clear = this.clear.bind(this);
 }
@@ -16,6 +16,7 @@ BaseBonusManager.prototype = Object.create(EventEmitter.prototype);
 BaseBonusManager.prototype.bonusCap         = 20;
 BaseBonusManager.prototype.bonusPoppingRate = 0.2;
 BaseBonusManager.prototype.bonusPopingTime  = 1000;
+BaseBonusManager.prototype.bonusTypes       = [TurtleBonus, RabbitBonus];
 
 /**
  * Start
@@ -25,17 +26,32 @@ BaseBonusManager.prototype.start = function() {};
 /**
  * Stop
  */
-BaseBonusManager.prototype.stop = function() {
+BaseBonusManager.prototype.stop = function()
+{
     this.clear();
 };
 
 /**
- * Clear bonuses
+ * Add bonus
+ *
+ * @param {Bonus} bonus
+ */
+BaseBonusManager.prototype.add = function(bonus)
+{
+    return this.bonuses.add(bonus);
+};
+
+
+/**
+ * Remove bonus
+ *
+ * @param {Bonus} bonus
  */
 BaseBonusManager.prototype.remove = function(bonus)
 {
     bonus.clear();
-    this.bonuses.remove(bonus);
+
+    return this.bonuses.remove(bonus);
 };
 
 /**
@@ -43,11 +59,23 @@ BaseBonusManager.prototype.remove = function(bonus)
  */
 BaseBonusManager.prototype.clear = function()
 {
-    var bonus, i;
-
-    for (i = this.bonuses.items.length - 1; i >= 0; i--) {
-        bonus = this.bonuses.items[i];
-        bonus.clear();
-        this.bonuses.remove(bonus);
+    for (var i = this.bonuses.items.length - 1; i >= 0; i--) {
+        this.bonuses.items[i].clear();
     }
+
+    this.bonuses.clear(bonus);
+};
+
+/**
+ * Get random bonus
+ *
+ * @param {Array} position
+ *
+ * @return {Bonus}
+ */
+BaseBonusManager.prototype.getRandomBonus = function(position)
+{
+    var type = this.bonusTypes[Math.floor(Math.random() * this.bonusTypes.length)];
+
+    return new type(position);
 };
