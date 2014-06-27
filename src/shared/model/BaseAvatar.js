@@ -33,7 +33,7 @@ BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
 BaseAvatar.prototype.precision           = 1;
 BaseAvatar.prototype.velocity            = 18/1000;
-BaseAvatar.prototype.velocityStep        = 6/1000;
+BaseAvatar.prototype.velocityStep        = 1.5;
 BaseAvatar.prototype.defaultVelocity     = 18/1000;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 200;
@@ -141,13 +141,10 @@ BaseAvatar.prototype.downVelocity = function()
  */
 BaseAvatar.prototype.updateVelocity = function()
 {
-    // ((x-vmin)/10)³+vmin =
-    // or something else?
-
     if (this.velocityStepNumber > 0) {
-        this.velocity = this.defaultVelocity * (log10(this.velocityStepNumber)+1.25);
+        this.velocity = this.defaultVelocity * (log10(this.velocityStepNumber)+this.velocityStep);
     } else if (this.velocityStepNumber < 0) {
-        this.velocity = this.defaultVelocity * (1/(log10(Math.abs(this.velocityStepNumber))+1.25));
+        this.velocity = this.defaultVelocity * (1/(log10(Math.abs(this.velocityStepNumber))+this.velocityStep));
     } else {
         this.velocity = this.defaultVelocity;
     }
