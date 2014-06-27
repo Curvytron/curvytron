@@ -124,3 +124,14 @@ Avatar.prototype.resetVelocity = function()
 {
     BaseAvatar.prototype.resetVelocity.call(this);
 };
+
+/**
+ * Set score
+ *
+ * @param {Number} score
+ */
+Avatar.prototype.setScore = function(score)
+{
+    BaseAvatar.prototype.setScore.call(this, score);
+    this.emit('score', {avatar: this, score: this.score});
+};
