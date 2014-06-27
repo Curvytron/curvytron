@@ -52,14 +52,9 @@ BaseBonus.prototype.clear = function()
 };
 
 /**
- * Update
- */
-BaseBonus.prototype.update = function() {};
-
-/**
  * Serialize
  *
- * @returns {{id: *, name: *, color: *, radius: *, active: *, position: *}}
+ * @return {Object}
  */
 BaseBonus.prototype.serialize = function ()
 {
@@ -76,9 +71,14 @@ BaseBonus.prototype.serialize = function ()
 /**
  * Unserialize
  *
- * @param bonus
+ * @param {Object} bonus
  */
 BaseBonus.prototype.unserialize = function (bonus)
 {
-    _.extend(this, bonus);
+    this.id       = bonus.id;
+    this.name     = bonus.name;
+    this.color    = bonus.color;
+    this.radius   = bonus.radius;
+    this.active   = bonus.active;
+    this.position = bonus.position;
 };

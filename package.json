@@ -38,8 +38,7 @@
   },
   "dependencies": {
     "faye-websocket": "^0.7.*",
-    "express": "~4.4.*",
-    "lodash": "~2.4.*"
+    "express": "~4.4.*"
   },
   "scripts": {
     "install": "bower install"
