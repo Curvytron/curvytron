@@ -41,9 +41,7 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
         this.joinRoom($routeParams.name);
     } else {
         var controller = this;
-
         this.repository.on('synced', function () { controller.joinRoom($routeParams.name); });
-        this.repository.start();
     }
 }
 
