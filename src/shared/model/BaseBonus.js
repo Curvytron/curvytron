@@ -8,7 +8,7 @@
 function BaseBonus(name, color, radius)
 {
     EventEmitter.call(this);
-
+    this.id       = null;
     this.name     = name || this.defaultName;
     this.color    = color || this.defaultColor;
     this.radius   = radius || this.defaultRadius;
