@@ -14,9 +14,6 @@ function BaseBonus(name, color, radius)
     this.radius   = radius || this.defaultRadius;
     this.active   = false;
     this.positive = true;
-
-    console.log(this);
-
     this.position = [this.radius, this.radius];
 }
 

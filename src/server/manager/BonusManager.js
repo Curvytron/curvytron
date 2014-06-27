@@ -89,9 +89,9 @@ BonusManager.prototype.testCatch = function(avatar)
 
 
     if (circle) {
-        var bonus = circle[4];
-        console.log('bonus', bonus);
-        bonus.clear();
+        var bonus = circle[4];;
+            bonus.clear();
+
         this.emit('bonus:clear', {game: this.game, bonus: bonus});
         this.timeouts.push(
             bonus.applyTo(avatar)

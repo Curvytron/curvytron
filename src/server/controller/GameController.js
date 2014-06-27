@@ -271,7 +271,7 @@ GameController.prototype.onVelocityUp = function(data)
     var avatar = data.avatar,
         channel = avatar.player.client.room.game.channel;
 
-    game.client.addEvent('velocity:up', {avatar: avatar.name});
+    game.client.addEvent('die', {avatar: avatar.name});
 };
 
 /**
