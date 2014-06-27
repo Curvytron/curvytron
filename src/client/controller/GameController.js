@@ -14,6 +14,7 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.$location  = $location;
     this.repository = repository;
     this.client     = client;
+    this.game       = null;
 
     createjs.Sound.alternateExtensions = ['mp3'];
     createjs.Sound.registerManifest(
@@ -81,6 +82,8 @@ GameController.prototype.detachSocketEvents = function()
     this.client.off('printing', this.onPrinting);
     this.client.off('angle', this.onAngle);
     this.client.off('point', this.onPoint);
+    this.client.off('bonus:pop', this.onBonusPop);
+    this.client.off('bonus:clear', this.onBonusClear);
     this.client.off('die', this.onDie);
     this.client.off('score', this.onScore);
     this.client.off('trail:clear', this.onTrailClear);
