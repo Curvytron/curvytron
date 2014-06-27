@@ -51,8 +51,6 @@ FPSLogger.prototype.draw = function()
 {
     if (this.element) {
         this.element.innerHTML = this.fps;
-    } else {
-        console.log('FPS: %s', this.fps);
     }
 };
 

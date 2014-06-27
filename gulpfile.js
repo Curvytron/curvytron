@@ -11,17 +11,14 @@ var gulp      = require('gulp'),
     nodemon   = require('gulp-nodemon'),
     meta      = require('./package.json');
 
-    var srcDir     = './src/',
-        jsDir      = './web/js/',
-        cssDir     = './web/css/',
-        sassDir    = './src/sass/',
-        maps       = [
-            './bower_components/angular/angular.min.js.map',
-            './bower_components/angular-route/angular-route.min.js.map',
-        ],
-        expose     = [
-            './bower_components/angular/angular.min.js',
-            './bower_components/angular-route/angular-route.min.js',
+    var srcDir  = './src/',
+        jsDir   = './web/js/',
+        cssDir  = './web/css/',
+        sassDir = './src/sass/',
+        expose  = [],
+        dependencies = [
+            './bower_components/angular/angular.js',
+            './bower_components/angular-route/angular-route.js',
             './bower_components/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.js',
             './bower_components/paper/dist/paper-full.js',
             './bower_components/createjs-soundjs/lib/soundjs-0.5.2.min.js',
@@ -30,11 +27,11 @@ var gulp      = require('gulp'),
             './bower_components/tom32i-gamepad.js/dist/gamepad.min.js',
             './bower_components/tom32i-key-mapper.js/dist/key-mapper.min.js'
         ],
-        recipes    = {
+        recipes = {
             server: require('./recipes/server.json'),
             client: require('./recipes/client.json')
         },
-        banner     = [
+        banner = [
           '/*!',
           ' * <%= name %> <%= version %>',
           ' * <%= homepage %>',
@@ -55,12 +52,13 @@ gulp.task('jshint', function() {
 });
 
 gulp.task('front-expose', function() {
-    gulp.src(expose)
+    gulp.src(dependencies)
         .pipe(concat('dependencies.js'))
+        .pipe(uglify())
         .pipe(gulp.dest(recipes.client.path));
 
-    for (var i = maps.length - 1; i >= 0; i--) {
-        gulp.src(maps[i]).pipe(gulp.dest(recipes.client.path));
+    for (var i = expose.length - 1; i >= 0; i--) {
+        gulp.src(expose[i]).pipe(gulp.dest(recipes.client.path));
     }
 });
 
@@ -73,7 +71,7 @@ gulp.task('front-full', function() {
 
 gulp.task('front-min', function(){
     gulp.src(recipes.client.files)
-        .pipe(concat(recipes.client.name ))
+        .pipe(concat(recipes.client.name))
         .pipe(uglify())
         .pipe(header(banner, meta))
         .pipe(gulp.dest(recipes.client.path));

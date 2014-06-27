@@ -31,8 +31,6 @@ function RoomsController($scope, $location, repository, client)
     this.$scope.spectate = this.spectateRoom;
 
     this.$scope.curvytron.bodyClass = null;
-
-    this.repository.start();
 }
 
 /**
@@ -102,5 +100,9 @@ RoomsController.prototype.spectateRoom = function(room)
  */
 RoomsController.prototype.applyScope = function()
 {
-    this.$scope.$apply();
+    try {
+        this.$scope.$apply();
+    } catch (e) {
+
+    }
 };
