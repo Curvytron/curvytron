@@ -15,7 +15,7 @@ BaseBonusManager.prototype = Object.create(EventEmitter.prototype);
 
 BaseBonusManager.prototype.bonusCap         = 20;
 BaseBonusManager.prototype.bonusPoppingRate = 0.2;
-BaseBonusManager.prototype.bonusPopingTime  = 3000;
+BaseBonusManager.prototype.bonusPopingTime  = 1000;
 
 /**
  * Start
@@ -25,7 +25,18 @@ BaseBonusManager.prototype.start = function() {};
 /**
  * Stop
  */
-BaseBonusManager.prototype.stop = function() {};
+BaseBonusManager.prototype.stop = function() {
+    this.clear();
+};
+
+/**
+ * Clear bonuses
+ */
+BaseBonusManager.prototype.remove = function(bonus)
+{
+    bonus.clear();
+    this.bonuses.remove(bonus);
+};
 
 /**
  * Clear bonuses
@@ -37,7 +48,6 @@ BaseBonusManager.prototype.clear = function()
     for (i = this.bonuses.items.length - 1; i >= 0; i--) {
         bonus = this.bonuses.items[i];
         bonus.clear();
-        this.emit('bonus:clear', { game: this.game, bonus: bonus});
         this.bonuses.remove(bonus);
     }
 };
