@@ -32,12 +32,14 @@ BonusManager.prototype.start = function()
  */
 BonusManager.prototype.stop = function()
 {
-    BaseBonusManager.prototype.start.call(this);
+    BaseBonusManager.prototype.stop.call(this);
 
     clearTimeout(this.popingTimeout);
     this.popingTimeout = null;
 
     this.clearTimeouts();
+
+    this.world.clear();
 };
 
 /**
@@ -87,22 +89,32 @@ BonusManager.prototype.testCatch = function(avatar)
         0,
     ]);
 
-
     if (circle) {
-        var bonus = circle[4];;
-            bonus.clear();
+        var bonus = circle[4];
+        if (bonus.active === true) {
+            this.timeouts.push(
+                bonus.applyTo(avatar)
+            );
 
-        this.emit('bonus:clear', {game: this.game, bonus: bonus});
-        this.timeouts.push(
-            bonus.applyTo(avatar)
-        );
+            this.remove(bonus);
+        }
     }
 };
 
 /**
+ *  Remove the given bonus
+ */
+BonusManager.prototype.remove = function(bonus)
+{
+    BaseBonusManager.prototype.remove.call(this, bonus);
+
+    this.emit('bonus:clear', {game: this.game, bonus: bonus});
+}
+
+/**
  * Clear timeouts
  */
-BaseBonusManager.prototype.clearTimeouts = function()
+BonusManager.prototype.clearTimeouts = function()
 {
     for (var i = this.timeouts.length - 1; i >= 0; i--) {
         clearTimeout(this.timeouts[i]);
@@ -115,7 +127,7 @@ BaseBonusManager.prototype.clearTimeouts = function()
  * @param percentTrue
  * @returns {boolean}
  */
-BaseBonusManager.prototype.percentChance = function (percentTrue)
+BonusManager.prototype.percentChance = function (percentTrue)
 {
     percentTrue = percentTrue || 100;
 
@@ -127,7 +139,7 @@ BaseBonusManager.prototype.percentChance = function (percentTrue)
  *
  * @return {Number}
  */
-BaseBonusManager.prototype.getRandomPopingTime  = function()
+BonusManager.prototype.getRandomPopingTime  = function()
 {
     return this.bonusPopingTime * (1 +  Math.random() * 2);
 };
