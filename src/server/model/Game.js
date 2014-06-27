@@ -12,7 +12,6 @@ function Game(room)
     this.deaths       = new Collection([], 'name');
     this.clients      = this.room.clients;
     this.client       = new SocketGroup(this.clients);
-    this.bonusManager = new BonusManager(this);
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -158,7 +157,7 @@ Game.prototype.setScores = function()
         for (var i = this.deaths.items.length - 1; i >= 0; i--) {
             this.deaths.items[i].addScore(i + 1);
         }
-        
+
         if (this.deaths.count() < total) {
             var winner = this.avatars.match(function () { return this.alive; });
 
