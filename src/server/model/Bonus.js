@@ -29,7 +29,6 @@ Bonus.prototype.setPosition = function(point)
 Bonus.prototype.pop = function()
 {
     BaseBonus.prototype.pop.call(this);
-    this.emit('bonus:pop', this.position);
 };
 
 /**
@@ -38,7 +37,6 @@ Bonus.prototype.pop = function()
 Bonus.prototype.clear = function()
 {
     BaseBonus.prototype.clear.call(this);
-    this.emit('clear');
 };
 
 /**
