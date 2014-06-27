@@ -8,6 +8,7 @@
 function BaseBonus(name, color, radius)
 {
     EventEmitter.call(this);
+
     this.id       = null;
     this.name     = name || this.defaultName;
     this.color    = color || this.defaultColor;
@@ -54,11 +55,6 @@ BaseBonus.prototype.clear = function()
 };
 
 /**
- * Update
- */
-BaseBonus.prototype.update = function() {};
-
-/**
  * Serialize
  *
  * @returns {{id: *, name: *, color: *, radius: *, active: *, position: *}}
@@ -82,5 +78,10 @@ BaseBonus.prototype.serialize = function ()
  */
 BaseBonus.prototype.unserialize = function (bonus)
 {
-    _.extend(this, bonus);
+    this.id       = bonus.id;
+    this.name     = bonus.name;
+    this.color    = bonus.color;
+    this.radius   = bonus.radius;
+    this.active   = bonus.active;
+    this.position = bonus.position;
 };
