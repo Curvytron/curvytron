@@ -107,8 +107,6 @@ Avatar.prototype.die = function()
 Avatar.prototype.upVelocity = function()
 {
     BaseAvatar.prototype.upVelocity.call(this);
-
-    this.emit('velocity:up', {avatar: this});
 };
 
 /**
@@ -117,8 +115,6 @@ Avatar.prototype.upVelocity = function()
 Avatar.prototype.downVelocity = function()
 {
     BaseAvatar.prototype.downVelocity.call(this);
-
-    this.emit('velocity:down', {avatar: this});
 };
 
 /**
@@ -127,6 +123,4 @@ Avatar.prototype.downVelocity = function()
 Avatar.prototype.resetVelocity = function()
 {
     BaseAvatar.prototype.resetVelocity.call(this);
-
-    this.emit('velocity:reset', {avatar: this});
 };
