@@ -31,6 +31,8 @@ Bonus.prototype.createPath = function()
  */
 Bonus.prototype.pop = function()
 {
+    BaseBonus.prototype.pop.call(this)
+
     this.createPath();
 };
 
@@ -39,5 +41,7 @@ Bonus.prototype.pop = function()
  */
 Bonus.prototype.clear = function()
 {
+    BaseBonus.prototype.clear.call(this)
+
     this.path.remove();
 };
