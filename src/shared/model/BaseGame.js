@@ -112,6 +112,8 @@ BaseGame.prototype.onStop = function()
 {
     this.frame    = null;
     this.rendered = null;
+
+    this.bonusManager.stop();
 };
 
 /**
