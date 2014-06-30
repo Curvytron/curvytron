@@ -46,8 +46,15 @@ BonusManager.prototype.stop = function()
     this.popingTimeout = null;
 
     this.clearTimeouts();
+};
 
+/**
+ * Clear
+ */
+BonusManager.prototype.clear = function()
+{
     this.world.clear();
+    BaseBonusManager.prototype.clear.call(this);
 };
 
 /**
@@ -75,6 +82,9 @@ BonusManager.prototype.popBonus = function ()
  */
 BonusManager.prototype.testCatch = function(avatar)
 {
+    if (!avatar.body) {
+        throw avatar;
+    }
     var body = this.world.getBody(avatar.body),
         bonus = body ? body.data : null;
 

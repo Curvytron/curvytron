@@ -32,7 +32,7 @@ BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
 BaseAvatar.prototype.precision           = 1;
 BaseAvatar.prototype.velocity            = 18;
-BaseAvatar.prototype.velocityStep        = 2;
+BaseAvatar.prototype.velocityStep        = 6;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 200;
 BaseAvatar.prototype.printingTime        = 3000;
@@ -85,10 +85,7 @@ BaseAvatar.prototype.setAngle = function(angle)
  *
  * @param {Number} step
  */
-BaseAvatar.prototype.update = function(step)
-{
-    return this.body;
-};
+BaseAvatar.prototype.update = function(step) {};
 
 /**
  * Add angle

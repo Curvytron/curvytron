@@ -117,12 +117,12 @@ World.prototype.getBody = function(body)
     }
 
     var islands = this.getIslandsByBody(body),
-        body;
+        match;
 
     for (var i = islands.length - 1; i >= 0; i--) {
-        body = islands[i].getBody(body);
-        if (body) {
-            return body;
+        match = islands[i].getBody(body);
+        if (match) {
+            return match;
         }
     }
 

@@ -32,5 +32,5 @@ Bonus.prototype.clear = function()
 {
     this.path.remove();
 
-    BaseBonus.prototype.clear.call(this)
+    BaseBonus.prototype.clear.call(this);
 };

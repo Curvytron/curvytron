@@ -50,11 +50,11 @@ Game.prototype.update = function(step)
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        position = avatar.update(step);
+
+        avatar.update(step);
 
         if (avatar.alive) {
             if (!this.world.testBody(avatar.body)) {
-                console.log('DIE!');
                 avatar.die();
             } else {
                 this.bonusManager.testCatch(avatar);
@@ -195,6 +195,7 @@ Game.prototype.newRound = function()
         var avatar, i;
 
         this.world.clear();
+        this.bonusManager.stop();
 
         this.inRound = true;
         this.deaths.clear();
@@ -207,8 +208,6 @@ Game.prototype.newRound = function()
             avatar.setAngle(Math.random() * Math.PI * 2);
         }
 
-        this.bonusManager.stop();
-
         BaseGame.prototype.newRound.call(this);
 
         this.emit('round:new', {game: this});
@@ -220,6 +219,8 @@ Game.prototype.newRound = function()
  */
 Game.prototype.onStart = function()
 {
+    BaseGame.prototype.onStart.call(this);
+
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.printingTimeout = setTimeout(avatar.togglePrinting, 3000);
@@ -230,6 +231,7 @@ Game.prototype.onStart = function()
 
     this.printing = false;
 };
+
 /**
  * FIN DU GAME
  */

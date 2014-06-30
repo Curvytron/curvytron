@@ -788,7 +788,7 @@ BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
 BaseAvatar.prototype.precision           = 1;
 BaseAvatar.prototype.velocity            = 18;
-BaseAvatar.prototype.velocityStep        = 2;
+BaseAvatar.prototype.velocityStep        = 6;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 200;
 BaseAvatar.prototype.printingTime        = 3000;
@@ -841,10 +841,7 @@ BaseAvatar.prototype.setAngle = function(angle)
  *
  * @param {Number} step
  */
-BaseAvatar.prototype.update = function(step)
-{
-    return this.body;
-};
+BaseAvatar.prototype.update = function(step) {};
 
 /**
  * Add angle
@@ -2678,12 +2675,12 @@ World.prototype.getBody = function(body)
     }
 
     var islands = this.getIslandsByBody(body),
-        body;
+        match;
 
     for (var i = islands.length - 1; i >= 0; i--) {
-        body = islands[i].getBody(body);
-        if (body) {
-            return body;
+        match = islands[i].getBody(body);
+        if (match) {
+            return match;
         }
     }
 
@@ -2814,8 +2811,15 @@ BonusManager.prototype.stop = function()
     this.popingTimeout = null;
 
     this.clearTimeouts();
+};
 
+/**
+ * Clear
+ */
+BonusManager.prototype.clear = function()
+{
     this.world.clear();
+    BaseBonusManager.prototype.clear.call(this);
 };
 
 /**
@@ -2843,6 +2847,9 @@ BonusManager.prototype.popBonus = function ()
  */
 BonusManager.prototype.testCatch = function(avatar)
 {
+    if (!avatar.body) {
+        throw avatar;
+    }
     var body = this.world.getBody(avatar.body),
         bonus = body ? body.data : null;
 
@@ -3131,11 +3138,11 @@ Game.prototype.update = function(step)
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        position = avatar.update(step);
+
+        avatar.update(step);
 
         if (avatar.alive) {
             if (!this.world.testBody(avatar.body)) {
-                console.log('DIE!');
                 avatar.die();
             } else {
                 this.bonusManager.testCatch(avatar);
@@ -3276,6 +3283,7 @@ Game.prototype.newRound = function()
         var avatar, i;
 
         this.world.clear();
+        this.bonusManager.stop();
 
         this.inRound = true;
         this.deaths.clear();
@@ -3288,8 +3296,6 @@ Game.prototype.newRound = function()
             avatar.setAngle(Math.random() * Math.PI * 2);
         }
 
-        this.bonusManager.stop();
-
         BaseGame.prototype.newRound.call(this);
 
         this.emit('round:new', {game: this});
@@ -3301,6 +3307,8 @@ Game.prototype.newRound = function()
  */
 Game.prototype.onStart = function()
 {
+    BaseGame.prototype.onStart.call(this);
+
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.printingTimeout = setTimeout(avatar.togglePrinting, 3000);
@@ -3311,6 +3319,7 @@ Game.prototype.onStart = function()
 
     this.printing = false;
 };
+
 /**
  * FIN DU GAME
  */
