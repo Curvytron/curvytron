@@ -24,7 +24,6 @@ RabbitBonus.prototype.type = 'rabbit';
  */
 RabbitBonus.prototype.applyTo = function(avatar)
 {
-    console.log('apply', this.name, 'to', avatar.name);
     avatar.upVelocity();
 
     return setTimeout(function() { avatar.downVelocity(); }, this.duration);

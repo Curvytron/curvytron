@@ -25,7 +25,6 @@ TurtleBonus.prototype.positive = false;
  */
 TurtleBonus.prototype.applyTo = function(avatar)
 {
-    console.log('apply', this.name, 'to', avatar.name);
     avatar.downVelocity();
 
     return setTimeout(function() { avatar.upVelocity(); }, this.duration);
