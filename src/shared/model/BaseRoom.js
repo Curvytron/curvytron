@@ -20,6 +20,13 @@ BaseRoom.prototype = Object.create(EventEmitter.prototype);
 BaseRoom.prototype.warmupTime = 5000;
 
 /**
+ * Max length for name
+ *
+ * @type {Number}
+ */
+BaseRoom.prototype.maxLength = 25;
+
+/**
  * Add player
  *
  * @param {Player} player

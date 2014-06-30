@@ -3,7 +3,7 @@
         <h1>
             <form ng-submit="submit()" class="top-right-form" name="addPlayer">
                 <div class="input-group input-group-lg">
-                    <input type="text" ng-model="username" class="form-control" name="username" placeholder="Add a player" />
+                    <input type="text" ng-model="username" class="form-control" name="username" placeholder="Add a player" maxlength="{{ nameMaxLength }}" />
                     <span class="input-group-btn">
                         <button type="submit" id="submit" class="btn btn-lg btn-default" name="submit" ><i class="icon-plus"></i></button>
                     </span>
@@ -34,7 +34,7 @@
                     </td>
                     <td class="player-color-col">
                         <span class="color-preview" style="background-color: {{ player.color }};"></span>
-                        <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-change="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" />
+                        <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-change="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ colorMaxLength }}" />
                     </td>
                     <td>
                         <button class="btn btn-default control"

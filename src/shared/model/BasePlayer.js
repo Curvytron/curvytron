@@ -20,6 +20,20 @@ function BasePlayer(client, name, color, mail)
 BasePlayer.prototype = Object.create(EventEmitter.prototype);
 
 /**
+ * Max length for name
+ *
+ * @type {Number}
+ */
+BasePlayer.prototype.maxLength = 25;
+
+/**
+ * Max length for color
+ *
+ * @type {Number}
+ */
+BasePlayer.prototype.colorMaxLength = 20;
+
+/**
  * Set name
  *
  * @param {String} name

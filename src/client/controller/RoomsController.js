@@ -25,10 +25,11 @@ function RoomsController($scope, $location, repository, client)
     this.attachEvents();
 
     // Hydrating the scope:
-    this.$scope.rooms    = this.repository.rooms;
-    this.$scope.submit   = this.createRoom;
-    this.$scope.join     = this.joinRoom;
-    this.$scope.spectate = this.spectateRoom;
+    this.$scope.rooms         = this.repository.rooms;
+    this.$scope.submit        = this.createRoom;
+    this.$scope.join          = this.joinRoom;
+    this.$scope.spectate      = this.spectateRoom;
+    this.$scope.roomMaxLength = Room.prototype.maxLength;
 
     this.$scope.curvytron.bodyClass = null;
 }

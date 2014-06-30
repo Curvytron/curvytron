@@ -107,7 +107,7 @@ RoomController.prototype.emitAllRooms = function(client)
  */
 RoomController.prototype.onCreateRoom = function(client, data, callback)
 {
-    var room = this.repository.create(data.name);
+    var room = this.repository.create(data.name.substr(0, Room.prototype.maxLength));
 
     callback({success: room ? true : false, room: room? room.name : null});
 
@@ -182,7 +182,7 @@ RoomController.prototype.checkRoomClose = function(room)
  */
 RoomController.prototype.onAddPlayer = function(client, data, callback)
 {
-    var name = data.name;
+    var name = data.name.substr(0, Player.prototype.maxLength);
 
     if (client.room && client.room.isNameAvailable(name)) {
 
@@ -212,7 +212,7 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
         player = client.players.getById(data.player);
 
     if (room && player) {
-        player.setColor(data.color);
+        player.setColor(data.color.substr(0, Player.prototype.colorMaxLength));
 
         callback({success: true, color: player.color});
 
