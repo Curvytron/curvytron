@@ -31,8 +31,8 @@ function BaseAvatar(player)
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
 BaseAvatar.prototype.precision           = 1;
-BaseAvatar.prototype.velocity            = 18/1000;
-BaseAvatar.prototype.defaultVelocity     = 18/1000;
+BaseAvatar.prototype.velocity            = 18;
+BaseAvatar.prototype.velocityStep        = 2;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 200;
 BaseAvatar.prototype.printingTime        = 3000;
@@ -87,7 +87,7 @@ BaseAvatar.prototype.setAngle = function(angle)
  */
 BaseAvatar.prototype.update = function(step)
 {
-    return [this.head[0], this.head[1], this.radius, this.mask];
+    return this.body;
 };
 
 /**
@@ -120,7 +120,8 @@ BaseAvatar.prototype.updatePosition = function(step)
  */
 BaseAvatar.prototype.upVelocity = function()
 {
-    this.velocity = this.velocity + ((this.defaultVelocity * 33)/100);
+    this.velocity += this.velocityStep;
+    console.log(this.velocity);
     this.updateVelocities();
 };
 
@@ -129,17 +130,11 @@ BaseAvatar.prototype.upVelocity = function()
  */
 BaseAvatar.prototype.downVelocity = function()
 {
-    this.velocity = this.velocity - ((this.defaultVelocity * 33)/100);
-    this.updateVelocities();
-};
-
-/**
- * Reset velocity
- */
-BaseAvatar.prototype.resetVelocity = function()
-{
-    this.velocity = this.defaultVelocity;
-    this.updateVelocities();
+    if (this.velocity > this.velocityStep) {
+        this.velocity -= this.velocityStep;
+        console.log(this.velocity);
+        this.updateVelocities();
+    }
 };
 
 /**
@@ -148,8 +143,8 @@ BaseAvatar.prototype.resetVelocity = function()
 BaseAvatar.prototype.updateVelocities = function()
 {
     this.velocities = [
-        Math.cos(this.angle) * this.velocity,
-        Math.sin(this.angle) * this.velocity
+        Math.cos(this.angle) * this.velocity/1000,
+        Math.sin(this.angle) * this.velocity/1000
     ];
 };
 
@@ -262,10 +257,19 @@ BaseAvatar.prototype.clear = function()
     this.angle           = Math.random() * Math.PI;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
+    this.velocity        = BaseAvatar.prototype.velocity;
     this.alive           = true;
     this.printing        = false;
 
     this.updateVelocities();
+};
+
+/**
+ * Destroy
+ */
+BaseAvatar.prototype.destroy = function()
+{
+    this.stopPrinting();
 };
 
 /**

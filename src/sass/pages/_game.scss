@@ -76,11 +76,19 @@
             left: 0;
             bottom: 0;
         }
+        #fps {
+            width: 24px;
+            text-align: right;
+        }
+        #ping {
+            width: 32px;
+            text-align: right;
+        }
         footer {
             display: block !important;
             position: fixed;
             left: 0;
-            bottom: 90px;
+            bottom: 0px;
             width: 300px;
             min-width: 300px;
             max-width: 300px;

@@ -11,14 +11,12 @@ function Game(room)
     this.inRound = false;
     this.deaths  = new Collection([], 'name');
     this.clients = this.room.clients;
+    this.client  = new SocketGroup(this.clients);
 
-    this.addPoint                   = this.addPoint.bind(this);
-    this.onDie                      = this.onDie.bind(this);
-    this.bonusPrinting              = false;
-    this.bonusPrintingTimeout       = null;
-    this.timeouts                   = [];
+    this.addPoint = this.addPoint.bind(this);
+    this.onDie    = this.onDie.bind(this);
 
-    this.toggleBonusPrinting = this.toggleBonusPrinting.bind(this);
+    var avatar;
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
@@ -31,11 +29,6 @@ function Game(room)
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
-
-Game.prototype.bonusCap            = 20;
-Game.prototype.bonusPoppingRate    = 0.2;
-Game.prototype.noBonusPrintingTime = 200;
-Game.prototype.bonusPrintingTime   = 3000;
 
 /**
  * Trail latency
@@ -53,27 +46,18 @@ Game.prototype.update = function(step)
 {
     BaseGame.prototype.update.call(this, step);
 
-    var avatar, bonus;
-
-    if (this.bonusPrinting) {
-        this.popBonus();
-    }
+    var avatar, position;
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
+        position = avatar.update(step);
 
-        if (avatar.alive && !this.world.testCircle(avatar.update(step))) {
-            avatar.die();
-        }
-        
-        // check if a bonus has been taken
-        for (var j = this.bonuses.ids.length - 1; j >= 0; j--) {
-            bonus = this.bonuses.items[j];
-
-            if (bonus.isTakenBy(avatar)) {
-                bonus.clear();
-                this.timeouts.push(bonus.apply(avatar));
-                this.emit('bonus:clear', { game: this, bonus: bonus });
+        if (avatar.alive) {
+            if (!this.world.testBody(avatar.body)) {
+                console.log('DIE!');
+                avatar.die();
+            } else {
+                this.bonusManager.testCatch(avatar);
             }
         }
     }
@@ -102,12 +86,11 @@ Game.prototype.removeAvatar = function(avatar)
 Game.prototype.addPoint = function(data)
 {
     if (this.world.active) {
-        var world = this.world,
-            circle = [data.point[0], data.point[1], data.avatar.radius, data.avatar.mask];
+        var body = new Body(data.point, data.avatar.radius, data.avatar),
+            duration = this.trailLatency * (data.avatar.velocity / BaseAvatar.prototype.velocity);
 
-        setTimeout(function () { circle[3] = 0; }, this.trailLatency);
-
-        world.addCircle(circle);
+        body.setMask(data.avatar.mask, duration);
+        this.world.addBody(body);
     }
 };
 
@@ -175,7 +158,7 @@ Game.prototype.setScores = function()
         for (var i = this.deaths.items.length - 1; i >= 0; i--) {
             this.deaths.items[i].addScore(i + 1);
         }
-        
+
         if (this.deaths.count() < total) {
             var winner = this.avatars.match(function () { return this.alive; });
 
@@ -194,10 +177,6 @@ Game.prototype.endRound = function()
 {
     BaseGame.prototype.endRound.call(this);
 
-    this.stopBonusPrinting();
-    this.resetBonusEffects();
-    this.clearTimeouts();
-
     this.emit('round:end', {game: this});
 
     if (this.isWon()) {
@@ -213,7 +192,7 @@ Game.prototype.endRound = function()
 Game.prototype.newRound = function()
 {
     if (!this.inRound) {
-        var avatar, bonus, i;
+        var avatar, i;
 
         this.world.clear();
 
@@ -228,13 +207,7 @@ Game.prototype.newRound = function()
             avatar.setAngle(Math.random() * Math.PI * 2);
         }
 
-        // clear the bonuses stack
-        for (i = this.bonuses.ids.length - 1; i >= 0; i--) {
-            bonus = this.bonuses.items[i];
-            bonus.clear();
-            this.emit('bonus:clear', { game: this, bonus: bonus});
-            this.bonuses.removeById(bonus.id);
-        }
+        this.bonusManager.stop();
 
         BaseGame.prototype.newRound.call(this);
 
@@ -253,110 +226,17 @@ Game.prototype.onStart = function()
     }
 
     this.world.activate();
-   
-    // toggle bonuses printing
-    this.timeouts.push(setTimeout(this.toggleBonusPrinting, 3000));
-
-    BaseGame.prototype.start.call(this);
-};
-
-/**
- * Toggle bonus printing
- */
-Game.prototype.toggleBonusPrinting = function () {
-    this.bonusPrinting = !this.bonusPrinting;
-
-    clearTimeout(this.bonusPrintingTimeout);
-    this.printingTimeout = setTimeout(this.toggleBonusPrinting, this.getRandomPrintingTime());
-};
-
-/**
- * Stop bonus printing
- */
-Game.prototype.stopBonusPrinting = function()
-{
-    clearTimeout(this.bonusPrintingTimeout);
+    this.bonusManager.start();
 
     this.printing = false;
 };
-
-/**
- * Make a bonus `pop'
- */
-Game.prototype.popBonus = function () {
-    if (this.bonuses.count() < this.bonusCap) {
-        if (this.percentChance(this.bonusPoppingRate)) {
-            var bonus;
-            if (this.percentChance(50)) {
-                bonus = new RabbitBonus('test');
-            } else {
-                bonus = new TurtleBonus('test');
-            }
-            bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
-            bonus.pop();
-
-            this.emit('bonus:pop', { game: this, bonus: bonus });
-            this.bonuses.add(bonus);
-        }
-    }
-};
-
-/**
- * Has a percent of chance to return true
- *
- * @param percentTrue
- * @returns {boolean}
- */
-Game.prototype.percentChance = function (percentTrue) {
-    percentTrue = percentTrue || 100;
-
-    return (Math.floor(Math.random()*101) <= percentTrue);
-};
-
-/**
- * Get random printing time
- *
- * @return {Number}
- */
-Game.prototype.getRandomPrintingTime = function()
-{
-    if (this.bonusPrinting) {
-        return this.bonusPrintingTime * (0.2 + Math.random() * 0.8);
-    } else {
-        return this.noBonusPrintingTime * (0.8 + Math.random() * 0.5);
-    }
-};
-
-/**
- * Reset bonus effects
- * Only velocity for now
- */
-Game.prototype.resetBonusEffects = function () {
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
-        this.avatars.items[i].resetVelocity();
-    }
-};
-
-/**
- * Clear timeouts
- */
-Game.prototype.clearTimeouts = function()
-{
-    for (var i = this.timeouts.length - 1; i >= 0; i--) {
-        clearTimeout(this.timeouts[i]);
-    }
-};
-
 /**
  * FIN DU GAME
  */
 Game.prototype.end = function()
 {
-    if (BaseGame.prototype.end.call(this)) {
-        this.world.clear();
+    BaseGame.prototype.end.call(this);
 
-        return true;
-    }
-
-    return false;
+    this.bonusManager.stop();
+    this.world.clear();
 };

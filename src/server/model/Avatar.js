@@ -8,6 +8,7 @@ function Avatar(player)
     BaseAvatar.call(this, player);
 
     this.game = null;
+    this.body = new Body(this.head, this.radius, this);
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
@@ -33,6 +34,18 @@ Avatar.prototype.update = function(step)
 };
 
 /**
+ * Set mask
+ *
+ * @param {Number} mask
+ */
+Avatar.prototype.setMask = function(mask)
+{
+    BaseAvatar.prototype.setMask.call(this, mask);
+
+    this.body.setMask(this.mask);
+};
+
+/**
  * Set position
  *
  * @param {Array} point
@@ -40,6 +53,9 @@ Avatar.prototype.update = function(step)
 Avatar.prototype.setPosition = function(point)
 {
     BaseAvatar.prototype.setPosition.call(this, point);
+
+    this.body.position = this.head;
+
     this.emit('position', {avatar: this, point: this.head});
 };
 

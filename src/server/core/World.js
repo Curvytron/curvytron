@@ -1,13 +1,15 @@
 /**
  * World
  */
-function World(size)
+function World(size, islands)
 {
+    islands = typeof(islands) === 'number' ? islands : this.islandGridSize;
+
     this.size       = size;
     this.from       = [0, 0];
     this.to         = [size, size];
     this.islands    = new Collection();
-    this.islandSize = this.size / this.islandGridSize;
+    this.islandSize = this.size / islands;
     this.active     = false;
 
     var x, y, id;
@@ -44,20 +46,20 @@ World.prototype.getIslandByPoint = function(point)
 };
 
 /**
- * Get island by circle
+ * Get island by body
  *
- * @param {Array} circle
+ * @param {Body} body
  *
  * @return {Island}
  */
-World.prototype.getIslandsByCircle = function(circle)
+World.prototype.getIslandsByBody = function(body)
 {
     var islands = new Collection(),
         sources = [
-            this.getIslandByPoint([circle[0] - circle[2], circle[1] - circle[2]]),
-            this.getIslandByPoint([circle[0] + circle[2], circle[1] - circle[2]]),
-            this.getIslandByPoint([circle[0] - circle[2], circle[1] + circle[2]]),
-            this.getIslandByPoint([circle[0] + circle[2], circle[1] + circle[2]])
+            this.getIslandByPoint([body.position[0] - body.radius, body.position[1] - body.radius]),
+            this.getIslandByPoint([body.position[0] + body.radius, body.position[1] - body.radius]),
+            this.getIslandByPoint([body.position[0] - body.radius, body.position[1] + body.radius]),
+            this.getIslandByPoint([body.position[0] + body.radius, body.position[1] + body.radius])
         ];
 
     for (var i = sources.length - 1; i >= 0; i--) {
@@ -70,60 +72,83 @@ World.prototype.getIslandsByCircle = function(circle)
 };
 
 /**
- * Add circle
+ * Add body
  *
- * @param {Array} circle
+ * @param {Body} body
  */
-World.prototype.addCircle = function(circle)
+World.prototype.addBody = function(body)
 {
     if (!this.active) {
         return;
     }
 
-    var islands = this.getIslandsByCircle(circle);
+    var islands = this.getIslandsByBody(body);
 
     for (var i = islands.length - 1; i >= 0; i--) {
-        islands[i].addCircle(circle);
+        islands[i].addBody(body);
     }
 };
 
 /**
- * Add circle
+ * Remove body
  *
- * @param {Array} circle
+ * @param {Body} body
  */
-World.prototype.testCircle = function(circle)
+World.prototype.removeBody = function(body)
 {
-    if (!this.circleInBound(circle, this.from, this.to)) {
+    if (!this.active) {
+        return;
+    }
+
+    for (var i = body.islands.items.length - 1; i >= 0; i--) {
+        body.islands.items[i].removeBody(body);
+    }
+};
+
+/**
+ * Get body
+ *
+ * @param {Body} body
+ */
+World.prototype.getBody = function(body)
+{
+    if (!Island.bodyInBound(body, this.from, this.to)) {
+        return null;
+    }
+
+    var islands = this.getIslandsByBody(body),
+        body;
+
+    for (var i = islands.length - 1; i >= 0; i--) {
+        body = islands[i].getBody(body);
+        if (body) {
+            return body;
+        }
+    }
+
+    return null;
+};
+
+/**
+ * Add body
+ *
+ * @param {Body} body
+ */
+World.prototype.testBody = function(body)
+{
+    if (!Island.bodyInBound(body, this.from, this.to)) {
         return false;
     }
 
-    var islands = this.getIslandsByCircle(circle);
+    var islands = this.getIslandsByBody(body);
 
     for (var i = islands.length - 1; i >= 0; i--) {
-        if (!islands[i].testCircle(circle)) {
+        if (!islands[i].testBody(body)) {
             return false;
         }
     }
 
     return true;
-};
-
-/**
- * Is point in bound?
- *
- * @param {Array} circle
- * @param {Array} from
- * @param {Array} to
- *
- * @return {Boolean}
- */
-World.prototype.circleInBound = function(circle, from, to)
-{
-    return circle[0] - circle[2] >= from[0] &&
-           circle[0] + circle[2] <= to[0]   &&
-           circle[1] - circle[2] >= from[1] &&
-           circle[1] + circle[2] <= to[1];
 };
 
 /**
@@ -139,7 +164,7 @@ World.prototype.getRandomPosition = function(radius, border)
     var margin = radius + border * this.size,
         point = this.getRandomPoint(margin);
 
-    while (!this.testCircle([point[0], point[1], margin, 0])) {
+    while (!this.testBody(new Body(point, margin))) {
         point = this.getRandomPoint(margin);
     }
 

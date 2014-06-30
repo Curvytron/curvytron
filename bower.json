@@ -32,10 +32,9 @@
     "tom32i-key-mapper.js": "~0.0.*",
     "html5-boilerplate": "~4.3.0",
     "angular": "~1.2.*",
-    "angular-route": "~1.2.x",
-    "createjs-soundjs": "*",
-    "angular-bootstrap-colorpicker": "~3.0.7",
-    "lodash": "~2.4.1"
+    "angular-route": "~1.2.*",
+    "angular-bootstrap-colorpicker": "~3.0.*",
+    "createjs-soundjs": "*"
   },
   "ignore": [
     "**/.*",

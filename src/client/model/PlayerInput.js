@@ -56,6 +56,33 @@ PlayerInput.prototype.attachEvents = function()
 };
 
 /**
+ * Detach events
+ */
+PlayerInput.prototype.detachEvents = function()
+{
+    var listening = [],
+        binding, type;
+
+    for (var i = this.binding.length - 1; i >= 0; i--) {
+        binding = this.binding[i];
+        type = this.getBindingType(binding);
+
+        if (listening.indexOf(type) < 0) {
+            listening.push(type);
+
+            if (type === 'keyboard') {
+                window.removeEventListener('keydown', this.onKeyDown);
+                window.removeEventListener('keyup', this.onKeyUp);
+            } else if (new RegExp('^gamepad:\\d+:button').test(type)) {
+                gamepadListener.off(type, this.onButton);
+            } else {
+                gamepadListener.off(type, this.onAxis);
+            }
+        }
+    }
+};
+
+/**
  * Get binding type
  *
  * @param {String} binding
@@ -163,6 +190,5 @@ PlayerInput.prototype.resolve = function()
 PlayerInput.prototype.setMove = function(move)
 {
     this.move = move;
-
     this.emit('move', {avatar: this.avatar, move: move});
 };

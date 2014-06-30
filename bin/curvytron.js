@@ -1,7 +1,16 @@
 var EventEmitter = require('events').EventEmitter,
     http = require('http'),
     express = require('express'),
-    io = require('socket.io');
+    WebSocket = require('faye-websocket');
+/**
+ * Log10 approximation
+ *
+ * @param x
+ * @returns {number}
+ */
+function log10(x) {
+    return Math.log(x) / Math.LN10;
+}
 /**
  * Collection
  *
@@ -380,8 +389,6 @@ FPSLogger.prototype.draw = function()
 {
     if (this.element) {
         this.element.innerHTML = this.fps;
-    } else {
-        console.log('FPS: %s', this.fps);
     }
 };
 
@@ -406,11 +413,353 @@ FPSLogger.prototype.stop = function()
     }
 };
 /**
+ * Base Socket Client
+ *
+ * @param {Object} socket
+ * @param {Number} interval
+ */
+function BaseSocketClient(socket, interval)
+{
+    EventEmitter.call(this);
+
+    this.socket        = socket;
+    this.interval      = typeof(interval) === 'number' ? interval : 0;
+    this.events        = [];
+    this.callbackQueue = [];
+    this.callbacks     = [];
+    this.loop          = null;
+    this.empty         = 0;
+
+    this.flush     = this.flush.bind(this);
+    this.onMessage = this.onMessage.bind(this);
+    this.ping      = this.onPing.bind(this);
+
+    this.socket.onmessage = this.onMessage;
+
+    this.attachEvents();
+    this.start();
+}
+
+BaseSocketClient.prototype = Object.create(EventEmitter.prototype);
+
+/**
+ * Event prefix
+ *
+ * @type {String}
+ */
+BaseSocketClient.prototype.eventPrefix = 'evt/';
+
+/**
+ * Callback prefix
+ *
+ * @type {String}
+ */
+BaseSocketClient.prototype.callbackPrefix = 'clb/';
+
+/**
+ * Set interval
+ *
+ * @param {[type]} interval
+ */
+BaseSocketClient.prototype.setInterval = function(interval)
+{
+    this.stop();
+    this.flush();
+
+    this.interval = typeof(interval) === 'number' ? interval : 0;
+
+    this.start();
+};
+
+/**
+ * Start
+ */
+BaseSocketClient.prototype.start = function()
+{
+    if (this.interval && !this.loop) {
+        this.loop = setInterval(this.flush, this.interval);
+        this.flush();
+    }
+};
+
+/**
+ * Stop
+ */
+BaseSocketClient.prototype.stop = function()
+{
+    if (this.loop) {
+        clearInterval(this.loop);
+        this.loop = null;
+    }
+};
+
+/**
+ * Attach events
+ */
+BaseSocketClient.prototype.attachEvents = function()
+{
+    this.on('ping', this.onPing);
+};
+
+/**
+ * Detach Events
+ */
+BaseSocketClient.prototype.detachEvents = function()
+{
+    this.removeListener('ping', this.onPing);
+};
+
+/**
+ * Add an event to the list
+ *
+ * @param {String} name
+ * @param {Object} data
+ * @param {Function} callback
+ * @param {Boolean} force
+ */
+BaseSocketClient.prototype.addEvent = function (name, data, callback, force)
+{
+    var event = [this.eventPrefix + name];
+
+    if (typeof(data) !== 'undefined') {
+        event[1] = data;
+    }
+
+    if (typeof(callback) !== 'undefined') {
+        this.callbacks.push(callback);
+        event[2] = this.callbacks.indexOf(callback);
+    }
+
+    if (!this.interval || (typeof(force) !== 'undefined' && force)) {
+        this.sendEvents([event]);
+    } else {
+        this.events.push(event);
+        this.start();
+    }
+};
+
+/**
+ * Add an event to the list
+ *
+ * @param {Array} events
+ * @param {Boolean} force
+ */
+BaseSocketClient.prototype.addEvents = function (sources, force)
+{
+    var length = sources.length,
+        events = [],
+        event;
+
+    for (var i = 0; i < length; i++) {
+        event = [this.eventPrefix + sources[i][0]];
+
+        if (typeof(sources[i][1]) != 'undefined') {
+            event[1] = sources[i][1];
+        }
+
+        if (typeof(sources[i][2]) != 'undefined') {
+            this.callbacks.push(sources[i][2]);
+            event[2] = this.callbacks.indexOf(sources[i][2]);
+        }
+
+        events.push(event);
+    }
+
+    if (!this.interval || force) {
+        this.sendEvents(events);
+    } else {
+        Array.prototype.push.apply(this.events, events);
+        this.start();
+    }
+};
+
+/**
+ * Add a callback
+ *
+ * @param {Number} id
+ * @param {Object} data
+ */
+BaseSocketClient.prototype.addCallback = function (id, data)
+{
+    var event = [this.callbackPrefix + id];
+
+    if (typeof(data) !== 'undefined') {
+        event[1] = data;
+    }
+
+    if (!this.interval || (typeof(force) !== 'undefined' && force)) {
+        this.sendEvents([event]);
+    } else {
+        this.events.push(event);
+        this.start();
+    }
+};
+
+/**
+ * Send an event
+ *
+ * @param {String} name
+ * @param {String} data
+ */
+BaseSocketClient.prototype.sendEvents = function (events)
+{
+    this.socket.send(JSON.stringify(events));
+};
+
+/**
+ * Send Events
+ */
+BaseSocketClient.prototype.flush = function ()
+{
+    if (this.events.length > 0) {
+        this.sendEvents(this.events);
+        this.events = [];
+    }
+};
+
+/**
+ * On message
+ *
+ * @param {Event} event
+ */
+BaseSocketClient.prototype.onMessage = function (event)
+{
+    var data = JSON.parse(event.data),
+        length = data.length,
+        item, index, name, isEvent;
+
+    for (var i = 0; i < length; i++) {
+
+        isEvent = data[i][0].substr(0, this.eventPrefix.length) === this.eventPrefix;
+        name = data[i][0].substr(this.eventPrefix.length);
+
+        if (isEvent) {
+            if (typeof(data[i][2]) == 'number') {
+                this.emit(name, {data: data[i][1], callback: this.createCallback(data[i][2])});
+            } else {
+                this.emit(name, data[i][1]);
+            }
+        } else {
+            id = parseInt(name);
+
+            if(typeof(this.callbacks[id]) != 'undefined') {
+                this.callbacks[id](typeof(data[i][1]) !== 'undefined' ? data[i][1] : null);
+                this.callbacks.splice(id, 1);
+            }
+        }
+    }
+};
+
+/**
+ * Create callback
+ *
+ * @param {Number} id
+ *
+ * @return {Function}
+ */
+BaseSocketClient.prototype.createCallback = function(id)
+{
+    var client = this;
+
+    return function (data) { client.addCallback(id, data); };
+};
+
+/**
+ * On ping
+ *
+ * @param {Number} ping
+ */
+BaseSocketClient.prototype.onPing = function (ping)
+{
+    this.addEvent('pong', ping);
+};
+/**
+ * Base Bonus Manager
+ */
+function BaseBonusManager(game)
+{
+    EventEmitter.call(this);
+
+    this.game    = game;
+    this.bonuses = new Collection([], 'id', true);
+
+    this.clear = this.clear.bind(this);
+}
+
+BaseBonusManager.prototype = Object.create(EventEmitter.prototype);
+
+BaseBonusManager.prototype.bonusCap         = 20;
+BaseBonusManager.prototype.bonusPoppingRate = 0.2;
+BaseBonusManager.prototype.bonusPopingTime  = 1000;
+
+/**
+ * Start
+ */
+BaseBonusManager.prototype.start = function() {};
+
+/**
+ * Stop
+ */
+BaseBonusManager.prototype.stop = function()
+{
+    this.clear();
+};
+
+/**
+ * Add bonus
+ *
+ * @param {Bonus} bonus
+ */
+BaseBonusManager.prototype.add = function(bonus)
+{
+    return this.bonuses.add(bonus);
+};
+
+
+/**
+ * Remove bonus
+ *
+ * @param {Bonus} bonus
+ */
+BaseBonusManager.prototype.remove = function(bonus)
+{
+    bonus.clear();
+
+    return this.bonuses.remove(bonus);
+};
+
+/**
+ * Clear bonuses
+ */
+BaseBonusManager.prototype.clear = function()
+{
+    for (var i = this.bonuses.items.length - 1; i >= 0; i--) {
+        this.bonuses.items[i].clear();
+    }
+
+    this.bonuses.clear();
+};
+
+/**
+ * Get random bonus
+ *
+ * @param {Array} position
+ *
+ * @return {Bonus}
+ */
+BaseBonusManager.prototype.getRandomBonus = function(position)
+{
+    var type = this.bonusTypes[Math.floor(Math.random() * this.bonusTypes.length)];
+
+    return new type(position);
+};
+
+/**
  * Base Avatar
  *
  * @param {Player} player
  */
-function BaseAvatar(player, position)
+function BaseAvatar(player)
 {
     EventEmitter.call(this);
 
@@ -438,8 +787,8 @@ function BaseAvatar(player, position)
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
 BaseAvatar.prototype.precision           = 1;
-BaseAvatar.prototype.velocity            = 18/1000;
-BaseAvatar.prototype.defaultVelocity     = 18/1000;
+BaseAvatar.prototype.velocity            = 18;
+BaseAvatar.prototype.velocityStep        = 2;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 200;
 BaseAvatar.prototype.printingTime        = 3000;
@@ -473,8 +822,6 @@ BaseAvatar.prototype.addPoint = function(point)
  */
 BaseAvatar.prototype.setAngularVelocity = function(factor)
 {
-    if (!this.alive) { return; }
-
     this.angularVelocity = factor * this.angularVelocityBase;
 };
 
@@ -485,10 +832,7 @@ BaseAvatar.prototype.setAngularVelocity = function(factor)
  */
 BaseAvatar.prototype.setAngle = function(angle)
 {
-    if (!this.alive) { return; }
-
     this.angle = angle;
-
     this.updateVelocities();
 };
 
@@ -499,7 +843,7 @@ BaseAvatar.prototype.setAngle = function(angle)
  */
 BaseAvatar.prototype.update = function(step)
 {
-    return [this.head[0], this.head[1], this.radius, this.mask];
+    return this.body;
 };
 
 /**
@@ -532,7 +876,8 @@ BaseAvatar.prototype.updatePosition = function(step)
  */
 BaseAvatar.prototype.upVelocity = function()
 {
-    this.velocity = this.velocity + ((this.defaultVelocity * 33)/100);
+    this.velocity += this.velocityStep;
+    console.log(this.velocity);
     this.updateVelocities();
 };
 
@@ -541,17 +886,11 @@ BaseAvatar.prototype.upVelocity = function()
  */
 BaseAvatar.prototype.downVelocity = function()
 {
-    this.velocity = this.velocity - ((this.defaultVelocity * 33)/100);
-    this.updateVelocities();
-};
-
-/**
- * Reset velocity
- */
-BaseAvatar.prototype.resetVelocity = function()
-{
-    this.velocity = this.defaultVelocity;
-    this.updateVelocities();
+    if (this.velocity > this.velocityStep) {
+        this.velocity -= this.velocityStep;
+        console.log(this.velocity);
+        this.updateVelocities();
+    }
 };
 
 /**
@@ -560,8 +899,8 @@ BaseAvatar.prototype.resetVelocity = function()
 BaseAvatar.prototype.updateVelocities = function()
 {
     this.velocities = [
-        Math.cos(this.angle) * this.velocity,
-        Math.sin(this.angle) * this.velocity
+        Math.cos(this.angle) * this.velocity/1000,
+        Math.sin(this.angle) * this.velocity/1000
     ];
 };
 
@@ -590,17 +929,13 @@ BaseAvatar.prototype.die = function()
 /**
  * Start printing
  */
-BaseAvatar.prototype.togglePrinting = function(e)
+BaseAvatar.prototype.togglePrinting = function()
 {
-    this.printing = !this.printing;
-
     clearTimeout(this.printingTimeout);
 
-    this.printingTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
+    this.setPrinting(!this.printing);
 
-    if (!this.printing) {
-        this.trail.clear();
-    }
+    this.printingTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
 };
 
 /**
@@ -610,9 +945,17 @@ BaseAvatar.prototype.stopPrinting = function()
 {
     clearTimeout(this.printingTimeout);
 
-    this.printing = false;
+    this.setPrinting(false);
+};
 
-    this.trail.clear();
+/**
+ * Set printing
+ *
+ * @param {Boolean} printing
+ */
+BaseAvatar.prototype.setPrinting = function(printing)
+{
+    this.printing = printing;
 };
 
 /**
@@ -670,10 +1013,19 @@ BaseAvatar.prototype.clear = function()
     this.angle           = Math.random() * Math.PI;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
+    this.velocity        = BaseAvatar.prototype.velocity;
     this.alive           = true;
     this.printing        = false;
 
     this.updateVelocities();
+};
+
+/**
+ * Destroy
+ */
+BaseAvatar.prototype.destroy = function()
+{
+    this.stopPrinting();
 };
 
 /**
@@ -694,110 +1046,46 @@ BaseAvatar.prototype.serialize = function()
  *
  * @param name
  * @param color
- * @param radius
  */
-function BaseBonus(name, color, radius)
+function BaseBonus(position)
 {
     EventEmitter.call(this);
-    this.id              = this.generateUUID();
-    this.name            = name || this.defaultName;
-    this.color           = color || this.defaultColor;
-    this.radius          = radius || this.defaultRadius;
-    this.active          = false;
-    this.positive        = true;
 
-    this.position        = [this.radius, this.radius];
+    this.position = position;
+    this.id       = null;
 }
 
 BaseBonus.prototype = Object.create(EventEmitter.prototype);
 
-BaseBonus.prototype.precision      = 1;
-BaseBonus.prototype.defaultName    = 'Bonus';
-BaseBonus.prototype.defaultColor   = '#7CFC00';
-BaseBonus.prototype.defaultRadius  = 1.2;
+BaseBonus.prototype.precision = 1;
+BaseBonus.prototype.type      = 'default';
+BaseBonus.prototype.color     = '#7CFC00';
+BaseBonus.prototype.radius    = 2.4;
+BaseBonus.prototype.duration  = 3333;
+BaseBonus.prototype.positive  = true;
 
-/**
- * Set Point
- *
- * @param {Array} point
- */
-BaseBonus.prototype.setPosition = function(point)
-{
-    this.position[0] = point[0];
-    this.position[1] = point[1];
-};
-
-/**
- * Pop
- */
-BaseBonus.prototype.pop = function() {
-    this.active = true;
-};
 
 /**
  * Clear
  *
  * @param {Array} point
  */
-BaseBonus.prototype.clear = function()
-{
-    this.active = false;
-};
-
-/**
- * Update
- */
-BaseBonus.prototype.update = function() {};
-
-/**
- * http://www.broofa.com/Tools/Math.uuid.htm
- * @returns {Function}
- */
-BaseBonus.prototype.generateUUID = function () {
-    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
-    var uuid = new Array(36), rnd = 0, r;
-
-    for ( var i = 0; i < 36; i ++ ) {
-        if ( i === 8 || i === 13 || i === 18 || i === 23 ) {
-            uuid[ i ] = '-';
-        } else if ( i === 14 ) {
-            uuid[ i ] = '4';
-        } else {
-            if (rnd <= 0x02) {
-                rnd = 0x2000000 + (Math.random()*0x1000000)|0;
-            }
-            r = rnd & 0xf;
-            rnd = rnd >> 4;
-            uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r];
-        }
-    }
-
-    return uuid.join('');
-};
+BaseBonus.prototype.clear = function() {};
 
 /**
  * Serialize
  *
- * @returns {{id: *, name: *, color: *, radius: *, active: *, position: *}}
+ * @return {Object}
  */
-BaseBonus.prototype.serialize = function () {
+BaseBonus.prototype.serialize = function ()
+{
     return {
         id: this.id,
-        name: this.name,
+        type: this.type,
         color: this.color,
         radius: this.radius,
-        active: this.active,
         position: this.position
     };
-};
-
-/**
- * Unserialize
- *
- * @param bonus
- */
-BaseBonus.prototype.unserialize = function (bonus) {
-    _.extend(this, bonus);
 };
 /**
  * BaseGame
@@ -808,17 +1096,17 @@ function BaseGame(room)
 {
     EventEmitter.call(this);
 
-    this.room     = room;
-    this.name     = this.room.name;
-    this.channel  = 'game:' + this.name;
-    this.frame    = null;
-    this.avatars  = this.room.players.map(function () { return this.getAvatar(); });
-    this.bonuses  = new Collection([], 'id');
-    this.size     = this.getSize(this.avatars.count());
-    this.rendered = null;
-    this.maxScore = this.getMaxScore(this.avatars.count());
-    this.fps      = new FPSLogger();
-    this.started  = false;
+    this.room         = room;
+    this.name         = this.room.name;
+    this.channel      = 'game:' + this.name;
+    this.frame        = null;
+    this.avatars      = this.room.players.map(function () { return this.getAvatar(); });
+    this.size         = this.getSize(this.avatars.count());
+    this.rendered     = null;
+    this.maxScore     = this.getMaxScore(this.avatars.count());
+    this.fps          = new FPSLogger();
+    this.started      = false;
+    this.bonusManager = new BonusManager(this);
 
     this.start    = this.start.bind(this);
     this.stop     = this.stop.bind(this);
@@ -831,7 +1119,7 @@ function BaseGame(room)
 
 BaseGame.prototype = Object.create(EventEmitter.prototype);
 
-BaseGame.prototype.framerate     = 1/60;
+BaseGame.prototype.framerate     = 1/60 * 1000;
 BaseGame.prototype.perPlayerSize = 100;
 BaseGame.prototype.warmupTime    = 5000;
 BaseGame.prototype.warmdownTime  = 3000;
@@ -850,7 +1138,7 @@ BaseGame.prototype.update = function(step) {};
  */
 BaseGame.prototype.removeAvatar = function(avatar)
 {
-    avatar.clear();
+    avatar.destroy();
 
     var result = this.avatars.remove(avatar);
 
@@ -913,6 +1201,8 @@ BaseGame.prototype.onStop = function()
 {
     this.frame    = null;
     this.rendered = null;
+
+    this.bonusManager.stop();
 };
 
 /**
@@ -920,7 +1210,7 @@ BaseGame.prototype.onStop = function()
  */
 BaseGame.prototype.newFrame = function()
 {
-    this.frame = setTimeout(this.loop.bind(this), this.framerate * 1000);
+    this.frame = setTimeout(this.loop.bind(this), this.framerate);
 };
 
 /**
@@ -985,9 +1275,9 @@ BaseGame.prototype.serialize = function()
  *
  * @return {Boolean}
  */
-BaseGame.prototype.isStarted = function()
+BaseGame.prototype.isPlaying = function()
 {
-    return this.started;
+    return this.frame !== null;
 };
 
 /**
@@ -995,6 +1285,10 @@ BaseGame.prototype.isStarted = function()
  */
 BaseGame.prototype.newRound = function()
 {
+    for (var i = this.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
+        this.bonusManager.bonuses.items[i].clear();
+    }
+
     setTimeout(this.start, this.warmupTime);
 };
 
@@ -1024,11 +1318,7 @@ BaseGame.prototype.end = function()
         }
 
         this.emit('end', {game: this});
-
-        return true;
     }
-
-    return false;
 };
 
 /**
@@ -1101,8 +1391,10 @@ BasePlayer.prototype.getAvatar = function()
  */
 BasePlayer.prototype.reset = function()
 {
-    this.ready  = false;
+    this.avatar.destroy();
+
     this.avatar = null;
+    this.ready  = false;
 };
 
 /**
@@ -1131,7 +1423,7 @@ BasePlayer.prototype.getRandomColor = function()
     var code = Math.floor(Math.random()*16777215).toString(16),
         miss = 6 - code.length;
 
-    return '#' + code + (miss ? Array(miss +1).join("0") : '');
+    return '#' + code + (miss ? new Array(miss +1).join('0') : '');
 };
 /**
  * Base Room
@@ -1191,7 +1483,7 @@ BaseRoom.prototype.removePlayer = function(player)
  */
 BaseRoom.prototype.isReady = function()
 {
-    return this.players.count() > 1 && this.players.filter(function () { return !this.ready; }).isEmpty();
+    return /*this.players.count() > 1 &&*/ this.players.filter(function () { return !this.ready; }).isEmpty();
 };
 
 /**
@@ -1280,22 +1572,30 @@ BaseTrail.prototype.clear = function()
 /**
  * Game Controller
  */
-function GameController(io)
+function GameController()
 {
-    this.io    = io;
+    var controller = this;
+
     this.games = new Collection([], 'name');
 
     this.onDie         = this.onDie.bind(this);
     this.onAngle       = this.onAngle.bind(this);
     this.onPosition    = this.onPosition.bind(this);
+    this.onBonusPop    = this.onBonusPop.bind(this);
+    this.onBonusClear  = this.onBonusClear.bind(this);
+    this.onPrinting    = this.onPrinting.bind(this);
     this.onPoint       = this.onPoint.bind(this);
     this.onScore       = this.onScore.bind(this);
     this.onTrailClear  = this.onTrailClear.bind(this);
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
     this.onRoundWinner = this.onRoundWinner.bind(this);
-    this.onBonusPop    = this.onBonusPop.bind(this);
-    this.onBonusClear  = this.onBonusClear.bind(this);
+    this.onEnd         = this.onEnd.bind(this);
+
+    this.callbacks = {
+        onGameLoaded: function () { controller.onGameLoaded(this); },
+        onMove: function (data) { controller.onMove(this, data); },
+    };
 }
 
 /**
@@ -1310,9 +1610,9 @@ GameController.prototype.addGame = function(game)
         game.on('round:end', this.onRoundEnd);
         game.on('round:winner', this.onRoundWinner);
 
-        game.on('bonus:pop', this.onBonusPop);
-        game.on('bonus:clear', this.onBonusClear);
-        
+        game.bonusManager.on('bonus:pop', this.onBonusPop);
+        game.bonusManager.on('bonus:clear', this.onBonusClear);
+
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
             this.attach(game.clients.items[i], game);
         }
@@ -1327,12 +1627,13 @@ GameController.prototype.addGame = function(game)
 GameController.prototype.removeGame = function(game)
 {
     if (this.games.remove(game)) {
+        game.removeListener('end', this.onEnd);
         game.removeListener('round:new', this.onRoundNew);
         game.removeListener('round:end', this.onRoundEnd);
         game.removeListener('round:winner', this.onRoundWinner);
-        game.removeListener('bonus:pop', this.onBonusPop);
-        game.removeListener('bonus:clear', this.onBonusClear);
-        
+        game.bonusManager.removeListener('bonus:pop', this.onBonusPop);
+        game.bonusManager.removeListener('bonus:clear', this.onBonusClear);
+
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
             this.detach(game.clients.items[i], game);
         }
@@ -1347,7 +1648,6 @@ GameController.prototype.removeGame = function(game)
 GameController.prototype.attach = function(client, game)
 {
     this.attachEvents(client);
-    client.joinChannel('game:' + game.name);
 };
 
 /**
@@ -1364,7 +1664,7 @@ GameController.prototype.detach = function(client)
     if (client.room.game) {
         for (var i = client.players.items.length - 1; i >= 0; i--) {
             avatar = client.players.items[i].avatar;
-            this.io.sockets.in(client.room.game.channel).emit('game:leave', {avatar: avatar.name});
+            client.room.game.client.addEvent('game:leave', {avatar: avatar.name});
             client.room.game.removeAvatar(avatar);
         }
     }
@@ -1380,8 +1680,8 @@ GameController.prototype.attachEvents = function(client)
     var controller = this,
         avatar;
 
-    client.socket.on('loaded', function (data) { controller.onGameLoaded(client); });
-    client.socket.on('player:move', function (data) { controller.onMove(client, data); });
+    client.on('loaded', this.callbacks.onGameLoaded);
+    client.on('player:move', this.callbacks.onMove);
 
     for (var i = client.players.items.length - 1; i >= 0; i--) {
         avatar = client.players.items[i].avatar;
@@ -1389,6 +1689,7 @@ GameController.prototype.attachEvents = function(client)
         avatar.on('die', this.onDie);
         avatar.on('angle', this.onAngle);
         avatar.on('position', this.onPosition);
+        avatar.on('printing', this.onPrinting);
         avatar.on('point', this.onPoint);
         avatar.on('score', this.onScore);
         avatar.trail.on('clear', this.onTrailClear);
@@ -1404,16 +1705,19 @@ GameController.prototype.detachEvents = function(client)
 {
     var avatar;
 
-    client.socket.removeAllListeners('loaded');
-    client.socket.removeAllListeners('channel');
-    client.socket.removeAllListeners('player:move');
+    client.removeListener('loaded', this.callbacks.onGameLoaded);
+    client.removeListener('player:move', this.callbacks.onMove);
 
     for (var i = client.players.items.length - 1; i >= 0; i--) {
-        client.players.items[i].avatar.removeAllListeners('die');
-        client.players.items[i].avatar.removeAllListeners('position');
-        client.players.items[i].avatar.removeAllListeners('point');
-        client.players.items[i].avatar.removeAllListeners('score');
-        client.players.items[i].avatar.trail.removeAllListeners('clear');
+        avatar = client.players.items[i].avatar;
+
+        avatar.removeListener('die', this.onDie);
+        avatar.removeListener('angle', this.onAngle);
+        avatar.removeListener('position', this.onPosition);
+        avatar.removeListener('printing', this.onPrinting);
+        avatar.removeListener('point', this.onPoint);
+        avatar.removeListener('score', this.onScore);
+        avatar.trail.removeListener('clear', this.onTrailClear);
     }
 };
 
@@ -1424,17 +1728,16 @@ GameController.prototype.detachEvents = function(client)
  */
 GameController.prototype.onGameLoaded = function(client)
 {
-    var avatar;
+    var game = client.room.game,
+        avatar;
 
-    for (var i = client.players.ids.length - 1; i >= 0; i--) {
+    for (var i = client.players.items.length - 1; i >= 0; i--) {
         avatar = client.players.items[i].avatar;
         avatar.ready = true;
-        this.io.sockets.in(client.room.game.channel).emit('position', {avatar: avatar.name, point: avatar.head});
-        this.io.sockets.in(client.room.game.channel).emit('angle', {avatar: avatar.name, angle: avatar.angle});
     }
 
-    if (client.room.game.isReady()) {
-        client.room.game.newRound();
+    if (game.isReady()) {
+        game.newRound();
     }
 };
 
@@ -1461,10 +1764,24 @@ GameController.prototype.onMove = function(client, data)
 GameController.prototype.onPosition = function(data)
 {
     var avatar = data.avatar,
-        channel = avatar.player.client.room.game.channel,
+        game = avatar.player.client.room.game,
         point = data.point;
 
-    this.io.sockets.in(channel).emit('position', {avatar: avatar.name, point: point});
+    game.client.addEvent('position', {avatar: avatar.name, point: point});
+};
+
+/**
+ * On printing
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onPrinting = function(data)
+{
+    var avatar = data.avatar,
+        game = avatar.player.client.room.game,
+        printing = data.printing;
+
+    game.client.addEvent('printing', {avatar: avatar.name, printing: printing});
 };
 
 /**
@@ -1475,10 +1792,12 @@ GameController.prototype.onPosition = function(data)
 GameController.prototype.onAngle = function(data)
 {
     var avatar = data.avatar,
-        channel = avatar.player.client.room.game.channel,
+        game = avatar.player.client.room.game,
         angle = data.angle;
 
-    this.io.sockets.in(channel).emit('angle', {avatar: avatar.name, angle: angle});
+    if(!avatar.player.client.room.game.isPlaying()) {
+        game.client.addEvent('angle', {avatar: avatar.name, angle: angle});
+    }
 };
 
 /**
@@ -1489,10 +1808,12 @@ GameController.prototype.onAngle = function(data)
 GameController.prototype.onPoint = function(data)
 {
     var avatar = data.avatar,
-        channel = avatar.player.client.room.game.channel,
+        game = avatar.player.client.room.game,
         point = data.point;
 
-    this.io.sockets.in(channel).emit('point', {avatar: avatar.name, point: point});
+    if (data.important) {
+        game.client.addEvent('point', {avatar: avatar.name, point: point});
+    }
 };
 
 /**
@@ -1503,9 +1824,9 @@ GameController.prototype.onPoint = function(data)
 GameController.prototype.onDie = function(data)
 {
     var avatar = data.avatar,
-        channel = avatar.player.client.room.game.channel;
+        game = avatar.player.client.room.game;
 
-    this.io.sockets.in(channel).emit('die', {avatar: avatar.name});
+    game.client.addEvent('die', {avatar: avatar.name});
 };
 
 /**
@@ -1515,10 +1836,9 @@ GameController.prototype.onDie = function(data)
  */
 GameController.prototype.onBonusPop = function(data)
 {
-    var game = data.game,
-        channel = data.game.channel;
-    
-    this.io.sockets.in(channel).emit('bonus:pop', data.bonus.serialize());
+    var game = data.game, bonus = data.bonus;
+
+    game.client.addEvent('bonus:pop', bonus.serialize());
 };
 
 /**
@@ -1529,10 +1849,9 @@ GameController.prototype.onBonusPop = function(data)
  */
 GameController.prototype.onBonusClear = function(data)
 {
-    var game = data.game,
-        channel = data.game.channel;
+    var game = data.game, bonus = data.bonus;
 
-    this.io.sockets.in(channel).emit('bonus:clear', data.bonus.serialize());
+    game.client.addEvent('bonus:clear', {bonus: bonus.id});
 };
 
 
@@ -1544,10 +1863,10 @@ GameController.prototype.onBonusClear = function(data)
 GameController.prototype.onScore = function(data)
 {
     var avatar = data.avatar,
-        channel = avatar.player.client.room.game.channel,
+        game = avatar.player.client.room.game,
         score = data.score;
 
-    this.io.sockets.in(channel).emit('score', {avatar: avatar.name, score: score});
+    game.client.addEvent('score', {avatar: avatar.name, score: score});
 };
 
 /**
@@ -1558,9 +1877,9 @@ GameController.prototype.onScore = function(data)
 GameController.prototype.onTrailClear = function(data)
 {
     var avatar = data.avatar,
-        channel = avatar.player.client.room.game.channel;
+        game = avatar.player.client.room.game;
 
-    this.io.sockets.in(channel).emit('trail:clear', {avatar: avatar.name});
+    game.client.addEvent('trail:clear', {avatar: avatar.name});
 };
 
 // Game events:
@@ -1572,7 +1891,7 @@ GameController.prototype.onTrailClear = function(data)
  */
 GameController.prototype.onRoundNew = function(data)
 {
-    this.io.sockets.in(data.game.channel).emit('round:new');
+    data.game.client.addEvent('round:new');
 };
 
 /**
@@ -1582,7 +1901,7 @@ GameController.prototype.onRoundNew = function(data)
  */
 GameController.prototype.onRoundEnd = function(data)
 {
-    this.io.sockets.in(data.game.channel).emit('round:end');
+    data.game.client.addEvent('round:end');
 };
 
 /**
@@ -1592,19 +1911,44 @@ GameController.prototype.onRoundEnd = function(data)
  */
 GameController.prototype.onRoundWinner = function(data)
 {
-    this.io.sockets.in(data.game.channel).emit('round:winner', {winner: data.winner.name});
+    data.game.client.addEvent('round:winner', {winner: data.winner.name});
+};
+
+/**
+ * On end
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onEnd = function(data)
+{
+    data.game.client.addEvent('end');
 };
 
 /**
  * Room Controller
+ *
+ * @param {RoomRepository} repository
+ * @param {GameController} gameController
  */
-function RoomController(io, repository, gameController)
+function RoomController(repository, gameController)
 {
-    this.io             = io;
+    var controller = this;
+
+    this.socketGroup    = new SocketGroup();
     this.repository     = repository;
     this.gameController = gameController;
 
     this.endGame = this.endGame.bind(this);
+
+    this.callbacks = {
+        emitAllRooms: function () { controller.emitAllRooms(this); },
+        onCreateRoom: function (data) { controller.onCreateRoom(this, data.data, data.callback); },
+        onJoinRoom: function (data) { controller.onJoinRoom(this, data.data, data.callback); },
+        onLeaveRoom: function () { controller.onLeaveRoom(this); },
+        onAddPlayer: function (data) { controller.onAddPlayer(this, data.data, data.callback); },
+        onReadyRoom: function (data) { controller.onReadyRoom(this, data.data, data.callback); },
+        onColorRoom: function (data) { controller.onColorRoom(this, data.data, data.callback); }
+    };
 }
 
 /**
@@ -1614,11 +1958,9 @@ function RoomController(io, repository, gameController)
  */
 RoomController.prototype.attach = function(client)
 {
-    var rooms = this.repository.all();
-
-    client.joinChannel('rooms');
-    this.attachEvents(client);
-    this.emitAllRooms(client);
+    if (this.socketGroup.clients.add(client)) {
+        this.attachEvents(client);
+    }
 };
 
 /**
@@ -1628,8 +1970,9 @@ RoomController.prototype.attach = function(client)
  */
 RoomController.prototype.detach = function(client)
 {
-    this.detachEvents(client);
-    this.onLeaveRoom(client);
+    if (this.socketGroup.clients.remove(client)) {
+        this.detachEvents(client);
+    }
 };
 
 /**
@@ -1639,15 +1982,13 @@ RoomController.prototype.detach = function(client)
  */
 RoomController.prototype.attachEvents = function(client)
 {
-    var controller = this;
-
-    client.socket.on('room:fetch', function () { controller.emitAllRooms(client); });
-    client.socket.on('room:create', function (data, callback) { controller.onCreateRoom(client, data, callback); });
-    client.socket.on('room:join', function (data, callback) { controller.onJoinRoom(client, data, callback); });
-    client.socket.on('room:leave', function () { controller.onLeaveRoom(client); });
-    client.socket.on('room:player:add', function (data, callback) { controller.onAddPlayer(client, data, callback); });
-    client.socket.on('room:ready', function (data, callback) { controller.onReadyRoom(client, data, callback); });
-    client.socket.on('room:color', function (data, callback) { controller.onColorRoom(client, data, callback); });
+    client.on('room:fetch', this.callbacks.emitAllRooms);
+    client.on('room:create', this.callbacks.onCreateRoom);
+    client.on('room:join', this.callbacks.onJoinRoom);
+    client.on('room:leave', this.callbacks.onLeaveRoom);
+    client.on('room:player:add', this.callbacks.onAddPlayer);
+    client.on('room:ready', this.callbacks.onReadyRoom);
+    client.on('room:color', this.callbacks.onColorRoom);
 };
 
 /**
@@ -1657,13 +1998,13 @@ RoomController.prototype.attachEvents = function(client)
  */
 RoomController.prototype.detachEvents = function(client)
 {
-    client.socket.removeAllListeners('room:fetch');
-    client.socket.removeAllListeners('room:create');
-    client.socket.removeAllListeners('room:join');
-    client.socket.removeAllListeners('room:player:add');
-    client.socket.removeAllListeners('room:leave');
-    client.socket.removeAllListeners('room:ready');
-    client.socket.removeAllListeners('room:color');
+    client.removeListener('room:fetch', this.callbacks.emitAllRooms);
+    client.removeListener('room:create', this.callbacks.onCreateRoom);
+    client.removeListener('room:join', this.callbacks.onJoinRoom);
+    client.removeListener('room:leave', this.callbacks.onLeaveRoom);
+    client.removeListener('room:player:add', this.callbacks.onAddPlayer);
+    client.removeListener('room:ready', this.callbacks.onReadyRoom);
+    client.removeListener('room:color', this.callbacks.onColorRoom);
 };
 
 /**
@@ -1673,9 +2014,13 @@ RoomController.prototype.detachEvents = function(client)
  */
 RoomController.prototype.emitAllRooms = function(client)
 {
+    var events = [];
+
     for (var i = this.repository.rooms.items.length - 1; i >= 0; i--) {
-        client.socket.emit('room:new', this.repository.rooms.items[i].serialize());
+        events.push(['room:new', this.repository.rooms.items[i].serialize()]);
     }
+
+    client.addEvents(events);
 };
 
 // Events:
@@ -1693,7 +2038,7 @@ RoomController.prototype.onCreateRoom = function(client, data, callback)
     callback({success: room ? true : false, room: room? room.name : null});
 
     if (room) {
-        this.io.sockets.in('rooms').emit('room:new', room.serialize());
+        this.socketGroup.addEvent('room:new', room.serialize());
     }
 };
 
@@ -1707,7 +2052,7 @@ RoomController.prototype.onJoinRoom = function(client, data, callback)
 {
     var room = this.repository.get(data.room);
 
-    if (room) {
+    if (room && !room.game) {
         room.addClient(client);
         callback({success: true});
     } else {
@@ -1732,7 +2077,7 @@ RoomController.prototype.onLeaveRoom = function(client)
 
         for (var i = client.players.items.length - 1; i >= 0; i--) {
             player = client.players.items[i];
-            this.io.sockets.in('rooms').emit('room:leave', {room: room.name, player: player.name});
+            this.socketGroup.addEvent('room:leave', {room: room.name, player: player.name});
             room.removePlayer(player);
         }
 
@@ -1749,16 +2094,15 @@ RoomController.prototype.onLeaveRoom = function(client)
  */
 RoomController.prototype.checkRoomClose = function(room)
 {
-    var name = room.name;
-
     if (room.clients.isEmpty() && this.repository.remove(room)) {
-        this.io.sockets.in('rooms').emit('room:close', {room: room.name});
+        this.socketGroup.addEvent('room:close', {room: room.name});
     }
 };
 
 /**
  * On add player to room
  *
+ * @param client
  * @param {Object} data
  * @param {Function} callback
  */
@@ -1775,7 +2119,7 @@ RoomController.prototype.onAddPlayer = function(client, data, callback)
 
         callback({success: true});
 
-        this.io.sockets.in('rooms').emit('room:join', {room: client.room.name, player: player.serialize()});
+        this.socketGroup.addEvent('room:join', {room: client.room.name, player: player.serialize()});
     } else {
         callback({success: false});
     }
@@ -1784,7 +2128,9 @@ RoomController.prototype.onAddPlayer = function(client, data, callback)
 /**
  * On new room
  *
- * @param {Object} data
+ * @param client
+ * @param data
+ * @param callback
  */
 RoomController.prototype.onColorRoom = function(client, data, callback)
 {
@@ -1796,7 +2142,7 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
 
         callback({success: true, color: player.color});
 
-        this.io.sockets.in('rooms').emit('room:player:color', {
+        this.socketGroup.addEvent('room:player:color', {
             room: room.name,
             player: player.name,
             color: player.color
@@ -1807,7 +2153,9 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
 /**
  * On new room
  *
+ * @param client
  * @param {Object} data
+ * @param callback
  */
 RoomController.prototype.onReadyRoom = function(client, data, callback)
 {
@@ -1819,7 +2167,7 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
 
         callback({success: true, ready: player.ready});
 
-        this.io.sockets.in('rooms').emit('room:player:ready', {
+        this.socketGroup.addEvent('room:player:ready', {
             room: room.name,
             player: player.name,
             ready: player.ready
@@ -1838,18 +2186,16 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
  */
 RoomController.prototype.startGame = function(room)
 {
-    var game = room.newGame(),
-        client;
+    var game = room.newGame();
 
-    this.io.sockets.in('rooms').emit('room:start', {room: room.name});
-
-    game.on('end', this.endGame);
-
-    this.gameController.addGame(game);
+    this.socketGroup.addEvent('room:game:start', {room: room.name});
 
     for (var i = room.clients.items.length - 1; i >= 0; i--) {
-        this.detachEvents(room.clients.items[i]);
+        this.detach(room.clients.items[i]);
     }
+
+    this.gameController.addGame(game);
+    game.on('end', this.endGame);
 };
 
 /**
@@ -1863,93 +2209,162 @@ RoomController.prototype.endGame = function(data)
         room = game.room,
         client;
 
-    this.io.sockets.in(game.channel).emit('end');
+    this.socketGroup.addEvent('room:game:end', {room: room.name});
 
     this.gameController.removeGame(game);
 
     for (var i = room.clients.items.length - 1; i >= 0; i--) {
         client = room.clients.items[i];
-        client.joinChannel('rooms');
-        this.attachEvents(client);
+        this.attach(client);
         this.emitAllRooms(client);
     }
 
     room.closeGame();
 };
 
+/**
+ * Body
+ *
+ * @param {Array} position
+ * @param {Number} radius
+ * @param {Number} mask
+ * @param {Object} data
+ */
+function Body (position, radius, data, mask)
+{
+    this.position = position;
+    this.radius   = radius;
+    this.data     = data;
+    this.islands  = new Collection();
+    this.mask     = typeof(mask) !== 'undefined' ? mask : null;
+    this.id       = null;
+
+    this.clearMask = this.clearMask.bind(this);
+}
+
+/**
+ * Clear mask
+ */
+Body.prototype.setMask = function(mask, duration)
+{
+    this.mask = mask;
+
+    if (typeof(duration) === 'number') {
+        setTimeout(this.clearMask, duration);
+    }
+};
+
+/**
+ * Clear mask
+ */
+Body.prototype.clearMask = function()
+{
+    this.mask = null;
+};
+
+/**
+ * Match mask
+ *
+ * @param {Body} body
+ *
+ * @return {Boolean}
+ */
+Body.prototype.matchMask = function(body)
+{
+    return this.mask && body.mask ? this.mask !== body.mask : true;
+};
 
 /**
  * Island
  */
 function Island(id,  size, from)
 {
-    this.id      = id;
-    this.size    = size;
-    this.from    = [from[0], from[1]];
-    this.to      = [this.from[0] + size, this.from[1] + size];
-    this.circles = [];
+    this.id     = id;
+    this.size   = size;
+    this.from   = [from[0], from[1]];
+    this.to     = [this.from[0] + size, this.from[1] + size];
+    this.bodies = new Collection([], 'id', true);
 }
 
 /**
- * Add circle
+ * Add body
  *
- * @param {Array} circle
+ * @param {Array} body
  */
-Island.prototype.addCircle = function(circle)
+Island.prototype.addBody = function(body)
 {
-    this.circles.push(circle);
+    this.bodies.add(body);
+    body.islands.add(this);
 };
 
 /**
- * Add circle
+ * Remove body
  *
- * @param {Array} circle
+ * @param {Array} body
  */
-Island.prototype.testCircle = function(circle)
+Island.prototype.removeBody = function(body)
 {
-    if (!this.circleInBound(circle, this.from, this.to)) {
-        return false;
-    }
+    this.bodies.remove(body);
+    body.islands.remove(this);
+};
 
-    for (var i = this.circles.length - 1; i >= 0; i--)
-    {
-        if (Island.circlesTouch(this.circles[i], circle)) {
-            return false;
+
+/**
+ * Add body
+ *
+ * @param {Array} body
+ */
+Island.prototype.testBody = function(body)
+{
+    return this.getBody(body) === null;
+};
+
+/**
+ * Add body
+ *
+ * @param {Body} body
+ */
+Island.prototype.getBody = function(body)
+{
+    if (Island.bodyInBound(body, this.from, this.to)) {
+        for (var i = this.bodies.items.length - 1; i >= 0; i--) {
+            if (Island.bodiesTouch(this.bodies.items[i], body)) {
+                return this.bodies.items[i];
+            }
         }
     }
 
-    return true;
+    return null;
 };
 
 /**
- * Circles touch
+ * Bodies touch
  *
- * @param {Array} circleA
- * @param {Array} circleB
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  *
  * @return {Boolean}
  */
-Island.circlesTouch = function(circleA, circleB)
+Island.bodiesTouch = function(bodyA, bodyB)
 {
-    return Island.getDistance(circleA, circleB) < (circleA[2] + circleB[2])
-        && (circleA[3] && circleB[3] ? circleA[3] !== circleB[3] : true);
+    return Island.getDistance(bodyA.position, bodyB.position) < (bodyA.radius + bodyB.radius) && bodyA.matchMask(bodyB);
 };
 
 /**
  * Is point in bound?
  *
- * @param {Array} circle
+ * @param {Body} body
  * @param {Array} from
  * @param {Array} to
  *
  * @return {Boolean}
  */
-Island.prototype.circleInBound = function(circle, from, to)
+Island.bodyInBound = function(body, from, to)
 {
-    return circle[0] + circle[2] >= from[0]
-        && circle[0] - circle[2] <= to[0]
-        && circle[1] + circle[2] >= from[1]
-        && circle[1] - circle[2] <= to[1];
+    return body.position[0] + body.radius >= from[0] &&
+           body.position[0] - body.radius <= to[0]   &&
+           body.position[1] + body.radius >= from[1] &&
+           body.position[1] - body.radius <= to[1];
 };
 
 /**
@@ -1958,7 +2373,7 @@ Island.prototype.circleInBound = function(circle, from, to)
  * @param {Array} from
  * @param {Array} to
  *
- * @returns {number}
+ * @return {Number}
  */
 Island.getDistance = function(from, to)
 {
@@ -1978,7 +2393,7 @@ Island.prototype.getRandomPosition = function(radius, border)
     var margin = radius + border * this.size,
         point = this.getRandomPoint(margin);
 
-    while (!this.testCircle([point[0], point[1], margin, 0])) {
+    while (!this.testBody(point, margin)) {
         point = this.getRandomPoint(margin);
     }
 
@@ -2005,29 +2420,46 @@ Island.prototype.getRandomPoint = function(margin)
  */
 Island.prototype.clear = function()
 {
-    this.circles = [];
+    this.bodies.clear();
 };
 /**
  * Server
  */
 function Server(config)
 {
-    this.config       = config;
-    this.app          = express();
-    this.server       = http.Server(this.app);
-    this.io           = io(this.server);
+    this.config      = config;
+    this.app         = express();
+    this.server      = new http.Server(this.app);
+    this.clients     = new Collection([], 'id', true);
 
-    this.roomRepository = new RoomRepository(this.io);
-    this.gameController = new GameController(this.io);
-    this.roomController = new RoomController(this.io, this.roomRepository, this.gameController);
+    this.roomRepository = new RoomRepository();
+    this.gameController = new GameController();
+    this.roomController = new RoomController(this.roomRepository, this.gameController);
 
+    this.authorizationHandler  = this.authorizationHandler.bind(this);
     this.onSocketConnection    = this.onSocketConnection.bind(this);
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
+    this.onError               = this.onError.bind(this);
 
-    this.io.on('connection', this.onSocketConnection);
     this.app.use(express.static('web'));
 
-    this.server.listen(config.port, function() { console.log('Listening on: %d' + config.port); });
+    this.server.on("error", this.onError);
+    this.server.on('upgrade', this.authorizationHandler);
+    this.server.listen(config.port);
+
+    console.info('Listening on: %s', config.port);
+}
+
+/**
+ * Authorization Handler
+ *
+ * @param {object} request
+ * @param {object} socket
+ * @param {Buffer} body
+ */
+Server.prototype.authorizationHandler = function(request, socket, head)
+{
+    return WebSocket.isWebSocket(request) ? this.onSocketConnection(new WebSocket(request, socket, head, ['websocket'], {ping: 5})) : socket.end();
 }
 
 /**
@@ -2036,15 +2468,19 @@ function Server(config)
  * @param {Socket} socket
  */
 Server.prototype.onSocketConnection = function(socket)
-{
-    console.log('Client connected', socket.id);
+{;
 
     var server = this,
-        client = new SocketClient(socket);
+        client = new SocketClient(socket, 3);
 
-    socket.on('disconnect', function () { server.onSocketDisconnection(client); });
+    this.clients.add(client);
+    socket.on('close', function (event) { server.onSocketDisconnection(client); });
+
+    client.addEvent('open', client.id);
 
     this.roomController.attach(client);
+
+    console.log('Client connected', client.id)
 };
 
 /**
@@ -2056,46 +2492,86 @@ Server.prototype.onSocketDisconnection = function(client)
 {
     console.log('Client disconnected', client.socket.id);
 
+    this.roomController.onLeaveRoom(client);
     this.roomController.detach(client);
+
+    this.clients.remove(client);
+    client = null;
+};
+
+/**
+ * On error
+ *
+ * @param {Error} error */
+Server.prototype.onError = function(error)
+{
+    console.error("Server Error:", error.stack);
 };
 /**
  * Socket Client
  *
  * @param {Socket} socket
  */
-function SocketClient(socket)
+function SocketClient(socket, interval)
 {
-    this.id      = socket.id;
-    this.socket  = socket;
+    BaseSocketClient.call(this, socket, interval);
+
     this.players = new Collection([], 'name');
+    this.id      = null;
     this.room    = null;
-
-    this.joinChannel = this.joinChannel.bind(this);
-
-    this.socket.emit('open', this.id);
 }
 
-SocketClient.prototype = Object.create(EventEmitter.prototype);
-
+SocketClient.prototype = Object.create(BaseSocketClient.prototype);
 /**
- * On channel change
+ * Socket group
  *
- * @param {String} channel
+ * @param {Object} clients
  */
-SocketClient.prototype.joinChannel = function(channel)
+function SocketGroup(clients)
 {
-    this.socket.join(channel);
+    this.clients = typeof(clients) != 'undefined' ? clients : new Collection();
+}
+
+SocketGroup.prototype.on = function(name, callback)
+{
+    for (var i = this.clients.items.length - 1; i >= 0; i--) {
+        this.clients.items[i].on(name, callback);
+    }
+};
+
+SocketGroup.prototype.removeListener = function(name, callback)
+{
+    for (var i = this.clients.items.length - 1; i >= 0; i--) {
+        this.clients.items[i].removeListener(name, callback);
+    }
+};
+
+SocketGroup.prototype.addEvents = function(events, force)
+{
+    for (var i = this.clients.items.length - 1; i >= 0; i--) {
+        this.clients.items[i].addEvents(events, force);
+    }
+};
+
+SocketGroup.prototype.addEvent = function(name, data, callback, force)
+{
+    for (var i = this.clients.items.length - 1; i >= 0; i--) {
+        this.clients.items[i].addEvent(name, data, callback, force);
+    }
 };
 /**
  * World
  */
-function World(size)
+function World(size, islands)
 {
+    islands = typeof(islands) === 'number' ? islands : this.islandGridSize;
+
     this.size       = size;
     this.from       = [0, 0];
     this.to         = [size, size];
     this.islands    = new Collection();
-    this.islandSize = this.size / this.islandGridSize;
+    this.islandSize = this.size / islands;
+    this.active     = false;
 
     var x, y, id;
 
@@ -2131,20 +2607,20 @@ World.prototype.getIslandByPoint = function(point)
 };
 
 /**
- * Get island by circle
+ * Get island by body
  *
- * @param {Array} circle
+ * @param {Body} body
  *
  * @return {Island}
  */
-World.prototype.getIslandsByCircle = function(circle)
+World.prototype.getIslandsByBody = function(body)
 {
     var islands = new Collection(),
         sources = [
-            this.getIslandByPoint([circle[0] - circle[2], circle[1] - circle[2]]),
-            this.getIslandByPoint([circle[0] + circle[2], circle[1] - circle[2]]),
-            this.getIslandByPoint([circle[0] - circle[2], circle[1] + circle[2]]),
-            this.getIslandByPoint([circle[0] + circle[2], circle[1] + circle[2]])
+            this.getIslandByPoint([body.position[0] - body.radius, body.position[1] - body.radius]),
+            this.getIslandByPoint([body.position[0] + body.radius, body.position[1] - body.radius]),
+            this.getIslandByPoint([body.position[0] - body.radius, body.position[1] + body.radius]),
+            this.getIslandByPoint([body.position[0] + body.radius, body.position[1] + body.radius])
         ];
 
     for (var i = sources.length - 1; i >= 0; i--) {
@@ -2157,56 +2633,83 @@ World.prototype.getIslandsByCircle = function(circle)
 };
 
 /**
- * Add circle
+ * Add body
  *
- * @param {Array} circle
+ * @param {Body} body
  */
-World.prototype.addCircle = function(circle)
+World.prototype.addBody = function(body)
 {
-    var islands = this.getIslandsByCircle(circle);
+    if (!this.active) {
+        return;
+    }
+
+    var islands = this.getIslandsByBody(body);
 
     for (var i = islands.length - 1; i >= 0; i--) {
-        islands[i].addCircle(circle);
+        islands[i].addBody(body);
     }
 };
 
 /**
- * Add circle
+ * Remove body
  *
- * @param {Array} circle
+ * @param {Body} body
  */
-World.prototype.testCircle = function(circle)
+World.prototype.removeBody = function(body)
 {
-    if (!this.circleInBound(circle, this.from, this.to)) {
+    if (!this.active) {
+        return;
+    }
+
+    for (var i = body.islands.items.length - 1; i >= 0; i--) {
+        body.islands.items[i].removeBody(body);
+    }
+};
+
+/**
+ * Get body
+ *
+ * @param {Body} body
+ */
+World.prototype.getBody = function(body)
+{
+    if (!Island.bodyInBound(body, this.from, this.to)) {
+        return null;
+    }
+
+    var islands = this.getIslandsByBody(body),
+        body;
+
+    for (var i = islands.length - 1; i >= 0; i--) {
+        body = islands[i].getBody(body);
+        if (body) {
+            return body;
+        }
+    }
+
+    return null;
+};
+
+/**
+ * Add body
+ *
+ * @param {Body} body
+ */
+World.prototype.testBody = function(body)
+{
+    if (!Island.bodyInBound(body, this.from, this.to)) {
         return false;
     }
 
-    var islands = this.getIslandsByCircle(circle);
+    var islands = this.getIslandsByBody(body);
 
     for (var i = islands.length - 1; i >= 0; i--) {
-        if (!islands[i].testCircle(circle)) {
+        if (!islands[i].testBody(body)) {
             return false;
         }
     }
 
     return true;
-};
-
-/**
- * Is point in bound?
- *
- * @param {Array} circle
- * @param {Array} from
- * @param {Array} to
- *
- * @return {Boolean}
- */
-World.prototype.circleInBound = function(circle, from, to)
-{
-    return circle[0] - circle[2] >= from[0]
-        && circle[0] + circle[2] <= to[0]
-        && circle[1] - circle[2] >= from[1]
-        && circle[1] + circle[2] <= to[1];
 };
 
 /**
@@ -2222,7 +2725,7 @@ World.prototype.getRandomPosition = function(radius, border)
     var margin = radius + border * this.size,
         point = this.getRandomPoint(margin);
 
-    while (!this.testCircle([point[0], point[1], margin, 0])) {
+    while (!this.testBody(new Body(point, margin))) {
         point = this.getRandomPoint(margin);
     }
 
@@ -2252,7 +2755,158 @@ World.prototype.clear = function()
     for (var i = this.islands.items.length - 1; i >= 0; i--) {
         this.islands.items[i].clear();
     }
+
+    this.active = false;
 };
+
+/**
+ * Activate
+ */
+World.prototype.activate = function()
+{
+    this.active = true;
+};
+/**
+ * Bonus Manager
+ *
+ * @param {Game} game
+ */
+function BonusManager(game)
+{
+    BaseBonusManager.call(this, game);
+
+    this.world         = new World(this.game.size, 1);
+    this.popingTimeout = null;
+    this.timeouts      = [];
+
+    this.popBonus = this.popBonus.bind(this);
+}
+
+BonusManager.prototype = Object.create(BaseBonusManager.prototype);
+
+/**
+ * Bonus types
+ *
+ * @type {Array}
+ */
+BonusManager.prototype.bonusTypes = [TurtleBonus, RabbitBonus];
+
+/**
+ * Start
+ */
+BonusManager.prototype.start = function()
+{
+    BaseBonusManager.prototype.start.call(this);
+
+    this.world.activate();
+
+    this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
+};
+
+/**
+ * Stop
+ */
+BonusManager.prototype.stop = function()
+{
+    BaseBonusManager.prototype.stop.call(this);
+
+    clearTimeout(this.popingTimeout);
+    this.popingTimeout = null;
+
+    this.clearTimeouts();
+
+    this.world.clear();
+};
+
+/**
+ * Make a bonus 'pop'
+ */
+BonusManager.prototype.popBonus = function ()
+{
+    clearTimeout(this.popingTimeout);
+    this.popingTimeout = null;
+
+    if (this.bonuses.count() < this.bonusCap) {
+        var position = this.game.world.getRandomPosition(BaseBonus.prototype.radius, 0.03),
+            bonus = this.getRandomBonus(position);
+
+        this.add(bonus);
+    }
+
+    this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
+};
+
+/**
+ * Test if an avatar catches a bonus
+ *
+ * @param {Avatar} avatar
+ */
+BonusManager.prototype.testCatch = function(avatar)
+{
+    var body = this.world.getBody(avatar.body),
+        bonus = body ? body.data : null;
+
+    if (bonus && this.remove(bonus)) {
+        this.timeouts.push(bonus.applyTo(avatar));
+    }
+};
+
+/**
+ * Add bonus
+ *
+ * @param {Bonus} bonus
+ */
+BonusManager.prototype.add = function (bonus)
+{
+    if (BaseBonusManager.prototype.add.call(this, bonus)) {
+        this.world.addBody(bonus.body);
+        this.emit('bonus:pop', { game: this.game, bonus: bonus });
+
+        return true;
+    }
+
+    return false;
+};
+
+/**
+ *  Remove bonus
+ *
+ * @param {Bonus} bonus
+ */
+BonusManager.prototype.remove = function(bonus)
+{
+    if (BaseBonusManager.prototype.remove.call(this, bonus)) {
+        this.world.removeBody(bonus.body);
+        this.emit('bonus:clear', {game: this.game, bonus: bonus});
+
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Clear timeouts
+ */
+BonusManager.prototype.clearTimeouts = function()
+{
+    for (var i = this.timeouts.length - 1; i >= 0; i--) {
+        clearTimeout(this.timeouts[i]);
+    }
+
+    this.timeouts = [];
+};
+
+/**
+ * Get random printing time
+ *
+ * @return {Number}
+ */
+BonusManager.prototype.getRandomPopingTime  = function()
+{
+    return this.bonusPopingTime * (1 +  Math.random() * 2);
+};
+
 /**
  * Avatar
  *
@@ -2261,6 +2915,9 @@ World.prototype.clear = function()
 function Avatar(player)
 {
     BaseAvatar.call(this, player);
+
+    this.game = null;
+    this.body = new Body(this.head, this.radius, this);
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
@@ -2286,6 +2943,18 @@ Avatar.prototype.update = function(step)
 };
 
 /**
+ * Set mask
+ *
+ * @param {Number} mask
+ */
+Avatar.prototype.setMask = function(mask)
+{
+    BaseAvatar.prototype.setMask.call(this, mask);
+
+    this.body.setMask(this.mask);
+};
+
+/**
  * Set position
  *
  * @param {Array} point
@@ -2293,7 +2962,10 @@ Avatar.prototype.update = function(step)
 Avatar.prototype.setPosition = function(point)
 {
     BaseAvatar.prototype.setPosition.call(this, point);
-    this.emit('position', {avatar: this, point: point});
+
+    this.body.position = this.head;
+
+    this.emit('position', {avatar: this, point: this.head});
 };
 
 /**
@@ -2304,7 +2976,7 @@ Avatar.prototype.setPosition = function(point)
 Avatar.prototype.setAngle = function(angle)
 {
     BaseAvatar.prototype.setAngle.call(this, angle);
-    this.emit('angle', {avatar: this, angle: angle});
+    this.emit('angle', {avatar: this, angle: this.angle});
 };
 
 /**
@@ -2312,10 +2984,37 @@ Avatar.prototype.setAngle = function(angle)
  *
  * @param {Array} point
  */
-Avatar.prototype.addPoint = function(point)
+Avatar.prototype.addPoint = function(point, important)
 {
-    BaseAvatar.prototype.addPoint.call(this, point);
-    this.emit('point', {avatar: this, point: point});
+    if (this.game.isPlaying()) {
+        BaseAvatar.prototype.addPoint.call(this, point);
+        important = important || this.angularVelocity;
+        this.emit('point', {avatar: this, point: point, important: important});
+    }
+};
+
+/**
+ * Set printing
+ *
+ * @param {Boolean} printing
+ */
+Avatar.prototype.setPrinting = function(printing)
+{
+    if (!printing) {
+        this.addPoint(this.head.slice(0), true);
+    }
+
+    BaseAvatar.prototype.setPrinting.call(this, printing);
+
+    if (!this.printing) {
+        this.trail.clear();
+    }
+
+    this.emit('printing', {avatar: this, printing: this.printing});
+
+    if (printing) {
+        this.addPoint(this.head.slice(0), true);
+    }
 };
 
 /**
@@ -2335,7 +3034,6 @@ Avatar.prototype.die = function()
 Avatar.prototype.setScore = function(score)
 {
     BaseAvatar.prototype.setScore.call(this, score);
-
     this.emit('score', {avatar: this, score: this.score});
 };
 
@@ -2371,66 +3069,16 @@ Avatar.prototype.resetVelocity = function()
 /**
  * Bonus
  *
- * @param name
- * @param color
- * @param radius
+ * @param {Array} position
  */
-function Bonus(name, color, radius)
+function Bonus(position)
 {
-    BaseBonus.call(this, name, color, radius);
+    BaseBonus.call(this, position);
+
+    this.body = new Body(this.position, this.radius, this);
 }
 
 Bonus.prototype = Object.create(BaseBonus.prototype);
-
-/**
- * Set position
- *
- * @param {Array} point
- */
-Bonus.prototype.setPosition = function(point)
-{
-    BaseBonus.prototype.setPosition.call(this, point);
-    this.emit('bonus:position', point);
-};
-
-/**
- * Pop
- */
-Bonus.prototype.pop = function()
-{
-    BaseBonus.prototype.pop.call(this);
-    this.emit('bonus:pop', this.position);
-};
-
-/**
- * Clear
- */
-Bonus.prototype.clear = function()
-{
-    BaseBonus.prototype.clear.call(this);
-    this.emit('clear');
-};
-
-/**
- * Check if a bonus has been taken by given avatar
- *
- * @param avatar
- * @returns {boolean}
- */
-Bonus.prototype.isTakenBy = function (avatar) {
-    if (
-        this.active &&
-        Island.circlesTouch(
-            [avatar.head[0], avatar.head[1], avatar.radius, avatar.mask],
-            [this.position[0], this.position[1], this.radius, 0]
-        )
-    ) {
-        return true;
-    } else {
-        return false;
-    }
-};
-
 /**
  * Game
  *
@@ -2444,36 +3092,31 @@ function Game(room)
     this.inRound = false;
     this.deaths  = new Collection([], 'name');
     this.clients = this.room.clients;
+    this.client  = new SocketGroup(this.clients);
 
-    this.addPoint                   = this.addPoint.bind(this);
-    this.onDie                      = this.onDie.bind(this);
-    this.bonusPrinting              = false;
-    this.bonusPrintingTimeout       = null;
-    this.timeouts                   = [];
+    this.addPoint = this.addPoint.bind(this);
+    this.onDie    = this.onDie.bind(this);
 
-    this.toggleBonusPrinting = this.toggleBonusPrinting.bind(this);
+    var avatar;
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        this.avatars.items[i].clear();
-        this.avatars.items[i].on('point', this.addPoint);
-        this.avatars.items[i].on('die', this.onDie);
-        this.avatars.items[i].setMask(i+1);
+        avatar = this.avatars.items[i];
+        avatar.game = this;
+        avatar.clear();
+        avatar.on('point', this.addPoint);
+        avatar.on('die', this.onDie);
+        avatar.setMask(i+1);
     }
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
-
-Game.prototype.bonusCap            = 20;
-Game.prototype.bonusPoppingRate    = 0.2;
-Game.prototype.noBonusPrintingTime = 200;
-Game.prototype.bonusPrintingTime   = 3000;
 
 /**
  * Trail latency
  *
  * @type {Number}
  */
-Game.prototype.trailLatency = 150;
+Game.prototype.trailLatency = 300;
 
 /**
  * Update
@@ -2484,29 +3127,18 @@ Game.prototype.update = function(step)
 {
     BaseGame.prototype.update.call(this, step);
 
-    var avatar, bonus;
-
-    if (this.bonusPrinting) {
-        this.popBonus();
-    }
+    var avatar, position;
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
+        position = avatar.update(step);
 
-        if (avatar.alive && !this.world.testCircle(avatar.update(step))) {
-            avatar.die();
-        }
-
-        // check if a bonus has been taken
-        for (var j = this.bonuses.ids.length - 1; j >= 0; j--) {
-            bonus = this.bonuses.items[j];
-
-            if (bonus.isTakenBy(avatar)) {
-                // sample speed bonus test
-                bonus.clear();
-                this.emit('bonus:clear', { game: this, bonus: bonus });
-                avatar.upVelocity();
-                this.timeouts.push(setTimeout(function() { avatar.downVelocity(); }, 3333));
+        if (avatar.alive) {
+            if (!this.world.testBody(avatar.body)) {
+                console.log('DIE!');
+                avatar.die();
+            } else {
+                this.bonusManager.testCatch(avatar);
             }
         }
     }
@@ -2534,12 +3166,13 @@ Game.prototype.removeAvatar = function(avatar)
  */
 Game.prototype.addPoint = function(data)
 {
-    var world = this.world,
-        circle = [data.point[0], data.point[1], data.avatar.radius, data.avatar.mask];
+    if (this.world.active) {
+        var body = new Body(data.point, data.avatar.radius, data.avatar),
+            duration = this.trailLatency * (data.avatar.velocity / BaseAvatar.prototype.velocity);
 
-    setTimeout(function () { circle[3] = 0; }, this.trailLatency);
-
-    world.addCircle(circle);
+        body.setMask(data.avatar.mask, duration);
+        this.world.addBody(body);
+    }
 };
 
 /**
@@ -2606,7 +3239,7 @@ Game.prototype.setScores = function()
         for (var i = this.deaths.items.length - 1; i >= 0; i--) {
             this.deaths.items[i].addScore(i + 1);
         }
-        
+
         if (this.deaths.count() < total) {
             var winner = this.avatars.match(function () { return this.alive; });
 
@@ -2625,10 +3258,6 @@ Game.prototype.endRound = function()
 {
     BaseGame.prototype.endRound.call(this);
 
-    this.stopBonusPrinting();
-    this.resetBonusEffects();
-    this.clearTimeouts();
-
     this.emit('round:end', {game: this});
 
     if (this.isWon()) {
@@ -2644,9 +3273,7 @@ Game.prototype.endRound = function()
 Game.prototype.newRound = function()
 {
     if (!this.inRound) {
-        var avatar, bonus, i;
-
-        this.emit('round:new', {game: this});
+        var avatar, i;
 
         this.world.clear();
 
@@ -2661,133 +3288,39 @@ Game.prototype.newRound = function()
             avatar.setAngle(Math.random() * Math.PI * 2);
         }
 
-        // clear the bonuses stack
-        for (i = this.bonuses.ids.length - 1; i >= 0; i--) {
-            bonus = this.bonuses.items[i];
-            bonus.clear();
-            this.emit('bonus:clear', { game: this, bonus: bonus});
-            this.bonuses.removeById(bonus.id);
-        }
+        this.bonusManager.stop();
 
         BaseGame.prototype.newRound.call(this);
+
+        this.emit('round:new', {game: this});
     }
 };
 
 /**
- * Start
+ * On start
  */
-Game.prototype.start = function()
+Game.prototype.onStart = function()
 {
-    if (!this.frame) {
-        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-            setTimeout(this.avatars.items[i].togglePrinting, 3000);
-        }
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        avatar.printingTimeout = setTimeout(avatar.togglePrinting, 3000);
     }
 
-    // toggle bonuses printing
-    this.timeouts.push(setTimeout(this.toggleBonusPrinting, 3000));
-
-    BaseGame.prototype.start.call(this);
-};
-
-/**
- * Toggle bonus printing
- */
-Game.prototype.toggleBonusPrinting = function () {
-    this.bonusPrinting = !this.bonusPrinting;
-
-    clearTimeout(this.bonusPrintingTimeout);
-    this.printingTimeout = setTimeout(this.toggleBonusPrinting, this.getRandomPrintingTime());
-};
-
-/**
- * Stop bonus printing
- */
-Game.prototype.stopBonusPrinting = function()
-{
-    clearTimeout(this.bonusPrintingTimeout);
+    this.world.activate();
+    this.bonusManager.start();
 
     this.printing = false;
 };
-
-/**
- * Make a bonus `pop'
- */
-Game.prototype.popBonus = function () {
-    if (this.bonuses.count() < this.bonusCap) {
-
-        if (this.percentChance(this.bonusPoppingRate)) {
-            var bonus = new Bonus('test', '#7CFC00');
-                bonus.setPosition(this.world.getRandomPosition(bonus.radius, 0.1));
-                bonus.pop();
-            this.emit('bonus:pop', { game: this, bonus: bonus });
-            this.bonuses.add(bonus);
-        }
-    }
-};
-
-/**
- * Has a percent of chance to return true
- *
- * @param percentTrue
- * @returns {boolean}
- */
-Game.prototype.percentChance = function (percentTrue) {
-    percentTrue = percentTrue || 100;
-
-    return (Math.floor(Math.random()*101) <= percentTrue);
-};
-
-/**
- * Get random printing time
- *
- * @return {Number}
- */
-Game.prototype.getRandomPrintingTime = function()
-{
-    if (this.bonusPrinting) {
-        return this.bonusPrintingTime * (0.2 + Math.random() * 0.8);
-    } else {
-        return this.noBonusPrintingTime * (0.8 + Math.random() * 0.5);
-    }
-};
-
-/**
- * Reset bonus effects
- * Only velocity for now
- */
-Game.prototype.resetBonusEffects = function () {
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
-        this.avatars.items[i].resetVelocity();
-    }
-};
-
-/**
- * Clear timeouts
- */
-Game.prototype.clearTimeouts = function()
-{
-    for (var i = this.timeouts.length - 1; i >= 0; i--) {
-        clearTimeout(this.timeouts[i]);
-    }
-};
-
 /**
  * FIN DU GAME
  */
 Game.prototype.end = function()
 {
-    if (BaseGame.prototype.end.call(this)) {
-        this.world.clear();
+    BaseGame.prototype.end.call(this);
 
-        return true;
-    }
-
-    return false;
+    this.bonusManager.stop();
+    this.world.clear();
 };
-
-Player.prototype = Object.create(BasePlayer.prototype);
-Player.prototype.constructor = Player;
 
 /**
  * Player
@@ -2800,6 +3333,32 @@ function Player(client, name, color, mail)
 {
     BasePlayer.call(this, client, name, color, mail);
 }
+
+Player.prototype = Object.create(BasePlayer.prototype);
+Player.prototype.constructor = Player;
+/**
+ * RabbitBonus
+ *
+ * @param color
+ * @param radius
+ */
+function RabbitBonus(name, color, radius)
+{
+    BaseBonus.call(this, name, '#7CFC00', radius);
+
+    this.path = null;
+}
+
+RabbitBonus.prototype = Object.create(BaseBonus.prototype);
+
+/**
+ * Aplly bonus callback
+ */
+RabbitBonus.prototype.callback = function(avatar)
+{
+    avatar.upVelocity();
+    return setTimeout(function() { avatar.downVelocity(); }, 3333);
+};
 /**
  * Room
  */
@@ -2854,6 +3413,29 @@ Trail.prototype.clear = function()
     this.emit('clear', {avatar: this.avatar});
 };
 /**
+ * Bonus
+ *
+ * @param color
+ * @param radius
+ */
+function TurtleBonus(name, color, radius)
+{
+    BaseBonus.call(this, name, '#FF0000', radius);
+
+    this.path = null;
+}
+
+TurtleBonus.prototype = Object.create(BaseBonus.prototype);
+
+/**
+ * Aplly bonus callback
+ */
+TurtleBonus.prototype.callback = function(avatar)
+{
+    avatar.downVelocity();
+    return setTimeout(function() { avatar.upVelocity(); }, 3333);
+};
+/**
  * Room Repository
  */
 function RoomRepository()
@@ -2875,7 +3457,7 @@ RoomRepository.prototype.create = function(name)
     var room = new Room(name);
 
     return this.rooms.add(room) ? room : null;
-}
+};
 
 /**
  * Delete a room
@@ -2907,6 +3489,69 @@ RoomRepository.prototype.get = function(name)
 RoomRepository.prototype.all = function()
 {
     return this.rooms.items;
+};
+/**
+ * Rabbit Bonus
+ *
+ * @param {Array} position
+ */
+function RabbitBonus(position)
+{
+    Bonus.call(this, position);
+}
+
+RabbitBonus.prototype = Object.create(Bonus.prototype);
+
+/**
+ * Type
+ *
+ * @type {String}
+ */
+RabbitBonus.prototype.type = 'rabbit';
+
+/**
+ * Aplly bonus callback
+ *
+ * @param {Avatar} avatar
+ */
+RabbitBonus.prototype.applyTo = function(avatar)
+{
+    console.log('apply', this.name, 'to', avatar.name);
+    avatar.upVelocity();
+
+    return setTimeout(function() { avatar.downVelocity(); }, this.duration);
+};
+/**
+ * Turtle Bonus
+ *
+ * @param {Array} position
+ */
+function TurtleBonus(position)
+{
+    Bonus.call(this, position);
+}
+
+TurtleBonus.prototype = Object.create(Bonus.prototype);
+
+/**
+ * Type
+ *
+ * @type {String}
+ */
+TurtleBonus.prototype.name     = 'turtle';
+
+TurtleBonus.prototype.color    = '#FF0000';
+TurtleBonus.prototype.positive = false;
+
+/**
+ * Aplly bonus callback
+ */
+TurtleBonus.prototype.applyTo = function(avatar)
+{
+    console.log('apply', this.name, 'to', avatar.name);
+    avatar.downVelocity();
+
+    return setTimeout(function() { avatar.upVelocity(); }, this.duration);
 };
 module.exports = new Server({
     port: 8080
