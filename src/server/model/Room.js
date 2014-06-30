@@ -1,5 +1,7 @@
 /**
  * Room
+ *
+ * @param name
  */
 function Room(name)
 {

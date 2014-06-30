@@ -83,13 +83,12 @@ RoomRepository.prototype.get = function(name)
 /**
  * Create
  *
- * @param name
+ * @param {String} name
  * @param {Function} callback
- * @returns {*|Emitter|Namespace|Socket}
  */
 RoomRepository.prototype.create = function(name, callback)
 {
-    return this.client.addEvent('room:create', {name: name.substr(0, Room.prototype.maxLength)}, callback);
+    this.client.addEvent('room:create', {name: name.substr(0, Room.prototype.maxLength)}, callback);
 };
 
 /**
@@ -100,7 +99,7 @@ RoomRepository.prototype.create = function(name, callback)
  */
 RoomRepository.prototype.join = function(room, callback)
 {
-    return this.client.addEvent('room:join', {room: room}, callback);
+    this.client.addEvent('room:join', {room: room}, callback);
 };
 
 /**
@@ -111,7 +110,7 @@ RoomRepository.prototype.join = function(room, callback)
  */
 RoomRepository.prototype.addPlayer = function(name, callback)
 {
-    return this.client.addEvent('room:player:add', {name: name.substr(0, Player.prototype.maxLength)}, callback);
+    this.client.addEvent('room:player:add', {name: name.substr(0, Player.prototype.maxLength)}, callback);
 };
 
 /**

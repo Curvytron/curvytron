@@ -125,7 +125,7 @@ BonusManager.prototype.remove = function(bonus)
     }
 
     return false;
-}
+};
 
 /**
  * Clear timeouts

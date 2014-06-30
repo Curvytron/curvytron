@@ -1,5 +1,7 @@
 /**
  * Base Bonus Manager
+ *
+ * @param {Game} game
  */
 function BaseBonusManager(game)
 {

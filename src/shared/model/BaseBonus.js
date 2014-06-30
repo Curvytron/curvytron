@@ -1,8 +1,7 @@
 /**
  * BaseBonus
  *
- * @param name
- * @param color
+ * @param {Array} position
  */
 function BaseBonus(position)
 {

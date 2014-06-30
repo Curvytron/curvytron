@@ -1,6 +1,5 @@
 /**
  * Trail
- * @constructor
  */
 function Trail(avatar)
 {

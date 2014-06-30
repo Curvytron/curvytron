@@ -16,9 +16,8 @@ function Game(room)
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
 
-    var avatar;
-
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+    var avatar, i;
+    for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.game = this;
         avatar.clear();

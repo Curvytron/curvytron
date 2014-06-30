@@ -154,10 +154,10 @@ World.prototype.testBody = function(body)
 /**
  * Random Position
  *
- * @param radius
- * @param border
+ * @param {Number} radius
+ * @param {Number} border
  *
- * @returns {Array}
+ * @return {Array}
  */
 World.prototype.getRandomPosition = function(radius, border)
 {
