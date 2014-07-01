@@ -126,30 +126,3 @@ Avatar.prototype.setScore = function(score)
     BaseAvatar.prototype.setScore.call(this, score);
     this.emit('score', {avatar: this, score: this.score});
 };
-
-/**
- * Upgrade velocity
- */
-Avatar.prototype.upVelocity = function()
-{
-    BaseAvatar.prototype.upVelocity.call(this);
-    this.emit('velocity:up', {avatar: this});
-};
-
-/**
- * Downgrade velocity
- */
-Avatar.prototype.downVelocity = function()
-{
-    BaseAvatar.prototype.downVelocity.call(this);
-    this.emit('velocity:down', {avatar: this});
-};
-
-/**
- * Reset velocity
- */
-Avatar.prototype.resetVelocity = function()
-{
-    BaseAvatar.prototype.resetVelocity.call(this);
-    this.emit('velocity:reset', {avatar: this});
-};

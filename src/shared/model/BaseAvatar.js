@@ -32,7 +32,7 @@ BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
 BaseAvatar.prototype.precision           = 1;
 BaseAvatar.prototype.velocity            = 18;
-BaseAvatar.prototype.velocityStep        = 6;
+BaseAvatar.prototype.velocityStep        = 4;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 200;
 BaseAvatar.prototype.printingTime        = 3000;
@@ -118,7 +118,6 @@ BaseAvatar.prototype.updatePosition = function(step)
 BaseAvatar.prototype.upVelocity = function()
 {
     this.velocity += this.velocityStep;
-    console.log(this.velocity);
     this.updateVelocities();
 };
 
@@ -129,7 +128,6 @@ BaseAvatar.prototype.downVelocity = function()
 {
     if (this.velocity > this.velocityStep) {
         this.velocity -= this.velocityStep;
-        console.log(this.velocity);
         this.updateVelocities();
     }
 };
