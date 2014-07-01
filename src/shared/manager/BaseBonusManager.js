@@ -52,7 +52,6 @@ BaseBonusManager.prototype.add = function(bonus)
     return this.bonuses.add(bonus);
 };
 
-
 /**
  * Remove bonus
  *

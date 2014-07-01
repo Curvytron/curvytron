@@ -282,7 +282,6 @@ GameController.prototype.onBonusClear = function(data)
     game.client.addEvent('bonus:clear', {bonus: bonus.id});
 };
 
-
 /**
  * On score
  *

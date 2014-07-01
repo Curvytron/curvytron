@@ -20,7 +20,6 @@ BaseBonus.prototype.radius    = 2.4;
 BaseBonus.prototype.duration  = 3333;
 BaseBonus.prototype.positive  = true;
 
-
 /**
  * Clear
  *

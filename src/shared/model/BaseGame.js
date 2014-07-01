@@ -203,7 +203,6 @@ BaseGame.prototype.newRound = function()
     setTimeout(this.start, this.warmupTime);
 };
 
-
 /**
  * Check end of round
  */

@@ -33,7 +33,6 @@ Island.prototype.removeBody = function(body)
     body.islands.remove(this);
 };
 
-
 /**
  * Add body
  *

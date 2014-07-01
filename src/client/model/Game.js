@@ -124,7 +124,6 @@ Game.prototype.removeAvatar = function(avatar)
     return BaseGame.prototype.removeAvatar.call(this, avatar);
 };
 
-
 /**
  * On resize
  */
