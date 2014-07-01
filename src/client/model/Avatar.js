@@ -9,9 +9,9 @@ function Avatar(player)
 
     this.local = player.local;
 
-    this.path  = new paper.Shape.Circle({
+    this.path = new paper.Shape.Circle({
         center: [this.head[0] * paper.sceneScale, this.head[1] * paper.sceneScale],
-        radius: this.radius * paper.sceneScale,
+        radius: this.radius * this.radiusMargin * paper.sceneScale,
         fillColor: this.color,
         fullySelected: false
     });
@@ -22,6 +22,8 @@ function Avatar(player)
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
+
+Avatar.prototype.radiusMargin = 1.1;
 
 /**
  * Set position

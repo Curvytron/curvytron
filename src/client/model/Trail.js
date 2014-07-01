@@ -21,7 +21,7 @@ Trail.prototype.createPath = function()
 {
     this.path = new paper.Path({
         strokeColor: this.color,
-        strokeWidth: this.radius * 2 * paper.sceneScale,
+        strokeWidth: this.radius * Avatar.prototype.radiusMargin * 2 * paper.sceneScale,
         strokeCap: 'round',
         strokeJoin: 'round',
         fullySelected: false
