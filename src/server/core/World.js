@@ -112,7 +112,7 @@ World.prototype.removeBody = function(body)
  */
 World.prototype.getBody = function(body)
 {
-    if (!Island.bodyInBound(body, this.from, this.to)) {
+    if (!this.bodyInBound(body, this.from, this.to)) {
         return null;
     }
 
@@ -136,7 +136,7 @@ World.prototype.getBody = function(body)
  */
 World.prototype.testBody = function(body)
 {
-    if (!Island.bodyInBound(body, this.from, this.to)) {
+    if (!this.bodyInBound(body, this.from, this.to)) {
         return false;
     }
 
@@ -184,6 +184,23 @@ World.prototype.getRandomPoint = function(margin)
         margin + Math.random() * (this.size - margin * 2),
         margin + Math.random() * (this.size - margin * 2)
     ];
+};
+
+/**
+ * Is point in bound?
+ *
+ * @param {Body} body
+ * @param {Array} from
+ * @param {Array} to
+ *
+ * @return {Boolean}
+ */
+World.prototype.bodyInBound = function(body, from, to)
+{
+    return body.position[0] - body.radius > from[0] &&
+           body.position[0] + body.radius < to[0]   &&
+           body.position[1] - body.radius > from[1] &&
+           body.position[1] + body.radius < to[1];
 };
 
 /**

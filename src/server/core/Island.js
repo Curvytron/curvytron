@@ -51,9 +51,9 @@ Island.prototype.testBody = function(body)
  */
 Island.prototype.getBody = function(body)
 {
-    if (Island.bodyInBound(body, this.from, this.to)) {
+    if (this.bodyInBound(body, this.from, this.to)) {
         for (var i = this.bodies.items.length - 1; i >= 0; i--) {
-            if (Island.bodiesTouch(this.bodies.items[i], body)) {
+            if (this.bodiesTouch(this.bodies.items[i], body)) {
                 return this.bodies.items[i];
             }
         }
@@ -70,9 +70,9 @@ Island.prototype.getBody = function(body)
  *
  * @return {Boolean}
  */
-Island.bodiesTouch = function(bodyA, bodyB)
+Island.prototype.bodiesTouch = function(bodyA, bodyB)
 {
-    return Island.getDistance(bodyA.position, bodyB.position) < (bodyA.radius + bodyB.radius) && bodyA.matchMask(bodyB);
+    return this.getDistance(bodyA.position, bodyB.position) < (bodyA.radius + bodyB.radius) && bodyA.matchMask(bodyB);
 };
 
 /**
@@ -84,12 +84,12 @@ Island.bodiesTouch = function(bodyA, bodyB)
  *
  * @return {Boolean}
  */
-Island.bodyInBound = function(body, from, to)
+Island.prototype.bodyInBound = function(body, from, to)
 {
-    return body.position[0] + body.radius >= from[0] &&
-           body.position[0] - body.radius <= to[0]   &&
-           body.position[1] + body.radius >= from[1] &&
-           body.position[1] - body.radius <= to[1];
+    return body.position[0] + body.radius > from[0] &&
+           body.position[0] - body.radius < to[0]   &&
+           body.position[1] + body.radius > from[1] &&
+           body.position[1] - body.radius < to[1];
 };
 
 /**
@@ -100,7 +100,7 @@ Island.bodyInBound = function(body, from, to)
  *
  * @return {Number}
  */
-Island.getDistance = function(from, to)
+Island.prototype.getDistance = function(from, to)
 {
     return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
 };
@@ -113,7 +113,7 @@ Island.getDistance = function(from, to)
  *
  * @return {Array}
  */
-Island.prototype.getRandomPosition = function(radius, border)
+Island.prototype.prototype.getRandomPosition = function(radius, border)
 {
     var margin = radius + border * this.size,
         point = this.getRandomPoint(margin);
