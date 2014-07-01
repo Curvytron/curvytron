@@ -90,7 +90,7 @@ gulp.task('server', function() {
 
 gulp.task('nodemon', function () {
     nodemon({
-        watch: recipes.server.files
+        watch: recipes.server.files,
         ext: 'js',
         script: 'bin/curvytron.js',
         restartable: "rs"
