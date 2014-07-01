@@ -81,6 +81,14 @@ Game.prototype.onFrame = function(e)
 };
 
 /**
+ * Get new frame
+ */
+Game.prototype.newFrame = function()
+{
+    this.frame = true;
+};
+
+/**
  * New round
  */
 Game.prototype.newRound = function()

@@ -8,6 +8,7 @@ function Avatar(player)
     BaseAvatar.call(this, player);
 
     this.game = null;
+    this.body = new Body(this.head, this.radius, this);
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
@@ -15,8 +16,7 @@ Avatar.prototype = Object.create(BaseAvatar.prototype);
 /**
  * Update
  *
- * @param step
- * @returns {*}
+ * @param {Number} step
  */
 Avatar.prototype.update = function(step)
 {
@@ -29,7 +29,19 @@ Avatar.prototype.update = function(step)
         }
     }
 
-    return BaseAvatar.prototype.update.call(this);
+    BaseAvatar.prototype.update.call(this);
+};
+
+/**
+ * Set mask
+ *
+ * @param {Number} mask
+ */
+Avatar.prototype.setMask = function(mask)
+{
+    BaseAvatar.prototype.setMask.call(this, mask);
+
+    this.body.setMask(this.mask);
 };
 
 /**
@@ -40,6 +52,9 @@ Avatar.prototype.update = function(step)
 Avatar.prototype.setPosition = function(point)
 {
     BaseAvatar.prototype.setPosition.call(this, point);
+
+    this.body.position = this.head;
+
     this.emit('position', {avatar: this, point: this.head});
 };
 
@@ -102,26 +117,12 @@ Avatar.prototype.die = function()
 };
 
 /**
- * Upgrade velocity
+ * Set score
+ *
+ * @param {Number} score
  */
-Avatar.prototype.upVelocity = function()
+Avatar.prototype.setScore = function(score)
 {
-    BaseAvatar.prototype.upVelocity.call(this);
+    BaseAvatar.prototype.setScore.call(this, score);
+    this.emit('score', {avatar: this, score: this.score});
 };
-
-/**
- * Downgrade velocity
- */
-Avatar.prototype.downVelocity = function()
-{
-    BaseAvatar.prototype.downVelocity.call(this);
-};
-
-/**
- * Reset velocity
- */
-Avatar.prototype.resetVelocity = function()
-{
-    BaseAvatar.prototype.resetVelocity.call(this);
-};
-

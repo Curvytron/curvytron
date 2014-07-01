@@ -17,6 +17,13 @@ function BonusManager(game)
 BonusManager.prototype = Object.create(BaseBonusManager.prototype);
 
 /**
+ * Available onus types
+ *
+ * @type {Array}
+ */
+BonusManager.prototype.bonusTypes = [TurtleBonus, RabbitBonus];
+
+/**
  * Start
  */
 BonusManager.prototype.start = function()
@@ -24,6 +31,7 @@ BonusManager.prototype.start = function()
     BaseBonusManager.prototype.start.call(this);
 
     this.world.activate();
+
     this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
 };
 
@@ -38,7 +46,15 @@ BonusManager.prototype.stop = function()
     this.popingTimeout = null;
 
     this.clearTimeouts();
+};
+
+/**
+ * Clear
+ */
+BonusManager.prototype.clear = function()
+{
     this.world.clear();
+    BaseBonusManager.prototype.clear.call(this);
 };
 
 /**
@@ -46,29 +62,14 @@ BonusManager.prototype.stop = function()
  */
 BonusManager.prototype.popBonus = function ()
 {
+    clearTimeout(this.popingTimeout);
+    this.popingTimeout = null;
+
     if (this.bonuses.count() < this.bonusCap) {
-        var bonus;
+        var position = this.game.world.getRandomPosition(BaseBonus.prototype.radius, 0.03),
+            bonus = this.getRandomBonus(position);
 
-        if (this.percentChance(50)) {
-            bonus = new RabbitBonus('test');
-        } else {
-            bonus = new TurtleBonus('test');
-        }
-
-        bonus.setPosition(this.game.world.getRandomPosition(bonus.radius, 0.1));
-        bonus.pop();
-
-        this.world.addCircle([
-            bonus.position[0],
-            bonus.position[1],
-            bonus.radius,
-            0,
-            bonus
-        ]);
-
-        this.bonuses.add(bonus);
-
-        this.emit('bonus:pop', { game: this.game, bonus: bonus });
+        this.add(bonus);
     }
 
     this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
@@ -77,37 +78,53 @@ BonusManager.prototype.popBonus = function ()
 /**
  * Test if an avatar catches a bonus
  *
- * @param {Avaatr} avatar
+ * @param {Avatar} avatar
  */
 BonusManager.prototype.testCatch = function(avatar)
 {
-    var circle = this.world.getCircle([
-        avatar.head[0],
-        avatar.head[1],
-        avatar.radius,
-        0,
-    ]);
+    if (!avatar.body) {
+        throw avatar;
+    }
+    var body = this.world.getBody(avatar.body),
+        bonus = body ? body.data : null;
 
-    if (circle) {
-        var bonus = circle[4];
-        if (bonus.active === true) {
-            this.timeouts.push(
-                bonus.applyTo(avatar)
-            );
-
-            this.remove(bonus);
-        }
+    if (bonus && this.remove(bonus)) {
+        this.timeouts.push(bonus.applyTo(avatar));
     }
 };
 
 /**
- *  Remove the given bonus
+ * Add bonus
+ *
+ * @param {Bonus} bonus
+ */
+BonusManager.prototype.add = function (bonus)
+{
+    if (BaseBonusManager.prototype.add.call(this, bonus)) {
+        this.world.addBody(bonus.body);
+        this.emit('bonus:pop', { game: this.game, bonus: bonus });
+
+        return true;
+    }
+
+    return false;
+};
+
+/**
+ *  Remove bonus
+ *
+ * @param {Bonus} bonus
  */
 BonusManager.prototype.remove = function(bonus)
 {
-    BaseBonusManager.prototype.remove.call(this, bonus);
+    if (BaseBonusManager.prototype.remove.call(this, bonus)) {
+        this.world.removeBody(bonus.body);
+        this.emit('bonus:clear', {game: this.game, bonus: bonus});
 
-    this.emit('bonus:clear', {game: this.game, bonus: bonus});
+        return true;
+    }
+
+    return false;
 };
 
 /**
@@ -118,19 +135,8 @@ BonusManager.prototype.clearTimeouts = function()
     for (var i = this.timeouts.length - 1; i >= 0; i--) {
         clearTimeout(this.timeouts[i]);
     }
-};
 
-/**
- * Has a percent of chance to return true
- *
- * @param percentTrue
- * @returns {boolean}
- */
-BonusManager.prototype.percentChance = function (percentTrue)
-{
-    percentTrue = percentTrue || 100;
-
-    return (Math.floor(Math.random()*101) <= percentTrue);
+    this.timeouts = [];
 };
 
 /**
@@ -141,4 +147,18 @@ BonusManager.prototype.percentChance = function (percentTrue)
 BonusManager.prototype.getRandomPopingTime  = function()
 {
     return this.bonusPopingTime * (1 +  Math.random() * 2);
+};
+
+/**
+ * Get random bonus
+ *
+ * @param {Array} position
+ *
+ * @return {Bonus}
+ */
+BonusManager.prototype.getRandomBonus = function(position)
+{
+    var type = this.bonusTypes[Math.floor(Math.random() * this.bonusTypes.length)];
+
+    return new type(position);
 };

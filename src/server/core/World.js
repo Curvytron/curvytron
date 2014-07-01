@@ -46,20 +46,20 @@ World.prototype.getIslandByPoint = function(point)
 };
 
 /**
- * Get island by circle
+ * Get island by body
  *
- * @param {Array} circle
+ * @param {Body} body
  *
  * @return {Island}
  */
-World.prototype.getIslandsByCircle = function(circle)
+World.prototype.getIslandsByBody = function(body)
 {
     var islands = new Collection(),
         sources = [
-            this.getIslandByPoint([circle[0] - circle[2], circle[1] - circle[2]]),
-            this.getIslandByPoint([circle[0] + circle[2], circle[1] - circle[2]]),
-            this.getIslandByPoint([circle[0] - circle[2], circle[1] + circle[2]]),
-            this.getIslandByPoint([circle[0] + circle[2], circle[1] + circle[2]])
+            this.getIslandByPoint([body.position[0] - body.radius, body.position[1] - body.radius]),
+            this.getIslandByPoint([body.position[0] + body.radius, body.position[1] - body.radius]),
+            this.getIslandByPoint([body.position[0] - body.radius, body.position[1] + body.radius]),
+            this.getIslandByPoint([body.position[0] + body.radius, body.position[1] + body.radius])
         ];
 
     for (var i = sources.length - 1; i >= 0; i--) {
@@ -72,41 +72,57 @@ World.prototype.getIslandsByCircle = function(circle)
 };
 
 /**
- * Add circle
+ * Add body
  *
- * @param {Array} circle
+ * @param {Body} body
  */
-World.prototype.addCircle = function(circle)
+World.prototype.addBody = function(body)
 {
     if (!this.active) {
         return;
     }
 
-    var islands = this.getIslandsByCircle(circle);
+    var islands = this.getIslandsByBody(body);
 
     for (var i = islands.length - 1; i >= 0; i--) {
-        islands[i].addCircle(circle);
+        islands[i].addBody(body);
     }
 };
 
 /**
- * Add circle
+ * Remove body
  *
- * @param {Array} circle
+ * @param {Body} body
  */
-World.prototype.getCircle = function(circle)
+World.prototype.removeBody = function(body)
 {
-    if (!this.circleInBound(circle, this.from, this.to)) {
+    if (!this.active) {
+        return;
+    }
+
+    for (var i = body.islands.items.length - 1; i >= 0; i--) {
+        body.islands.items[i].removeBody(body);
+    }
+};
+
+/**
+ * Get body
+ *
+ * @param {Body} body
+ */
+World.prototype.getBody = function(body)
+{
+    if (!this.bodyInBound(body, this.from, this.to)) {
         return null;
     }
 
-    var islands = this.getIslandsByCircle(circle),
-        circle;
+    var islands = this.getIslandsByBody(body),
+        match;
 
     for (var i = islands.length - 1; i >= 0; i--) {
-        circle = islands[i].getCircle(circle);
-        if (circle) {
-            return circle;
+        match = islands[i].getBody(body);
+        if (match) {
+            return match;
         }
     }
 
@@ -114,20 +130,20 @@ World.prototype.getCircle = function(circle)
 };
 
 /**
- * Add circle
+ * Add body
  *
- * @param {Array} circle
+ * @param {Body} body
  */
-World.prototype.testCircle = function(circle)
+World.prototype.testBody = function(body)
 {
-    if (!this.circleInBound(circle, this.from, this.to)) {
+    if (!this.bodyInBound(body, this.from, this.to)) {
         return false;
     }
 
-    var islands = this.getIslandsByCircle(circle);
+    var islands = this.getIslandsByBody(body);
 
     for (var i = islands.length - 1; i >= 0; i--) {
-        if (!islands[i].testCircle(circle)) {
+        if (!islands[i].testBody(body)) {
             return false;
         }
     }
@@ -136,36 +152,19 @@ World.prototype.testCircle = function(circle)
 };
 
 /**
- * Is point in bound?
- *
- * @param {Array} circle
- * @param {Array} from
- * @param {Array} to
- *
- * @return {Boolean}
- */
-World.prototype.circleInBound = function(circle, from, to)
-{
-    return circle[0] - circle[2] >= from[0] &&
-           circle[0] + circle[2] <= to[0]   &&
-           circle[1] - circle[2] >= from[1] &&
-           circle[1] + circle[2] <= to[1];
-};
-
-/**
  * Random Position
  *
- * @param radius
- * @param border
+ * @param {Number} radius
+ * @param {Number} border
  *
- * @returns {Array}
+ * @return {Array}
  */
 World.prototype.getRandomPosition = function(radius, border)
 {
     var margin = radius + border * this.size,
         point = this.getRandomPoint(margin);
 
-    while (!this.testCircle([point[0], point[1], margin, 0])) {
+    while (!this.testBody(new Body(point, margin))) {
         point = this.getRandomPoint(margin);
     }
 
@@ -185,6 +184,23 @@ World.prototype.getRandomPoint = function(margin)
         margin + Math.random() * (this.size - margin * 2),
         margin + Math.random() * (this.size - margin * 2)
     ];
+};
+
+/**
+ * Is point in bound?
+ *
+ * @param {Body} body
+ * @param {Array} from
+ * @param {Array} to
+ *
+ * @return {Boolean}
+ */
+World.prototype.bodyInBound = function(body, from, to)
+{
+    return body.position[0] - body.radius > from[0] &&
+           body.position[0] + body.radius < to[0]   &&
+           body.position[1] - body.radius > from[1] &&
+           body.position[1] + body.radius < to[1];
 };
 
 /**

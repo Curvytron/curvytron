@@ -1,9 +1,7 @@
 /**
  * Room
  *
- * @param name
- *
- * @constructor
+ * @param {String} name
  */
 function Room(name)
 {

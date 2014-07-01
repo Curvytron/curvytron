@@ -88,17 +88,16 @@ gulp.task('server', function() {
         .pipe(gulp.dest(recipes.server.path));
 });
 
-gulp.task('server', function() {
-    gulp.src(recipes.server.files)
-        .pipe(concat(recipes.server.name))
-        .pipe(gulp.dest(recipes.server.path));
-});
-
 gulp.task('nodemon', function () {
-    nodemon({ watch: recipes.server.files, ext: 'js', script: 'bin/curvytron.js', restartable: "rs"})
-        .on('change', ['server', 'front-expose', 'front-full'])
-        .on('restart', ['default'])
-})
+    nodemon({
+        watch: recipes.server.files,
+        ext: 'js',
+        script: 'bin/curvytron.js',
+        restartable: "rs"
+    })
+    .on('change', ['server', 'front-expose', 'front-full'])
+    .on('restart', ['default'])
+});
 
 gulp.task('sass-full', function() {
   gulp.src(sassDir + 'style.scss')
@@ -117,8 +116,8 @@ gulp.task('sass-min', function() {
     .pipe(gulp.dest(cssDir));
 });
 
-gulp.task('watch', ['dev', 'views', 'sass-full'], function () {
-    gulp.watch('src/**/*.js', ['dev']);
+gulp.task('watch', ['dev'], function () {
+    gulp.watch('src/**/*.js', ['jshint', 'server', 'front-full', 'sass-full']);
     gulp.watch('src/client/views/**/*', ['views']);
     gulp.watch('src/**/*.scss', ['sass-full']);
 });

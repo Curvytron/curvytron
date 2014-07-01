@@ -102,12 +102,13 @@ RoomController.prototype.emitAllRooms = function(client)
 /**
  * On new room
  *
- * @param {String} name
+ * @param {SocketClient} client
+ * @param {Object} data
  * @param {Function} callback
  */
 RoomController.prototype.onCreateRoom = function(client, data, callback)
 {
-    var room = this.repository.create(data.name);
+    var room = this.repository.create(data.name.substr(0, Room.prototype.maxLength));
 
     callback({success: room ? true : false, room: room? room.name : null});
 
@@ -119,6 +120,7 @@ RoomController.prototype.onCreateRoom = function(client, data, callback)
 /**
  * On join room
  *
+ * @param {SocketClient} client
  * @param {Object} data
  * @param {Function} callback
  */
@@ -176,13 +178,13 @@ RoomController.prototype.checkRoomClose = function(room)
 /**
  * On add player to room
  *
- * @param client
+ * @param {SocketClient} client
  * @param {Object} data
  * @param {Function} callback
  */
 RoomController.prototype.onAddPlayer = function(client, data, callback)
 {
-    var name = data.name;
+    var name = data.name.substr(0, Player.prototype.maxLength);
 
     if (client.room && client.room.isNameAvailable(name)) {
 
@@ -202,9 +204,9 @@ RoomController.prototype.onAddPlayer = function(client, data, callback)
 /**
  * On new room
  *
- * @param client
- * @param data
- * @param callback
+ * @param {SocketClient} client
+ * @param {Object} data
+ * @param {Function} callback
  */
 RoomController.prototype.onColorRoom = function(client, data, callback)
 {
@@ -212,7 +214,7 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
         player = client.players.getById(data.player);
 
     if (room && player) {
-        player.setColor(data.color);
+        player.setColor(data.color.substr(0, Player.prototype.colorMaxLength));
 
         callback({success: true, color: player.color});
 
@@ -227,9 +229,9 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
 /**
  * On new room
  *
- * @param client
+ * @param {SocketClient} client
  * @param {Object} data
- * @param callback
+ * @param {Function} callback
  */
 RoomController.prototype.onReadyRoom = function(client, data, callback)
 {

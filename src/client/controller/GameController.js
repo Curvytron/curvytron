@@ -197,9 +197,7 @@ GameController.prototype.onPosition = function(e)
 GameController.prototype.onBonusPop = function(e)
 {
     var data = e.detail,
-        bonus = new Bonus();
-        bonus.unserialize(data);
-        bonus.pop();
+        bonus = new Bonus(data.id, data.position, data.type, data.color, data.radius);
 
     this.game.bonusManager.bonuses.add(bonus);
 };
@@ -212,7 +210,7 @@ GameController.prototype.onBonusPop = function(e)
 GameController.prototype.onBonusClear = function(e)
 {
     var data = e.detail,
-        bonus = this.game.bonusManager.bonuses.getById(data.id);
+        bonus = this.game.bonusManager.bonuses.getById(data.bonus);
 
     this.game.bonusManager.remove(bonus);
 };

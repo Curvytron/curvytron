@@ -1,20 +1,24 @@
 /**
- * Bonus
+ * Turtle Bonus
  *
- * @param name
- * @param color
- * @param radius
- *
- * @constructor
+ * @param {Array} position
  */
-function TurtleBonus(name, color, radius)
+function TurtleBonus(position)
 {
-    BaseBonus.call(this, name, '#FF0000', radius);
-
-    this.path = null;
+    Bonus.call(this, position);
 }
 
-TurtleBonus.prototype = Object.create(BaseBonus.prototype);
+TurtleBonus.prototype = Object.create(Bonus.prototype);
+
+/**
+ * Type
+ *
+ * @type {String}
+ */
+TurtleBonus.prototype.name     = 'turtle';
+
+TurtleBonus.prototype.color    = '#FF0000';
+TurtleBonus.prototype.positive = false;
 
 /**
  * Aplly bonus callback
@@ -22,5 +26,6 @@ TurtleBonus.prototype = Object.create(BaseBonus.prototype);
 TurtleBonus.prototype.applyTo = function(avatar)
 {
     avatar.downVelocity();
-    return setTimeout(function() { avatar.upVelocity(); }, 3333);
+
+    return setTimeout(function() { avatar.upVelocity(); }, this.duration);
 };
