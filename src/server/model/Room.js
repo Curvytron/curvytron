@@ -1,7 +1,7 @@
 /**
  * Room
  *
- * @param name
+ * @param {String} name
  */
 function Room(name)
 {

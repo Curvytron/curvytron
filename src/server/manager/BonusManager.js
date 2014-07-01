@@ -17,7 +17,7 @@ function BonusManager(game)
 BonusManager.prototype = Object.create(BaseBonusManager.prototype);
 
 /**
- * Bonus types
+ * Available onus types
  *
  * @type {Array}
  */
@@ -147,4 +147,18 @@ BonusManager.prototype.clearTimeouts = function()
 BonusManager.prototype.getRandomPopingTime  = function()
 {
     return this.bonusPopingTime * (1 +  Math.random() * 2);
+};
+
+/**
+ * Get random bonus
+ *
+ * @param {Array} position
+ *
+ * @return {Bonus}
+ */
+BonusManager.prototype.getRandomBonus = function(position)
+{
+    var type = this.bonusTypes[Math.floor(Math.random() * this.bonusTypes.length)];
+
+    return new type(position);
 };

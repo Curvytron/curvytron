@@ -15,9 +15,19 @@ function BaseBonusManager(game)
 
 BaseBonusManager.prototype = Object.create(EventEmitter.prototype);
 
-BaseBonusManager.prototype.bonusCap         = 20;
-BaseBonusManager.prototype.bonusPoppingRate = 0.2;
-BaseBonusManager.prototype.bonusPopingTime  = 1000;
+/**
+ * Maximum number of bonus on the map at the same time
+ *
+ * @type {Number}
+ */
+BaseBonusManager.prototype.bonusCap = 20;
+
+/**
+ * Interval between two bons pop (will vary from a factor x1 to x3)
+ *
+ * @type {Number}
+ */
+BaseBonusManager.prototype.bonusPopingTime = 1000;
 
 /**
  * Start
@@ -65,18 +75,4 @@ BaseBonusManager.prototype.clear = function()
     }
 
     this.bonuses.clear();
-};
-
-/**
- * Get random bonus
- *
- * @param {Array} position
- *
- * @return {Bonus}
- */
-BaseBonusManager.prototype.getRandomBonus = function(position)
-{
-    var type = this.bonusTypes[Math.floor(Math.random() * this.bonusTypes.length)];
-
-    return new type(position);
 };

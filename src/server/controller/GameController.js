@@ -38,7 +38,6 @@ GameController.prototype.addGame = function(game)
         game.on('round:new', this.onRoundNew);
         game.on('round:end', this.onRoundEnd);
         game.on('round:winner', this.onRoundWinner);
-
         game.bonusManager.on('bonus:pop', this.onBonusPop);
         game.bonusManager.on('bonus:clear', this.onBonusClear);
 
@@ -261,7 +260,7 @@ GameController.prototype.onDie = function(data)
 /**
  * On bonus pop
  *
- * @param {SocketClient} game
+ * @param {Object} data
  */
 GameController.prototype.onBonusPop = function(data)
 {
@@ -273,8 +272,7 @@ GameController.prototype.onBonusPop = function(data)
 /**
  * On bonus clear
  *
- * @param {SocketClient}client
- * @param data
+ * @param {Object} data
  */
 GameController.prototype.onBonusClear = function(data)
 {

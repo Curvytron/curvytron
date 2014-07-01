@@ -102,7 +102,8 @@ RoomController.prototype.emitAllRooms = function(client)
 /**
  * On new room
  *
- * @param {String} name
+ * @param {SocketClient} client
+ * @param {Object} data
  * @param {Function} callback
  */
 RoomController.prototype.onCreateRoom = function(client, data, callback)
@@ -119,6 +120,7 @@ RoomController.prototype.onCreateRoom = function(client, data, callback)
 /**
  * On join room
  *
+ * @param {SocketClient} client
  * @param {Object} data
  * @param {Function} callback
  */
@@ -176,7 +178,7 @@ RoomController.prototype.checkRoomClose = function(room)
 /**
  * On add player to room
  *
- * @param client
+ * @param {SocketClient} client
  * @param {Object} data
  * @param {Function} callback
  */
@@ -202,9 +204,9 @@ RoomController.prototype.onAddPlayer = function(client, data, callback)
 /**
  * On new room
  *
- * @param client
- * @param data
- * @param callback
+ * @param {SocketClient} client
+ * @param {Object} data
+ * @param {Function} callback
  */
 RoomController.prototype.onColorRoom = function(client, data, callback)
 {
@@ -227,9 +229,9 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
 /**
  * On new room
  *
- * @param client
+ * @param {SocketClient} client
  * @param {Object} data
- * @param callback
+ * @param {Function} callback
  */
 RoomController.prototype.onReadyRoom = function(client, data, callback)
 {
