@@ -113,7 +113,7 @@ Island.prototype.getDistance = function(from, to)
  *
  * @return {Array}
  */
-Island.prototype.prototype.getRandomPosition = function(radius, border)
+Island.prototype.getRandomPosition = function(radius, border)
 {
     var margin = radius + border * this.size,
         point = this.getRandomPoint(margin);
