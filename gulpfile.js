@@ -116,8 +116,8 @@ gulp.task('sass-min', function() {
     .pipe(gulp.dest(cssDir));
 });
 
-gulp.task('watch', ['dev', 'views', 'sass-full'], function () {
-    gulp.watch('src/**/*.js', ['dev']);
+gulp.task('watch', ['dev'], function () {
+    gulp.watch('src/**/*.js', ['jshint', 'server', 'front-full', 'sass-full']);
     gulp.watch('src/client/views/**/*', ['views']);
     gulp.watch('src/**/*.scss', ['sass-full']);
 });
