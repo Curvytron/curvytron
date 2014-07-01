@@ -35,6 +35,7 @@ function GameController()
 GameController.prototype.addGame = function(game)
 {
     if (this.games.add(game)) {
+        game.on('end', this.onEnd);
         game.on('round:new', this.onRoundNew);
         game.on('round:end', this.onRoundEnd);
         game.on('round:winner', this.onRoundWinner);
