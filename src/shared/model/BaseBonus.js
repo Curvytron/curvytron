@@ -17,7 +17,7 @@ BaseBonus.prototype.precision = 1;
 BaseBonus.prototype.type      = 'default';
 BaseBonus.prototype.color     = '#7CFC00';
 BaseBonus.prototype.radius    = 2.4;
-BaseBonus.prototype.duration  = 3333;
+BaseBonus.prototype.duration  = 5000;
 BaseBonus.prototype.positive  = true;
 
 /**

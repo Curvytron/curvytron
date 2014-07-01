@@ -27,7 +27,7 @@ BaseBonusManager.prototype.bonusCap = 20;
  *
  * @type {Number}
  */
-BaseBonusManager.prototype.bonusPopingTime = 1000;
+BaseBonusManager.prototype.bonusPopingTime = 3000;
 
 /**
  * Start
