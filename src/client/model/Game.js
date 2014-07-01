@@ -8,16 +8,12 @@ function Game(room)
     this.canvas = document.getElementById('game');
     this.size   = this.getSize(room.players.count());
 
-    paper.setup(this.canvas);
-
     this.onResize();
 
     BaseGame.call(this, room);
 
     window.addEventListener('error', this.stop);
     window.addEventListener('resize', this.onResize);
-
-    paper.view.onFrame = this.onFrame;
 }
 
 Game.prototype = Object.create(BaseGame.prototype);

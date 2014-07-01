@@ -49,6 +49,8 @@ Trail.prototype.addPoint = function(point)
     var x = point[0] * paper.sceneScale,
         y = point[1] * paper.sceneScale;
 
+    console.log(x, y);
+
     if (!this.path.length) {
         this.path.add(x, y);
     }
