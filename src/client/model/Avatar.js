@@ -10,6 +10,8 @@ function Avatar(player)
     this.local  = player.local;
     this.canvas = new Canvas(100, 100);
     this.arrow  = new Canvas(100, 100);
+    this.radius = this.radius * this.radiusMargin;
+    this.width  = this.radius * 2;
 
     if (this.local) {
         this.input = new PlayerInput(this, player.getBinding());
@@ -20,6 +22,13 @@ function Avatar(player)
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
+
+/**
+ * Radius margin
+ *
+ * @type {Number}
+ */
+Avatar.prototype.radiusMargin = 1.1;
 
 /**
  * Arrao width
@@ -50,7 +59,7 @@ Avatar.prototype.setPosition = function(point)
  */
 Avatar.prototype.setScale = function(scale)
 {
-    var width = Math.ceil(this.radius * 2 * scale);
+    var width = Math.ceil(this.width * scale);
 
     this.canvas.setDimension(width, width);
     this.drawHead();

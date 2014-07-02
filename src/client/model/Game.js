@@ -119,7 +119,7 @@ Game.prototype.draw = function()
         if (avatar.alive) {
             points = avatar.trail.getLastSegment();
             if (points) {
-                this.background.drawLineScaled(points, avatar.radius*2, avatar.color);
+                this.background.drawLineScaled(points, avatar.width, avatar.color);
             }
         }
     }
