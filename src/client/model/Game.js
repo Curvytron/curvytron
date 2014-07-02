@@ -5,76 +5,49 @@
  */
 function Game(room)
 {
-    this.canvas = document.getElementById('game');
-    this.size   = this.getSize(room.players.count());
+    BaseGame.call(this, room);
+
+    this.canvas     = new Canvas(0, 0, document.getElementById('game'));
+    this.background = new Canvas(0, 0, document.getElementById('game'));
+
+    this.onResize = this.onResize.bind(this);
 
     this.onResize();
 
-    BaseGame.call(this, room);
-
     window.addEventListener('error', this.stop);
     window.addEventListener('resize', this.onResize);
+
+    this.draw();
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
 
 /**
- * On start
+ * Get new frame
  */
-Game.prototype.onStart = function()
+Game.prototype.newFrame = function()
 {
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        this.avatars.items[i].setStarted(true);
-    }
-
-    BaseGame.prototype.onStart.call(this);
+    this.frame = window.requestAnimationFrame(this.loop);
 };
-
 /**
- * On start
+ * Clear frame
  */
-Game.prototype.onStop = function()
+Game.prototype.clearFrame = function()
 {
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        this.avatars.items[i].setStarted(false);
-    }
-
-    BaseGame.prototype.onStop.call(this);
-};
-
-
-/**
- * Start loop
- */
-Game.prototype.start = function()
-{
-    this.started = true;
-
-    if (!this.frame) {
-        this.frame = true;
-        this.onStart();
-    }
-};
-
-/**
- * Stop loop
- */
-Game.prototype.stop = function()
-{
-    if (this.frame) {
-        this.frame = null;
-        this.onStop();
-    }
+    console.log('clearFrame');
+    window.cancelAnimationFrame(this.frame);
+    this.frame = null;
 };
 
 /**
  * On frame
  *
- * @param {Event} e
+ * @param {Number} step
  */
-Game.prototype.onFrame = function(e)
+Game.prototype.onFrame = function(step)
 {
-    BaseGame.prototype.onFrame.call(this, e.delta * 1000);
+    this.draw();
+    BaseGame.prototype.onFrame.call(this, step);
 };
 
 /**
@@ -108,11 +81,46 @@ Game.prototype.end = function()
  */
 Game.prototype.removeAvatar = function(avatar)
 {
-    avatar.path.remove();
+    avatar.destroy();
+    this.draw();
 
     return BaseGame.prototype.removeAvatar.call(this, avatar);
 };
 
+/**
+ * Draw
+ *
+ * @param {Number} step
+ */
+Game.prototype.draw = function()
+{
+    var i, trail, avatar, width, position, points;
+
+    this.canvas.clear();
+
+    for (i = this.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        points = avatar.trail.getLastSegment();
+        if (points) {
+            this.background.drawLine(points, avatar.radius/2, avatar.color);
+        }
+    }
+
+    this.canvas.drawImage(this.background.element, [0, 0]);
+
+    for (i = this.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        width  = avatar.radius * 2;
+
+        this.canvas.drawImageScaled(avatar.draw(), avatar.head, width, width, avatar.angle);
+
+        //if (!this.running) {
+            width = 10;
+            position = [avatar.head[0] + avatar.radius - width/2, avatar.head[1] + avatar.radius - width/2];
+            this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
+        //}
+    }
+};
 
 /**
  * On resize
@@ -121,10 +129,10 @@ Game.prototype.onResize = function()
 {
     var w=window,d=document,e=d.documentElement,g=d.getElementsByTagName('body')[0],x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
 
-    var width = Math.min(x - 300 - 8, y - 8);
+    var width = Math.min(x - 300 - 8, y - 8),
+        scale = width / this.size;
 
-    paper.view.viewSize.width  = width;
-    paper.view.viewSize.height = width;
-
-    paper.sceneScale = width / this.size;
+    console.log(width,scale);
+    this.canvas.setDimension(width, width, scale);
+    this.background.setDimension(width, width, scale);
 };
