@@ -35,7 +35,7 @@ SocketClient.prototype = Object.create(BaseSocketClient.prototype);
  */
 SocketClient.prototype.onSocketConnection = function(e)
 {
-    console.log('Connected', e);
+    console.log('Connected');
 
     this.connected = true;
     this.start();
@@ -52,7 +52,7 @@ SocketClient.prototype.onSocketConnection = function(e)
  */
 SocketClient.prototype.onSocketDisconnection = function(e)
 {
-    console.log('Disconnect', e);
+    console.log('Disconnect');
 
     this.connected = false;
     this.id        = null;

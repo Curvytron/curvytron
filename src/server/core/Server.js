@@ -66,7 +66,7 @@ Server.prototype.onSocketConnection = function(socket)
  */
 Server.prototype.onSocketDisconnection = function(client)
 {
-    console.log('Client disconnected', client.socket.id);
+    console.log('Client disconnected', client.id);
 
     this.roomController.onLeaveRoom(client);
     this.roomController.detach(client);

@@ -28,4 +28,3 @@
 
     AgularJS -- https://angularjs.org
     Faye     -- https://github.com/faye/faye-websocket-node
-    Paper.js -- http://paperjs.org

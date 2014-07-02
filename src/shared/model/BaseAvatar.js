@@ -34,7 +34,7 @@ BaseAvatar.prototype.precision           = 1;
 BaseAvatar.prototype.velocity            = 18;
 BaseAvatar.prototype.velocityStep        = 9;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
-BaseAvatar.prototype.noPrintingTime      = 200;
+BaseAvatar.prototype.noPrintingTime      = 300;
 BaseAvatar.prototype.printingTime        = 3000;
 BaseAvatar.prototype.defaultRadius       = 0.6;
 

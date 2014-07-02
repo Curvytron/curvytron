@@ -15,22 +15,43 @@ function Bonus(id, position, type, color, radius)
     this.type   = type;
     this.color  = color;
     this.radius = radius;
-    this.path   = new paper.Shape.Circle({
-        center: new paper.Point(this.position[0] * paper.sceneScale, this.position[1] * paper.sceneScale),
-        radius: this.radius * paper.sceneScale,
-        fillColor: this.color,
-        fullySelected: false
-    });
+    this.canvas = new Canvas(100, 100);
+
+    this.position[0] = this.position[0] - this.radius;
+    this.position[1] = this.position[1] - this.radius;
 }
 
 Bonus.prototype = Object.create(BaseBonus.prototype);
+
+/**
+ * Set scale
+ *
+ * @param {Number} scale
+ */
+Bonus.prototype.setScale = function(scale)
+{
+    var width = Math.ceil(this.radius * 2 * scale);
+
+    this.canvas.setDimension(width, width);
+    this.draw();
+};
+
+/**
+ * Draw
+ */
+Bonus.prototype.draw = function()
+{
+    var middle = this.canvas.element.width/2;
+
+    this.canvas.drawCircle([middle, middle], middle, this.color);
+};
 
 /**
  * Clear
  */
 Bonus.prototype.clear = function()
 {
-    this.path.remove();
+    this.canvas.clear();
 
     BaseBonus.prototype.clear.call(this);
 };
