@@ -21,6 +21,13 @@ function Game(room)
 Game.prototype = Object.create(BaseGame.prototype);
 
 /**
+ * Background color
+ *
+ * @type {String}
+ */
+Game.prototype.backgroundColor = '#222222';
+
+/**
  * Get new frame
  */
 Game.prototype.newFrame = function()
@@ -54,7 +61,7 @@ Game.prototype.newRound = function()
 {
     BaseGame.prototype.newRound.call(this);
 
-    this.background.clear();
+    this.clearBackground();
     this.draw();
 
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
@@ -67,7 +74,7 @@ Game.prototype.newRound = function()
  */
 Game.prototype.endRound = function()
 {
-    this.background.clear();
+    this.clearBackground();
     this.draw();
 
     BaseGame.prototype.endRound.call(this);
@@ -107,8 +114,6 @@ Game.prototype.draw = function()
 {
     var i, trail, avatar, width, position, points;
 
-    this.canvas.clear();
-
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         if (avatar.alive) {
@@ -133,6 +138,14 @@ Game.prototype.draw = function()
             this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
         }
     }
+};
+
+/**
+ * Clear background with color
+ */
+Game.prototype.clearBackground = function()
+{
+    this.background.color(this.backgroundColor);
 };
 
 /**

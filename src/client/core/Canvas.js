@@ -86,6 +86,17 @@ Canvas.prototype.clear = function()
 };
 
 /**
+ * Color
+ */
+Canvas.prototype.color = function(color)
+{
+    this.context.beginPath();
+    this.context.rect(0, 0, this.element.width, this.element.height);
+    this.context.fillStyle = color;
+    this.context.fill();
+};
+
+/**
  * Save context
  */
 Canvas.prototype.save = function()
