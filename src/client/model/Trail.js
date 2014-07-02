@@ -6,24 +6,10 @@ function Trail(avatar)
 {
     BaseTrail.call(this, avatar);
 
-    this.path    = [];
-    this.changed = true;
+    this.path = [];
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
-
-/**
- * Set position
- */
-Trail.prototype.setPosition = function(point)
-{
-    var length = this.path.length - 1;
-
-    if (length >= 0) {
-        this.path[length] = point;
-        this.changed = true;
-    }
-};
 
 /**
  * Add point
@@ -32,13 +18,9 @@ Trail.prototype.setPosition = function(point)
  */
 Trail.prototype.addPoint = function(point)
 {
-    if (!this.path.length) {
+    if (!this.path.length || point !== this.path[this.path.length - 1]) {
         this.path.push(point);
     }
-
-    this.path.push(point);
-
-    this.changed = true;
 };
 
 /**
@@ -58,5 +40,13 @@ Trail.prototype.clear = function()
  */
 Trail.prototype.getLastSegment = function()
 {
-    return (this.changed && this.path.length > 1) ? [this.path[this.path.length-2], this.path[this.path.length-1]] : null;
+    var length = this.path.length;
+
+    if (length > 2) {
+        var path = this.path;
+        this.path = [path[length - 1]];
+        return path;
+    }
+
+    return null;
 };

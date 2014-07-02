@@ -139,9 +139,7 @@ Canvas.prototype.drawImageSized = function(image, position, width, height, angle
 {
     x = this.round(position[0]);
     y = this.round(position[1]);
-    width = this.round(width);
-    height = this.round(height);
-    angle = typeof(angle) !== 'undefined' && angle ? this.roundFloat(angle) : false;
+    angle = typeof(angle) !== 'undefined' && angle ? angle : false;
 
     if (angle) {
         var centerX = x + width/2,
@@ -173,8 +171,6 @@ Canvas.prototype.drawImageSized = function(image, position, width, height, angle
  */
 Canvas.prototype.drawCircle = function(position, radius, fill, stroke, alpha)
 {
-    console.log("drawCircle", position, radius, fill, stroke, alpha);
-
     if (typeof(alpha) != 'undefined') {
         var previous = this.context.globalAlpha;
         this.context.globalAlpha = alpha;
@@ -222,12 +218,12 @@ Canvas.prototype.drawLine = function(points, width, color, alpha)
         }
 
         this.context.lineWidth = typeof(width) !== 'undefined' ? width : 1;
-
+        this.context.lineCap = 'round';
         this.context.beginPath();
-        this.context.moveTo(this.round(points[0][0]), this.round(points[0][1]));
+        this.context.moveTo(points[0][0], points[0][1]);
 
         for (var i = 1; i < length; i++) {
-            this.context.lineTo(this.round(points[i][0]), this.round(points[i][1]));
+            this.context.lineTo(points[i][0], points[i][1]);
         }
 
         this.context.stroke();
@@ -248,13 +244,11 @@ Canvas.prototype.drawLine = function(points, width, color, alpha)
  */
 Canvas.prototype.drawLineScaled = function(points, width, color, alpha)
 {
-    var scaledPoints = [];
-
     for (var i = points.length - 1; i >= 0; i--) {
-        scaledPoints[i] = [points[i][0] * this.scale, points[i][1] * this.scale];
+        points[i] = [points[i][0] * this.scale, points[i][1] * this.scale];
     }
 
-    this.drawLine(scaledPoints, width, color, alpha);
+    this.drawLine(points, width * this.scale, color, alpha);
 };
 
 /**

@@ -180,7 +180,6 @@ GameController.prototype.onPosition = function(e)
         avatar.setPosition(data.point);
 
         if (!this.game.running) {
-            console.log('not running');
             this.game.draw();
         }
     }
@@ -213,10 +212,8 @@ GameController.prototype.onAngle = function(e)
 
     if (avatar) {
         avatar.setAngle(data.angle);
-            console.log(data.angle);
 
         if (!this.game.running) {
-            console.log('not running');
             this.game.draw();
         }
     }

@@ -8,7 +8,7 @@ function Game(room)
     BaseGame.call(this, room);
 
     this.canvas     = new Canvas(0, 0, document.getElementById('game'));
-    this.background = new Canvas(0, 0, document.getElementById('game'));
+    this.background = new Canvas(0, 0);
 
     this.onResize = this.onResize.bind(this);
 
@@ -34,7 +34,6 @@ Game.prototype.newFrame = function()
  */
 Game.prototype.clearFrame = function()
 {
-    console.log('clearFrame');
     window.cancelAnimationFrame(this.frame);
     this.frame = null;
 };
@@ -60,6 +59,16 @@ Game.prototype.newRound = function()
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
     }
+};
+
+/**
+ * End round
+ */
+Game.prototype.endRound = function()
+{
+    this.background.clear();
+
+    BaseGame.prototype.endRound.call(this);
 };
 
 /**
@@ -100,9 +109,11 @@ Game.prototype.draw = function()
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        points = avatar.trail.getLastSegment();
-        if (points) {
-            this.background.drawLine(points, avatar.radius/2, avatar.color);
+        if (avatar.alive) {
+            points = avatar.trail.getLastSegment();
+            if (points) {
+                this.background.drawLineScaled(points, avatar.radius*2, avatar.color);
+            }
         }
     }
 
@@ -112,13 +123,13 @@ Game.prototype.draw = function()
         avatar = this.avatars.items[i];
         width  = avatar.radius * 2;
 
-        this.canvas.drawImageScaled(avatar.draw(), avatar.head, width, width, avatar.angle);
+        this.canvas.drawImageScaled(avatar.canvas.element, avatar.head, width, width, avatar.angle);
 
-        //if (!this.running) {
+        if (!this.running) {
             width = 10;
             position = [avatar.head[0] + avatar.radius - width/2, avatar.head[1] + avatar.radius - width/2];
             this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
-        //}
+        }
     }
 };
 
@@ -132,7 +143,6 @@ Game.prototype.onResize = function()
     var width = Math.min(x - 300 - 8, y - 8),
         scale = width / this.size;
 
-    console.log(width,scale);
     this.canvas.setDimension(width, width, scale);
     this.background.setDimension(width, width, scale);
 };
