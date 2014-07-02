@@ -22,6 +22,13 @@ function Avatar(player)
 Avatar.prototype = Object.create(BaseAvatar.prototype);
 
 /**
+ * Arrao width
+ *
+ * @type {Number}
+ */
+Avatar.prototype.arrowWidth = 3;
+
+/**
  * Set position
  *
  * @param {Array} point
@@ -37,13 +44,26 @@ Avatar.prototype.setPosition = function(point)
 };
 
 /**
+ * Set scale
+ *
+ * @param {Number} scale
+ */
+Avatar.prototype.setScale = function(scale)
+{
+    var width = Math.ceil(this.radius * 2 * scale);
+
+    this.canvas.setDimension(width, width);
+    this.drawHead();
+};
+
+/**
  * Draw head
  */
 Avatar.prototype.drawHead = function()
 {
     var middle = this.canvas.element.width/2;
 
-    this.canvas.drawCircle([middle, middle], middle - 1, this.color);
+    this.canvas.drawCircle([middle, middle], middle, this.color);
 };
 
 /**
@@ -51,8 +71,8 @@ Avatar.prototype.drawHead = function()
  */
 Avatar.prototype.drawArrow = function()
 {
-    this.arrow.drawLine([[65, 50], [95, 50]], 2, this.color);
-    this.arrow.drawLine([[85, 40], [95, 50], [85, 60]], 2, this.color);
+    this.arrow.drawLine([[65, 50], [95, 50]], this.arrowWidth, this.color);
+    this.arrow.drawLine([[85, 40], [95, 50], [85, 60]], this.arrowWidth, this.color);
 };
 
 /**

@@ -57,13 +57,23 @@ Canvas.prototype.setScale = function(scale)
  * @param {Number} height
  * @param {Number} scale
  */
-Canvas.prototype.setDimension = function(width, height, scale)
+Canvas.prototype.setDimension = function(width, height, scale, update)
 {
+    if (update) {
+        var save = new Canvas(this.element.width, this.element.height);
+        save.drawImage(this.element, [0,0]);
+    }
+
     this.element.width  = width;
     this.element.height = height;
 
     if (typeof(scale) != 'undefined') {
         this.setScale(scale);
+    }
+
+    if (update) {
+        this.drawImage(save.element, [0,0], this.element.width, this.element.height);
+        save = null;
     }
 };
 
@@ -102,17 +112,6 @@ Canvas.prototype.reverse = function()
 };
 
 /**
- * Draw image
- *
- * @param {Resource} image
- * @param {Array} position
- */
-Canvas.prototype.drawImage = function(image, position)
-{
-    this.context.drawImage(image, this.round(position[0]), this.round(position[1]));
-};
-
-/**
  * Draw image to scale
  *
  * @param {Resource} image
@@ -123,7 +122,7 @@ Canvas.prototype.drawImage = function(image, position)
  */
 Canvas.prototype.drawImageScaled = function(image, position, width, height, angle)
 {
-    this.drawImageSized(image, [position[0] * this.scale, position[1] * this.scale], width * this.scale, height * this.scale, angle);
+    this.drawImage(image, [position[0] * this.scale, position[1] * this.scale], width * this.scale, height * this.scale, angle);
 };
 
 /**
@@ -135,7 +134,7 @@ Canvas.prototype.drawImageScaled = function(image, position, width, height, angl
  * @param {Number} height
  * @param {Number} angle
  */
-Canvas.prototype.drawImageSized = function(image, position, width, height, angle)
+Canvas.prototype.drawImage = function(image, position, width, height, angle)
 {
     x = this.round(position[0]);
     y = this.round(position[1]);
@@ -153,7 +152,11 @@ Canvas.prototype.drawImageSized = function(image, position, width, height, angle
         this.context.rotate(angle);
     }
 
-    this.context.drawImage(image, x, y, width, height);
+    if (typeof(width) === 'number' && typeof(height) === 'number') {
+        this.context.drawImage(image, this.round(x), this.round(y), this.round(width), this.round(height));
+    } else {
+        this.context.drawImage(image, this.round(x), this.round(y));
+    }
 
     if (angle) {
         this.context.restore();

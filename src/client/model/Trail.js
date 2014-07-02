@@ -18,9 +18,7 @@ Trail.prototype = Object.create(BaseTrail.prototype);
  */
 Trail.prototype.addPoint = function(point)
 {
-    if (!this.path.length || point !== this.path[this.path.length - 1]) {
-        this.path.push(point);
-    }
+    this.path.push(point);
 };
 
 /**

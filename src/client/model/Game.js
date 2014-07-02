@@ -12,12 +12,10 @@ function Game(room)
 
     this.onResize = this.onResize.bind(this);
 
-    this.onResize();
-
     window.addEventListener('error', this.stop);
     window.addEventListener('resize', this.onResize);
 
-    this.draw();
+    this.onResize();
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
@@ -56,6 +54,9 @@ Game.prototype.newRound = function()
 {
     BaseGame.prototype.newRound.call(this);
 
+    this.background.clear();
+    this.draw();
+
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
     }
@@ -67,6 +68,7 @@ Game.prototype.newRound = function()
 Game.prototype.endRound = function()
 {
     this.background.clear();
+    this.draw();
 
     BaseGame.prototype.endRound.call(this);
 };
@@ -123,7 +125,7 @@ Game.prototype.draw = function()
         avatar = this.avatars.items[i];
         width  = avatar.radius * 2;
 
-        this.canvas.drawImageScaled(avatar.canvas.element, avatar.head, width, width, avatar.angle);
+        this.canvas.drawImage(avatar.canvas.element, [avatar.head[0] * this.canvas.scale, avatar.head[1] * this.canvas.scale], avatar.angle);
 
         if (!this.running) {
             width = 10;
@@ -143,6 +145,11 @@ Game.prototype.onResize = function()
     var width = Math.min(x - 300 - 8, y - 8),
         scale = width / this.size;
 
+    for (i = this.avatars.items.length - 1; i >= 0; i--) {
+        this.avatars.items[i].setScale(scale);
+    }
+
     this.canvas.setDimension(width, width, scale);
-    this.background.setDimension(width, width, scale);
+    this.background.setDimension(width, width, scale, true);
+    this.draw();
 };
