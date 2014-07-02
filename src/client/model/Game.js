@@ -5,80 +5,53 @@
  */
 function Game(room)
 {
-    this.canvas = document.getElementById('game');
-    this.size   = this.getSize(room.players.count());
-
-    paper.setup(this.canvas);
-
-    this.onResize();
-
     BaseGame.call(this, room);
+
+    this.canvas     = new Canvas(0, 0, document.getElementById('game'));
+    this.background = new Canvas(0, 0);
+
+    this.onResize = this.onResize.bind(this);
 
     window.addEventListener('error', this.stop);
     window.addEventListener('resize', this.onResize);
 
-    paper.view.onFrame = this.onFrame;
+    this.onResize();
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
 
 /**
- * On start
+ * Background color
+ *
+ * @type {String}
  */
-Game.prototype.onStart = function()
-{
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        this.avatars.items[i].setStarted(true);
-    }
-
-    BaseGame.prototype.onStart.call(this);
-};
+Game.prototype.backgroundColor = '#222222';
 
 /**
- * On start
+ * Get new frame
  */
-Game.prototype.onStop = function()
+Game.prototype.newFrame = function()
 {
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        this.avatars.items[i].setStarted(false);
-    }
-
-    BaseGame.prototype.onStop.call(this);
+    this.frame = window.requestAnimationFrame(this.loop);
 };
-
-
 /**
- * Start loop
+ * Clear frame
  */
-Game.prototype.start = function()
+Game.prototype.clearFrame = function()
 {
-    this.started = true;
-
-    if (!this.frame) {
-        this.frame = true;
-        this.onStart();
-    }
-};
-
-/**
- * Stop loop
- */
-Game.prototype.stop = function()
-{
-    if (this.frame) {
-        this.frame = null;
-        this.onStop();
-    }
+    window.cancelAnimationFrame(this.frame);
+    this.frame = null;
 };
 
 /**
  * On frame
  *
- * @param {Event} e
+ * @param {Number} step
  */
-Game.prototype.onFrame = function(e)
+Game.prototype.onFrame = function(step)
 {
-    BaseGame.prototype.onFrame.call(this, e.delta * 1000);
+    this.draw();
+    BaseGame.prototype.onFrame.call(this, step);
 };
 
 /**
@@ -88,9 +61,23 @@ Game.prototype.newRound = function()
 {
     BaseGame.prototype.newRound.call(this);
 
+    this.clearBackground();
+    this.draw();
+
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
     }
+};
+
+/**
+ * End round
+ */
+Game.prototype.endRound = function()
+{
+    this.clearBackground();
+    this.draw();
+
+    BaseGame.prototype.endRound.call(this);
 };
 
 /**
@@ -112,11 +99,54 @@ Game.prototype.end = function()
  */
 Game.prototype.removeAvatar = function(avatar)
 {
-    avatar.path.remove();
+    avatar.destroy();
+    this.draw();
 
     return BaseGame.prototype.removeAvatar.call(this, avatar);
 };
 
+/**
+ * Draw
+ *
+ * @param {Number} step
+ */
+Game.prototype.draw = function()
+{
+    var i, trail, avatar, width, position, points;
+
+    for (i = this.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        if (avatar.alive) {
+            points = avatar.trail.getLastSegment();
+            if (points) {
+                this.background.drawLineScaled(points, avatar.width, avatar.color);
+            }
+        }
+    }
+
+    this.canvas.drawImage(this.background.element, [0, 0]);
+
+    for (i = this.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        width  = avatar.radius * 2;
+
+        this.canvas.drawImage(avatar.canvas.element, [avatar.head[0] * this.canvas.scale, avatar.head[1] * this.canvas.scale], avatar.angle);
+
+        if (avatar.local && !this.running) {
+            width = 10;
+            position = [avatar.head[0] + avatar.radius - width/2, avatar.head[1] + avatar.radius - width/2];
+            this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
+        }
+    }
+};
+
+/**
+ * Clear background with color
+ */
+Game.prototype.clearBackground = function()
+{
+    this.background.color(this.backgroundColor);
+};
 
 /**
  * On resize
@@ -125,10 +155,14 @@ Game.prototype.onResize = function()
 {
     var w=window,d=document,e=d.documentElement,g=d.getElementsByTagName('body')[0],x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
 
-    var width = Math.min(x - 300 - 8, y - 8);
+    var width = Math.min(x - 300 - 8, y - 8),
+        scale = width / this.size;
 
-    paper.view.viewSize.width  = width;
-    paper.view.viewSize.height = width;
+    for (i = this.avatars.items.length - 1; i >= 0; i--) {
+        this.avatars.items[i].setScale(scale);
+    }
 
-    paper.sceneScale = width / this.size;
+    this.canvas.setDimension(width, width, scale);
+    this.background.setDimension(width, width, scale, true);
+    this.draw();
 };

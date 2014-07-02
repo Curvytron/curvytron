@@ -6,38 +6,10 @@ function Trail(avatar)
 {
     BaseTrail.call(this, avatar);
 
-    this.path  = null;
-    this.paths = [];
-
-    this.createPath();
+    this.path = [];
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
-
-/**
- * Create path
- */
-Trail.prototype.createPath = function()
-{
-    this.path = new paper.Path({
-        strokeColor: this.color,
-        strokeWidth: this.radius * Avatar.prototype.radiusMargin * 2 * paper.sceneScale,
-        strokeCap: 'round',
-        strokeJoin: 'round',
-        fullySelected: false
-    });
-};
-
-/**
- * Set position
- */
-Trail.prototype.setPosition = function(point)
-{
-    if (this.path.lastSegment) {
-        this.path.lastSegment.point.x = point[0] * paper.sceneScale;
-        this.path.lastSegment.point.y = point[1] * paper.sceneScale;
-    }
-};
 
 /**
  * Add point
@@ -46,14 +18,7 @@ Trail.prototype.setPosition = function(point)
  */
 Trail.prototype.addPoint = function(point)
 {
-    var x = point[0] * paper.sceneScale,
-        y = point[1] * paper.sceneScale;
-
-    if (!this.path.length) {
-        this.path.add(x, y);
-    }
-
-    this.path.add(x, y);
+    this.path.push(point);
 };
 
 /**
@@ -63,20 +28,23 @@ Trail.prototype.addPoint = function(point)
  */
 Trail.prototype.clear = function()
 {
-    this.paths.push(this.path.rasterize());
-    this.path.remove();
-
-    this.createPath();
+    this.path = [];
 };
 
 /**
- * Clear Paths
+ * Get last segment
+ *
+ * @return {Array}
  */
-Trail.prototype.clearPaths = function()
+Trail.prototype.getLastSegment = function()
 {
-    for (var i = this.paths.length - 1; i >= 0; i--) {
-        this.paths[i].remove();
+    var length = this.path.length;
+
+    if (length > 2) {
+        var path = this.path;
+        this.path = [path[length - 1]];
+        return path;
     }
 
-    this.paths = [];
+    return null;
 };
