@@ -127,7 +127,7 @@ Game.prototype.draw = function()
 
         this.canvas.drawImage(avatar.canvas.element, [avatar.head[0] * this.canvas.scale, avatar.head[1] * this.canvas.scale], avatar.angle);
 
-        if (!this.running) {
+        if (avatar.local && !this.running) {
             width = 10;
             position = [avatar.head[0] + avatar.radius - width/2, avatar.head[1] + avatar.radius - width/2];
             this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
