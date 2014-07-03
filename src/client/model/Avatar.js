@@ -48,7 +48,7 @@ Avatar.prototype.setPosition = function(point)
     this.head[1] = point[1] - this.radius;
 
     if (this.printing) {
-        this.trail.addPoint(point);
+        this.addPoint(point);
     }
 };
 

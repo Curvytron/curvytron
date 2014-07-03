@@ -144,7 +144,6 @@ BaseAvatar.prototype.getDistance = function(from, to)
 BaseAvatar.prototype.die = function()
 {
     this.alive = false;
-    this.addPoint(this.head.slice(0));
 };
 
 /**

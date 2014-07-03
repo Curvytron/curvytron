@@ -116,11 +116,9 @@ Game.prototype.draw = function()
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        if (avatar.alive) {
-            points = avatar.trail.getLastSegment();
-            if (points) {
-                this.background.drawLineScaled(points, avatar.width, avatar.color);
-            }
+        points = avatar.trail.getLastSegment();
+        if (points) {
+            this.background.drawLineScaled(points, avatar.width, avatar.color);
         }
     }
 
