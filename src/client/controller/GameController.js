@@ -178,6 +178,10 @@ GameController.prototype.onPosition = function(e)
 
     if (avatar) {
         avatar.setPosition(data.point);
+
+        if (!this.game.running) {
+            this.game.draw();
+        }
     }
 };
 
@@ -208,6 +212,10 @@ GameController.prototype.onAngle = function(e)
 
     if (avatar) {
         avatar.setAngle(data.angle);
+
+        if (!this.game.running) {
+            this.game.draw();
+        }
     }
 };
 
@@ -309,7 +317,6 @@ GameController.prototype.onRoundEnd = function(e)
 GameController.prototype.onEnd = function(e)
 {
     this.detachSocketEvents();
-    paper.view.pause();
     this.repository.start();
 
     avatars = this.game.avatars.filter(function () { return this.local; }).items;

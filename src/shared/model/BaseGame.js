@@ -17,6 +17,7 @@ function BaseGame(room)
     this.maxScore = this.getMaxScore(this.avatars.count());
     this.fps      = new FPSLogger();
     this.started  = false;
+    this.running  = false;
 
     this.start    = this.start.bind(this);
     this.stop     = this.stop.bind(this);
@@ -79,7 +80,7 @@ BaseGame.prototype.start = function()
 BaseGame.prototype.stop = function()
 {
     if (this.frame) {
-        clearTimeout(this.frame);
+        this.clearFrame();
         this.onStop();
     }
 };
@@ -102,7 +103,10 @@ BaseGame.prototype.loop = function()
 /**
  * On start
  */
-BaseGame.prototype.onStart = function() {};
+BaseGame.prototype.onStart = function()
+{
+    this.running = true;
+};
 
 /**
  * Onn stop
@@ -111,6 +115,7 @@ BaseGame.prototype.onStop = function()
 {
     this.frame    = null;
     this.rendered = null;
+    this.running  = false;
 };
 
 /**
@@ -118,7 +123,15 @@ BaseGame.prototype.onStop = function()
  */
 BaseGame.prototype.newFrame = function()
 {
-    this.frame = setTimeout(this.loop.bind(this), this.framerate * 1000);
+    this.frame = setTimeout(this.loop, this.framerate * 1000);
+};
+
+/**
+ * Clear frame
+ */
+BaseGame.prototype.clearFrame = function()
+{
+    clearTimeout(this.frame);
 };
 
 /**

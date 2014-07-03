@@ -31,10 +31,11 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
     this.$scope.$on('$destroy', this.leaveRoom);
 
     // Hydrating scope:
-    this.$scope.submit   = this.addPlayer;
-    this.$scope.setColor = this.setColor;
-    this.$scope.setReady = this.setReady;
-
+    this.$scope.submit              = this.addPlayer;
+    this.$scope.setColor            = this.setColor;
+    this.$scope.setReady            = this.setReady;
+    this.$scope.nameMaxLength       = Player.prototype.maxLength;
+    this.$scope.colorMaxLength      = Player.prototype.colorMaxLength;
     this.$scope.curvytron.bodyClass = null;
 
     if (this.repository.synced) {

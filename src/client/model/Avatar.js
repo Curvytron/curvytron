@@ -7,21 +7,35 @@ function Avatar(player)
 {
     BaseAvatar.call(this, player);
 
-    this.local = player.local;
-
-    this.path  = new paper.Shape.Circle({
-        center: [this.head[0] * paper.sceneScale, this.head[1] * paper.sceneScale],
-        radius: this.radius * paper.sceneScale,
-        fillColor: this.color,
-        fullySelected: false
-    });
+    this.local  = player.local;
+    this.canvas = new Canvas(100, 100);
+    this.arrow  = new Canvas(100, 100);
+    this.radius = this.radius * this.radiusMargin;
+    this.width  = this.radius * 2;
 
     if (this.local) {
         this.input = new PlayerInput(this, player.getBinding());
     }
+
+    this.drawHead();
+    this.drawArrow();
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
+
+/**
+ * Radius margin
+ *
+ * @type {Number}
+ */
+Avatar.prototype.radiusMargin = 1.1;
+
+/**
+ * Arrao width
+ *
+ * @type {Number}
+ */
+Avatar.prototype.arrowWidth = 3;
 
 /**
  * Set position
@@ -30,89 +44,44 @@ Avatar.prototype = Object.create(BaseAvatar.prototype);
  */
 Avatar.prototype.setPosition = function(point)
 {
-    BaseAvatar.prototype.setPosition.call(this, point);
-
-    this.path.position.x = this.head[0] * paper.sceneScale;
-    this.path.position.y = this.head[1] * paper.sceneScale;
+    this.head[0] = point[0] - this.radius;
+    this.head[1] = point[1] - this.radius;
 
     if (this.printing) {
-        this.trail.setPosition(point);
+        this.addPoint(point);
     }
-
-    this.updateArrowPosition();
 };
 
 /**
- * Set angle
+ * Set scale
  *
- * @param {Float} angle
+ * @param {Number} scale
  */
-Avatar.prototype.setAngle = function(angle)
+Avatar.prototype.setScale = function(scale)
 {
-    BaseAvatar.prototype.setAngle.call(this, angle);
+    var width = Math.ceil(this.width * scale);
 
-    this.updateArrowPosition();
+    this.canvas.setDimension(width, width);
+    this.drawHead();
 };
 
 /**
- * Update arrow position
+ * Draw head
  */
-Avatar.prototype.updateArrowPosition = function()
+Avatar.prototype.drawHead = function()
 {
-    if (this.arrow !== null) {
-        this.setArrow(true);
-    }
+    var middle = this.canvas.element.width/2;
+
+    this.canvas.drawCircle([middle, middle], middle, this.color);
 };
 
 /**
- * Set started
- *
- * @param {Boolean} started
+ * Draw arrow
  */
-Avatar.prototype.setStarted = function(started)
+Avatar.prototype.drawArrow = function()
 {
-    this.setArrow(!started);
-};
-
-/**
- * Set arrow
- *
- * @param {Boolean} toggle
- */
-Avatar.prototype.setArrow = function(toggle)
-{
-    if (this.arrow) {
-        this.arrow.remove();
-    }
-
-    if (this.local && toggle) {
-        this.arrow = new paper.Group({
-            children: [
-                new paper.Path([[20, -10], [30, 0], [20, 10]]),
-                new paper.Path([[0, 0], [30, 0]])
-            ],
-            position: [
-                this.path.position.x + 40,
-                this.path.position.y
-            ],
-            strokeColor: this.color,
-            strokeWidth: 2
-        });
-
-        this.arrow.rotate(this.angle * 180 / Math.PI, [this.path.position.x, this.path.position.y]);
-    } else {
-        this.arrow = null;
-    }
-};
-
-/**
- * Clear
- */
-Avatar.prototype.clear = function()
-{
-    BaseAvatar.prototype.clear.call(this);
-
-    this.trail.clearPaths();
+    this.arrow.drawLine([[65, 50], [95, 50]], this.arrowWidth, this.color);
+    this.arrow.drawLine([[85, 40], [95, 50], [85, 60]], this.arrowWidth, this.color);
 };
 
 /**
@@ -120,13 +89,9 @@ Avatar.prototype.clear = function()
  */
 Avatar.prototype.destroy = function()
 {
-    this.trail.clearPaths();
-    this.trail.path.remove();
-    this.path.remove();
-
-    if (this.arrow) {
-        this.arrow.remove();
-    }
+    this.trail.clear();
+    this.canvas.clear();
+    this.arrow.clear();
 
     if (this.input) {
         this.input.detachEvents();

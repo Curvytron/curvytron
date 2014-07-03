@@ -26,6 +26,5 @@
 
     HTML5, CSS3, Javascript, Node JS
 
-    AgularJS  -- https://angularjs.org
-    Socket.io -- http://socket.io
-    Paper.js  -- http://paperjs.org
+    AgularJS -- https://angularjs.org
+    Faye     -- https://github.com/faye/faye-websocket-node
