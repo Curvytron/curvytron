@@ -3,6 +3,7 @@
         <aside id="game-infos">
             <header><a href="/">Curvytron</a></header>
             <h3>{{ game.name }}</h3>
+            <p class="maxScore">First to score <strong>{{ game.maxScore }}</strong> points win the game!</p>
             <ul id="game-players">
                 <li ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="color-preview" style="background-color: {{ avatar.color }};"></span>
