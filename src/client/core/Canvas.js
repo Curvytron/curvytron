@@ -59,6 +59,9 @@ Canvas.prototype.setScale = function(scale)
  */
 Canvas.prototype.setDimension = function(width, height, scale, update)
 {
+    width  = Math.ceil(width);
+    height = Math.ceil(height);
+
     if (update) {
         var save = new Canvas(this.element.width, this.element.height);
         save.drawImage(this.element, [0,0]);
@@ -162,9 +165,9 @@ Canvas.prototype.drawImage = function(image, position, width, height, angle)
     }
 
     if (typeof(width) === 'number' && typeof(height) === 'number') {
-        this.context.drawImage(image, position[0], position[1], width, height);
+        this.context.drawImage(image, this.round(position[0]), this.round(position[1]), this.round(width), this.round(height));
     } else {
-        this.context.drawImage(image, position[0], position[1]);
+        this.context.drawImage(image, this.round(position[0]), this.round(position[1]));
     }
 
     if (angle) {

@@ -113,6 +113,7 @@ Avatar.prototype.setPrinting = function(printing)
 Avatar.prototype.die = function()
 {
     BaseAvatar.prototype.die.call(this);
+    this.addPoint(this.head.slice(0));
     this.emit('die', {avatar: this});
 };
 

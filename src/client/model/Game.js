@@ -116,11 +116,9 @@ Game.prototype.draw = function()
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        if (avatar.alive) {
-            points = avatar.trail.getLastSegment();
-            if (points) {
-                this.background.drawLineScaled(points, avatar.width, avatar.color);
-            }
+        points = avatar.trail.getLastSegment();
+        if (points) {
+            this.background.drawLineScaled(points, avatar.width, avatar.color);
         }
     }
 
@@ -130,11 +128,11 @@ Game.prototype.draw = function()
         avatar = this.avatars.items[i];
         width  = avatar.radius * 2;
 
-        this.canvas.drawImage(avatar.canvas.element, [avatar.head[0] * this.canvas.scale, avatar.head[1] * this.canvas.scale], avatar.angle);
+        this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
 
         if (avatar.local && !this.running) {
             width = 10;
-            position = [avatar.head[0] + avatar.radius - width/2, avatar.head[1] + avatar.radius - width/2];
+            position = [avatar.head[0] - width/2, avatar.head[1] - width/2];
             this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
         }
     }

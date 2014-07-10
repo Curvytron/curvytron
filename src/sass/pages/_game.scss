@@ -44,6 +44,10 @@
             padding: 10px 20px;
             // background: lighten($game-background, 10%);
         }
+        .maxScore {
+            margin: 8px;
+            text-align: center;
+        }
         #game-players {
             @extend .no-bullet;
             li {
