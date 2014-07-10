@@ -218,8 +218,6 @@ Game.prototype.newRound = function()
  */
 Game.prototype.onStart = function()
 {
-    BaseGame.prototype.onStart.call(this);
-
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.printingTimeout = setTimeout(avatar.togglePrinting, 3000);
@@ -228,7 +226,7 @@ Game.prototype.onStart = function()
     this.world.activate();
     this.bonusManager.start();
 
-    this.printing = false;
+    BaseGame.prototype.onStart.call(this);
 };
 
 /**

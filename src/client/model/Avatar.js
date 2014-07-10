@@ -28,7 +28,7 @@ Avatar.prototype = Object.create(BaseAvatar.prototype);
  *
  * @type {Number}
  */
-Avatar.prototype.radiusMargin = 1.25;
+Avatar.prototype.radiusMargin = 1.15;
 
 /**
  * Arrao width

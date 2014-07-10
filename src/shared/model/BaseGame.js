@@ -17,6 +17,7 @@ function BaseGame(room)
     this.maxScore     = this.getMaxScore(this.avatars.count());
     this.fps          = new FPSLogger();
     this.started      = false;
+    this.running      = false;
     this.bonusManager = new BonusManager(this);
 
     this.start    = this.start.bind(this);

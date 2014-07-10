@@ -3,7 +3,6 @@
     "path": "bin/",
     "files": [
         "src/server/dependencies.js",
-        "src/server/utils.js",
         "src/shared/**/*.js",
         "src/server/*/**/*.js",
         "src/server/launcher.js"

@@ -12,7 +12,7 @@ function Game(room)
 
     this.onResize = this.onResize.bind(this);
 
-    window.addEventListener('error', this.clearFrame);
+    window.addEventListener('error', this.stop);
     window.addEventListener('resize', this.onResize);
 
     this.onResize();
@@ -45,13 +45,14 @@ Game.prototype.clearFrame = function()
 };
 
 /**
- * Update
+ * On frame
  *
  * @param {Number} step
  */
-Game.prototype.update = function(step)
+Game.prototype.onFrame = function(step)
 {
     this.draw();
+    BaseGame.prototype.onFrame.call(this, step);
 };
 
 /**
