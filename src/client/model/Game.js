@@ -128,7 +128,7 @@ Game.prototype.draw = function()
         avatar = this.avatars.items[i];
         width  = avatar.radius * 2;
 
-        this.canvas.drawImage(avatar.canvas.element, [avatar.head[0] * this.canvas.scale, avatar.head[1] * this.canvas.scale], avatar.angle);
+        this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
 
         if (avatar.local && !this.running) {
             width = 10;

@@ -59,6 +59,9 @@ Canvas.prototype.setScale = function(scale)
  */
 Canvas.prototype.setDimension = function(width, height, scale, update)
 {
+    width  = Math.ceil(width);
+    height = Math.ceil(height);
+
     if (update) {
         var save = new Canvas(this.element.width, this.element.height);
         save.drawImage(this.element, [0,0]);

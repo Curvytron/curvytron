@@ -12,13 +12,11 @@ function Avatar(player)
     this.arrow  = new Canvas(100, 100);
     this.radius = this.radius * this.radiusMargin;
     this.width  = this.radius * 2;
+    this.start  = new Array(2);
 
     if (this.local) {
         this.input = new PlayerInput(this, player.getBinding());
     }
-
-    this.drawHead();
-    this.drawArrow();
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
@@ -44,8 +42,9 @@ Avatar.prototype.arrowWidth = 3;
  */
 Avatar.prototype.setPosition = function(point)
 {
-    this.head[0] = point[0] - this.radius;
-    this.head[1] = point[1] - this.radius;
+    BaseAvatar.prototype.setPosition.call(this, point);
+
+    this.updateStart();
 
     if (this.printing) {
         this.addPoint(point);
@@ -59,9 +58,10 @@ Avatar.prototype.setPosition = function(point)
  */
 Avatar.prototype.setScale = function(scale)
 {
-    var width = Math.ceil(this.width * scale);
+    var width = this.width * scale;
 
-    this.canvas.setDimension(width, width);
+    this.canvas.setDimension(width, width, scale);
+    this.updateStart();
     this.drawHead();
 };
 
@@ -72,7 +72,7 @@ Avatar.prototype.drawHead = function()
 {
     var middle = this.canvas.element.width/2;
 
-    this.canvas.drawCircle([middle, middle], middle, this.color);
+    this.canvas.drawCircle([middle, middle], this.radius * this.canvas.scale, this.color);
 };
 
 /**
@@ -82,6 +82,17 @@ Avatar.prototype.drawArrow = function()
 {
     this.arrow.drawLine([[65, 50], [95, 50]], this.arrowWidth, this.color);
     this.arrow.drawLine([[85, 40], [95, 50], [85, 60]], this.arrowWidth, this.color);
+};
+
+/**
+ * Update drawing start point
+ */
+Avatar.prototype.updateStart = function()
+{
+    this.start = [
+        this.head[0] * this.canvas.scale - this.canvas.element.width/2,
+        this.head[1] * this.canvas.scale - this.canvas.element.width/2
+    ];
 };
 
 /**
