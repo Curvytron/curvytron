@@ -132,7 +132,7 @@ Game.prototype.draw = function()
 
         if (avatar.local && !this.running) {
             width = 10;
-            position = [avatar.head[0] + avatar.radius - width/2, avatar.head[1] + avatar.radius - width/2];
+            position = [avatar.head[0] - width/2, avatar.head[1] - width/2];
             this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
         }
     }

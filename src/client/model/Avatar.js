@@ -17,6 +17,8 @@ function Avatar(player)
     if (this.local) {
         this.input = new PlayerInput(this, player.getBinding());
     }
+
+    this.drawArrow();
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
@@ -26,7 +28,7 @@ Avatar.prototype = Object.create(BaseAvatar.prototype);
  *
  * @type {Number}
  */
-Avatar.prototype.radiusMargin = 1.1;
+Avatar.prototype.radiusMargin = 1.25;
 
 /**
  * Arrao width
