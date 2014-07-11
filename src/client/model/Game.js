@@ -113,7 +113,7 @@ Game.prototype.removeAvatar = function(avatar)
  */
 Game.prototype.draw = function()
 {
-    var i, trail, avatar, width, position, points, bonus;
+    var i, trail, avatar, width, position, points;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
@@ -138,16 +138,7 @@ Game.prototype.draw = function()
         }
     }
 
-    for (i = this.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
-        bonus = this.bonusManager.bonuses.items[i];
-        this.canvas.drawImage(
-            bonus.canvas.element,
-            [
-                bonus.position[0] * this.canvas.scale,
-                bonus.position[1] * this.canvas.scale
-            ]
-        );
-    }
+    this.bonusManager.draw(this.canvas);
 };
 
 /**

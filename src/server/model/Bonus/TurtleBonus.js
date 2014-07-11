@@ -15,7 +15,7 @@ TurtleBonus.prototype = Object.create(Bonus.prototype);
  *
  * @type {String}
  */
-TurtleBonus.prototype.name     = 'turtle';
+TurtleBonus.prototype.type = 'turtle';
 
 TurtleBonus.prototype.color    = '#FF0000';
 TurtleBonus.prototype.positive = false;

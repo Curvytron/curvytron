@@ -15,7 +15,7 @@ function Bonus(id, position, type, color, radius)
     this.type   = type;
     this.color  = color;
     this.radius = radius;
-    this.canvas = new Canvas(100, 100);
+    this.canvas = new Canvas();
 
     this.position[0] = this.position[0] - this.radius;
     this.position[1] = this.position[1] - this.radius;
@@ -44,6 +44,7 @@ Bonus.prototype.draw = function()
     var middle = this.canvas.element.width/2;
 
     this.canvas.drawCircle([middle, middle], middle, this.color);
+    this.canvas.drawImage(this.assets[this.type], [0, 0], this.canvas.element.width, this.canvas.element.width);
 };
 
 /**

@@ -56,7 +56,7 @@ Server.prototype.onSocketConnection = function(socket)
 
     this.roomController.attach(client);
 
-    console.log('Client connected', client.id)
+    console.log('Client connected', client.id);
 };
 
 /**

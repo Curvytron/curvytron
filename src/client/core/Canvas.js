@@ -150,6 +150,7 @@ Canvas.prototype.drawImageScaled = function(image, position, width, height, angl
  */
 Canvas.prototype.drawImage = function(image, position, width, height, angle)
 {
+    position = typeof(position) !== 'undefined' && position ? position : [0, 0];
     angle = typeof(angle) !== 'undefined' && angle ? angle : false;
 
     if (angle) {
