@@ -21,7 +21,13 @@ BonusManager.prototype = Object.create(BaseBonusManager.prototype);
  *
  * @type {Array}
  */
-BonusManager.prototype.bonusTypes = [TurtleBonus, RabbitBonus];
+BonusManager.prototype.bonusTypes = [
+    TurtleSelfBonus,
+    RabbitSelfBonus,
+    TurtleEnemyBonus,
+    RabbitEnemyBonus,
+    GodzillaEnemyBonus
+];
 
 /**
  * Start
@@ -89,7 +95,7 @@ BonusManager.prototype.testCatch = function(avatar)
         bonus = body ? body.data : null;
 
     if (bonus && this.remove(bonus)) {
-        this.timeouts.push(bonus.applyTo(avatar));
+        this.timeouts.push(bonus.applyTo(avatar, this.game));
     }
 };
 

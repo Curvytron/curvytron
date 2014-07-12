@@ -121,6 +121,8 @@ GameController.prototype.attachEvents = function(client)
         avatar.on('printing', this.onPrinting);
         avatar.on('point', this.onPoint);
         avatar.on('score', this.onScore);
+        avatar.on('radius', this.onRadius);
+        avatar.on('velocity', this.onVelocity);
         avatar.trail.on('clear', this.onTrailClear);
     }
 };
@@ -146,6 +148,8 @@ GameController.prototype.detachEvents = function(client)
         avatar.removeListener('printing', this.onPrinting);
         avatar.removeListener('point', this.onPoint);
         avatar.removeListener('score', this.onScore);
+        avatar.removeListener('radius', this.onRadius);
+        avatar.removeListener('velocity', this.onVelocity);
         avatar.trail.removeListener('clear', this.onTrailClear);
     }
 };
@@ -294,6 +298,34 @@ GameController.prototype.onScore = function(data)
         score = data.score;
 
     game.client.addEvent('score', {avatar: avatar.name, score: score});
+};
+
+/**
+ * On radius
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onRadius = function(data)
+{
+    var avatar = data.avatar,
+        game = avatar.player.client.room.game,
+        radius = data.radius;
+
+    game.client.addEvent('radius', {avatar: avatar.name, radius: radius});
+};
+
+/**
+ * On velocity
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onVelocity = function(data)
+{
+    var avatar = data.avatar,
+        game = avatar.player.client.room.game,
+        velocity = data.velocity;
+
+    game.client.addEvent('velocity', {avatar: avatar.name, velocity: velocity});
 };
 
 /**

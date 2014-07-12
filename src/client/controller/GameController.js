@@ -31,6 +31,7 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.onPrinting    = this.onPrinting.bind(this);
     this.onAngle       = this.onAngle.bind(this);
     this.onPoint       = this.onPoint.bind(this);
+    this.onRadius      = this.onRadius.bind(this);
     this.onBonusPop    = this.onBonusPop.bind(this);
     this.onBonusClear  = this.onBonusClear.bind(this);
     this.onDie         = this.onDie.bind(this);
@@ -60,6 +61,7 @@ GameController.prototype.attachSocketEvents = function()
     this.client.on('position', this.onPosition);
     this.client.on('printing', this.onPrinting);
     this.client.on('angle', this.onAngle);
+    this.client.on('radius', this.onRadius);
     this.client.on('point', this.onPoint);
     this.client.on('bonus:pop', this.onBonusPop);
     this.client.on('bonus:clear', this.onBonusClear);
@@ -81,6 +83,7 @@ GameController.prototype.detachSocketEvents = function()
     this.client.off('position', this.onPosition);
     this.client.off('printing', this.onPrinting);
     this.client.off('angle', this.onAngle);
+    this.client.off('radius', this.onRadius);
     this.client.off('point', this.onPoint);
     this.client.off('bonus:pop', this.onBonusPop);
     this.client.off('bonus:clear', this.onBonusClear);
@@ -201,7 +204,7 @@ GameController.prototype.onPosition = function(e)
 GameController.prototype.onBonusPop = function(e)
 {
     var data = e.detail,
-        bonus = new Bonus(data.id, data.position, data.type, data.color, data.radius);
+        bonus = new Bonus(data.id, data.position, data.type, data.affect, data.radius);
 
     this.game.bonusManager.add(bonus);
 };
@@ -246,6 +249,25 @@ GameController.prototype.onAngle = function(e)
 
     if (avatar) {
         avatar.setAngle(data.angle);
+
+        if (!this.game.running) {
+            this.game.draw();
+        }
+    }
+};
+
+/**
+ * On radius
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onRadius = function(e)
+{
+    var data = e.detail,
+        avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.setRadius(data.radius);
 
         if (!this.game.running) {
             this.game.draw();

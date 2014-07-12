@@ -10,9 +10,9 @@ function Avatar(player)
     this.local  = player.local;
     this.canvas = new Canvas(100, 100);
     this.arrow  = new Canvas(100, 100);
+    this.start  = new Array(2);
     this.radius = this.radius * this.radiusMargin;
     this.width  = this.radius * 2;
-    this.start  = new Array(2);
 
     if (this.local) {
         this.input = new PlayerInput(this, player.getBinding());
@@ -68,6 +68,19 @@ Avatar.prototype.setScale = function(scale)
 };
 
 /**
+ * Set radius
+ *
+ * @param {Number} radius
+ */
+Avatar.prototype.setRadius = function(radius)
+{
+    this.radius = radius * this.radiusMargin;
+    this.width  = this.radius * 2;
+
+    this.setScale(this.canvas.scale);
+};
+
+/**
  * Draw head
  */
 Avatar.prototype.drawHead = function()
@@ -95,6 +108,16 @@ Avatar.prototype.updateStart = function()
         this.head[0] * this.canvas.scale - this.canvas.element.width/2,
         this.head[1] * this.canvas.scale - this.canvas.element.width/2
     ];
+};
+
+/**
+ * Clear
+ */
+Avatar.prototype.clear = function()
+{
+    BaseAvatar.prototype.clear.call(this);
+
+    this.setRadius(this.defaultRadius);
 };
 
 /**

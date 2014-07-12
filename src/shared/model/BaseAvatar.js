@@ -32,7 +32,6 @@ BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
 BaseAvatar.prototype.precision           = 1;
 BaseAvatar.prototype.velocity            = 18;
-BaseAvatar.prototype.velocityStep        = 9;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 300;
 BaseAvatar.prototype.printingTime        = 3000;
@@ -113,21 +112,14 @@ BaseAvatar.prototype.updatePosition = function(step)
 };
 
 /**
- * Upgrade velocity
+ * Set velocity
+ *
+ * @param {Number} step
  */
-BaseAvatar.prototype.upVelocity = function()
+BaseAvatar.prototype.setVelocity = function(velocity)
 {
-    this.velocity += this.velocityStep;
-    this.updateVelocities();
-};
-
-/**
- * Downgrade velocity
- */
-BaseAvatar.prototype.downVelocity = function()
-{
-    if (this.velocity > this.velocityStep) {
-        this.velocity -= this.velocityStep;
+    if (velocity > 0) {
+        this.velocity = velocity;
         this.updateVelocities();
     }
 };
@@ -141,6 +133,18 @@ BaseAvatar.prototype.updateVelocities = function()
         Math.cos(this.angle) * this.velocity/1000,
         Math.sin(this.angle) * this.velocity/1000
     ];
+};
+
+/**
+ * Set radius
+ *
+ * @param {Number} radius
+ */
+BaseAvatar.prototype.setRadius = function(radius)
+{
+    if (radius > 0) {
+        this.radius = radius;
+    }
 };
 
 /**
@@ -254,6 +258,7 @@ BaseAvatar.prototype.clear = function()
     this.velocity        = BaseAvatar.prototype.velocity;
     this.alive           = true;
     this.printing        = false;
+    this.radius          = this.defaultRadius;
 
     this.updateVelocities();
 };

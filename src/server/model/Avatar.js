@@ -70,6 +70,18 @@ Avatar.prototype.setAngle = function(angle)
 };
 
 /**
+ * Set radius
+ *
+ * @param {Number} radius
+ */
+Avatar.prototype.setRadius = function(radius)
+{
+    BaseAvatar.prototype.setRadius.call(this, radius);
+    this.body.radius = this.radius;
+    this.emit('radius', {avatar: this, radius: this.radius});
+};
+
+/**
  * Add point
  *
  * @param {Array} point
