@@ -23,18 +23,10 @@ function Game(room)
         avatar.clear();
         avatar.on('point', this.addPoint);
         avatar.on('die', this.onDie);
-        avatar.setMask(i+1);
     }
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
-
-/**
- * Trail latency
- *
- * @type {Number}
- */
-Game.prototype.trailLatency = 300;
 
 /**
  * Update
@@ -85,11 +77,7 @@ Game.prototype.removeAvatar = function(avatar)
 Game.prototype.addPoint = function(data)
 {
     if (this.world.active) {
-        var body = new Body(data.point, data.avatar.radius, data.avatar),
-            duration = this.trailLatency * (data.avatar.velocity / BaseAvatar.prototype.velocity);
-
-        body.setMask(data.avatar.mask, duration);
-        this.world.addBody(body);
+        this.world.addBody(new AvatarBody(data.point, data.avatar));
     }
 };
 
@@ -175,7 +163,6 @@ Game.prototype.setScores = function()
 Game.prototype.endRound = function()
 {
     BaseGame.prototype.endRound.call(this);
-
     this.emit('round:end', {game: this});
 
     if (this.isWon()) {

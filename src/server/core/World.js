@@ -208,11 +208,11 @@ World.prototype.bodyInBound = function(body, from, to)
  */
 World.prototype.clear = function()
 {
+    this.active = false;
+
     for (var i = this.islands.items.length - 1; i >= 0; i--) {
         this.islands.items[i].clear();
     }
-
-    this.active = false;
 };
 
 /**

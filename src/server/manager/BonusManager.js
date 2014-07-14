@@ -23,9 +23,9 @@ BonusManager.prototype = Object.create(BaseBonusManager.prototype);
  */
 BonusManager.prototype.bonusTypes = [
     TurtleSelfBonus,
-    RabbitSelfBonus,
+    //RabbitSelfBonus,
     TurtleEnemyBonus,
-    RabbitEnemyBonus,
+    //RabbitEnemyBonus,
     GodzillaEnemyBonus
 ];
 

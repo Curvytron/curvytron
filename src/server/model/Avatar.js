@@ -7,8 +7,9 @@ function Avatar(player)
 {
     BaseAvatar.call(this, player);
 
-    this.game = null;
-    this.body = new Body(this.head, this.radius, this);
+    this.game      = null;
+    this.bodyCount = 0;
+    this.body      = new AvatarBody(this.head, this);
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
@@ -30,18 +31,6 @@ Avatar.prototype.update = function(step)
     }
 
     BaseAvatar.prototype.update.call(this);
-};
-
-/**
- * Set mask
- *
- * @param {Number} mask
- */
-Avatar.prototype.setMask = function(mask)
-{
-    BaseAvatar.prototype.setMask.call(this, mask);
-
-    this.body.setMask(this.mask);
 };
 
 /**
@@ -90,8 +79,11 @@ Avatar.prototype.addPoint = function(point, important)
 {
     if (this.game.isPlaying()) {
         BaseAvatar.prototype.addPoint.call(this, point);
-        important = important || this.angularVelocity;
-        this.emit('point', {avatar: this, point: point, important: important});
+        this.emit('point', {
+            avatar: this,
+            point: point,
+            important: important || this.angularVelocity
+        });
     }
 };
 
@@ -138,4 +130,13 @@ Avatar.prototype.setScore = function(score)
 {
     BaseAvatar.prototype.setScore.call(this, score);
     this.emit('score', {avatar: this, score: this.score});
+};
+
+/**
+ * Clear
+ */
+Avatar.prototype.clear = function()
+{
+    BaseAvatar.prototype.clear.call(this);
+    this.bodyCount = 0;
 };

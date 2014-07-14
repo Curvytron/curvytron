@@ -21,7 +21,6 @@ function BaseAvatar(player)
     this.score           = 0;
     this.printingTimeout = null;
     this.ready           = false;
-    this.mask            = 0;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
@@ -36,6 +35,19 @@ BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 300;
 BaseAvatar.prototype.printingTime        = 3000;
 BaseAvatar.prototype.defaultRadius       = 0.6;
+BaseAvatar.prototype.trailLatency        = 10;
+
+/**
+ * Equal
+ *
+ * @param {Avatar} avatar
+ *
+ * @return {Boolean}
+ */
+BaseAvatar.prototype.equal = function(avatar)
+{
+    return this.name === avatar.name;
+};
 
 /**
  * Set Point
@@ -232,16 +244,6 @@ BaseAvatar.prototype.addScore = function(score)
 BaseAvatar.prototype.setScore = function(score)
 {
     this.score = score;
-};
-
-/**
- * Set mask
- *
- * @param {Number} mask
- */
-BaseAvatar.prototype.setMask = function(mask)
-{
-    this.mask = mask;
 };
 
 /**

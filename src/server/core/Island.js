@@ -8,7 +8,7 @@ function Island(id,  size, from)
     this.size   = size;
     this.from   = [from[0], from[1]];
     this.to     = [this.from[0] + size, this.from[1] + size];
-    this.bodies = new Collection([], 'id', true);
+    this.bodies = new Collection();
 }
 
 /**
@@ -71,7 +71,7 @@ Island.prototype.getBody = function(body)
  */
 Island.prototype.bodiesTouch = function(bodyA, bodyB)
 {
-    return this.getDistance(bodyA.position, bodyB.position) < (bodyA.radius + bodyB.radius) && bodyA.matchMask(bodyB);
+    return this.getDistance(bodyA.position, bodyB.position) < (bodyA.radius + bodyB.radius) && bodyA.match(bodyB);
 };
 
 /**

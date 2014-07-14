@@ -8,7 +8,7 @@ function BaseTrail(avatar)
     this.avatar = avatar;
     this.color  = this.avatar.color;
     this.radius = this.avatar.radius;
-    this.points = [];
+    this.points = new Collection();
 }
 
 BaseTrail.prototype = Object.create(EventEmitter.prototype);
@@ -20,17 +20,17 @@ BaseTrail.prototype = Object.create(EventEmitter.prototype);
  */
 BaseTrail.prototype.addPoint = function(point)
 {
-    this.points.push(point);
+    this.points.add(point);
 };
 
 /**
- * get last point
+ * Get last point
  *
  * @return {Array}
  */
 BaseTrail.prototype.getLast = function()
 {
-    return this.points.length ? this.points[this.points.length - 1] : null;
+    return this.points.getLast();
 };
 
 /**
@@ -40,5 +40,5 @@ BaseTrail.prototype.getLast = function()
  */
 BaseTrail.prototype.clear = function()
 {
-    this.points = [];
+    this.points.clear();
 };
