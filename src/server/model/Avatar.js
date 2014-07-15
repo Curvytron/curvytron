@@ -25,7 +25,9 @@ Avatar.prototype.update = function(step)
         this.updateAngle(step);
         this.updatePosition(step);
 
-        if (this.printing && (!this.trail.getLast() || this.getDistance(this.trail.getLast(), this.head) > this.precision)) {
+        var last = this.trail.getLast();
+
+        if (this.printing && (!last || this.getDistance(last, this.head) > this.radius)) {
             this.addPoint(this.head.slice(0));
         }
     }
@@ -43,6 +45,7 @@ Avatar.prototype.setPosition = function(point)
     BaseAvatar.prototype.setPosition.call(this, point);
 
     this.body.position = this.head;
+    this.body.num      = this.bodyCount;
 
     this.emit('position', {avatar: this, point: this.head});
 };
@@ -94,21 +97,8 @@ Avatar.prototype.addPoint = function(point, important)
  */
 Avatar.prototype.setPrinting = function(printing)
 {
-    if (!printing) {
-        this.addPoint(this.head.slice(0), true);
-    }
-
     BaseAvatar.prototype.setPrinting.call(this, printing);
-
-    if (!this.printing) {
-        this.trail.clear();
-    }
-
     this.emit('printing', {avatar: this, printing: this.printing});
-
-    if (printing) {
-        this.addPoint(this.head.slice(0), true);
-    }
 };
 
 /**

@@ -27,7 +27,7 @@ function World(size, islands)
  *
  * @type {Number}
  */
-World.prototype.islandGridSize = 4;
+World.prototype.islandGridSize = 5;
 
 /**
  * Get island by point

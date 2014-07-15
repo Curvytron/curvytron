@@ -37,9 +37,9 @@ Game.prototype.update = function(step)
 {
     BaseGame.prototype.update.call(this, step);
 
-    var avatar, position;
+    var avatar, position, i;
 
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+    for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
         avatar.update(step);

@@ -29,13 +29,12 @@ function BaseAvatar(player)
 
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
-BaseAvatar.prototype.precision           = 1;
-BaseAvatar.prototype.velocity            = 18;
+BaseAvatar.prototype.velocity            = 16;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 300;
 BaseAvatar.prototype.printingTime        = 3000;
 BaseAvatar.prototype.defaultRadius       = 0.6;
-BaseAvatar.prototype.trailLatency        = 10;
+BaseAvatar.prototype.trailLatency        = 3;
 
 /**
  * Equal
@@ -209,7 +208,19 @@ BaseAvatar.prototype.stopPrinting = function()
  */
 BaseAvatar.prototype.setPrinting = function(printing)
 {
+    if (!printing) {
+        this.addPoint(this.head.slice(0), true);
+    }
+
     this.printing = printing;
+
+    if (!this.printing) {
+        this.trail.clear();
+    }
+
+    if (printing) {
+        this.addPoint(this.head.slice(0), true);
+    }
 };
 
 /**

@@ -7,9 +7,8 @@ function AvatarBody(point, avatar)
 
     avatar.bodyCount++;
 
-    this.id      = avatar.bodyCount;
-    this.avatar  = avatar;
-    this.created = new Date();
+    this.num    = avatar.bodyCount;
+    this.avatar = avatar;
 }
 
 AvatarBody.prototype = Object.create(Body.prototype);
@@ -23,8 +22,8 @@ AvatarBody.prototype = Object.create(Body.prototype);
  */
 AvatarBody.prototype.match = function(body)
 {
-    if (body instanceof AvatarBody && this.avatar.equal(body.avatar)) {
-        return this.avatar.bodyCount - this.id > this.avatar.trailLatency;
+    if ((body instanceof AvatarBody) && this.avatar.equal(body.avatar)) {
+        return body.num - this.num > this.avatar.trailLatency;
     }
 
     return Body.prototype.match.call(this, body);

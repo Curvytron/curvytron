@@ -15,7 +15,6 @@ function GameController()
     this.onPrinting    = this.onPrinting.bind(this);
     this.onPoint       = this.onPoint.bind(this);
     this.onScore       = this.onScore.bind(this);
-    this.onTrailClear  = this.onTrailClear.bind(this);
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
     this.onRoundWinner = this.onRoundWinner.bind(this);
@@ -123,7 +122,6 @@ GameController.prototype.attachEvents = function(client)
         avatar.on('score', this.onScore);
         avatar.on('radius', this.onRadius);
         avatar.on('velocity', this.onVelocity);
-        avatar.trail.on('clear', this.onTrailClear);
     }
 };
 
@@ -150,7 +148,6 @@ GameController.prototype.detachEvents = function(client)
         avatar.removeListener('score', this.onScore);
         avatar.removeListener('radius', this.onRadius);
         avatar.removeListener('velocity', this.onVelocity);
-        avatar.trail.removeListener('clear', this.onTrailClear);
     }
 };
 
@@ -326,19 +323,6 @@ GameController.prototype.onVelocity = function(data)
         velocity = data.velocity;
 
     game.client.addEvent('velocity', {avatar: avatar.name, velocity: velocity});
-};
-
-/**
- * On point
- *
- * @param {Object} data
- */
-GameController.prototype.onTrailClear = function(data)
-{
-    var avatar = data.avatar,
-        game = avatar.player.client.room.game;
-
-    game.client.addEvent('trail:clear', {avatar: avatar.name});
 };
 
 // Game events:

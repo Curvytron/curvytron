@@ -36,7 +36,6 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.onBonusClear  = this.onBonusClear.bind(this);
     this.onDie         = this.onDie.bind(this);
     this.onScore       = this.onScore.bind(this);
-    this.onTrailClear  = this.onTrailClear.bind(this);
     this.onWarmup      = this.onWarmup.bind(this);
     this.endWarmup     = this.endWarmup.bind(this);
     this.onRoundNew    = this.onRoundNew.bind(this);
@@ -67,7 +66,6 @@ GameController.prototype.attachSocketEvents = function()
     this.client.on('bonus:clear', this.onBonusClear);
     this.client.on('die', this.onDie);
     this.client.on('score', this.onScore);
-    this.client.on('trail:clear', this.onTrailClear);
     this.client.on('round:new', this.onRoundNew);
     this.client.on('round:end', this.onRoundEnd);
     this.client.on('round:winner', this.onRoundWinner);
@@ -89,7 +87,6 @@ GameController.prototype.detachSocketEvents = function()
     this.client.off('bonus:clear', this.onBonusClear);
     this.client.off('die', this.onDie);
     this.client.off('score', this.onScore);
-    this.client.off('trail:clear', this.onTrailClear);
     this.client.off('round:new', this.onRoundNew);
     this.client.off('round:end', this.onRoundEnd);
     this.client.off('round:winner', this.onRoundWinner);
@@ -322,21 +319,6 @@ GameController.prototype.onScore = function(e)
     if (avatar) {
         avatar.setScore(data.score);
         this.applyScope();
-    }
-};
-
-/**
- * On trail clear
- *
- * @param {Event} e
- */
-GameController.prototype.onTrailClear = function(e)
-{
-    var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
-
-    if (avatar) {
-        avatar.trail.clear();
     }
 };
 

@@ -74,7 +74,7 @@ RoomsController.prototype.createRoom = function(e)
                 $scope.name = null;
                 controller.joinRoom({name: result.room});
             } else {
-                console.log('Error');
+                console.error('Could not create room %s', $scope.name);
             }
         });
     }
