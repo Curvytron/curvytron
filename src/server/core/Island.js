@@ -4,71 +4,91 @@
  */
 function Island(id,  size, from)
 {
-    this.id      = id;
-    this.size    = size;
-    this.from    = [from[0], from[1]];
-    this.to      = [this.from[0] + size, this.from[1] + size];
-    this.circles = [];
+    this.id     = id;
+    this.size   = size;
+    this.from   = [from[0], from[1]];
+    this.to     = [this.from[0] + size, this.from[1] + size];
+    this.bodies = new Collection([], 'id', true);
 }
 
 /**
- * Add circle
+ * Add body
  *
- * @param {Array} circle
+ * @param {Array} body
  */
-Island.prototype.addCircle = function(circle)
+Island.prototype.addBody = function(body)
 {
-    this.circles.push(circle);
+    this.bodies.add(body);
+    body.islands.add(this);
 };
 
 /**
- * Add circle
+ * Remove body
  *
- * @param {Array} circle
+ * @param {Array} body
  */
-Island.prototype.testCircle = function(circle)
+Island.prototype.removeBody = function(body)
 {
-    if (this.circleInBound(circle, this.from, this.to)) {
-        for (var i = this.circles.length - 1; i >= 0; i--)
-        {
-            if (this.circlesTouch(this.circles[i], circle)) {
-                return false;
+    this.bodies.remove(body);
+    body.islands.remove(this);
+};
+
+/**
+ * Add body
+ *
+ * @param {Array} body
+ */
+Island.prototype.testBody = function(body)
+{
+    return this.getBody(body) === null;
+};
+
+/**
+ * Add body
+ *
+ * @param {Body} body
+ */
+Island.prototype.getBody = function(body)
+{
+    if (this.bodyInBound(body, this.from, this.to)) {
+        for (var i = this.bodies.items.length - 1; i >= 0; i--) {
+            if (this.bodiesTouch(this.bodies.items[i], body)) {
+                return this.bodies.items[i];
             }
         }
     }
 
-    return true;
+    return null;
 };
 
 /**
- * Circles touch
+ * Bodies touch
  *
- * @param {Array} circleA
- * @param {Array} circleB
+ * @param {Body} bodyA
+ * @param {Body} bodyB
  *
  * @return {Boolean}
  */
-Island.prototype.circlesTouch = function(circleA, circleB)
+Island.prototype.bodiesTouch = function(bodyA, bodyB)
 {
-    return this.getDistance(circleA, circleB) < (circleA[2] + circleB[2]) &&
-        (circleA[3] && circleB[3] ? circleA[3] !== circleB[3] : true);
+    return (this.getDistance(bodyA.position, bodyB.position) < (bodyA.radius + bodyB.radius)) && bodyA.match(bodyB);
 };
 
 /**
  * Is point in bound?
  *
- * @param {Array} circle
+ * @param {Body} body
  * @param {Array} from
  * @param {Array} to
  *
  * @return {Boolean}
  */
-Island.prototype.circleInBound = function(circle, from, to)
+Island.prototype.bodyInBound = function(body, from, to)
 {
-    return circle[0] + circle[2] >= from[0] &&
-           circle[0] - circle[2] <= to[0]   &&
-           circle[1] + circle[2] >= from[1] &&
-           circle[1] - circle[2] <= to[1];
+    return body.position[0] + body.radius > from[0] &&
+           body.position[0] - body.radius < to[0]   &&
+           body.position[1] + body.radius > from[1] &&
+           body.position[1] - body.radius < to[1];
 };
 
 /**
@@ -77,7 +97,7 @@ Island.prototype.circleInBound = function(circle, from, to)
  * @param {Array} from
  * @param {Array} to
  *
- * @return {Boolean}
+ * @return {Number}
  */
 Island.prototype.getDistance = function(from, to)
 {
@@ -88,6 +108,7 @@ Island.prototype.getDistance = function(from, to)
  * Random Position
  *
  * @param {Number} radius
+ * @param {Number} border
  *
  * @return {Array}
  */
@@ -96,7 +117,7 @@ Island.prototype.getRandomPosition = function(radius, border)
     var margin = radius + border * this.size,
         point = this.getRandomPoint(margin);
 
-    while (!this.testCircle([point[0], point[1], margin, 0])) {
+    while (!this.testBody(point, margin)) {
         point = this.getRandomPoint(margin);
     }
 
@@ -106,7 +127,7 @@ Island.prototype.getRandomPosition = function(radius, border)
 /**
  * Get random point
  *
- * @param {Number} radius
+ * @param {Number} margin
  *
  * @return {Array}
  */
@@ -123,5 +144,5 @@ Island.prototype.getRandomPoint = function(margin)
  */
 Island.prototype.clear = function()
 {
-    this.circles = [];
+    this.bodies.clear();
 };

@@ -40,7 +40,7 @@
     "faye-websocket": "^0.7.*",
     "express": "~4.4.*"
   },
-  "scripts" : {
-    "install" : "bower install"
+  "scripts": {
+    "install": "bower install"
   }
 }

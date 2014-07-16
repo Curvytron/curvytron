@@ -10,10 +10,11 @@ function GameController()
     this.onDie         = this.onDie.bind(this);
     this.onAngle       = this.onAngle.bind(this);
     this.onPosition    = this.onPosition.bind(this);
+    this.onBonusPop    = this.onBonusPop.bind(this);
+    this.onBonusClear  = this.onBonusClear.bind(this);
     this.onPrinting    = this.onPrinting.bind(this);
     this.onPoint       = this.onPoint.bind(this);
     this.onScore       = this.onScore.bind(this);
-    this.onTrailClear  = this.onTrailClear.bind(this);
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
     this.onRoundWinner = this.onRoundWinner.bind(this);
@@ -37,6 +38,8 @@ GameController.prototype.addGame = function(game)
         game.on('round:new', this.onRoundNew);
         game.on('round:end', this.onRoundEnd);
         game.on('round:winner', this.onRoundWinner);
+        game.bonusManager.on('bonus:pop', this.onBonusPop);
+        game.bonusManager.on('bonus:clear', this.onBonusClear);
 
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
             this.attach(game.clients.items[i], game);
@@ -56,6 +59,8 @@ GameController.prototype.removeGame = function(game)
         game.removeListener('round:new', this.onRoundNew);
         game.removeListener('round:end', this.onRoundEnd);
         game.removeListener('round:winner', this.onRoundWinner);
+        game.bonusManager.removeListener('bonus:pop', this.onBonusPop);
+        game.bonusManager.removeListener('bonus:clear', this.onBonusClear);
 
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
             this.detach(game.clients.items[i], game);
@@ -115,7 +120,8 @@ GameController.prototype.attachEvents = function(client)
         avatar.on('printing', this.onPrinting);
         avatar.on('point', this.onPoint);
         avatar.on('score', this.onScore);
-        avatar.trail.on('clear', this.onTrailClear);
+        avatar.on('radius', this.onRadius);
+        avatar.on('velocity', this.onVelocity);
     }
 };
 
@@ -140,7 +146,8 @@ GameController.prototype.detachEvents = function(client)
         avatar.removeListener('printing', this.onPrinting);
         avatar.removeListener('point', this.onPoint);
         avatar.removeListener('score', this.onScore);
-        avatar.trail.removeListener('clear', this.onTrailClear);
+        avatar.removeListener('radius', this.onRadius);
+        avatar.removeListener('velocity', this.onVelocity);
     }
 };
 
@@ -253,6 +260,30 @@ GameController.prototype.onDie = function(data)
 };
 
 /**
+ * On bonus pop
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onBonusPop = function(data)
+{
+    var game = data.game, bonus = data.bonus;
+
+    game.client.addEvent('bonus:pop', bonus.serialize());
+};
+
+/**
+ * On bonus clear
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onBonusClear = function(data)
+{
+    var game = data.game, bonus = data.bonus;
+
+    game.client.addEvent('bonus:clear', {bonus: bonus.id});
+};
+
+/**
  * On score
  *
  * @param {Object} data
@@ -267,16 +298,31 @@ GameController.prototype.onScore = function(data)
 };
 
 /**
- * On point
+ * On radius
  *
  * @param {Object} data
  */
-GameController.prototype.onTrailClear = function(data)
+GameController.prototype.onRadius = function(data)
 {
     var avatar = data.avatar,
-        game = avatar.player.client.room.game;
+        game = avatar.player.client.room.game,
+        radius = data.radius;
 
-    game.client.addEvent('trail:clear', {avatar: avatar.name});
+    game.client.addEvent('radius', {avatar: avatar.name, radius: radius});
+};
+
+/**
+ * On velocity
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onVelocity = function(data)
+{
+    var avatar = data.avatar,
+        game = avatar.player.client.room.game,
+        velocity = data.velocity;
+
+    game.client.addEvent('velocity', {avatar: avatar.name, velocity: velocity});
 };
 
 // Game events:

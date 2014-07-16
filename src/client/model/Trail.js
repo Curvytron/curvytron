@@ -1,35 +1,12 @@
 /**
  * Trail
- * @constructor
  */
 function Trail(avatar)
 {
     BaseTrail.call(this, avatar);
-
-    this.path = [];
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
-
-/**
- * Add point
- *
- * @param {Array} point
- */
-Trail.prototype.addPoint = function(point)
-{
-    this.path.push(point);
-};
-
-/**
- * Add point
- *
- * @param {Array} point
- */
-Trail.prototype.clear = function()
-{
-    this.path = [];
-};
 
 /**
  * Get last segment
@@ -38,12 +15,12 @@ Trail.prototype.clear = function()
  */
 Trail.prototype.getLastSegment = function()
 {
-    var length = this.path.length;
+    var length = this.points.length;
 
     if (length > 2) {
-        var path = this.path;
-        this.path = [path[length - 1]];
-        return path;
+        var points = this.points;
+        this.points = [points[length - 1]];
+        return points;
     }
 
     return null;

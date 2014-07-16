@@ -60,7 +60,7 @@ RoomController.prototype.joinRoom = function(name)
                 controller.$scope.room = controller.repository.get(name);
                 controller.attachEvents(name);
             } else {
-                console.log('Error');
+                console.error('Could not join room %s', name);
                 controller.goHome();
             }
             controller.applyScope();
@@ -138,7 +138,7 @@ RoomController.prototype.addPlayer = function()
                     $scope.username = null;
                     $scope.$apply();
                 } else {
-                    console.log('Error');
+                    console.error('Could not add player %s', $scope.username);
                 }
             }
         );
@@ -179,7 +179,7 @@ RoomController.prototype.setColor = function(player)
         player.color,
         function (result) {
             if (!result.success) {
-                console.log('Error');
+                console.error('Could not set color %s for player %s', player.color, player.name);
             }
         }
     );
@@ -201,7 +201,7 @@ RoomController.prototype.setReady = function(player)
         player.name,
         function (result) {
             if (!result.success) {
-                console.log('Error');
+                console.error('Could not set player %s ready', player.name);
             }
         }
     );

@@ -16,7 +16,7 @@ function SocketClient()
 
     var Socket = window.MozWebSocket || window.WebSocket;
 
-    BaseSocketClient.call(this, new Socket('ws://' + document.location.host, ['websocket']));
+    BaseSocketClient.call(this, new Socket('ws://' + document.location.host + document.location.pathname, ['websocket']));
 
     this.on('pong', this.pingLogger.pong);
     this.on('open', this.onOpen);
@@ -35,7 +35,7 @@ SocketClient.prototype = Object.create(BaseSocketClient.prototype);
  */
 SocketClient.prototype.onSocketConnection = function(e)
 {
-    console.log('Connected');
+    console.info('Connected');
 
     this.connected = true;
     this.start();
@@ -52,7 +52,7 @@ SocketClient.prototype.onSocketConnection = function(e)
  */
 SocketClient.prototype.onSocketDisconnection = function(e)
 {
-    console.log('Disconnect');
+    console.info('Disconnect');
 
     this.connected = false;
     this.id        = null;

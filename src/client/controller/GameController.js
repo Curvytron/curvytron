@@ -14,6 +14,7 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.$location  = $location;
     this.repository = repository;
     this.client     = client;
+    this.game       = null;
 
     createjs.Sound.alternateExtensions = ['mp3'];
     createjs.Sound.registerManifest(
@@ -21,7 +22,7 @@ function GameController($scope, $routeParams, $location, repository, client)
             {id:'loose', src:'loose.ogg'},
             {id:'win', src:'win.ogg'}
         ],
-        '../sounds/'
+        'sounds/'
     );
 
     // Binding
@@ -30,9 +31,11 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.onPrinting    = this.onPrinting.bind(this);
     this.onAngle       = this.onAngle.bind(this);
     this.onPoint       = this.onPoint.bind(this);
+    this.onRadius      = this.onRadius.bind(this);
+    this.onBonusPop    = this.onBonusPop.bind(this);
+    this.onBonusClear  = this.onBonusClear.bind(this);
     this.onDie         = this.onDie.bind(this);
     this.onScore       = this.onScore.bind(this);
-    this.onTrailClear  = this.onTrailClear.bind(this);
     this.onWarmup      = this.onWarmup.bind(this);
     this.endWarmup     = this.endWarmup.bind(this);
     this.onRoundNew    = this.onRoundNew.bind(this);
@@ -57,10 +60,12 @@ GameController.prototype.attachSocketEvents = function()
     this.client.on('position', this.onPosition);
     this.client.on('printing', this.onPrinting);
     this.client.on('angle', this.onAngle);
+    this.client.on('radius', this.onRadius);
     this.client.on('point', this.onPoint);
+    this.client.on('bonus:pop', this.onBonusPop);
+    this.client.on('bonus:clear', this.onBonusClear);
     this.client.on('die', this.onDie);
     this.client.on('score', this.onScore);
-    this.client.on('trail:clear', this.onTrailClear);
     this.client.on('round:new', this.onRoundNew);
     this.client.on('round:end', this.onRoundEnd);
     this.client.on('round:winner', this.onRoundWinner);
@@ -76,10 +81,12 @@ GameController.prototype.detachSocketEvents = function()
     this.client.off('position', this.onPosition);
     this.client.off('printing', this.onPrinting);
     this.client.off('angle', this.onAngle);
+    this.client.off('radius', this.onRadius);
     this.client.off('point', this.onPoint);
+    this.client.off('bonus:pop', this.onBonusPop);
+    this.client.off('bonus:clear', this.onBonusClear);
     this.client.off('die', this.onDie);
     this.client.off('score', this.onScore);
-    this.client.off('trail:clear', this.onTrailClear);
     this.client.off('round:new', this.onRoundNew);
     this.client.off('round:end', this.onRoundEnd);
     this.client.off('round:winner', this.onRoundWinner);
@@ -186,6 +193,33 @@ GameController.prototype.onPosition = function(e)
 };
 
 /**
+ * On bonus pop
+ *
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onBonusPop = function(e)
+{
+    var data = e.detail,
+        bonus = new Bonus(data.id, data.position, data.type, data.affect, data.radius);
+
+    this.game.bonusManager.add(bonus);
+};
+
+/**
+ * On bonus pop
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onBonusClear = function(e)
+{
+    var data = e.detail,
+        bonus = this.game.bonusManager.bonuses.getById(data.bonus);
+
+    this.game.bonusManager.remove(bonus);
+};
+
+/**
  * On printing
  *
  * @param {Event} e
@@ -212,6 +246,25 @@ GameController.prototype.onAngle = function(e)
 
     if (avatar) {
         avatar.setAngle(data.angle);
+
+        if (!this.game.running) {
+            this.game.draw();
+        }
+    }
+};
+
+/**
+ * On radius
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onRadius = function(e)
+{
+    var data = e.detail,
+        avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.setRadius(data.radius);
 
         if (!this.game.running) {
             this.game.draw();
@@ -266,21 +319,6 @@ GameController.prototype.onScore = function(e)
     if (avatar) {
         avatar.setScore(data.score);
         this.applyScope();
-    }
-};
-
-/**
- * On trail clear
- *
- * @param {Event} e
- */
-GameController.prototype.onTrailClear = function(e)
-{
-    var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
-
-    if (avatar) {
-        avatar.trail.clear();
     }
 };
 

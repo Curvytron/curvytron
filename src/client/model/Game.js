@@ -34,6 +34,7 @@ Game.prototype.newFrame = function()
 {
     this.frame = window.requestAnimationFrame(this.loop);
 };
+
 /**
  * Clear frame
  */
@@ -64,7 +65,7 @@ Game.prototype.newRound = function()
     this.clearBackground();
     this.draw();
 
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
     }
 };
@@ -74,10 +75,13 @@ Game.prototype.newRound = function()
  */
 Game.prototype.endRound = function()
 {
+    BaseGame.prototype.endRound.call(this);
     this.clearBackground();
     this.draw();
 
-    BaseGame.prototype.endRound.call(this);
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        this.avatars.items[i].clear();
+    }
 };
 
 /**
@@ -126,7 +130,6 @@ Game.prototype.draw = function()
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        width  = avatar.radius * 2;
 
         this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
 
@@ -136,6 +139,8 @@ Game.prototype.draw = function()
             this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
         }
     }
+
+    this.bonusManager.draw(this.canvas);
 };
 
 /**
@@ -160,6 +165,7 @@ Game.prototype.onResize = function()
         this.avatars.items[i].setScale(scale);
     }
 
+    this.bonusManager.setScale(scale);
     this.canvas.setDimension(width, width, scale);
     this.background.setDimension(width, width, scale, true);
     this.draw();

@@ -7,17 +7,18 @@ function BaseGame(room)
 {
     EventEmitter.call(this);
 
-    this.room     = room;
-    this.name     = this.room.name;
-    this.channel  = 'game:' + this.name;
-    this.frame    = null;
-    this.avatars  = this.room.players.map(function () { return this.getAvatar(); });
-    this.size     = this.getSize(this.avatars.count());
-    this.rendered = null;
-    this.maxScore = this.getMaxScore(this.avatars.count());
-    this.fps      = new FPSLogger();
-    this.started  = false;
-    this.running  = false;
+    this.room         = room;
+    this.name         = this.room.name;
+    this.channel      = 'game:' + this.name;
+    this.frame        = null;
+    this.avatars      = this.room.players.map(function () { return this.getAvatar(); });
+    this.size         = this.getSize(this.avatars.count());
+    this.rendered     = null;
+    this.maxScore     = this.getMaxScore(this.avatars.count());
+    this.fps          = new FPSLogger();
+    this.started      = false;
+    this.running      = false;
+    this.bonusManager = new BonusManager(this);
 
     this.start    = this.start.bind(this);
     this.stop     = this.stop.bind(this);
@@ -30,7 +31,7 @@ function BaseGame(room)
 
 BaseGame.prototype = Object.create(EventEmitter.prototype);
 
-BaseGame.prototype.framerate     = 1/60;
+BaseGame.prototype.framerate     = 1/60 * 1000;
 BaseGame.prototype.perPlayerSize = 100;
 BaseGame.prototype.warmupTime    = 5000;
 BaseGame.prototype.warmdownTime  = 3000;
@@ -116,6 +117,8 @@ BaseGame.prototype.onStop = function()
     this.frame    = null;
     this.rendered = null;
     this.running  = false;
+
+    this.bonusManager.stop();
 };
 
 /**
@@ -123,7 +126,7 @@ BaseGame.prototype.onStop = function()
  */
 BaseGame.prototype.newFrame = function()
 {
-    this.frame = setTimeout(this.loop, this.framerate * 1000);
+    this.frame = setTimeout(this.loop, this.framerate);
 };
 
 /**
@@ -206,9 +209,12 @@ BaseGame.prototype.isPlaying = function()
  */
 BaseGame.prototype.newRound = function()
 {
+    for (var i = this.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
+        this.bonusManager.bonuses.items[i].clear();
+    }
+
     setTimeout(this.start, this.warmupTime);
 };
-
 
 /**
  * Check end of round

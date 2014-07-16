@@ -24,7 +24,7 @@ BaseTrail.prototype.addPoint = function(point)
 };
 
 /**
- * get last point
+ * Get last point
  *
  * @return {Array}
  */

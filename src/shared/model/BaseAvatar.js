@@ -21,7 +21,6 @@ function BaseAvatar(player)
     this.score           = 0;
     this.printingTimeout = null;
     this.ready           = false;
-    this.mask            = 0;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
@@ -30,12 +29,24 @@ function BaseAvatar(player)
 
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 
-BaseAvatar.prototype.precision           = 1;
-BaseAvatar.prototype.velocity            = 18/1000;
+BaseAvatar.prototype.velocity            = 16;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 300;
 BaseAvatar.prototype.printingTime        = 3000;
 BaseAvatar.prototype.defaultRadius       = 0.6;
+BaseAvatar.prototype.trailLatency        = 3;
+
+/**
+ * Equal
+ *
+ * @param {Avatar} avatar
+ *
+ * @return {Boolean}
+ */
+BaseAvatar.prototype.equal = function(avatar)
+{
+    return this.name === avatar.name;
+};
 
 /**
  * Set Point
@@ -84,10 +95,7 @@ BaseAvatar.prototype.setAngle = function(angle)
  *
  * @param {Number} step
  */
-BaseAvatar.prototype.update = function(step)
-{
-    return [this.head[0], this.head[1], this.radius, this.mask];
-};
+BaseAvatar.prototype.update = function(step) {};
 
 /**
  * Add angle
@@ -115,14 +123,39 @@ BaseAvatar.prototype.updatePosition = function(step)
 };
 
 /**
+ * Set velocity
+ *
+ * @param {Number} step
+ */
+BaseAvatar.prototype.setVelocity = function(velocity)
+{
+    if (velocity > 0) {
+        this.velocity = velocity;
+        this.updateVelocities();
+    }
+};
+
+/**
  * Update velocities
  */
 BaseAvatar.prototype.updateVelocities = function()
 {
     this.velocities = [
-        Math.cos(this.angle) * this.velocity,
-        Math.sin(this.angle) * this.velocity
+        Math.cos(this.angle) * this.velocity/1000,
+        Math.sin(this.angle) * this.velocity/1000
     ];
+};
+
+/**
+ * Set radius
+ *
+ * @param {Number} radius
+ */
+BaseAvatar.prototype.setRadius = function(radius)
+{
+    if (radius > 0) {
+        this.radius = radius;
+    }
 };
 
 /**
@@ -175,7 +208,19 @@ BaseAvatar.prototype.stopPrinting = function()
  */
 BaseAvatar.prototype.setPrinting = function(printing)
 {
+    if (!printing) {
+        this.addPoint(this.head.slice(0), true);
+    }
+
     this.printing = printing;
+
+    if (!this.printing) {
+        this.trail.clear();
+    }
+
+    if (printing) {
+        this.addPoint(this.head.slice(0), true);
+    }
 };
 
 /**
@@ -213,16 +258,6 @@ BaseAvatar.prototype.setScore = function(score)
 };
 
 /**
- * Set mask
- *
- * @param {Number} mask
- */
-BaseAvatar.prototype.setMask = function(mask)
-{
-    this.mask = mask;
-};
-
-/**
  * Clear
  */
 BaseAvatar.prototype.clear = function()
@@ -233,8 +268,10 @@ BaseAvatar.prototype.clear = function()
     this.angle           = Math.random() * Math.PI;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
+    this.velocity        = BaseAvatar.prototype.velocity;
     this.alive           = true;
     this.printing        = false;
+    this.radius          = this.defaultRadius;
 
     this.updateVelocities();
 };

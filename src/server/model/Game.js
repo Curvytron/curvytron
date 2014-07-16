@@ -16,26 +16,17 @@ function Game(room)
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
 
-    var avatar;
-
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+    var avatar, i;
+    for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.game = this;
         avatar.clear();
         avatar.on('point', this.addPoint);
         avatar.on('die', this.onDie);
-        avatar.setMask(i+1);
     }
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
-
-/**
- * Trail latency
- *
- * @type {Number}
- */
-Game.prototype.trailLatency = 300;
 
 /**
  * Update
@@ -46,13 +37,19 @@ Game.prototype.update = function(step)
 {
     BaseGame.prototype.update.call(this, step);
 
-    var avatar;
+    var avatar, position, i;
 
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+    for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
-        if (avatar.alive && !this.world.testCircle(avatar.update(step))) {
-            avatar.die();
+        avatar.update(step);
+
+        if (avatar.alive) {
+            if (!this.world.testBody(avatar.body)) {
+                avatar.die();
+            } else {
+                this.bonusManager.testCatch(avatar);
+            }
         }
     }
 };
@@ -80,12 +77,7 @@ Game.prototype.removeAvatar = function(avatar)
 Game.prototype.addPoint = function(data)
 {
     if (this.world.active) {
-        var world = this.world,
-            circle = [data.point[0], data.point[1], data.avatar.radius, data.avatar.mask];
-
-        setTimeout(function () { circle[3] = 0; }, this.trailLatency);
-
-        world.addCircle(circle);
+        this.world.addBody(new AvatarBody(data.point, data.avatar));
     }
 };
 
@@ -103,7 +95,7 @@ Game.prototype.isWon = function()
 };
 
 /**
- * Add point
+ * On die
  *
  * @param {Object} data
  */
@@ -151,13 +143,13 @@ Game.prototype.setScores = function()
         var total = this.avatars.count();
 
         for (var i = this.deaths.items.length - 1; i >= 0; i--) {
-            this.deaths.items[i].addScore(i + 1);
+            this.deaths.items[i].addScore(i);
         }
 
         if (this.deaths.count() < total) {
             var winner = this.avatars.match(function () { return this.alive; });
 
-            winner.addScore(total);
+            winner.addScore(total - 1);
             this.emit('round:winner', {game: this, winner: winner});
         }
 
@@ -171,7 +163,6 @@ Game.prototype.setScores = function()
 Game.prototype.endRound = function()
 {
     BaseGame.prototype.endRound.call(this);
-
     this.emit('round:end', {game: this});
 
     if (this.isWon()) {
@@ -187,14 +178,15 @@ Game.prototype.endRound = function()
 Game.prototype.newRound = function()
 {
     if (!this.inRound) {
-        var avatar;
+        var avatar, i;
 
         this.world.clear();
+        this.bonusManager.stop();
 
         this.inRound = true;
         this.deaths.clear();
 
-        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        for (i = this.avatars.items.length - 1; i >= 0; i--) {
             avatar = this.avatars.items[i];
 
             avatar.clear();
@@ -219,6 +211,7 @@ Game.prototype.onStart = function()
     }
 
     this.world.activate();
+    this.bonusManager.start();
 
     BaseGame.prototype.onStart.call(this);
 };
@@ -228,6 +221,8 @@ Game.prototype.onStart = function()
  */
 Game.prototype.end = function()
 {
-    BaseGame.prototype.end.call(this)
+    BaseGame.prototype.end.call(this);
+
+    this.bonusManager.stop();
     this.world.clear();
 };
