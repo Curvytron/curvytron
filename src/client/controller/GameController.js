@@ -22,7 +22,7 @@ function GameController($scope, $routeParams, $location, repository, client)
             {id:'loose', src:'loose.ogg'},
             {id:'win', src:'win.ogg'}
         ],
-        '../sounds/'
+        'sounds/'
     );
 
     // Binding
