@@ -32,7 +32,7 @@ function RoomController(repository, gameController)
  */
 RoomController.prototype.attach = function(client)
 {
-    if (this.socketGroup.clients.add(client)) {
+    if (this.socketGroup.clients.add(client)) {
         this.attachEvents(client);
     }
 };
@@ -44,7 +44,7 @@ RoomController.prototype.attach = function(client)
  */
 RoomController.prototype.detach = function(client)
 {
-    if (this.socketGroup.clients.remove(client)) {
+    if (this.socketGroup.clients.remove(client)) {
         this.detachEvents(client);
     }
 };

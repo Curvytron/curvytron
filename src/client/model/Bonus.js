@@ -15,7 +15,7 @@ function Bonus(id, position, type, affect, radius)
     this.type   = type;
     this.affect = affect;
     this.radius = radius;
-    this.color  = this.affect == 'self' ? 'green' : 'red';
+    this.color  = this.affect === 'self' ? 'green' : 'red';
     this.canvas = new Canvas();
 
     this.position[0] = this.position[0] - this.radius;

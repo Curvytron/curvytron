@@ -20,7 +20,7 @@ RabbitEnemyBonus.prototype.step   = BaseAvatar.prototype.velocity/2;
 RabbitEnemyBonus.prototype.on = function()
 {
     for (var i = this.target.length - 1; i >= 0; i--) {
-        this.target[i].setVelocity(this.target[i].velocity + this.step)
+        this.target[i].setVelocity(this.target[i].velocity + this.step);
     }
 };
 
@@ -30,6 +30,6 @@ RabbitEnemyBonus.prototype.on = function()
 RabbitEnemyBonus.prototype.off = function()
 {
     for (var i = this.target.length - 1; i >= 0; i--) {
-        this.target[i].setVelocity(this.target[i].velocity - this.step)
+        this.target[i].setVelocity(this.target[i].velocity - this.step);
     }
 };

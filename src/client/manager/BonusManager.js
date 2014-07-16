@@ -12,7 +12,7 @@ function BonusManager(game)
     this.onLoad = this.onLoad.bind(this);
 
     this.sprite = new SpriteAsset('images/bonus.png', 4, 2, this.onLoad, true);
-    this.assets = {};
+    this.assets = {};
 }
 
 BonusManager.prototype = Object.create(BaseBonusManager.prototype);

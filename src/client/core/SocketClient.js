@@ -67,11 +67,11 @@ SocketClient.prototype.onSocketDisconnection = function(e)
 /**
  * On open
  *
- * @param {Event} event
+ * @param {Event} e
  */
-SocketClient.prototype.onOpen = function(event)
+SocketClient.prototype.onOpen = function(e)
 {
-    this.id = event.detail;
+    this.id = e.detail;
 };
 
 /**
@@ -87,9 +87,9 @@ SocketClient.prototype.sendPing = function(ping)
 /**
  * On error
  *
- * @param {Event} event
+ * @param {Event} e
  */
-SocketClient.prototype.onError = function (event)
+SocketClient.prototype.onError = function (e)
 {
-    throw event;
+    throw e;
 };

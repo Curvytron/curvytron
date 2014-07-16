@@ -116,7 +116,7 @@ Game.prototype.removeAvatar = function(avatar)
  */
 Game.prototype.draw = function()
 {
-    var i, trail, avatar, width, position, points;
+    var i, avatar, width, position, points;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];

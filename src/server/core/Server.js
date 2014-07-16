@@ -19,7 +19,7 @@ function Server(config)
 
     this.app.use(express.static('web'));
 
-    this.server.on("error", this.onError);
+    this.server.on('error', this.onError);
     this.server.on('upgrade', this.authorizationHandler);
     this.server.listen(config.port);
 
@@ -36,7 +36,7 @@ function Server(config)
 Server.prototype.authorizationHandler = function(request, socket, head)
 {
     return WebSocket.isWebSocket(request) ? this.onSocketConnection(new WebSocket(request, socket, head, ['websocket'], {ping: 5})) : socket.end();
-}
+};
 
 /**
  * On socket connection
@@ -44,13 +44,12 @@ Server.prototype.authorizationHandler = function(request, socket, head)
  * @param {Socket} socket
  */
 Server.prototype.onSocketConnection = function(socket)
-{;
-
+{
     var server = this,
         client = new SocketClient(socket, 3);
 
     this.clients.add(client);
-    socket.on('close', function (event) { server.onSocketDisconnection(client); });
+    socket.on('close', function (e) { server.onSocketDisconnection(client); });
 
     client.addEvent('open', client.id);
 
@@ -81,5 +80,5 @@ Server.prototype.onSocketDisconnection = function(client)
  * @param {Error} error */
 Server.prototype.onError = function(error)
 {
-    console.error("Server Error:", error.stack);
+    console.error('Server Error:', error.stack);
 };
