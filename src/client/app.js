@@ -26,18 +26,18 @@ curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvi
     //$locationProvider.html5Mode(true);
     $routeProvider
         .when('/', {
-            templateUrl: '/js/views/rooms/list.html',
+            templateUrl: 'js/views/rooms/list.html',
             controller: 'RoomsController'
         })
         .when('/about', {
-            templateUrl: '/js/views/pages/about.html'
+            templateUrl: 'js/views/pages/about.html'
         })
         .when('/room/:name', {
-            templateUrl: '/js/views/rooms/detail.html',
+            templateUrl: 'js/views/rooms/detail.html',
             controller: 'RoomController'
         })
         .when('/game/:name', {
-            templateUrl: '/js/views/game/play.html',
+            templateUrl: 'js/views/game/play.html',
             controller: 'GameController'
         })
         .otherwise({
