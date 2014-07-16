@@ -16,7 +16,7 @@ function SocketClient()
 
     var Socket = window.MozWebSocket || window.WebSocket;
 
-    BaseSocketClient.call(this, new Socket('ws://' + document.location.host, ['websocket']));
+    BaseSocketClient.call(this, new Socket('ws://' + document.location.host + document.location.pathname, ['websocket']));
 
     this.on('pong', this.pingLogger.pong);
     this.on('open', this.onOpen);
