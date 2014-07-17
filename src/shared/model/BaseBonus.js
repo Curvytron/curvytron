@@ -32,7 +32,7 @@ BaseBonus.prototype.affect = 'self';
  *
  * @type {Number}
  */
-BaseBonus.prototype.radius = 2.4;
+BaseBonus.prototype.radius = 3;
 
 /**
  * Effect duration

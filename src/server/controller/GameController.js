@@ -20,9 +20,9 @@ function GameController()
     this.onRoundWinner = this.onRoundWinner.bind(this);
     this.onEnd         = this.onEnd.bind(this);
 
-    this.callbacks = {
+    this.callbacks = {
         onGameLoaded: function () { controller.onGameLoaded(this); },
-        onMove: function (data) { controller.onMove(this, data); },
+        onMove: function (data) { controller.onMove(this, data); }
     };
 }
 
@@ -63,7 +63,7 @@ GameController.prototype.removeGame = function(game)
         game.bonusManager.removeListener('bonus:clear', this.onBonusClear);
 
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
-            this.detach(game.clients.items[i], game);
+            this.detach(game.clients.items[i]);
         }
     }
 };
@@ -73,7 +73,7 @@ GameController.prototype.removeGame = function(game)
  *
  * @param {SocketClient} client
  */
-GameController.prototype.attach = function(client, game)
+GameController.prototype.attach = function(client)
 {
     this.attachEvents(client);
 };
@@ -105,13 +105,12 @@ GameController.prototype.detach = function(client)
  */
 GameController.prototype.attachEvents = function(client)
 {
-    var controller = this,
-        avatar;
+    var avatar, i;
 
     client.on('loaded', this.callbacks.onGameLoaded);
     client.on('player:move', this.callbacks.onMove);
 
-    for (var i = client.players.items.length - 1; i >= 0; i--) {
+    for (i = client.players.items.length - 1; i >= 0; i--) {
         avatar = client.players.items[i].avatar;
 
         avatar.on('die', this.onDie);

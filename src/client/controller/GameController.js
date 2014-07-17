@@ -168,9 +168,9 @@ GameController.prototype.endWarmup = function(interval)
  *
  * @param {Event} e
  */
-GameController.prototype.onMove = function(event)
+GameController.prototype.onMove = function(e)
 {
-    this.client.addEvent('player:move', {avatar: event.detail.avatar.name, move: event.detail.move});
+    this.client.addEvent('player:move', {avatar: e.detail.avatar.name, move: e.detail.move});
 };
 
 /**

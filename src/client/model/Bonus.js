@@ -15,7 +15,6 @@ function Bonus(id, position, type, affect, radius)
     this.type   = type;
     this.affect = affect;
     this.radius = radius;
-    this.color  = this.affect == 'self' ? 'green' : 'red';
     this.canvas = new Canvas();
 
     this.position[0] = this.position[0] - this.radius;
@@ -23,13 +22,6 @@ function Bonus(id, position, type, affect, radius)
 }
 
 Bonus.prototype = Object.create(BaseBonus.prototype);
-
-/**
- * Icon scale
- *
- * @type {Number}
- */
-Bonus.prototype.iconScale = 0.9;
 
 /**
  * Set scale
@@ -50,10 +42,9 @@ Bonus.prototype.setScale = function(scale)
 Bonus.prototype.draw = function()
 {
     var middle = this.canvas.element.width/2,
-        iconWidth = this.canvas.element.width * this.iconScale,
+        iconWidth = this.canvas.element.width,
         iconMiddle = middle - iconWidth/2;
 
-    this.canvas.drawCircle([middle, middle], middle, this.color);
     this.canvas.drawImage(this.assets[this.type], [iconMiddle, iconMiddle], iconWidth, iconWidth);
 };
 

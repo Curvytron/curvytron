@@ -118,7 +118,7 @@ BaseSocketClient.prototype.addEvent = function (name, data, callback, force)
 
     if (!this.interval || (typeof(force) !== 'undefined' && force)) {
         this.sendEvents([event]);
-    } else {
+    } else {
         this.events.push(event);
         this.start();
     }
@@ -139,11 +139,11 @@ BaseSocketClient.prototype.addEvents = function (sources, force)
     for (var i = 0; i < length; i++) {
         event = [this.eventPrefix + sources[i][0]];
 
-        if (typeof(sources[i][1]) != 'undefined') {
+        if (typeof(sources[i][1]) !== 'undefined') {
             event[1] = sources[i][1];
         }
 
-        if (typeof(sources[i][2]) != 'undefined') {
+        if (typeof(sources[i][2]) !== 'undefined') {
             this.callbacks.push(sources[i][2]);
             event[2] = this.callbacks.indexOf(sources[i][2]);
         }
@@ -153,7 +153,7 @@ BaseSocketClient.prototype.addEvents = function (sources, force)
 
     if (!this.interval || force) {
         this.sendEvents(events);
-    } else {
+    } else {
         Array.prototype.push.apply(this.events, events);
         this.start();
     }
@@ -175,7 +175,7 @@ BaseSocketClient.prototype.addCallback = function (id, data)
 
     if (!this.interval || (typeof(force) !== 'undefined' && force)) {
         this.sendEvents([event]);
-    } else {
+    } else {
         this.events.push(event);
         this.start();
     }
@@ -206,13 +206,14 @@ BaseSocketClient.prototype.flush = function ()
 /**
  * On message
  *
- * @param {Event} event
+ * @param {Event} e
  */
-BaseSocketClient.prototype.onMessage = function (event)
+BaseSocketClient.prototype.onMessage = function (e)
 {
-    var data = JSON.parse(event.data),
+    var data = JSON.parse(e.data),
         length = data.length,
-        item, index, name, isEvent;
+        name,
+        isEvent;
 
     for (var i = 0; i < length; i++) {
 
@@ -220,15 +221,15 @@ BaseSocketClient.prototype.onMessage = function (event)
         name = data[i][0].substr(this.eventPrefix.length);
 
         if (isEvent) {
-            if (typeof(data[i][2]) == 'number') {
+            if (typeof(data[i][2]) === 'number') {
                 this.emit(name, {data: data[i][1], callback: this.createCallback(data[i][2])});
             } else {
                 this.emit(name, data[i][1]);
             }
         } else {
-            id = parseInt(name);
+            id = parseInt(name, 10);
 
-            if(typeof(this.callbacks[id]) != 'undefined') {
+            if(typeof(this.callbacks[id]) !== 'undefined') {
                 this.callbacks[id](typeof(data[i][1]) !== 'undefined' ? data[i][1] : null);
                 this.callbacks.splice(id, 1);
             }

@@ -148,11 +148,11 @@ RoomController.prototype.addPlayer = function()
 /**
  * On join
  *
- * @param {Event} event
+ * @param {Event} e
  */
-RoomController.prototype.onJoin = function(event)
+RoomController.prototype.onJoin = function(e)
 {
-    var player = event.detail.player;
+    var player = e.detail.player;
 
     if (player.client === this.client.id) {
         player.setLocal(true);
