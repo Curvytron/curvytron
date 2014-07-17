@@ -1,23 +1,23 @@
 /**
- * Turtle Enemy Bonus
+ * Slow Enemy Bonus
  *
  * @param {Array} position
  */
-function TurtleEnemyBonus(position)
+function SlowEnemyBonus(position)
 {
     Bonus.call(this, position);
 }
 
-TurtleEnemyBonus.prototype = Object.create(Bonus.prototype);
+SlowEnemyBonus.prototype = Object.create(Bonus.prototype);
 
-TurtleEnemyBonus.prototype.type   = 'turtle';
-TurtleEnemyBonus.prototype.affect = 'enemy';
-TurtleEnemyBonus.prototype.step   = BaseAvatar.prototype.velocity/2;
+SlowEnemyBonus.prototype.type   = 'slow_enemy';
+SlowEnemyBonus.prototype.affect = 'enemy';
+SlowEnemyBonus.prototype.step   = BaseAvatar.prototype.velocity/2;
 
 /**
  * On
  */
-TurtleEnemyBonus.prototype.on = function()
+SlowEnemyBonus.prototype.on = function()
 {
     for (var i = this.target.length - 1; i >= 0; i--) {
         this.target[i].setVelocity(this.target[i].velocity - this.step);
@@ -27,7 +27,7 @@ TurtleEnemyBonus.prototype.on = function()
 /**
  * Off
  */
-TurtleEnemyBonus.prototype.off = function()
+SlowEnemyBonus.prototype.off = function()
 {
     for (var i = this.target.length - 1; i >= 0; i--) {
         this.target[i].setVelocity(this.target[i].velocity + this.step);
