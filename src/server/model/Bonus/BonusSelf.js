@@ -11,6 +11,7 @@ function BonusSelf(position)
 }
 
 BonusSelf.prototype = Object.create(Bonus.prototype);
+BonusSelf.prototype.constructor = BonusSelf;
 
 /**
  * Affect self

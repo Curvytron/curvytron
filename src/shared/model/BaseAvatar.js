@@ -28,6 +28,7 @@ function BaseAvatar(player)
 }
 
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
+BaseAvatar.prototype.constructor = BaseAvatar;
 
 BaseAvatar.prototype.velocity            = 16;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
@@ -168,6 +169,7 @@ BaseAvatar.prototype.setRadius = function(radius)
 BaseAvatar.prototype.setInverse = function(inverse)
 {
     this.inverse = inverse ? true : false;
+    this.setAngularVelocity(this.angularVelocity > 0 ? 1 : -1);
 };
 
 /**
@@ -178,12 +180,6 @@ BaseAvatar.prototype.setInverse = function(inverse)
 BaseAvatar.prototype.setInvincible = function(invincible)
 {
     this.invincible = invincible ? true : false;
-
-    if (this.invincible) {
-        this.stopPrinting();
-    } else {
-        this.togglePrinting();
-    }
 };
 
 /**
@@ -212,7 +208,10 @@ BaseAvatar.prototype.die = function()
  */
 BaseAvatar.prototype.togglePrinting = function()
 {
-    clearTimeout(this.printingTimeout);
+    if (this.printingTimeout) {
+        clearTimeout(this.printingTimeout);
+        this.printingTimeout = null;
+    }
 
     this.setPrinting(!this.printing);
 
@@ -224,9 +223,26 @@ BaseAvatar.prototype.togglePrinting = function()
  */
 BaseAvatar.prototype.stopPrinting = function()
 {
-    clearTimeout(this.printingTimeout);
+    if (this.printingTimeout) {
+        clearTimeout(this.printingTimeout);
+        this.printingTimeout = null;
+    }
 
     this.setPrinting(false);
+};
+
+/**
+ * Set printing with timeout start/stop
+ *
+ * @param {Boolean} printing
+ */
+BaseAvatar.prototype.setPrintingWithTimeout = function(printing)
+{
+    if (!printing) {
+        this.stopPrinting();
+    } else if (!this.printingTimeout) {
+        this.togglePrinting();
+    }
 };
 
 /**

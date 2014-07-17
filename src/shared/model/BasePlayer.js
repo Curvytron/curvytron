@@ -18,6 +18,7 @@ function BasePlayer(client, name, color, mail)
 }
 
 BasePlayer.prototype = Object.create(EventEmitter.prototype);
+BasePlayer.prototype.constructor = BasePlayer;
 
 /**
  * Max length for name

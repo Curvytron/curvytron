@@ -9,7 +9,13 @@ function BonusEnemyBig(position)
 }
 
 BonusEnemyBig.prototype = Object.create(BonusEnemy.prototype);
+BonusEnemyBig.prototype.constructor = BonusEnemyBig;
 
-BonusEnemyBig.prototype.type     = 'big';
-BonusEnemyBig.prototype.property = 'radius';
-BonusEnemyBig.prototype.step     = BaseAvatar.prototype.radius;
+/**
+ * Effects
+ *
+ * @type {Object}
+ */
+BonusEnemyBig.prototype.effects = {
+    radius: BaseAvatar.prototype.radius
+};

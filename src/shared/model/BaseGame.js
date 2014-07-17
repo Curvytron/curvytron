@@ -30,6 +30,7 @@ function BaseGame(room)
 }
 
 BaseGame.prototype = Object.create(EventEmitter.prototype);
+BaseGame.prototype.constructor = BaseGame;
 
 BaseGame.prototype.framerate     = 1/60 * 1000;
 BaseGame.prototype.perPlayerSize = 100;

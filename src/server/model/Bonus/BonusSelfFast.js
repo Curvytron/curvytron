@@ -9,7 +9,13 @@ function BonusSelfFast(position)
 }
 
 BonusSelfFast.prototype = Object.create(BonusSelf.prototype);
+BonusSelfFast.prototype.constructor = BonusSelfFast;
 
-BonusSelfFast.prototype.type     = 'fast_me';
-BonusSelfFast.prototype.property = 'velocity';
-BonusSelfFast.prototype.step     = BaseAvatar.prototype.velocity/2;
+/**
+ * Effects
+ *
+ * @type {Object}
+ */
+BonusSelfFast.prototype.effects = {
+    velocity: BaseAvatar.prototype.velocity/2
+};

@@ -9,7 +9,14 @@ function BonusSelfMaster(position)
 }
 
 BonusSelfMaster.prototype = Object.create(BonusSelf.prototype);
+BonusSelfMaster.prototype.constructor = BonusSelfMaster;
 
-BonusSelfMaster.prototype.type     = 'master';
-BonusSelfMaster.prototype.property = 'invincible';
-BonusSelfMaster.prototype.step     = true;
+/**
+ * Effects
+ *
+ * @type {Object}
+ */
+BonusSelfMaster.prototype.effects = {
+    invincible: true,
+    printing: -1
+};

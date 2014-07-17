@@ -11,6 +11,7 @@ function BonusAll(position)
 }
 
 BonusAll.prototype = Object.create(Bonus.prototype);
+BonusAll.prototype.constructor = BonusAll;
 
 /**
  * Affect all

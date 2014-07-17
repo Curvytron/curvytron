@@ -9,7 +9,13 @@ function BonusEnemyFast(position)
 }
 
 BonusEnemyFast.prototype = Object.create(BonusEnemy.prototype);
+BonusEnemyFast.prototype.constructor = BonusEnemyFast;
 
-BonusEnemyFast.prototype.type     = 'fast_enemy';
-BonusEnemyFast.prototype.property = 'velocity';
-BonusEnemyFast.prototype.step     = BaseAvatar.prototype.velocity/2;
+/**
+ * Effects
+ *
+ * @type {Object}
+ */
+BonusEnemyFast.prototype.effects = {
+    velocity: BaseAvatar.prototype.velocity/2
+};

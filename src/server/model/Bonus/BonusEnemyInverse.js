@@ -9,7 +9,13 @@ function BonusEnemyInverse(position)
 }
 
 BonusEnemyInverse.prototype = Object.create(BonusEnemy.prototype);
+BonusEnemyInverse.prototype.constructor = BonusEnemyInverse;
 
-BonusEnemyInverse.prototype.type     = 'inverse';
-BonusEnemyInverse.prototype.property = 'inverse';
-BonusEnemyInverse.prototype.step     = 1;
+/**
+ * Effects
+ *
+ * @type {Object}
+ */
+BonusEnemyInverse.prototype.effects = {
+    inverse: 1
+};

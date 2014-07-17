@@ -22,6 +22,7 @@ function Bonus(id, position, type, affect, radius)
 }
 
 Bonus.prototype = Object.create(BaseBonus.prototype);
+Bonus.prototype.constructor = Bonus;
 
 /**
  * Set scale

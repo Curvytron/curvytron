@@ -11,6 +11,7 @@ function BonusEnemy(position)
 }
 
 BonusEnemy.prototype = Object.create(Bonus.prototype);
+BonusEnemy.prototype.constructor = BonusEnemy;
 
 /**
  * Affect enemy

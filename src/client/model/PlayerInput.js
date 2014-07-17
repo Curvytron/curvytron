@@ -20,6 +20,7 @@ function PlayerInput(avatar, binding)
 }
 
 PlayerInput.prototype = Object.create(EventEmitter.prototype);
+PlayerInput.prototype.constructor = PlayerInput;
 
 /**
  * Key binding

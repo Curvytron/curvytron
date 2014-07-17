@@ -27,6 +27,7 @@ function Game(room)
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
+Game.prototype.constructor = Game;
 
 /**
  * Update

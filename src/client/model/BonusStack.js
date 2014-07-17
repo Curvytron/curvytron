@@ -9,3 +9,4 @@ function BonusStack(avatar)
 }
 
 BonusStack.prototype = Object.create(BaseBonusStack.prototype);
+BonusStack.prototype.constructor = BonusStack;

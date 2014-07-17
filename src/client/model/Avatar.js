@@ -22,6 +22,7 @@ function Avatar(player)
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
+Avatar.prototype.constructor = Avatar;
 
 /**
  * Radius margin

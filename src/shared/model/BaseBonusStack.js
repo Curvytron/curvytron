@@ -12,6 +12,7 @@ function BaseBonusStack (avatar)
 }
 
 BaseBonusStack.prototype = Object.create(EventEmitter.prototype);
+BaseBonusStack.prototype.constructor = BaseBonusStack;
 
 /**
  * Add bonus to the stack
@@ -33,34 +34,44 @@ BaseBonusStack.prototype.add = function(bonus)
 BaseBonusStack.prototype.remove = function(bonus)
 {
     if (this.bonuses.remove(bonus)) {
-        this.resolve(bonus.property);
+        this.resolve(bonus.effects);
     }
 };
 
 /**
  * Resolve
  */
-BaseBonusStack.prototype.resolve = function(property)
+BaseBonusStack.prototype.resolve = function(effects)
 {
     var properties = {},
-        bonus, i;
+        bonus, property, i;
 
-    if (typeof(property) !== 'undefined') {
-        properties[property] = this.getDefaultProperty(property);
+    if (typeof(effects) !== 'undefined') {
+        for (property in effects) {
+            if (effects.hasOwnProperty(property)) {
+                properties[property] = this.getDefaultProperty(property);
+            }
+        }
     }
 
     for (i = this.bonuses.items.length - 1; i >= 0; i--) {
         bonus = this.bonuses.items[i];
 
-        if (typeof(properties[bonus.property]) === 'undefined') {
-            properties[bonus.property] = this.getDefaultProperty(bonus.property);
-        }
+        for (property in bonus.effects) {
+            if (bonus.effects.hasOwnProperty(property)) {
+                if (typeof(properties[property]) === 'undefined') {
+                    properties[property] = this.getDefaultProperty(property);
+                }
 
-        properties[bonus.property] += bonus.step;
+                properties[property] += bonus.effects[property];
+            }
+        }
     }
 
-    for (var property in properties) {
-        this.apply(property, properties[property]);
+    for (property in properties) {
+        if (properties.hasOwnProperty(property)) {
+            this.apply(property, properties[property]);
+        }
     }
 };
 
@@ -72,35 +83,24 @@ BaseBonusStack.prototype.resolve = function(property)
  */
 BaseBonusStack.prototype.apply = function(property, value)
 {
-    switch (property) {
+    if (property === 'radius') {
+        return this.avatar.setRadius(value);
+    }
 
-        case 'radius':
-            this.avatar.setRadius(value);
-            break;
+    if (property === 'velocity') {
+        return this.avatar.setVelocity(value);
+    }
 
-        case 'velocity':
-            this.avatar.setVelocity(value);
-            break;
+    if (property === 'inverse') {
+        return this.avatar.setInverse(value%2 !== 0);
+    }
 
-        case 'inverse':
-            this.avatar.setInverse(value%2 !== 0);
-            break;
+    if (property === 'invincible') {
+        return this.avatar.setInvincible(value ? true : false);
+    }
 
-        case 'invincible':
-            this.avatar.setInvincible(value ? true : false);
-            break;
-
-        case 'godzilla':
-            if (value) {
-                this.avatar.setInvincible(true);
-                this.avatar.setRadius(10);
-                this.avatar.setVelocity(4);
-            } else {
-                this.avatar.setRadius(this.getDefaultProperty('radius'));
-                this.avatar.setVelocity(this.getDefaultProperty('velocity'));
-                this.avatar.setInvincible(false);
-            }
-            break;
+    if (property === 'printing') {
+        return this.avatar.setPrintingWithTimeout(value > 0);
     }
 };
 
@@ -111,15 +111,21 @@ BaseBonusStack.prototype.apply = function(property, value)
  *
  * @return {Number}
  */
-BaseBonusStack.prototype.getDefaultProperty = function(property)
+BaseBonusStack.prototype.getDefaultProperty = function(property, avatar)
 {
-    switch (property) {
-        case 'godzilla':
-            return false;
-
-        default:
-            return Avatar.prototype[property];
+    if (property === 'printing') {
+        return 1;
     }
+
+    if (property === 'color') {
+        if (typeof(avatar.ownColor) === 'undefined') {
+            avatar.ownColor = avatar.color;
+        }
+
+        return avatar.ownColor;
+    }
+
+    return Avatar.prototype[property];
 };
 
 /**

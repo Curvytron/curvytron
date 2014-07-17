@@ -9,7 +9,16 @@ function BonusSelfGodzilla(position)
 }
 
 BonusSelfGodzilla.prototype = Object.create(BonusSelf.prototype);
+BonusSelfGodzilla.prototype.constructor = BonusSelfGodzilla;
 
-BonusSelfGodzilla.prototype.type     = 'godzilla';
-BonusSelfGodzilla.prototype.property = 'godzilla';
-BonusSelfGodzilla.prototype.step     = true;
+/**
+ * Effects
+ *
+ * @type {Object}
+ */
+BonusSelfGodzilla.prototype.effects = {
+    invincible: true,
+    printing: 100,
+    radius: 10,
+    velocity: 6
+};
