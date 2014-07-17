@@ -45,7 +45,7 @@ Game.prototype.update = function(step)
         avatar.update(step);
 
         if (avatar.alive) {
-            if (!this.world.testBody(avatar.body)) {
+            if (!avatar.invincible && !this.world.testBody(avatar.body)) {
                 avatar.die();
             } else {
                 this.bonusManager.testCatch(avatar);

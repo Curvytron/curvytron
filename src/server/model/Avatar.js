@@ -74,6 +74,28 @@ Avatar.prototype.setRadius = function(radius)
 };
 
 /**
+ * Set invincible
+ *
+ * @param {Number} invincible
+ */
+Avatar.prototype.setInvincible = function(invincible)
+{
+    BaseAvatar.prototype.setInvincible.call(this, invincible);
+    this.emit('invincible', {avatar: this, invincible: this.invincible});
+};
+
+/**
+ * Set inverse
+ *
+ * @param {Number} inverse
+ */
+Avatar.prototype.setInverse = function(inverse)
+{
+    BaseAvatar.prototype.setInverse.call(this, inverse);
+    this.emit('inverse', {avatar: this, inverse: this.inverse});
+};
+
+/**
  * Add point
  *
  * @param {Array} point

@@ -11,7 +11,7 @@ function BonusManager(game)
 
     this.onLoad = this.onLoad.bind(this);
 
-    this.sprite = new SpriteAsset('images/bonus.png', 3, 3, this.onLoad, true);
+    this.sprite = new SpriteAsset('images/bonus.png', 3, 4, this.onLoad, true);
     this.assets = {};
 }
 
@@ -31,7 +31,8 @@ BonusManager.prototype.spritePosition = [
     'master',
     'big',
     'color',
-    'inverse'
+    'inverse',
+    'godzilla'
 ];
 
 /**

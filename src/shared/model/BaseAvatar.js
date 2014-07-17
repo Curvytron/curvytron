@@ -10,9 +10,9 @@ function BaseAvatar(player)
     this.name            = player.name;
     this.color           = player.color;
     this.player          = player;
-    this.radius          = this.defaultRadius;
     this.head            = [this.radius, this.radius];
     this.trail           = new Trail(this);
+    this.bonusStack      = new BonusStack(this);
     this.angle           = 0;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
@@ -33,8 +33,10 @@ BaseAvatar.prototype.velocity            = 16;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
 BaseAvatar.prototype.noPrintingTime      = 300;
 BaseAvatar.prototype.printingTime        = 3000;
-BaseAvatar.prototype.defaultRadius       = 0.6;
+BaseAvatar.prototype.radius              = 0.6;
 BaseAvatar.prototype.trailLatency        = 3;
+BaseAvatar.prototype.inverse             = false;
+BaseAvatar.prototype.invincible          = false;
 
 /**
  * Equal
@@ -76,7 +78,7 @@ BaseAvatar.prototype.addPoint = function(point)
  */
 BaseAvatar.prototype.setAngularVelocity = function(factor)
 {
-    this.angularVelocity = factor * this.angularVelocityBase;
+    this.angularVelocity = factor * this.angularVelocityBase * (this.inverse ? -1 : 1);
 };
 
 /**
@@ -155,6 +157,32 @@ BaseAvatar.prototype.setRadius = function(radius)
 {
     if (radius > 0) {
         this.radius = radius;
+    }
+};
+
+/**
+ * Set inverse
+ *
+ * @param {Number} inverse
+ */
+BaseAvatar.prototype.setInverse = function(inverse)
+{
+    this.inverse = inverse ? true : false;
+};
+
+/**
+ * Set invincible
+ *
+ * @param {Number} inverse
+ */
+BaseAvatar.prototype.setInvincible = function(invincible)
+{
+    this.invincible = invincible ? true : false;
+
+    if (this.invincible) {
+        this.stopPrinting();
+    } else {
+        this.togglePrinting();
     }
 };
 
@@ -263,6 +291,7 @@ BaseAvatar.prototype.setScore = function(score)
 BaseAvatar.prototype.clear = function()
 {
     this.stopPrinting();
+    this.bonusStack.clear();
 
     this.head            = [this.radius, this.radius];
     this.angle           = Math.random() * Math.PI;
@@ -271,7 +300,9 @@ BaseAvatar.prototype.clear = function()
     this.velocity        = BaseAvatar.prototype.velocity;
     this.alive           = true;
     this.printing        = false;
-    this.radius          = this.defaultRadius;
+    this.radius          = BaseAvatar.prototype.radius;
+    this.inverse         = BaseAvatar.prototype.inverse;
+    this.invincible      = BaseAvatar.prototype.invincible;
 
     this.updateVelocities();
 };

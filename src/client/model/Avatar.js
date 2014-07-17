@@ -117,7 +117,7 @@ Avatar.prototype.clear = function()
 {
     BaseAvatar.prototype.clear.call(this);
 
-    this.setRadius(this.defaultRadius);
+    this.setRadius(Avatar.prototype.radius);
 };
 
 /**
