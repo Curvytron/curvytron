@@ -30,7 +30,9 @@ BonusManager.prototype.bonusTypes = [
     SmallerEnemyBonus,
     SmallerSelfBonus,
     ColorSelfBonus,
-    ColorEnemyBonus
+    ColorEnemyBonus,
+    PositionSelfBonus,
+    PositionEnemyBonus
 ];
 
 /**
