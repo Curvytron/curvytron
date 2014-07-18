@@ -81,6 +81,18 @@ Avatar.prototype.setRadius = function(radius)
 };
 
 /**
+ * Set color
+ *
+ * @param {Color} color
+ */
+Avatar.prototype.setColor = function(color)
+{
+    this.color = color;
+   
+    this.updateStart();
+};
+
+/**
  * Draw head
  */
 Avatar.prototype.drawHead = function()

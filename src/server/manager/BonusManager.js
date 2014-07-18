@@ -26,7 +26,11 @@ BonusManager.prototype.bonusTypes = [
     RabbitSelfBonus,
     TurtleEnemyBonus,
     RabbitEnemyBonus,
-    GodzillaEnemyBonus
+    GodzillaEnemyBonus,
+    SmallerEnemyBonus,
+    SmallerSelfBonus,
+    ColorSelfBonus,
+    ColorEnemyBonus
 ];
 
 /**
