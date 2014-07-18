@@ -19,9 +19,7 @@ ColorSelfBonus.prototype.step   = BaseAvatar.prototype.defaultRadius;
  */
 ColorSelfBonus.prototype.on = function()
 {
-    for (var i = this.target.length - 1; i >= 0; i--) {
-        this.target[i].setColor(this.getRandomColor());
-    }
+    this.target.player.setColor(this.getRandomColor());
 };
 
 /**

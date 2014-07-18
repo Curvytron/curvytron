@@ -19,7 +19,7 @@ SmallerSelfBonus.prototype.step   = BaseAvatar.prototype.defaultRadius;
  */
 SmallerSelfBonus.prototype.on = function()
 {
-    this.target.setRadius(this.target[i].radius - this.step);
+    this.target.setRadius(this.target.radius - this.step);
 };
 
 /**
@@ -27,5 +27,5 @@ SmallerSelfBonus.prototype.on = function()
  */
 SmallerSelfBonus.prototype.off = function()
 {
-    this.target.setRadius(this.target[i].radius + this.step);
+    this.target.setRadius(this.target.radius + this.step);
 };
