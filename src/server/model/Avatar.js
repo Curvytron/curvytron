@@ -62,6 +62,17 @@ Avatar.prototype.setAngle = function(angle)
 };
 
 /**
+ * Set color
+ *
+ * @param {Color} color
+ */
+Avatar.prototype.setColor = function(color)
+{
+    BaseAvatar.prototype.setColor.call(this, color);
+    this.emit('color', {avatar: this, color: this.color});
+};
+
+/**
  * Set radius
  *
  * @param {Number} radius

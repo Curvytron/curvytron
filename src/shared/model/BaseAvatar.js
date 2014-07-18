@@ -159,6 +159,16 @@ BaseAvatar.prototype.setRadius = function(radius)
 };
 
 /**
+ * Set color
+ *
+ * @param {Color} color
+ */
+BaseAvatar.prototype.setColor = function(color)
+{
+    this.color = color;
+};
+
+/**
  * Get distance
  *
  * @param {Array} from
