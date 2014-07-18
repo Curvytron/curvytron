@@ -85,7 +85,7 @@ Avatar.prototype.setRadius = function(radius)
  *
  * @param {Color} color
  */
-Avatar.prototype.setRadius = function(color)
+Avatar.prototype.setColor = function(color)
 {
     this.color = color;
    
