@@ -20,7 +20,7 @@ SmallerEnemyBonus.prototype.step   = BaseAvatar.prototype.defaultRadius;
 SmallerEnemyBonus.prototype.on = function()
 {
     for (var i = this.target.length - 1; i >= 0; i--) {
-        this.target[i].setRadius(this.target[i].radius - this.step);
+        this.target[i].setRadius(this.target[i].radius - (this.step / 2));
     }
 };
 
@@ -30,6 +30,6 @@ SmallerEnemyBonus.prototype.on = function()
 SmallerEnemyBonus.prototype.off = function()
 {
     for (var i = this.target.length - 1; i >= 0; i--) {
-        this.target[i].setRadius(this.target[i].radius + this.step);
+        this.target[i].setRadius(this.step);
     }
 };
