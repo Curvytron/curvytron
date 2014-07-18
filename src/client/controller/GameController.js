@@ -32,6 +32,7 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.onAngle       = this.onAngle.bind(this);
     this.onPoint       = this.onPoint.bind(this);
     this.onRadius      = this.onRadius.bind(this);
+    this.onColor       = this.onColor.bind(this);
     this.onBonusPop    = this.onBonusPop.bind(this);
     this.onBonusClear  = this.onBonusClear.bind(this);
     this.onDie         = this.onDie.bind(this);
