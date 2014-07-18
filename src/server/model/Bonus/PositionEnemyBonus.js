@@ -21,7 +21,7 @@ PositionEnemyBonus.prototype.on = function()
 {
     for (var i = this.target.length - 1; i >= 0; i--) {
         var point = this.target[i].game.world.getRandomPosition(this.target[i].radius, 0.1);
-        this.target[i].setPostion(point);
+        this.target[i].setPosition(point);
     }
 };
 
