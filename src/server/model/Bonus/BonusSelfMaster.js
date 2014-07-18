@@ -12,11 +12,16 @@ BonusSelfMaster.prototype = Object.create(BonusSelf.prototype);
 BonusSelfMaster.prototype.constructor = BonusSelfMaster;
 
 /**
- * Effects
+ * Get effects
  *
- * @type {Object}
+ * @param {Avatar} avatar
+ *
+ * @return {Array}
  */
-BonusSelfMaster.prototype.effects = {
-    invincible: true,
-    printing: -1
+BonusSelfMaster.prototype.getEffects = function(avatar)
+{
+    return [
+        ['invincible', true],
+        ['printing', -1]
+    ];
 };

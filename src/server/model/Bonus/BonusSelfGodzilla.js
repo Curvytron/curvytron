@@ -12,13 +12,18 @@ BonusSelfGodzilla.prototype = Object.create(BonusSelf.prototype);
 BonusSelfGodzilla.prototype.constructor = BonusSelfGodzilla;
 
 /**
- * Effects
+ * Get effects
  *
- * @type {Object}
+ * @param {Avatar} avatar
+ *
+ * @return {Array}
  */
-BonusSelfGodzilla.prototype.effects = {
-    invincible: true,
-    printing: 100,
-    radius: 10,
-    velocity: 6
+BonusSelfGodzilla.prototype.getEffects = function(avatar)
+{
+    return [
+        ['invincible', true],
+        ['printing', 100],
+        ['radius', 10],
+        ['velocity', 6]
+    ];
 };

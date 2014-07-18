@@ -37,18 +37,6 @@ BonusManager.prototype.spritePosition = [
 ];
 
 /**
- * Add bonus
- *
- * @param {Bonus} bonus
- */
-BonusManager.prototype.add = function(bonus)
-{
-    bonus.setScale(this.game.canvas.scale);
-
-    return BaseBonusManager.prototype.add.call(this, bonus);
-};
-
-/**
  * Set scale
  *
  * @param {Number} scale

@@ -21,6 +21,7 @@ function BaseAvatar(player)
     this.score           = 0;
     this.printingTimeout = null;
     this.ready           = false;
+    this.ownColor        = this.color;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
@@ -169,7 +170,10 @@ BaseAvatar.prototype.setRadius = function(radius)
 BaseAvatar.prototype.setInverse = function(inverse)
 {
     this.inverse = inverse ? true : false;
-    this.setAngularVelocity(this.angularVelocity > 0 ? 1 : -1);
+
+    if (this.angularVelocity !== 0) {
+        this.setAngularVelocity(this.angularVelocity > 0 ? 1 : -1);
+    }
 };
 
 /**
@@ -302,6 +306,16 @@ BaseAvatar.prototype.setScore = function(score)
 };
 
 /**
+ * Set color
+ *
+ * @param {Number} color
+ */
+BaseAvatar.prototype.setColor = function(color)
+{
+    this.color = color;
+};
+
+/**
  * Clear
  */
 BaseAvatar.prototype.clear = function()
@@ -316,6 +330,7 @@ BaseAvatar.prototype.clear = function()
     this.velocity        = BaseAvatar.prototype.velocity;
     this.alive           = true;
     this.printing        = false;
+    this.color           = this.ownColor;
     this.radius          = BaseAvatar.prototype.radius;
     this.inverse         = BaseAvatar.prototype.inverse;
     this.invincible      = BaseAvatar.prototype.invincible;

@@ -34,37 +34,36 @@ BaseBonusStack.prototype.add = function(bonus)
 BaseBonusStack.prototype.remove = function(bonus)
 {
     if (this.bonuses.remove(bonus)) {
-        this.resolve(bonus.effects);
+        this.resolve(bonus);
     }
 };
 
 /**
  * Resolve
  */
-BaseBonusStack.prototype.resolve = function(effects)
+BaseBonusStack.prototype.resolve = function(bonus)
 {
     var properties = {},
-        bonus, property, i;
+        effects, property, value, i;
 
-    if (typeof(effects) !== 'undefined') {
-        for (property in effects) {
-            if (effects.hasOwnProperty(property)) {
-                properties[property] = this.getDefaultProperty(property);
-            }
+    if (typeof(bonus) !== 'undefined') {
+        effects = bonus.getEffects(this.avatar);
+        for (i = effects.length - 1; i >= 0; i--) {
+            property = effects[i][0];
+            properties[property] = this.getDefaultProperty(property);
         }
     }
 
     for (i = this.bonuses.items.length - 1; i >= 0; i--) {
-        bonus = this.bonuses.items[i];
+        effects = this.bonuses.items[i].getEffects(this.avatar);
+        for (i = effects.length - 1; i >= 0; i--) {
+            property = effects[i][0];
 
-        for (property in bonus.effects) {
-            if (bonus.effects.hasOwnProperty(property)) {
-                if (typeof(properties[property]) === 'undefined') {
-                    properties[property] = this.getDefaultProperty(property);
-                }
-
-                properties[property] += bonus.effects[property];
+            if (typeof(properties[property]) === 'undefined') {
+                properties[property] = this.getDefaultProperty(property);
             }
+
+            properties = this.append(properties, property, effects[i][1]);
         }
     }
 
@@ -102,6 +101,10 @@ BaseBonusStack.prototype.apply = function(property, value)
     if (property === 'printing') {
         return this.avatar.setPrintingWithTimeout(value > 0);
     }
+
+    if (property === 'color') {
+        return this.avatar.setColor(value);
+    }
 };
 
 /**
@@ -118,14 +121,26 @@ BaseBonusStack.prototype.getDefaultProperty = function(property, avatar)
     }
 
     if (property === 'color') {
-        if (typeof(avatar.ownColor) === 'undefined') {
-            avatar.ownColor = avatar.color;
-        }
-
-        return avatar.ownColor;
+        return this.avatar.ownColor;
     }
 
     return Avatar.prototype[property];
+};
+
+BaseBonusStack.prototype.append = function(properties, property, value)
+{
+    switch (property) {
+
+        case 'color':
+            properties[property] = value;
+            break;
+
+        default:
+            properties[property] += value;
+            break;
+    }
+
+    return properties;
 };
 
 /**

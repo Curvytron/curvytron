@@ -12,10 +12,13 @@ BonusSelfSlow.prototype = Object.create(BonusSelf.prototype);
 BonusSelfSlow.prototype.constructor = BonusSelfSlow;
 
 /**
- * Effects
+ * Get effects
  *
- * @type {Object}
+ * @param {Avatar} avatar
+ *
+ * @return {Array}
  */
-BonusSelfSlow.prototype.effects = {
-    velocity: -BaseAvatar.prototype.velocity/2
+BonusSelfSlow.prototype.getEffects = function(avatar)
+{
+    return [['velocity', -BaseAvatar.prototype.velocity/2]];
 };

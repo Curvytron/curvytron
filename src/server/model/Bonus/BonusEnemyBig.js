@@ -12,10 +12,13 @@ BonusEnemyBig.prototype = Object.create(BonusEnemy.prototype);
 BonusEnemyBig.prototype.constructor = BonusEnemyBig;
 
 /**
- * Effects
+ * Get effects
  *
- * @type {Object}
+ * @param {Avatar} avatar
+ *
+ * @return {Array}
  */
-BonusEnemyBig.prototype.effects = {
-    radius: BaseAvatar.prototype.radius
+BonusEnemyBig.prototype.getEffects = function(avatar)
+{
+    return [['radius', BaseAvatar.prototype.radius]];
 };

@@ -28,8 +28,9 @@ BonusManager.prototype.bonusTypes = [
     BonusEnemySlow,
     BonusEnemyFast,
     BonusEnemyBig,
-    BonusEnemyInverse/*,
-    BonusSelfGodzilla*/
+    BonusEnemyInverse,
+    BonusAllColor,
+    BonusSelfGodzilla
 ];
 
 /**
@@ -75,8 +76,6 @@ BonusManager.prototype.popBonus = function ()
     if (this.bonuses.count() < this.bonusCap) {
         var position = this.game.world.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
             bonus = this.getRandomBonus(position);
-
-        console.log(position);
 
         this.add(bonus);
     }

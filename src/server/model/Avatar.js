@@ -48,7 +48,7 @@ Avatar.prototype.setPosition = function(point)
     this.body.position = this.head;
     this.body.num      = this.bodyCount;
 
-    this.emit('position', {avatar: this, point: this.head});
+    this.emit('property', {avatar: this, property: 'position', value: this.head});
 };
 
 /**
@@ -59,7 +59,7 @@ Avatar.prototype.setPosition = function(point)
 Avatar.prototype.setAngle = function(angle)
 {
     BaseAvatar.prototype.setAngle.call(this, angle);
-    this.emit('angle', {avatar: this, angle: this.angle});
+    this.emit('property', {avatar: this, property: 'angle', value: this.angle});
 };
 
 /**
@@ -71,7 +71,7 @@ Avatar.prototype.setRadius = function(radius)
 {
     BaseAvatar.prototype.setRadius.call(this, radius);
     this.body.radius = this.radius;
-    this.emit('radius', {avatar: this, radius: this.radius});
+    this.emit('property', {avatar: this, property: 'radius', value: this.radius});
 };
 
 /**
@@ -82,7 +82,7 @@ Avatar.prototype.setRadius = function(radius)
 Avatar.prototype.setInvincible = function(invincible)
 {
     BaseAvatar.prototype.setInvincible.call(this, invincible);
-    this.emit('invincible', {avatar: this, invincible: this.invincible});
+    this.emit('property', {avatar: this, property: 'invincible', value: this.invincible});
 };
 
 /**
@@ -93,7 +93,18 @@ Avatar.prototype.setInvincible = function(invincible)
 Avatar.prototype.setInverse = function(inverse)
 {
     BaseAvatar.prototype.setInverse.call(this, inverse);
-    this.emit('inverse', {avatar: this, inverse: this.inverse});
+    this.emit('property', {avatar: this, property: 'inverse', value: this.inverse});
+};
+
+/**
+ * Set color
+ *
+ * @param {Number} color
+ */
+Avatar.prototype.setColor = function(color)
+{
+    this.color = color;
+    this.emit('property', {avatar: this, property: 'color', value: this.color});
 };
 
 /**
@@ -121,7 +132,7 @@ Avatar.prototype.addPoint = function(point, important)
 Avatar.prototype.setPrinting = function(printing)
 {
     BaseAvatar.prototype.setPrinting.call(this, printing);
-    this.emit('printing', {avatar: this, printing: this.printing});
+    this.emit('property', {avatar: this, property: 'printing', value: this.printing});
 };
 
 /**
@@ -142,7 +153,7 @@ Avatar.prototype.die = function()
 Avatar.prototype.setScore = function(score)
 {
     BaseAvatar.prototype.setScore.call(this, score);
-    this.emit('score', {avatar: this, score: this.score});
+    this.emit('property', {avatar: this, property: 'score', value: this.score});
 };
 
 /**

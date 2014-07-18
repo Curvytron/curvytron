@@ -19,7 +19,7 @@ BonusStack.prototype.constructor = BonusStack;
 BonusStack.prototype.add = function(bonus)
 {
     BaseBonusStack.prototype.add.call(this, bonus);
-    this.emit('add', {bonusStack: this, bonus: bonus});
+    this.emit('change', {avatar: this.avatar, method: 'add', bonus: bonus});
 };
 
 /**
@@ -30,5 +30,5 @@ BonusStack.prototype.add = function(bonus)
 BonusStack.prototype.remove = function(bonus)
 {
     BaseBonusStack.prototype.remove.call(this, bonus);
-    this.emit('remove', {bonusStack: this, bonus: bonus});
+    this.emit('change', {avatar: this.avatar, method: 'remove', bonus: bonus});
 };

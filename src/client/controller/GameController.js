@@ -27,15 +27,12 @@ function GameController($scope, $routeParams, $location, repository, client)
 
     // Binding
     this.onMove        = this.onMove.bind(this);
-    this.onPosition    = this.onPosition.bind(this);
-    this.onPrinting    = this.onPrinting.bind(this);
-    this.onAngle       = this.onAngle.bind(this);
-    this.onPoint       = this.onPoint.bind(this);
-    this.onRadius      = this.onRadius.bind(this);
     this.onBonusPop    = this.onBonusPop.bind(this);
     this.onBonusClear  = this.onBonusClear.bind(this);
+    this.onBonusStack  = this.onBonusStack.bind(this);
+    this.onPoint       = this.onPoint.bind(this);
     this.onDie         = this.onDie.bind(this);
-    this.onScore       = this.onScore.bind(this);
+    this.onProperty    = this.onProperty.bind(this);
     this.onWarmup      = this.onWarmup.bind(this);
     this.endWarmup     = this.endWarmup.bind(this);
     this.onRoundNew    = this.onRoundNew.bind(this);
@@ -57,15 +54,12 @@ function GameController($scope, $routeParams, $location, repository, client)
  */
 GameController.prototype.attachSocketEvents = function()
 {
-    this.client.on('position', this.onPosition);
-    this.client.on('printing', this.onPrinting);
-    this.client.on('angle', this.onAngle);
-    this.client.on('radius', this.onRadius);
+    this.client.on('property', this.onProperty);
     this.client.on('point', this.onPoint);
+    this.client.on('die', this.onDie);
     this.client.on('bonus:pop', this.onBonusPop);
     this.client.on('bonus:clear', this.onBonusClear);
-    this.client.on('die', this.onDie);
-    this.client.on('score', this.onScore);
+    this.client.on('bonus:stack', this.onBonusStack);
     this.client.on('round:new', this.onRoundNew);
     this.client.on('round:end', this.onRoundEnd);
     this.client.on('round:winner', this.onRoundWinner);
@@ -78,15 +72,12 @@ GameController.prototype.attachSocketEvents = function()
  */
 GameController.prototype.detachSocketEvents = function()
 {
-    this.client.off('position', this.onPosition);
-    this.client.off('printing', this.onPrinting);
-    this.client.off('angle', this.onAngle);
-    this.client.off('radius', this.onRadius);
+    this.client.off('property', this.onProperty);
     this.client.off('point', this.onPoint);
+    this.client.off('die', this.onDie);
     this.client.off('bonus:pop', this.onBonusPop);
     this.client.off('bonus:clear', this.onBonusClear);
-    this.client.off('die', this.onDie);
-    this.client.off('score', this.onScore);
+    this.client.off('bonus:stack', this.onBonusStack);
     this.client.off('round:new', this.onRoundNew);
     this.client.off('round:end', this.onRoundEnd);
     this.client.off('round:winner', this.onRoundWinner);
@@ -174,21 +165,43 @@ GameController.prototype.onMove = function(e)
 };
 
 /**
- * On position
+ * On property
  *
  * @param {Event} e
  */
-GameController.prototype.onPosition = function(e)
+GameController.prototype.onProperty = function(e)
 {
     var data = e.detail,
         avatar = this.game.avatars.getById(data.avatar);
 
     if (avatar) {
-        avatar.setPosition(data.point);
+        avatar.set(data.property, data.value);
 
         if (!this.game.running) {
             this.game.draw();
         }
+
+        if (data.property == 'score') {
+            this.applyScope();
+        }
+    }
+};
+
+/**
+ * On bonus stack
+ *
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onBonusStack = function(e)
+{
+    var data = e.detail,
+        avatar = this.game.avatars.getById(data.avatar),
+        bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius);
+
+    if (avatar) {
+        bonus.setScale(this.game.canvas.scale);
+        avatar.bonusStack[data.method](bonus);
     }
 };
 
@@ -203,6 +216,7 @@ GameController.prototype.onBonusPop = function(e)
     var data = e.detail,
         bonus = new Bonus(data.id, data.position, data.type, data.affect, data.radius);
 
+    bonus.setScale(this.game.canvas.scale);
     this.game.bonusManager.add(bonus);
 };
 
@@ -217,59 +231,6 @@ GameController.prototype.onBonusClear = function(e)
         bonus = this.game.bonusManager.bonuses.getById(data.bonus);
 
     this.game.bonusManager.remove(bonus);
-};
-
-/**
- * On printing
- *
- * @param {Event} e
- */
-GameController.prototype.onPrinting = function(e)
-{
-    var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
-
-    if (avatar) {
-        avatar.setPrinting(data.printing);
-    }
-};
-
-/**
- * On angle
- *
- * @param {Event} e
- */
-GameController.prototype.onAngle = function(e)
-{
-    var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
-
-    if (avatar) {
-        avatar.setAngle(data.angle);
-
-        if (!this.game.running) {
-            this.game.draw();
-        }
-    }
-};
-
-/**
- * On radius
- *
- * @param {Event} e
- */
-GameController.prototype.onRadius = function(e)
-{
-    var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
-
-    if (avatar) {
-        avatar.setRadius(data.radius);
-
-        if (!this.game.running) {
-            this.game.draw();
-        }
-    }
 };
 
 /**
@@ -303,22 +264,6 @@ GameController.prototype.onDie = function(e)
 
         var loose = createjs.Sound.play('loose');
         loose.volume = 0.2;
-    }
-};
-
-/**
- * On score
- *
- * @param {Event} e
- */
-GameController.prototype.onScore = function(e)
-{
-    var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
-
-    if (avatar) {
-        avatar.setScore(data.score);
-        this.applyScope();
     }
 };
 

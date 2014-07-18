@@ -12,10 +12,13 @@ BonusEnemyInverse.prototype = Object.create(BonusEnemy.prototype);
 BonusEnemyInverse.prototype.constructor = BonusEnemyInverse;
 
 /**
- * Effects
+ * Get effects
  *
- * @type {Object}
+ * @param {Avatar} avatar
+ *
+ * @return {Array}
  */
-BonusEnemyInverse.prototype.effects = {
-    inverse: 1
+BonusEnemyInverse.prototype.getEffects = function(avatar)
+{
+    return [['inverse', 1]];
 };

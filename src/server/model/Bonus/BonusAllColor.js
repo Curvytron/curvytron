@@ -25,28 +25,44 @@ BonusAllColor.prototype.constructor = BonusAllColor;
  *
  * @return {Object}
  */
-BonusAll.prototype.getTarget = function(avatar, game)
+BonusAllColor.prototype.getTarget = function(avatar, game)
 {
     var targets = BonusAll.prototype.getTarget.call(this, avatar, game);
 
-    this.colors = new Array(targets.length);
+    this.avatars = new Array(targets.length);
+    this.colors  = new Array(targets.length);
 
     for (var i = targets.length - 1; i >= 0; i--) {
-        this.colors[i] = targets[i].color;
+        this.avatars[i] = targets[i].name;
+        this.colors[i]  = targets[i].color;
     }
 
     return targets;
 };
 
 /**
+ * Get effects
+ *
+ * @param {Avatar} avatar
+ *
+ * @return {Array}
+ */
+BonusAllColor.prototype.getEffects = function(avatar)
+{
+    return [['color', this.getColor(avatar)]];
+};
+
+/**
  * Get color
  *
- * @param {Number} index
  * @param {Avatar} avatar
  *
  * @return {String}
  */
-BonusAll.prototype.getColor = function(index, avatar)
+BonusAllColor.prototype.getColor = function(avatar)
 {
-    // body...
+    var index = this.avatars.indexOf(avatar.name),
+        roll = Math.floor(Math.random() * this.colors.length);
+
+    return this.colors[(index + roll) % this.colors.length];
 };

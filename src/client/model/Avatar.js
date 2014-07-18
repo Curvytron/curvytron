@@ -82,12 +82,24 @@ Avatar.prototype.setRadius = function(radius)
 };
 
 /**
+ * Set color
+ *
+ * @param {String} color
+ */
+Avatar.prototype.setColor = function(color)
+{
+    BaseAvatar.prototype.setColor.call(this, color);
+    this.drawHead();
+};
+
+/**
  * Draw head
  */
 Avatar.prototype.drawHead = function()
 {
     var middle = this.canvas.element.width/2;
 
+    this.canvas.clear();
     this.canvas.drawCircle([middle, middle], this.radius * this.canvas.scale, this.color);
 };
 
@@ -96,6 +108,7 @@ Avatar.prototype.drawHead = function()
  */
 Avatar.prototype.drawArrow = function()
 {
+    this.arrow.clear();
     this.arrow.drawLine([[65, 50], [95, 50]], this.arrowWidth, this.color);
     this.arrow.drawLine([[85, 40], [95, 50], [85, 60]], this.arrowWidth, this.color);
 };
@@ -117,7 +130,6 @@ Avatar.prototype.updateStart = function()
 Avatar.prototype.clear = function()
 {
     BaseAvatar.prototype.clear.call(this);
-
     this.setRadius(Avatar.prototype.radius);
 };
 
@@ -136,4 +148,21 @@ Avatar.prototype.destroy = function()
     }
 
     BaseAvatar.prototype.destroy.call(this);
+};
+
+/**
+ * Set
+ *
+ * @param {String} property
+ * @param {Object} value
+ */
+Avatar.prototype.set = function(property, value)
+{
+    var method = 'set' + property[0].toUpperCase() + property.slice(1);
+
+    if (typeof(this[method]) !== 'undefined') {
+        this[method](value);
+    } else {
+        throw "Unknown setter " + method;
+    }
 };

@@ -133,6 +133,7 @@ Game.prototype.draw = function()
         avatar = this.avatars.items[i];
 
         this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
+        this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 20, avatar.start[1] + 20]);
 
         if (avatar.local && !this.running) {
             width = 10;
