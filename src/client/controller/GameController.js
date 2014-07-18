@@ -32,6 +32,7 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.onAngle       = this.onAngle.bind(this);
     this.onPoint       = this.onPoint.bind(this);
     this.onRadius      = this.onRadius.bind(this);
+    this.onColor       = this.onColor.bind(this);
     this.onBonusPop    = this.onBonusPop.bind(this);
     this.onBonusClear  = this.onBonusClear.bind(this);
     this.onDie         = this.onDie.bind(this);
@@ -61,6 +62,7 @@ GameController.prototype.attachSocketEvents = function()
     this.client.on('printing', this.onPrinting);
     this.client.on('angle', this.onAngle);
     this.client.on('radius', this.onRadius);
+    this.client.on('color', this.onColor);
     this.client.on('point', this.onPoint);
     this.client.on('bonus:pop', this.onBonusPop);
     this.client.on('bonus:clear', this.onBonusClear);
@@ -82,6 +84,7 @@ GameController.prototype.detachSocketEvents = function()
     this.client.off('printing', this.onPrinting);
     this.client.off('angle', this.onAngle);
     this.client.off('radius', this.onRadius);
+    this.client.off('color', this.onColor);
     this.client.off('point', this.onPoint);
     this.client.off('bonus:pop', this.onBonusPop);
     this.client.off('bonus:clear', this.onBonusClear);
@@ -265,6 +268,25 @@ GameController.prototype.onRadius = function(e)
 
     if (avatar) {
         avatar.setRadius(data.radius);
+
+        if (!this.game.running) {
+            this.game.draw();
+        }
+    }
+};
+
+/**
+ * On color
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onColor = function(e)
+{
+    var data = e.detail,
+        avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.setColor(data.color);
 
         if (!this.game.running) {
             this.game.draw();

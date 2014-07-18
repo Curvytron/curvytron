@@ -121,6 +121,7 @@ GameController.prototype.attachEvents = function(client)
         avatar.on('point', this.onPoint);
         avatar.on('score', this.onScore);
         avatar.on('radius', this.onRadius);
+        avatar.on('color', this.onColor);
         avatar.on('velocity', this.onVelocity);
     }
 };
@@ -147,6 +148,7 @@ GameController.prototype.detachEvents = function(client)
         avatar.removeListener('point', this.onPoint);
         avatar.removeListener('score', this.onScore);
         avatar.removeListener('radius', this.onRadius);
+        avatar.removeListener('color', this.onColor);
         avatar.removeListener('velocity', this.onVelocity);
     }
 };
@@ -309,6 +311,20 @@ GameController.prototype.onRadius = function(data)
         radius = data.radius;
 
     game.client.addEvent('radius', {avatar: avatar.name, radius: radius});
+};
+
+/**
+ * On color
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onColor = function(data)
+{
+    var avatar = data.avatar,
+        game = avatar.player.client.room.game,
+        color = data.color;
+
+    game.client.addEvent('color', {avatar: avatar.name, color: color});
 };
 
 /**
