@@ -29,7 +29,7 @@ Avatar.prototype.constructor = Avatar;
  *
  * @type {Number}
  */
-Avatar.prototype.radiusMargin = 1;//1.15;
+Avatar.prototype.radiusMargin = 1;
 
 /**
  * Arrao width
