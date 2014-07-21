@@ -77,12 +77,13 @@ Game.prototype.newRound = function()
 Game.prototype.endRound = function()
 {
     BaseGame.prototype.endRound.call(this);
-    this.clearBackground();
-    this.draw();
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
     }
+
+    this.clearBackground();
+    this.draw();
 };
 
 /**
@@ -95,6 +96,9 @@ Game.prototype.end = function()
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
     }
+
+    this.clearBackground();
+    this.draw();
 };
 
 /**
