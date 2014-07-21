@@ -19,6 +19,7 @@ function Game(room)
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
+Game.prototype.constructor = Game;
 
 /**
  * Background color
@@ -132,6 +133,14 @@ Game.prototype.draw = function()
         avatar = this.avatars.items[i];
 
         this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
+
+        if (!avatar.alive && typeof(avatar.lastDraw) === 'undefined') {
+            avatar.lastDraw = true;
+        }
+
+        if (avatar.hasBonus()) {
+            this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
+        }
 
         if (avatar.local && !this.running) {
             width = 10;

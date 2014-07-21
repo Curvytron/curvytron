@@ -14,9 +14,10 @@ function BonusManager(game)
 }
 
 BonusManager.prototype = Object.create(BaseBonusManager.prototype);
+BonusManager.prototype.constructor = BonusManager;
 
 /**
- * Available onus types
+ * Available bonus types
  *
  * @type {Array}
  */
@@ -27,7 +28,8 @@ BonusManager.prototype.bonusTypes = [
     BonusEnemySlow,
     BonusEnemyFast,
     BonusEnemyBig,
-    BonusEnemyInverse/*,
+    BonusEnemyInverse,
+    BonusAllColor/*,
     BonusSelfGodzilla*/
 ];
 
@@ -72,7 +74,7 @@ BonusManager.prototype.popBonus = function ()
     this.popingTimeout = null;
 
     if (this.bonuses.count() < this.bonusCap) {
-        var position = this.game.world.getRandomPosition(BaseBonus.prototype.radius, 0.03),
+        var position = this.game.world.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
             bonus = this.getRandomBonus(position);
 
         this.add(bonus);

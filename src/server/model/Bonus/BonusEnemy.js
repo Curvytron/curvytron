@@ -11,6 +11,7 @@ function BonusEnemy(position)
 }
 
 BonusEnemy.prototype = Object.create(Bonus.prototype);
+BonusEnemy.prototype.constructor = BonusEnemy;
 
 /**
  * Affect enemy
@@ -29,7 +30,7 @@ BonusEnemy.prototype.affect = 'enemy';
  */
 BonusEnemy.prototype.getTarget = function(avatar, game)
 {
-    return game.avatars.filter(function () { return this.name !== avatar.name; }).items;
+    return game.avatars.filter(function () { return this.alive && this.name !== avatar.name; }).items;
 };
 
 /**

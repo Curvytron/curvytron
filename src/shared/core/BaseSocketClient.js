@@ -27,6 +27,7 @@ function BaseSocketClient(socket, interval)
 }
 
 BaseSocketClient.prototype = Object.create(EventEmitter.prototype);
+BaseSocketClient.prototype.constructor = BaseSocketClient;
 
 /**
  * Event prefix

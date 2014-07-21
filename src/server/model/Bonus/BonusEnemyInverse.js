@@ -9,7 +9,16 @@ function BonusEnemyInverse(position)
 }
 
 BonusEnemyInverse.prototype = Object.create(BonusEnemy.prototype);
+BonusEnemyInverse.prototype.constructor = BonusEnemyInverse;
 
-BonusEnemyInverse.prototype.type     = 'inverse';
-BonusEnemyInverse.prototype.property = 'inverse';
-BonusEnemyInverse.prototype.step     = 1;
+/**
+ * Get effects
+ *
+ * @param {Avatar} avatar
+ *
+ * @return {Array}
+ */
+BonusEnemyInverse.prototype.getEffects = function(avatar)
+{
+    return [['inverse', 1]];
+};

@@ -11,6 +11,7 @@ function BonusAll(position)
 }
 
 BonusAll.prototype = Object.create(Bonus.prototype);
+BonusAll.prototype.constructor = BonusAll;
 
 /**
  * Affect all
@@ -29,7 +30,7 @@ BonusAll.prototype.affect = 'all';
  */
 BonusAll.prototype.getTarget = function(avatar, game)
 {
-    return game.avatars.items;
+    return game.avatars.filter(function () { return this.alive; }).items;
 };
 
 /**

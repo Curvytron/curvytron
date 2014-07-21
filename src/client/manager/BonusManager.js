@@ -16,6 +16,7 @@ function BonusManager(game)
 }
 
 BonusManager.prototype = Object.create(BaseBonusManager.prototype);
+BonusManager.prototype.constructor = BonusManager;
 
 /**
  * Bonuses position on the sprite
@@ -23,29 +24,17 @@ BonusManager.prototype = Object.create(BaseBonusManager.prototype);
  * @type {Array}
  */
 BonusManager.prototype.spritePosition = [
-    'fast_me',
-    'fast_enemy',
-    'slow_me',
-    'slow_enemy',
-    'borderless',
-    'master',
-    'big',
-    'color',
-    'inverse',
-    'godzilla'
+    'BonusSelfFast',
+    'BonusEnemyFast',
+    'BonusSelfSlow',
+    'BonusEnemySlow',
+    'BonusAllBorderless',
+    'BonusSelfMaster',
+    'BonusEnemyBig',
+    'BonusAllColor',
+    'BonusEnemyInverse',
+    'BonusSelfGodzilla'
 ];
-
-/**
- * Add bonus
- *
- * @param {Bonus} bonus
- */
-BonusManager.prototype.add = function(bonus)
-{
-    bonus.setScale(this.game.canvas.scale);
-
-    return BaseBonusManager.prototype.add.call(this, bonus);
-};
 
 /**
  * Set scale
@@ -75,6 +64,8 @@ BonusManager.prototype.onLoad = function()
 
 /**
  * Draw
+ *
+ * @param {Canvas} canvas
  */
 BonusManager.prototype.draw = function(canvas)
 {

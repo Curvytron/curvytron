@@ -27,6 +27,7 @@ function SocketClient()
 }
 
 SocketClient.prototype = Object.create(BaseSocketClient.prototype);
+SocketClient.prototype.constructor = SocketClient;
 
 /**
  * On socket connection

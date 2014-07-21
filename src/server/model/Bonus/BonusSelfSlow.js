@@ -9,7 +9,16 @@ function BonusSelfSlow(position)
 }
 
 BonusSelfSlow.prototype = Object.create(BonusSelf.prototype);
+BonusSelfSlow.prototype.constructor = BonusSelfSlow;
 
-BonusSelfSlow.prototype.type     = 'slow_me';
-BonusSelfSlow.prototype.property = 'velocity';
-BonusSelfSlow.prototype.step     = -BaseAvatar.prototype.velocity/2;
+/**
+ * Get effects
+ *
+ * @param {Avatar} avatar
+ *
+ * @return {Array}
+ */
+BonusSelfSlow.prototype.getEffects = function(avatar)
+{
+    return [['velocity', -BaseAvatar.prototype.velocity/2]];
+};

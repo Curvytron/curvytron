@@ -13,6 +13,7 @@ function Bonus(position)
 }
 
 Bonus.prototype = Object.create(BaseBonus.prototype);
+Bonus.prototype.constructor = Bonus;
 
 /**
  * Aplly bonus callback

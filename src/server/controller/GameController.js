@@ -8,13 +8,11 @@ function GameController()
     this.games = new Collection([], 'name');
 
     this.onDie         = this.onDie.bind(this);
-    this.onAngle       = this.onAngle.bind(this);
-    this.onPosition    = this.onPosition.bind(this);
+    this.onPoint       = this.onPoint.bind(this);
+    this.onProperty    = this.onProperty.bind(this);
+    this.onBonusStack  = this.onBonusStack.bind(this);
     this.onBonusPop    = this.onBonusPop.bind(this);
     this.onBonusClear  = this.onBonusClear.bind(this);
-    this.onPrinting    = this.onPrinting.bind(this);
-    this.onPoint       = this.onPoint.bind(this);
-    this.onScore       = this.onScore.bind(this);
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
     this.onRoundWinner = this.onRoundWinner.bind(this);
@@ -114,13 +112,9 @@ GameController.prototype.attachEvents = function(client)
         avatar = client.players.items[i].avatar;
 
         avatar.on('die', this.onDie);
-        avatar.on('angle', this.onAngle);
-        avatar.on('position', this.onPosition);
-        avatar.on('printing', this.onPrinting);
         avatar.on('point', this.onPoint);
-        avatar.on('score', this.onScore);
-        avatar.on('radius', this.onRadius);
-        avatar.on('velocity', this.onVelocity);
+        avatar.on('property', this.onProperty);
+        avatar.bonusStack.on('change', this.onBonusStack);
     }
 };
 
@@ -140,13 +134,9 @@ GameController.prototype.detachEvents = function(client)
         avatar = client.players.items[i].avatar;
 
         avatar.removeListener('die', this.onDie);
-        avatar.removeListener('angle', this.onAngle);
-        avatar.removeListener('position', this.onPosition);
-        avatar.removeListener('printing', this.onPrinting);
         avatar.removeListener('point', this.onPoint);
-        avatar.removeListener('score', this.onScore);
-        avatar.removeListener('radius', this.onRadius);
-        avatar.removeListener('velocity', this.onVelocity);
+        avatar.removeListener('property', this.onProperty);
+        avatar.bonusStack.removeListener('change', this.onBonusStack);
     }
 };
 
@@ -186,50 +176,6 @@ GameController.prototype.onMove = function(client, data)
 };
 
 /**
- * On position
- *
- * @param {Object} data
- */
-GameController.prototype.onPosition = function(data)
-{
-    var avatar = data.avatar,
-        game = avatar.player.client.room.game,
-        point = data.point;
-
-    game.client.addEvent('position', {avatar: avatar.name, point: point});
-};
-
-/**
- * On printing
- *
- * @param {Object} data
- */
-GameController.prototype.onPrinting = function(data)
-{
-    var avatar = data.avatar,
-        game = avatar.player.client.room.game,
-        printing = data.printing;
-
-    game.client.addEvent('printing', {avatar: avatar.name, printing: printing});
-};
-
-/**
- * On angle
- *
- * @param {Object} data
- */
-GameController.prototype.onAngle = function(data)
-{
-    var avatar = data.avatar,
-        game = avatar.player.client.room.game,
-        angle = data.angle;
-
-    if(!avatar.player.client.room.game.isPlaying()) {
-        game.client.addEvent('angle', {avatar: avatar.name, angle: angle});
-    }
-};
-
-/**
  * On point
  *
  * @param {Object} data
@@ -240,9 +186,9 @@ GameController.prototype.onPoint = function(data)
         game = avatar.player.client.room.game,
         point = data.point;
 
-    if (data.important) {
+    //if (data.important) {
         game.client.addEvent('point', {avatar: avatar.name, point: point});
-    }
+    //}
 };
 
 /**
@@ -283,45 +229,31 @@ GameController.prototype.onBonusClear = function(data)
 };
 
 /**
- * On score
+ * On property
  *
  * @param {Object} data
  */
-GameController.prototype.onScore = function(data)
+GameController.prototype.onProperty = function(data)
 {
-    var avatar = data.avatar,
-        game = avatar.player.client.room.game,
-        score = data.score;
+    var game = data.avatar.player.client.room.game;
 
-    game.client.addEvent('score', {avatar: avatar.name, score: score});
+    if (data.property == 'angle' && game.isPlaying()) {
+        return;
+    }
+
+    game.client.addEvent('property', {avatar: data.avatar.name, property: data.property, value: data.value});
 };
 
 /**
- * On radius
+ * On bonus stack add
  *
  * @param {Object} data
  */
-GameController.prototype.onRadius = function(data)
+GameController.prototype.onBonusStack = function(data)
 {
-    var avatar = data.avatar,
-        game = avatar.player.client.room.game,
-        radius = data.radius;
+    var game = data.avatar.player.client.room.game;
 
-    game.client.addEvent('radius', {avatar: avatar.name, radius: radius});
-};
-
-/**
- * On velocity
- *
- * @param {Object} data
- */
-GameController.prototype.onVelocity = function(data)
-{
-    var avatar = data.avatar,
-        game = avatar.player.client.room.game,
-        velocity = data.velocity;
-
-    game.client.addEvent('velocity', {avatar: avatar.name, velocity: velocity});
+    game.client.addEvent('bonus:stack', {avatar: data.avatar.name, method: data.method, bonus: data.bonus.serialize()});
 };
 
 // Game events:

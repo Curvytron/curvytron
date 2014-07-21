@@ -11,6 +11,7 @@ function BonusSelf(position)
 }
 
 BonusSelf.prototype = Object.create(Bonus.prototype);
+BonusSelf.prototype.constructor = BonusSelf;
 
 /**
  * Affect self
@@ -29,7 +30,7 @@ BonusSelf.prototype.affect = 'self';
  */
 BonusSelf.prototype.getTarget = function(avatar, game)
 {
-    return avatar;
+    return avatar.alive ? avatar : null;
 };
 
 /**
@@ -37,7 +38,9 @@ BonusSelf.prototype.getTarget = function(avatar, game)
  */
 BonusSelf.prototype.on = function()
 {
-    this.target.bonusStack.add(this);
+    if (this.target) {
+        this.target.bonusStack.add(this);
+    }
 };
 
 /**
@@ -45,5 +48,7 @@ BonusSelf.prototype.on = function()
  */
 BonusSelf.prototype.off = function()
 {
-    this.target.bonusStack.remove(this);
+    if (this.target) {
+        this.target.bonusStack.remove(this);
+    }
 };
