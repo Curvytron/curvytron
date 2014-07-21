@@ -8,10 +8,6 @@ function BonusAllColor(position)
     BonusAll.call(this, position);
 
     this.getColor = this.getColor.bind(this);
-
-    this.effects = {
-        color: this.getColor
-    };
 }
 
 BonusAllColor.prototype = Object.create(BonusAll.prototype);
@@ -61,8 +57,7 @@ BonusAllColor.prototype.getEffects = function(avatar)
  */
 BonusAllColor.prototype.getColor = function(avatar)
 {
-    var index = this.avatars.indexOf(avatar.name),
-        roll = Math.floor(Math.random() * this.colors.length);
+    var index = this.avatars.indexOf(avatar.name);
 
-    return this.colors[(index + roll) % this.colors.length];
+    return this.colors[(index + 1) % this.colors.length];
 };

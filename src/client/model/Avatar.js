@@ -166,3 +166,13 @@ Avatar.prototype.set = function(property, value)
         throw "Unknown setter " + method;
     }
 };
+
+/**
+ * Has bonus
+ *
+ * @return {Boolean}
+ */
+Avatar.prototype.hasBonus = function()
+{
+    return !this.bonusStack.bonuses.isEmpty();
+};

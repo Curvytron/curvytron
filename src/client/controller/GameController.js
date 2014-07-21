@@ -199,7 +199,7 @@ GameController.prototype.onBonusStack = function(e)
         avatar = this.game.avatars.getById(data.avatar),
         bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius);
 
-    if (avatar) {
+    if (avatar && avatar.local) {
         bonus.setScale(this.game.canvas.scale);
         avatar.bonusStack[data.method](bonus);
     }

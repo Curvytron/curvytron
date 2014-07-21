@@ -150,10 +150,11 @@ Canvas.prototype.drawImageScaled = function(image, position, width, height, angl
  * @param {Number} height
  * @param {Number} angle
  */
-Canvas.prototype.drawImage = function(image, position, width, height, angle)
+Canvas.prototype.drawImage = function(image, position, width, height, angle, opacity)
 {
     position = typeof(position) !== 'undefined' && position ? position : [0, 0];
     angle = typeof(angle) !== 'undefined' && angle ? angle : false;
+    opacity = typeof(opacity) !== 'undefined' && opacity ? opacity : 1;
 
     if (angle) {
         var centerX = position[0] + width/2,
@@ -166,6 +167,8 @@ Canvas.prototype.drawImage = function(image, position, width, height, angle)
         this.context.translate(centerX, centerY);
         this.context.rotate(angle);
     }
+
+    this.context.globalAlpha = opacity;
 
     if (typeof(width) === 'number' && typeof(height) === 'number') {
         this.context.drawImage(image, this.round(position[0]), this.round(position[1]), this.round(width), this.round(height));

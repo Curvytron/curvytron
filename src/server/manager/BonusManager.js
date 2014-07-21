@@ -17,7 +17,7 @@ BonusManager.prototype = Object.create(BaseBonusManager.prototype);
 BonusManager.prototype.constructor = BonusManager;
 
 /**
- * Available onus types
+ * Available bonus types
  *
  * @type {Array}
  */
@@ -29,8 +29,8 @@ BonusManager.prototype.bonusTypes = [
     BonusEnemyFast,
     BonusEnemyBig,
     BonusEnemyInverse,
-    BonusAllColor,
-    BonusSelfGodzilla
+    BonusAllColor/*,
+    BonusSelfGodzilla*/
 ];
 
 /**

@@ -64,6 +64,8 @@ BonusManager.prototype.onLoad = function()
 
 /**
  * Draw
+ *
+ * @param {Canvas} canvas
  */
 BonusManager.prototype.draw = function(canvas)
 {

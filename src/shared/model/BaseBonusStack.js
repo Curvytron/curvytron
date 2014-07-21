@@ -127,6 +127,15 @@ BaseBonusStack.prototype.getDefaultProperty = function(property, avatar)
     return Avatar.prototype[property];
 };
 
+/**
+ * Append
+ *
+ * @param {Object} properties
+ * @param {String} property
+ * @param {Number} value
+ *
+ * @return {Object}
+ */
 BaseBonusStack.prototype.append = function(properties, property, value)
 {
     switch (property) {

@@ -19,10 +19,20 @@ function Bonus(id, position, type, affect, radius)
 
     this.position[0] = this.position[0] - this.radius;
     this.position[1] = this.position[1] - this.radius;
+
+    this.setEnding     = this.setEnding.bind(this);
+    this.toggleOpacity = this.toggleOpacity.bind(this);
 }
 
 Bonus.prototype = Object.create(BaseBonus.prototype);
 Bonus.prototype.constructor = Bonus;
+
+/**
+ * Opacity
+ *
+ * @type {Number}
+ */
+Bonus.prototype.opacity = 1;
 
 /**
  * Set scale
@@ -56,5 +66,25 @@ Bonus.prototype.clear = function()
 {
     this.canvas.clear();
 
+    if (this.timeout) {
+        clearInterval(this.timeout);
+    }
+
     BaseBonus.prototype.clear.call(this);
+};
+
+/**
+ * Set ending
+ */
+Bonus.prototype.setEnding = function()
+{
+    this.timeout = setInterval(this.toggleOpacity, 100);
+};
+
+/**
+ * Toggle opacity
+ */
+Bonus.prototype.toggleOpacity = function()
+{
+    this.opacity = this.opacity === 1 ? 0.5 : 1;
 };
