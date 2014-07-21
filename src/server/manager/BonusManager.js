@@ -25,12 +25,16 @@ BonusManager.prototype.bonusTypes = [
     BonusSelfSlow,
     BonusSelfFast,
     BonusSelfMaster,
+    BonusSelfSmall,
+    BonusSelfInverse,
     BonusEnemySlow,
     BonusEnemyFast,
     BonusEnemyBig,
     BonusEnemyInverse,
-    BonusAllColor/*,
-    BonusSelfGodzilla*/
+    BonusEnemySmall,
+    BonusEnemyMaster,
+    BonusAllColor,
+    BonusSelfGodzilla,
 ];
 
 /**
