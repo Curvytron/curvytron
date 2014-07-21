@@ -46,7 +46,7 @@ BonusManager.prototype.setScale = function(scale)
  */
 BonusManager.prototype.onLoad = function()
 {
-    var bonuses = ['rabbit', 'turtle', 'godzilla', 'smaller', 'borderless', 'magnet', 'color', 'fly'],
+    var bonuses = ['rabbit', 'turtle', 'godzilla', 'smaller', 'position', 'magnet', 'color', 'fly'],
         images = this.sprite.getImages();
 
     for (var i = bonuses.length - 1; i >= 0; i--) {
