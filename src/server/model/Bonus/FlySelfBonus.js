@@ -21,6 +21,9 @@ FlySelfBonus.prototype.duration = 5000;
 FlySelfBonus.prototype.on = function()
 {
     this.target.setPrinting(false);
+    this.target.getRandomPrintingTime = function() {
+        return FlySelfBonus.prototype.duration;
+    }
 };
 
 /**
