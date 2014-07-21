@@ -20,7 +20,8 @@ FlySelfBonus.prototype.duration = 5000;
  */
 FlySelfBonus.prototype.on = function()
 {
-  this.target.stopPrinting();
+    this.target.stopPrinting();
+    this.target.setInvincible(true);
 };
 
 /**
@@ -28,5 +29,6 @@ FlySelfBonus.prototype.on = function()
  */
 FlySelfBonus.prototype.off = function()
 {
-  this.target.togglePrinting();
+    this.target.togglePrinting();
+    this.target.setInvincible(false);
 };
