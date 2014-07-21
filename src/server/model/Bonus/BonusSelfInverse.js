@@ -5,10 +5,10 @@
  */
 function BonusSelfInverse(position)
 {
-    BonusEnemy.call(this, position);
+    BonusSelf.call(this, position);
 }
 
-BonusSelfInverse.prototype = Object.create(BonusEnemy.prototype);
+BonusSelfInverse.prototype = Object.create(BonusSelf.prototype);
 BonusSelfInverse.prototype.constructor = BonusSelfInverse;
 
 /**
