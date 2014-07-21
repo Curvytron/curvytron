@@ -22,6 +22,7 @@ FlySelfBonus.prototype.on = function()
 {
     this.target.stopPrinting();
     this.target.setInvincible(true);
+    this.target.setRadius(this.step * 2);
 };
 
 /**
@@ -30,5 +31,6 @@ FlySelfBonus.prototype.on = function()
 FlySelfBonus.prototype.off = function()
 {
     this.target.togglePrinting();
+    this.target.setRadius(this.step);
     this.target.setInvincible(false);
 };
