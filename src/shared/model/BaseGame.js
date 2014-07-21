@@ -34,8 +34,8 @@ BaseGame.prototype.constructor = BaseGame;
 
 BaseGame.prototype.framerate     = 1/60 * 1000;
 BaseGame.prototype.perPlayerSize = 100;
-BaseGame.prototype.warmupTime    = 5000;
-BaseGame.prototype.warmdownTime  = 3000;
+BaseGame.prototype.warmupTime    = 3000;
+BaseGame.prototype.warmdownTime  = 5000;
 
 /**
  * Update

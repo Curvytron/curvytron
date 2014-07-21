@@ -300,6 +300,8 @@ GameController.prototype.onRoundEnd = function(e)
 GameController.prototype.onEnd = function(e)
 {
     this.detachSocketEvents();
+    this.game.end();
+
     this.repository.start();
 
     avatars = this.game.avatars.filter(function () { return this.local; }).items;
@@ -308,7 +310,6 @@ GameController.prototype.onEnd = function(e)
         avatars[i].input.off('move', this.onMove);
     }
 
-    this.game.end();
     this.room.closeGame();
     this.game = null;
 
