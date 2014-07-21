@@ -21,6 +21,7 @@ PositionSelfBonus.prototype.on = function()
 {
      var point = this.target.game.world.getRandomPosition(this.target.radius, 0.1);
      this.target.setPosition(point);
+     this.target.setPrinting(false);
 };
 
 /**
