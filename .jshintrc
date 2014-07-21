@@ -25,6 +25,7 @@
         "CustomEvent",
         "Event",
         "console",
-        "navigator"
+        "navigator",
+        "WebSocket"
     ]
 }

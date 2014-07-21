@@ -14,6 +14,7 @@ function BaseBonusManager(game)
 }
 
 BaseBonusManager.prototype = Object.create(EventEmitter.prototype);
+BaseBonusManager.prototype.constructor = BaseBonusManager;
 
 /**
  * Maximum number of bonus on the map at the same time
@@ -28,6 +29,13 @@ BaseBonusManager.prototype.bonusCap = 20;
  * @type {Number}
  */
 BaseBonusManager.prototype.bonusPopingTime = 3000;
+
+/**
+ * Margin from bonus to trails
+ *
+ * @type {Number}
+ */
+BaseBonusManager.prototype.bonusPopingMargin = 0.02;
 
 /**
  * Start

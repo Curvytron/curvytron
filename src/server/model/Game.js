@@ -27,6 +27,7 @@ function Game(room)
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
+Game.prototype.constructor = Game;
 
 /**
  * Update
@@ -37,15 +38,15 @@ Game.prototype.update = function(step)
 {
     BaseGame.prototype.update.call(this, step);
 
-    var avatar, position, i;
+    var avatar, i;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
         avatar.update(step);
 
-        if (avatar.alive) {
-            if (!this.world.testBody(avatar.body)) {
+        if (avatar.alive) {
+            if (!avatar.invincible && !this.world.testBody(avatar.body, true)) {
                 avatar.die();
             } else {
                 this.bonusManager.testCatch(avatar);

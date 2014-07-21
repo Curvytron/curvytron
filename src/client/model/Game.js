@@ -19,6 +19,7 @@ function Game(room)
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
+Game.prototype.constructor = Game;
 
 /**
  * Background color
@@ -76,12 +77,13 @@ Game.prototype.newRound = function()
 Game.prototype.endRound = function()
 {
     BaseGame.prototype.endRound.call(this);
-    this.clearBackground();
-    this.draw();
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
     }
+
+    this.clearBackground();
+    this.draw();
 };
 
 /**
@@ -94,6 +96,9 @@ Game.prototype.end = function()
     for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
         this.avatars.items[i].clear();
     }
+
+    this.clearBackground();
+    this.draw();
 };
 
 /**
@@ -116,7 +121,7 @@ Game.prototype.removeAvatar = function(avatar)
  */
 Game.prototype.draw = function()
 {
-    var i, trail, avatar, width, position, points;
+    var i, avatar, width, position, points;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
@@ -132,6 +137,14 @@ Game.prototype.draw = function()
         avatar = this.avatars.items[i];
 
         this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
+
+        if (!avatar.alive && typeof(avatar.lastDraw) === 'undefined') {
+            avatar.lastDraw = true;
+        }
+
+        if (avatar.hasBonus()) {
+            this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
+        }
 
         if (avatar.local && !this.running) {
             width = 10;

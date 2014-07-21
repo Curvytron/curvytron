@@ -70,8 +70,13 @@
                     border-top: 2px solid lighten($game-background, 10%);
                 }
                 &.dead {
-                    @include animation(deadAnim 1s);
+                    @include animation(deadAnim 1s forwards);
                     @include transition(all 0.2s ease);
+
+                    .color-preview {
+                        @include transition(all 0.2s ease);
+                        @include opacity(50);
+                    }
                 }
             }
         }
