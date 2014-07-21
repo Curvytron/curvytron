@@ -21,6 +21,7 @@ function BaseAvatar(player)
     this.score           = 0;
     this.printingTimeout = null;
     this.ready           = false;
+    this.invincible      = false;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
@@ -57,6 +58,11 @@ BaseAvatar.prototype.setPosition = function(point)
 {
     this.head[0] = point[0];
     this.head[1] = point[1];
+};
+
+BaseAvatar.prototype.setInvincible = function(invincible)
+{
+    this.invincible = invincible;
 };
 
 /**
@@ -186,7 +192,9 @@ BaseAvatar.prototype.getDistance = function(from, to)
  */
 BaseAvatar.prototype.die = function()
 {
-    this.alive = false;
+    if (!this.invincible) {
+        this.alive = false;
+    }
 };
 
 /**
