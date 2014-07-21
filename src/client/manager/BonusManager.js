@@ -24,16 +24,21 @@ BonusManager.prototype.constructor = BonusManager;
  * @type {Array}
  */
 BonusManager.prototype.spritePosition = [
-    'BonusSelfFast',
-    'BonusEnemyFast',
     'BonusSelfSlow',
-    'BonusEnemySlow',
-    'BonusAllBorderless',
+    'BonusSelfFast',
     'BonusSelfMaster',
+    'BonusSelfSmall',
+    'BonusSelfInverse',
+    'BonusSelfTeleport',
+    'BonusEnemySlow',
+    'BonusEnemyFast',
     'BonusEnemyBig',
-    'BonusAllColor',
     'BonusEnemyInverse',
-    'BonusSelfGodzilla'
+    'BonusEnemySmall',
+    'BonusEnemyMaster',
+    'BonusEnemyTeleport',
+    'BonusAllColor',
+    'BonusSelfGodzilla',
 ];
 
 /**
