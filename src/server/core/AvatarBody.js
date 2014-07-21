@@ -12,6 +12,7 @@ function AvatarBody(point, avatar)
 }
 
 AvatarBody.prototype = Object.create(Body.prototype);
+AvatarBody.prototype.constructor = AvatarBody;
 
 /**
  * Match?

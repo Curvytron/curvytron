@@ -7,6 +7,7 @@ function Trail(avatar)
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
+Trail.prototype.constructor = Trail;
 
 /**
  * Clear

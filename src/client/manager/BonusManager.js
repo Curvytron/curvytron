@@ -11,23 +11,30 @@ function BonusManager(game)
 
     this.onLoad = this.onLoad.bind(this);
 
-    this.sprite = new SpriteAsset('images/bonus.png', 4, 2, this.onLoad, true);
-    this.assets = {};
+    this.sprite = new SpriteAsset('images/bonus.png', 3, 4, this.onLoad, true);
+    this.assets = {};
 }
 
 BonusManager.prototype = Object.create(BaseBonusManager.prototype);
+BonusManager.prototype.constructor = BonusManager;
 
 /**
- * Add bonus
+ * Bonuses position on the sprite
  *
- * @param {Bonus} bonus
+ * @type {Array}
  */
-BonusManager.prototype.add = function(bonus)
-{
-    bonus.setScale(this.game.canvas.scale);
-
-    return BaseBonusManager.prototype.add.call(this, bonus);
-};
+BonusManager.prototype.spritePosition = [
+    'BonusSelfFast',
+    'BonusEnemyFast',
+    'BonusSelfSlow',
+    'BonusEnemySlow',
+    'BonusAllBorderless',
+    'BonusSelfMaster',
+    'BonusEnemyBig',
+    'BonusAllColor',
+    'BonusEnemyInverse',
+    'BonusSelfGodzilla'
+];
 
 /**
  * Set scale
@@ -46,11 +53,10 @@ BonusManager.prototype.setScale = function(scale)
  */
 BonusManager.prototype.onLoad = function()
 {
-    var bonuses = ['rabbit', 'turtle', 'godzilla', 'smaller', 'borderless', 'magnet', 'color', 'fly'],
-        images = this.sprite.getImages();
+    var images = this.sprite.getImages();
 
-    for (var i = bonuses.length - 1; i >= 0; i--) {
-        this.assets[bonuses[i]] = images[i];
+    for (var i = this.spritePosition.length - 1; i >= 0; i--) {
+        this.assets[this.spritePosition[i]] = images[i];
     }
 
     Bonus.prototype.assets = this.assets;
@@ -58,6 +64,8 @@ BonusManager.prototype.onLoad = function()
 
 /**
  * Draw
+ *
+ * @param {Canvas} canvas
  */
 BonusManager.prototype.draw = function(canvas)
 {

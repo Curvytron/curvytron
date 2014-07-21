@@ -12,6 +12,7 @@ function BaseTrail(avatar)
 }
 
 BaseTrail.prototype = Object.create(EventEmitter.prototype);
+BaseTrail.prototype.constructor = BaseTrail;
 
 /**
  * Add point
