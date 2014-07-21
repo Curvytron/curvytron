@@ -11,11 +11,11 @@ function Bonus(id, position, type, affect, radius)
 {
     BaseBonus.call(this, position);
 
-    this.id     = id;
-    this.type   = type;
-    this.affect = affect;
-    this.radius = radius;
-    this.canvas = new Canvas();
+    this.id      = id;
+    this.type    = type;
+    this.affect  = affect;
+    this.radius  = radius;
+    this.canvas  = new Canvas();
 
     this.position[0] = this.position[0] - this.radius;
     this.position[1] = this.position[1] - this.radius;
@@ -87,4 +87,5 @@ Bonus.prototype.setEnding = function()
 Bonus.prototype.toggleOpacity = function()
 {
     this.opacity = this.opacity === 1 ? 0.5 : 1;
+    this.emit('change');
 };

@@ -186,9 +186,9 @@ GameController.prototype.onPoint = function(data)
         game = avatar.player.client.room.game,
         point = data.point;
 
-    if (data.important) {
+    //if (data.important) {
         game.client.addEvent('point', {avatar: avatar.name, point: point});
-    }
+    //}
 };
 
 /**

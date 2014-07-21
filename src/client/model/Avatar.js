@@ -29,7 +29,7 @@ Avatar.prototype.constructor = Avatar;
  *
  * @type {Number}
  */
-Avatar.prototype.radiusMargin = 1.15;
+Avatar.prototype.radiusMargin = 1;//1.15;
 
 /**
  * Arrao width
@@ -90,6 +90,15 @@ Avatar.prototype.setColor = function(color)
 {
     BaseAvatar.prototype.setColor.call(this, color);
     this.drawHead();
+};
+
+/**
+ * Die
+ */
+Avatar.prototype.die = function()
+{
+    BaseAvatar.prototype.die.call(this);
+    this.addPoint(this.head);
 };
 
 /**

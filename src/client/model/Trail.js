@@ -4,6 +4,8 @@
 function Trail(avatar)
 {
     BaseTrail.call(this, avatar);
+
+    this.clearAsked = false;
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
@@ -16,13 +18,25 @@ Trail.prototype.constructor = Trail;
  */
 Trail.prototype.getLastSegment = function()
 {
-    var length = this.points.length;
+    var length = this.points.length,
+        points = null;
 
-    if (length > 2) {
-        var points = this.points;
-        this.points = [points[length - 1]];
-        return points;
+    if (length) {
+        points = this.points;
+
+        this.points     = this.clearAsked ? [] : [points[length - 1]];
+        this.clearAsked = false;
     }
 
-    return null;
+    return points;
+};
+
+/**
+ * Clear
+ *
+ * @param {Array} point
+ */
+Trail.prototype.clear = function()
+{
+    this.clearAsked = true;
 };

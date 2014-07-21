@@ -134,8 +134,12 @@ Game.prototype.draw = function()
 
         this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
 
+        if (!avatar.alive && typeof(avatar.lastDraw) === 'undefined') {
+            avatar.lastDraw = true;
+        }
+
         if (avatar.hasBonus()) {
-            this.canvas.drawImage(avatar.bonusStack.draw(), [avatar.start[0] + 20, avatar.start[1] + 20]);
+            this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
         }
 
         if (avatar.local && !this.running) {

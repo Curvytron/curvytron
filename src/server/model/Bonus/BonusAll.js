@@ -30,7 +30,7 @@ BonusAll.prototype.affect = 'all';
  */
 BonusAll.prototype.getTarget = function(avatar, game)
 {
-    return game.avatars.items;
+    return game.avatars.filter(function () { return this.alive; }).items;
 };
 
 /**

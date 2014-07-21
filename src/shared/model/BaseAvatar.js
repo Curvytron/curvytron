@@ -257,7 +257,7 @@ BaseAvatar.prototype.setPrintingWithTimeout = function(printing)
 BaseAvatar.prototype.setPrinting = function(printing)
 {
     if (!printing) {
-        this.addPoint(this.head.slice(0), true);
+        this.addPoint(this.head.slice(0), true, 'before printing end');
     }
 
     this.printing = printing;
@@ -267,7 +267,7 @@ BaseAvatar.prototype.setPrinting = function(printing)
     }
 
     if (printing) {
-        this.addPoint(this.head.slice(0), true);
+        this.addPoint(this.head.slice(0), true, 'after printing start');
     }
 };
 
