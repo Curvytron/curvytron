@@ -53,7 +53,7 @@ Inspector.prototype.onGameEnd = function(data)
 {
     var game = data.game;
 
-    console.info('Game won in ' + game.rounds + ' rounds');
+    this.log(game, 'Game won in ' + game.rounds + ' rounds.');
 };
 
 /**
