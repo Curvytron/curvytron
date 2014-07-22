@@ -34,7 +34,7 @@
                     </td>
                 </tr>
                 <tr ng-repeat="room in rooms.items" ng-if="room.inGame" class="room in-game">
-                    <td><h3><a href="#/game/{{ room.name }}">{{ room.name }}</a></h3></td>
+                    <td><h3>{{ room.name }}</h3></td>
                     <td>
                         <h4>
                             <ng-pluralize count="room.players.items.length "
