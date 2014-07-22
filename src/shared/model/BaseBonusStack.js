@@ -107,7 +107,7 @@ BaseBonusStack.prototype.apply = function(property, value)
     }
 
     if (property === 'position') {
-        if (value !== 'undefined') {
+        if (typeof(value) !== 'undefined') {
             return this.avatar.setPosition(value);
         }
     }
