@@ -23,6 +23,6 @@ BonusEnemyTeleport.prototype.getEffects = function(avatar)
     var point = avatar.game.world.getRandomPosition(avatar.radius, 0.1);
 
     return [
-        ['point', point],
-        ['printing', -1]];
+        ['printing', -1],
+        ['position', point]];
 };
