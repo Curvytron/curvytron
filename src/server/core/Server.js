@@ -29,8 +29,8 @@ function Server(config)
 /**
  * Authorization Handler
  *
- * @param {object} request
- * @param {object} socket
+ * @param {Object} request
+ * @param {Object} socket
  * @param {Buffer} body
  */
 Server.prototype.authorizationHandler = function(request, socket, head)
@@ -77,7 +77,8 @@ Server.prototype.onSocketDisconnection = function(client)
 /**
  * On error
  *
- * @param {Error} error */
+ * @param {Error} error
+ */
 Server.prototype.onError = function(error)
 {
     console.error('Server Error:', error.stack);

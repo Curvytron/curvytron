@@ -134,15 +134,6 @@ Avatar.prototype.updateStart = function()
 };
 
 /**
- * Clear
- */
-Avatar.prototype.clear = function()
-{
-    BaseAvatar.prototype.clear.call(this);
-    this.setRadius(Avatar.prototype.radius);
-};
-
-/**
  * Destroy
  */
 Avatar.prototype.destroy = function()

@@ -8,7 +8,6 @@ function Game(room)
     BaseGame.call(this, room);
 
     this.world   = new World(this.size);
-    this.inRound = false;
     this.deaths  = new Collection([], 'name');
     this.clients = this.room.clients;
     this.client  = new SocketGroup(this.clients);
@@ -17,6 +16,7 @@ function Game(room)
     this.onDie    = this.onDie.bind(this);
 
     var avatar, i;
+
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.game = this;
@@ -43,9 +43,9 @@ Game.prototype.update = function(step)
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
-        avatar.update(step);
-
         if (avatar.alive) {
+            avatar.update(step);
+
             if (!avatar.invincible && !this.world.testBody(avatar.body, true)) {
                 avatar.die();
             } else {
@@ -53,21 +53,6 @@ Game.prototype.update = function(step)
             }
         }
     }
-};
-
-/**
- * Remove a avatar from the game
- *
- * @param {Avatar} avatar
- */
-Game.prototype.removeAvatar = function(avatar)
-{
-    var result = BaseGame.prototype.removeAvatar.call(this, avatar);
-
-    this.deaths.remove(avatar);
-    this.checkRoundEnd();
-
-    return result;
 };
 
 /**
@@ -112,16 +97,8 @@ Game.prototype.onDie = function(data)
  */
 Game.prototype.checkRoundEnd = function()
 {
-    if (!this.inRound) {
-        return;
-    }
-
-    var alivePlayers = this.avatars.filter(function () { return this.alive; });
-
-    if (alivePlayers.count() <= 1) {
-        this.inRound = false;
-        this.setScores();
-        setTimeout(this.endRound, this.warmdownTime);
+    if (this.inRound && this.getAliveAvatars().count() <= 1) {
+        this.endRound();
     }
 };
 
@@ -153,18 +130,68 @@ Game.prototype.setScores = function()
             winner.addScore(total);
             this.emit('round:winner', {game: this, winner: winner});
         }
-
-        this.deaths.clear();
     }
 };
 
 /**
  * Check end of round
  */
-Game.prototype.endRound = function()
+Game.prototype.onRoundEnd = function()
 {
-    BaseGame.prototype.endRound.call(this);
     this.emit('round:end', {game: this});
+    BaseGame.prototype.onRoundEnd.call(this);
+    this.setScores();
+};
+
+/**
+ * New round
+ */
+Game.prototype.onRoundNew = function()
+{
+    this.emit('round:new', {game: this});
+    BaseGame.prototype.onRoundNew.call(this);
+
+    var avatar, i;
+
+    this.world.clear();
+    this.deaths.clear();
+
+    for (i = this.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        if (avatar.present) {
+            avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+            avatar.setAngle(Math.random() * Math.PI * 2);
+        } else {
+            this.deaths.add(avatar);
+        }
+    }
+};
+
+/**
+ * On start
+ */
+Game.prototype.onStart = function()
+{
+    this.emit('game:start', {game: this});
+
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        avatar.printingTimeout = setTimeout(avatar.togglePrinting, 3000);
+    }
+
+    this.world.activate();
+
+    BaseGame.prototype.onStart.call(this);
+};
+
+/**
+ * On stop
+ */
+Game.prototype.onStop = function()
+{
+    this.emit('game:stop', {game: this});
+
+    BaseGame.prototype.onStop.call(this);
 
     if (this.isWon()) {
         this.end();
@@ -174,56 +201,11 @@ Game.prototype.endRound = function()
 };
 
 /**
- * New round
- */
-Game.prototype.newRound = function()
-{
-    if (!this.inRound) {
-        var avatar, i;
-
-        this.world.clear();
-        this.bonusManager.stop();
-
-        this.inRound = true;
-        this.deaths.clear();
-
-        for (i = this.avatars.items.length - 1; i >= 0; i--) {
-            avatar = this.avatars.items[i];
-
-            avatar.clear();
-            avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
-            avatar.setAngle(Math.random() * Math.PI * 2);
-        }
-
-        BaseGame.prototype.newRound.call(this);
-
-        this.emit('round:new', {game: this});
-    }
-};
-
-/**
- * On start
- */
-Game.prototype.onStart = function()
-{
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        avatar = this.avatars.items[i];
-        avatar.printingTimeout = setTimeout(avatar.togglePrinting, 3000);
-    }
-
-    this.world.activate();
-    this.bonusManager.start();
-
-    BaseGame.prototype.onStart.call(this);
-};
-
-/**
  * FIN DU GAME
  */
 Game.prototype.end = function()
 {
     BaseGame.prototype.end.call(this);
 
-    this.bonusManager.stop();
     this.world.clear();
 };

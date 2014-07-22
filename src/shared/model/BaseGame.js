@@ -17,8 +17,8 @@ function BaseGame(room)
     this.maxScore     = this.getMaxScore(this.avatars.count());
     this.fps          = new FPSLogger();
     this.started      = false;
-    this.running      = false;
     this.bonusManager = new BonusManager(this);
+    this.inRound      = false;
     this.rounds       = 0;
 
     this.start    = this.start.bind(this);
@@ -52,15 +52,10 @@ BaseGame.prototype.update = function(step) {};
  */
 BaseGame.prototype.removeAvatar = function(avatar)
 {
-    avatar.destroy();
-
-    var result = this.avatars.remove(avatar);
-
-    if (this.avatars.isEmpty()) {
-        this.end();
+    if (this.avatars.exists(avatar)) {
+        avatar.die();
+        avatar.destroy();
     }
-
-    return result;
 };
 
 /**
@@ -68,11 +63,8 @@ BaseGame.prototype.removeAvatar = function(avatar)
  */
 BaseGame.prototype.start = function()
 {
-    this.started = true;
-
     if (!this.frame) {
         this.onStart();
-        this.rendered = new Date().getTime();
         this.loop();
     }
 };
@@ -108,7 +100,8 @@ BaseGame.prototype.loop = function()
  */
 BaseGame.prototype.onStart = function()
 {
-    this.running = true;
+    this.rendered = new Date().getTime();
+    this.bonusManager.start();
 };
 
 /**
@@ -116,11 +109,28 @@ BaseGame.prototype.onStart = function()
  */
 BaseGame.prototype.onStop = function()
 {
-    this.frame    = null;
     this.rendered = null;
-    this.running  = false;
-
     this.bonusManager.stop();
+};
+
+/**
+ * On round new
+ */
+BaseGame.prototype.onRoundNew = function()
+{
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        if (this.avatars.items[i].present) {
+            this.avatars.items[i].clear();
+        }
+    }
+};
+
+/**
+ * On round end
+ */
+BaseGame.prototype.onRoundEnd = function()
+{
+    this.rounds++;
 };
 
 /**
@@ -137,6 +147,7 @@ BaseGame.prototype.newFrame = function()
 BaseGame.prototype.clearFrame = function()
 {
     clearTimeout(this.frame);
+    this.frame = null;
 };
 
 /**
@@ -159,16 +170,9 @@ BaseGame.prototype.onFrame = function(step)
  */
 BaseGame.prototype.getSize = function(players)
 {
-    /**
-     * Should be:
-     * 2  -> 105 -> 11000
-     * 3  -> 110 -> 12000
-     * 4  -> 114 -> 13000
-     * 5  -> 118 -> 14000
-     */
     var baseSquareSize = this.perPlayerSize * this.perPlayerSize;
 
-    return Math.sqrt(baseSquareSize + ((players - 1) * baseSquareSize / 5.0));
+    return Math.sqrt(baseSquareSize + ((players - 1) * baseSquareSize / 5));
 };
 
 /**
@@ -181,6 +185,16 @@ BaseGame.prototype.getSize = function(players)
 BaseGame.prototype.getMaxScore = function(players)
 {
     return players * 10 - 10;
+};
+
+/**
+ * Get alive players
+ *
+ * @return {Collection}
+ */
+BaseGame.prototype.getAliveAvatars = function()
+{
+    return this.avatars.filter(function () { return this.alive; });
 };
 
 /**
@@ -197,25 +211,17 @@ BaseGame.prototype.serialize = function()
 };
 
 /**
- * Is started
- *
- * @return {Boolean}
- */
-BaseGame.prototype.isPlaying = function()
-{
-    return this.frame !== null;
-};
-
-/**
  * New round
  */
 BaseGame.prototype.newRound = function()
 {
-    for (var i = this.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
-        this.bonusManager.bonuses.items[i].clear();
-    }
+    this.started = true;
 
-    setTimeout(this.start, this.warmupTime);
+    if (!this.inRound) {
+        this.inRound = true;
+        setTimeout(this.start, this.warmupTime);
+        this.onRoundNew();
+    }
 };
 
 /**
@@ -223,8 +229,11 @@ BaseGame.prototype.newRound = function()
  */
 BaseGame.prototype.endRound = function()
 {
-    this.stop();
-    this.rounds++;
+    if (this.inRound) {
+        this.inRound = false;
+        setTimeout(this.stop, this.warmdownTime);
+        this.onRoundEnd();
+    }
 };
 
 /**
@@ -233,15 +242,11 @@ BaseGame.prototype.endRound = function()
 BaseGame.prototype.end = function()
 {
     if (this.started) {
-
         this.started = false;
 
         this.stop();
         this.fps.stop();
-
-        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-            this.removeAvatar(this.avatars.items[i]);
-        }
+        this.avatars.clear();
 
         this.emit('end', {game: this});
     }
