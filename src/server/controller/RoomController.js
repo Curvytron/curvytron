@@ -161,8 +161,8 @@ RoomController.prototype.onLeaveRoom = function(client)
 
         for (var i = client.players.items.length - 1; i >= 0; i--) {
             player = client.players.items[i];
-            this.socketGroup.addEvent('room:leave', {room: room.name, player: player.name});
             room.removePlayer(player);
+            this.socketGroup.addEvent('room:leave', {room: room.name, player: player.name});
         }
 
         client.players.clear();
@@ -222,9 +222,9 @@ RoomController.prototype.onTalk = function(client, data, callback)
         data = new Message(client.players.getById(data.player), data.content).serialize();
 
     if (room && data.content.length) {
-        data.room = room.name;
         callback({success: true});
-        this.socketGroup.addEvent('room:talk', data);
+        data.room = room.name;
+        room.client.addEvent('room:talk', data);
     } else {
         callback({success: false});
     }
@@ -247,11 +247,7 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
 
         callback({success: true, color: player.color});
 
-        this.socketGroup.addEvent('room:player:color', {
-            room: room.name,
-            player: player.name,
-            color: player.color
-        });
+        room.client.addEvent('room:player:color', { player: player.name, color: player.color, room: room.name });
     }
 };
 
@@ -272,11 +268,7 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
 
         callback({success: true, ready: player.ready});
 
-        this.socketGroup.addEvent('room:player:ready', {
-            room: room.name,
-            player: player.name,
-            ready: player.ready
-        });
+        room.client.addEvent('room:player:ready', { player: player.name, ready: player.ready, room: room.name });
 
         if (room.isReady()) {
             this.startGame(room);

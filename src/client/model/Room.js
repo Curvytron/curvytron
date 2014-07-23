@@ -12,3 +12,13 @@ function Room(name)
 
 Room.prototype = Object.create(BaseRoom.prototype);
 Room.prototype.constructor = Room;
+
+/**
+ * Get local players
+ *
+ * @return {Collection}
+ */
+Room.prototype.getLocalPlayers = function()
+{
+    return this.players.filter(function () { return this.local; });
+};

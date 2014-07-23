@@ -8,6 +8,7 @@ function Room(name)
     BaseRoom.call(this, name);
 
     this.clients = new Collection();
+    this.client  = new SocketGroup(this.clients);
 }
 
 Room.prototype = Object.create(BaseRoom.prototype);
