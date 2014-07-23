@@ -20,6 +20,7 @@ function RoomRepository(client)
     this.onRoomGameEnd   = this.onRoomGameEnd.bind(this);
     this.onPlayerReady   = this.onPlayerReady.bind(this);
     this.onPlayerColor   = this.onPlayerColor.bind(this);
+    this.onTalk          = this.onTalk.bind(this);
 
     if (this.client.connected) {
         this.start();
@@ -44,6 +45,7 @@ RoomRepository.prototype.attachEvents = function()
     this.client.on('room:game:end', this.onRoomGameEnd);
     this.client.on('room:player:ready', this.onPlayerReady);
     this.client.on('room:player:color', this.onPlayerColor);
+    this.client.on('room:talk', this.onTalk);
 };
 
 /**
@@ -59,6 +61,7 @@ RoomRepository.prototype.detachEvents = function()
     this.client.off('room:game:end', this.onRoomGameEnd);
     this.client.off('room:player:ready', this.onPlayerReady);
     this.client.off('room:player:color', this.onPlayerColor);
+    this.client.off('room:talk', this.onTalk);
 };
 
 /**
@@ -112,6 +115,18 @@ RoomRepository.prototype.join = function(room, callback)
 RoomRepository.prototype.addPlayer = function(name, callback)
 {
     this.client.addEvent('room:player:add', {name: name.substr(0, Player.prototype.maxLength)}, callback);
+};
+
+/**
+ * Send a message
+ *
+ * @param {String} message
+ * @param {Player} player
+ * @param {Function} callback
+ */
+RoomRepository.prototype.sendMessage = function(message, callback)
+{
+    this.client.addEvent('room:talk', message.serialize(), callback);
 };
 
 /**
@@ -267,6 +282,25 @@ RoomRepository.prototype.onPlayerReady = function(e)
     if (player) {
         player.toggleReady(data.ready);
         this.emit('room:player:ready:' + room.name, {room: room, player: player});
+    }
+};
+
+/**
+ * On player talk
+ *
+ * @param {Event} e
+ */
+RoomRepository.prototype.onTalk = function(e)
+{
+    var data = e.detail,
+        room = this.rooms.getById(data.room),
+        player = room ? room.players.getById(data.player) : null,
+        message;
+
+    if (room) {
+        message = new Message(player, data.content);
+        room.messages.push(message);
+        this.emit('room:talk:' + room.name, {room: room, message: message});
     }
 };
 

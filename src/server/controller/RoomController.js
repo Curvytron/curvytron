@@ -20,6 +20,7 @@ function RoomController(repository, gameController)
         emitAllRooms: function () { controller.emitAllRooms(this); },
         onCreateRoom: function (data) { controller.onCreateRoom(this, data.data, data.callback); },
         onJoinRoom: function (data) { controller.onJoinRoom(this, data.data, data.callback); },
+        onTalk: function (data) { controller.onTalk(this, data.data, data.callback); },
         onLeaveRoom: function () { controller.onLeaveRoom(this); },
         onAddPlayer: function (data) { controller.onAddPlayer(this, data.data, data.callback); },
         onReadyRoom: function (data) { controller.onReadyRoom(this, data.data, data.callback); },
@@ -64,6 +65,7 @@ RoomController.prototype.attachEvents = function(client)
     client.on('room:fetch', this.callbacks.emitAllRooms);
     client.on('room:create', this.callbacks.onCreateRoom);
     client.on('room:join', this.callbacks.onJoinRoom);
+    client.on('room:talk', this.callbacks.onTalk);
     client.on('room:leave', this.callbacks.onLeaveRoom);
     client.on('room:player:add', this.callbacks.onAddPlayer);
     client.on('room:ready', this.callbacks.onReadyRoom);
@@ -80,6 +82,7 @@ RoomController.prototype.detachEvents = function(client)
     client.removeListener('room:fetch', this.callbacks.emitAllRooms);
     client.removeListener('room:create', this.callbacks.onCreateRoom);
     client.removeListener('room:join', this.callbacks.onJoinRoom);
+    client.removeListener('room:talk', this.callbacks.onTalk);
     client.removeListener('room:leave', this.callbacks.onLeaveRoom);
     client.removeListener('room:player:add', this.callbacks.onAddPlayer);
     client.removeListener('room:ready', this.callbacks.onReadyRoom);
@@ -201,6 +204,27 @@ RoomController.prototype.onAddPlayer = function(client, data, callback)
         callback({success: true});
 
         this.socketGroup.addEvent('room:join', {room: client.room.name, player: player.serialize()});
+    } else {
+        callback({success: false});
+    }
+};
+
+/**
+ * On talk
+ *
+ * @param {SocketClient} client
+ * @param {Object} data
+ * @param {Function} callback
+ */
+RoomController.prototype.onTalk = function(client, data, callback)
+{
+    var room = client.room,
+        data = new Message(client.players.getById(data.player), data.content).serialize();
+
+    if (room && data.content.length) {
+        data.room = room.name;
+        callback({success: true});
+        this.socketGroup.addEvent('room:talk', data);
     } else {
         callback({success: false});
     }

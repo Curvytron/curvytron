@@ -18,6 +18,7 @@ function RoomController($scope, $rootScope, $routeParams, $location, $cookies, r
     this.$cookies   = $cookies;
     this.repository = repository;
     this.client     = client;
+    this.feed       = document.getElementById('feed');
 
     // Binding:
     this.addPlayer  = this.addPlayer.bind(this);
@@ -28,16 +29,21 @@ function RoomController($scope, $rootScope, $routeParams, $location, $cookies, r
     this.setColor   = this.setColor.bind(this);
     this.setReady   = this.setReady.bind(this);
     this.start      = this.start.bind(this);
+    this.talk       = this.talk.bind(this);
+    this.onTalk     = this.onTalk.bind(this);
 
     this.$scope.$on('$destroy', this.leaveRoom);
 
     // Hydrating scope:
-    this.$scope.submit              = this.addPlayer;
+    this.$scope.submitAddPlayer     = this.addPlayer;
+    this.$scope.submitTalk          = this.talk;
     this.$scope.setColor            = this.setColor;
     this.$scope.setReady            = this.setReady;
     this.$scope.nameMaxLength       = Player.prototype.maxLength;
     this.$scope.colorMaxLength      = Player.prototype.colorMaxLength;
     this.$scope.curvytron.bodyClass = null;
+    this.$scope.currentMessage      = new Message();
+    this.$scope.messageMaxLength    = Message.prototype.maxLength;
 
     if (this.repository.synced) {
         this.joinRoom($routeParams.name);
@@ -92,6 +98,7 @@ RoomController.prototype.attachEvents = function(name)
     this.repository.on('room:player:ready:' + name, this.applyScope);
     this.repository.on('room:player:color:' + name, this.applyScope);
     this.repository.on('room:game:start:' + name, this.start);
+    this.repository.on('room:talk:' + name, this.onTalk);
 
     for (var i = this.$scope.room.players.items.length - 1; i >= 0; i--) {
         this.$scope.room.players.items[i].on('control:change', this.applyScope);
@@ -148,6 +155,28 @@ RoomController.prototype.addPlayer = function()
 };
 
 /**
+ * Talk
+ */
+RoomController.prototype.talk = function()
+{
+    var $scope = this.$scope;
+
+    if ($scope.currentMessage.content.length) {
+        this.repository.sendMessage(
+            $scope.currentMessage,
+            function (result) {
+                if (result.success) {
+                    $scope.currentMessage.clear();
+                    $scope.$apply();
+                } else {
+                    console.error('Could send %s', $scope.currentMessage);
+                }
+            }
+        );
+    }
+};
+
+/**
  * On join
  *
  * @param {Event} e
@@ -159,10 +188,24 @@ RoomController.prototype.onJoin = function(e)
     if (player.client === this.client.id) {
         player.setLocal(true);
         player.on('control:change', this.applyScope);
+
+        if (!this.$scope.currentMessage.player) {
+            this.$scope.currentMessage.player = player;
+        }
+
         this.setFavoriteColor(player);
     }
 
     this.applyScope();
+};
+
+/**
+ * On talk
+ */
+RoomController.prototype.onTalk = function()
+{
+    this.applyScope();
+    this.feed.scrollTop = this.feed.scrollHeight;
 };
 
 /**
