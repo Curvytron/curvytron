@@ -82,8 +82,13 @@ Game.prototype.onStop = function()
  */
 Game.prototype.end = function()
 {
-    BaseGame.prototype.end.call(this);
-    this.canvas.clear();
+    if (this.started) {
+        this.started = false;
+
+        this.stop();
+        this.fps.stop();
+        this.canvas.clear();
+    }
 };
 
 /**

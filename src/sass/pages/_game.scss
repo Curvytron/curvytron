@@ -24,7 +24,7 @@
         border-right: 4px solid #000;
         @include animation(gameBorder 20s infinite);
         padding-top: $game-header-height;
-        padding-bottom: 250px;
+        padding-bottom: 298px;
         header {
             background: red;
             height: $game-header-height;
@@ -113,11 +113,11 @@
             text-align: right;
         }
         #ping {
-            width: 32px;
+            width: 52px;
             text-align: right;
         }
         footer {
-            display: none !important;
+            display: block !important;
             position: fixed;
             left: 0;
             bottom: 250px;
