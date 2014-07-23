@@ -10,7 +10,7 @@ function Game(room)
     this.world   = new World(this.size);
     this.deaths  = new Collection([], 'name');
     this.clients = this.room.clients;
-    this.client  = new SocketGroup(this.clients);
+    this.client  = this.room.client;
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -89,7 +89,7 @@ Game.prototype.isWon = function()
         maxScore = this.maxScore;
 
     if (presents.count() === 1) {
-        return presents.first();
+        return presents.getFirst();
     }
 
     presents.sort(function (a, b) { return a.score > b.score ? 1 : (a.score < b.score ? -1 : 0); });

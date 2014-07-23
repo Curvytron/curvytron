@@ -67,6 +67,7 @@ RoomController.prototype.joinRoom = function(name)
                 controller.$scope.room = controller.repository.get(name);
                 controller.attachEvents(name);
                 controller.setFavoriteName();
+                controller.updateCurrentMessage();
             } else {
                 console.error('Could not join room %s', name);
                 controller.goHome();
@@ -188,11 +189,7 @@ RoomController.prototype.onJoin = function(e)
     if (player.client === this.client.id) {
         player.setLocal(true);
         player.on('control:change', this.applyScope);
-
-        if (!this.$scope.currentMessage.player) {
-            this.$scope.currentMessage.player = player;
-        }
-
+        this.updateCurrentMessage();
         this.setFavoriteColor(player);
     }
 
@@ -261,7 +258,7 @@ RoomController.prototype.setReady = function(player)
 RoomController.prototype.start = function(e)
 {
     // Get first player
-    var player = e.detail.room.players.filter(function () { return this.local; }).getFirst();
+    var player = e.detail.room.getLocalPlayers().getFirst();
 
     // Set first player favorite name and color
     if (player) {
@@ -279,7 +276,7 @@ RoomController.prototype.start = function(e)
  */
 RoomController.prototype.setFavoriteName = function()
 {
-    if (this.$cookies.favorite_name) {
+    if (this.$cookies.favorite_name && this.$scope.room.players.ids.indexOf(this.$cookies.favorite_name) < 0) {
         this.$scope.username = this.$cookies.favorite_name;
     }
 };
@@ -292,6 +289,16 @@ RoomController.prototype.setFavoriteColor = function(player)
     if (this.$cookies.favorite_color && player.name === this.$cookies.favorite_name) {
         player.color = this.$cookies.favorite_color;
         this.setColor(player);
+    }
+};
+
+/**
+ * Update current message
+ */
+RoomController.prototype.updateCurrentMessage = function()
+{
+    if (this.$scope.room && !this.$scope.currentMessage.player) {
+        this.$scope.currentMessage.player = this.$scope.room.getLocalPlayers().getFirst();
     }
 };
 
