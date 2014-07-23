@@ -24,7 +24,7 @@
         border-right: 4px solid #000;
         @include animation(gameBorder 20s infinite);
         padding-top: $game-header-height;
-        padding-bottom: 48px;
+        padding-bottom: 250px;
         header {
             background: red;
             height: $game-header-height;
@@ -50,7 +50,6 @@
             margin: 0;
             color: #FFF;
             padding: 10px 20px;
-            // background: lighten($game-background, 10%);
         }
         .maxScore {
             padding: 10px 10px 10px 20px;
@@ -61,6 +60,7 @@
         }
         #game-players {
             @extend .no-bullet;
+            margin-bottom: 0;
             li {
                 border-bottom: 2px solid lighten($game-background, 10%);
                 padding: 10px 60px 10px 20px;
@@ -117,10 +117,10 @@
             text-align: right;
         }
         footer {
-            display: block !important;
+            display: none !important;
             position: fixed;
             left: 0;
-            bottom: 0px;
+            bottom: 250px;
             width: 296px;
             min-width: 296;
             max-width: 296;
@@ -261,6 +261,63 @@
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    .chat-wrapper {
+        position: fixed;
+        bottom: 0;
+        left: 0px;
+        width: 296px;
+        padding: 10px;
+        height: 250px;
+        background: lighten($game-background, 10);
+        border-top: 2px solid lighten($game-background, 20%);
+        font-size: 14px;
+
+        #feed {
+            position: relative;
+            height: 175px;
+            overflow-y: auto;
+            padding: 10px 0;
+            border: 2px solid lighten($game-background, 20%);
+            @include border-radius(4px);
+            background: lighten($game-background, 5%);
+
+            .one-message {
+                margin: 0 15px;
+                font-size: 14px;
+                line-height: 22px;
+                padding: 3px 0;
+            }
+        }
+
+        .action-line {
+            margin-top: 10px;
+            height: 60px;
+
+            .form-control {
+                height: 44px;
+                font-size: 14px;
+                border-color: lighten($game-background, 20%);
+
+                &:focus {
+                    border-color: lighten($game-background, 20%);
+                }
+            }
+
+            .btn {
+                width: 44px;
+                padding-left: 0;
+                padding-right: 0;
+                text-align: center;
+                margin-left: -2px;
+                border-color: lighten($game-background, 20%);
+
+                &:hover {
+                    background: lighten($game-background, 20%);
                 }
             }
         }
