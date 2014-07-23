@@ -63,7 +63,7 @@
             @extend .no-bullet;
             li {
                 border-bottom: 2px solid lighten($game-background, 10%);
-                padding: 10px 20px;
+                padding: 10px 60px 10px 20px;
                 position: relative;
                 .score {
                     display: block;
@@ -76,6 +76,10 @@
                     line-height: 44px;
                     font-size: 24px;
                     border-left: 2px solid lighten($game-background, 10%);
+                }
+                .round-points {
+                    font-size: 18px;
+                    margin-left: 10px;
                 }
                 &:first-child {
                     border-top: 2px solid lighten($game-background, 10%);

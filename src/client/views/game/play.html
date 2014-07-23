@@ -7,7 +7,7 @@
             <ul id="game-players">
                 <li ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="line-color-preview" style="background-color: {{ avatar.color }};"></span>
-                    {{ avatar.name }}
+                    {{ avatar.name }} <span class="round-points" ng-if="avatar.alive == false">(+ 4)</span>
                     <span class="score">{{ avatar.score }}</span>
                 </li>
             </ul>
