@@ -187,25 +187,27 @@
 
 
 .room-details {
+    padding-top: 30px;
+}
+
+.room-players {
     width: 68%;
     float: left;
 }
 
 .room-chat {
-    float: right;
+    float: left;
     width: 32%;
-    padding-top: 20px;
-    padding-left: 30px;
+    padding-right: 30px;
 
     .chat-wrapper {
-        @include border-radius(4px);
-        background-color: #e9eae7;
-        padding: 15px 0 75px 0;
-        border: 2px solid #d9dad7;
-        position: relative;
-
         #feed {
-            max-height: 400px;
+            @include border-radius(4px);
+            background-color: transparent;
+            padding: 15px 0;
+            border: 2px solid $text-color;
+            position: relative;
+            max-height: 350px;
             overflow-y: scroll;
 
             .one-message {
@@ -217,31 +219,24 @@
         }
 
         .action-line {
-            background: #d9dad7;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            margin-top: 10px;
             height: 60px;
-            padding: 10px 15px;
 
             .form-control {
-                background: #FFF;
-                border-color: #c7c7c6;
+                height: 44px;
                 font-size: 14px;
-                width: 255px;
 
+                &:focus {
+                    border-color: $text-color;
+                }
             }
 
-            button {
-                margin-top: 1px;
-                width: 40px;
-                height: 40px;
-                float: right;
-                background: $text-color;
-                color: #FFF;
-                padding: 0;
+            .btn {
+                width: 44px;
+                padding-left: 0;
+                padding-right: 0;
                 text-align: center;
+                margin-left: -2px;
             }
         }
     }
