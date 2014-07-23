@@ -269,7 +269,9 @@ Collection.prototype.filter = function(callable)
  */
 Collection.prototype.match = function(callable)
 {
-    for (var i = this.items.length - 1; i >= 0; i--) {
+    var length = this.items.length;
+
+    for (var i = 0; i < length; i++) {
         if (callable.call(this.items[i])) {
             return this.items[i];
         }
@@ -322,4 +324,29 @@ Collection.prototype.getFirst = function()
 Collection.prototype.getLast = function()
 {
     return this.items.length > 0 ? this.items[this.items.length - 1] : null;
+};
+
+/**
+ * Sort
+ *
+ * @param {Function} callable
+ */
+Collection.prototype.sort = function(callable)
+{
+    this.items.sort(callable);
+    this.rebuildIds();
+};
+
+/**
+ * Rebuild Ids
+ */
+Collection.prototype.rebuildIds = function()
+{
+    var ids = [];
+
+    for (var i = this.items.length - 1; i >= 0; i--) {
+        ids.push(this.items[i][this.key]);
+    }
+
+    this.ids = ids;
 };

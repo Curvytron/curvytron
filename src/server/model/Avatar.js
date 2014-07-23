@@ -114,7 +114,7 @@ Avatar.prototype.setColor = function(color)
  */
 Avatar.prototype.addPoint = function(point, important)
 {
-    if (this.game.isPlaying()) {
+    if (this.game.frame) {
         BaseAvatar.prototype.addPoint.call(this, point);
         this.emit('point', { avatar: this, point: point, important: important || this.angularVelocity });
     }
