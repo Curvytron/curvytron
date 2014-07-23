@@ -92,7 +92,8 @@ BaseRoom.prototype.newGame = function()
  */
 BaseRoom.prototype.closeGame = function()
 {
-    this.game = null;
+    this.game    = null;
+    this.players = this.players.filter(function () { return this.client; });
 
     for (var i = this.players.items.length - 1; i >= 0; i--) {
         this.players.items[i].reset();

@@ -56,6 +56,17 @@ Game.prototype.update = function(step)
 };
 
 /**
+ * Remove a avatar from the game
+ *
+ * @param {Avatar} avatar
+ */
+Game.prototype.removeAvatar = function(avatar)
+{
+    BaseGame.prototype.removeAvatar.call(this, avatar);
+    this.checkRoundEnd();
+};
+
+/**
  * Add point
  *
  * @param {Object} data
@@ -74,10 +85,16 @@ Game.prototype.addPoint = function(data)
  */
 Game.prototype.isWon = function()
 {
-    var game = this,
-        winner = this.avatars.match(function () { return this.score >= game.maxScore; });
+    var presents = this.getPresentAvatars(),
+        maxScore = this.maxScore;
 
-    return winner ? winner : false;
+    if (presents.count() === 1) {
+        return presents.first();
+    }
+
+    presents.sort(function (a, b) { return a.score > b.score ? 1 : (a.score < b.score ? -1 : 0); });
+
+    return presents.match(function () { return this.score >= maxScore; });
 };
 
 /**

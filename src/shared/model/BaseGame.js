@@ -55,6 +55,10 @@ BaseGame.prototype.removeAvatar = function(avatar)
     if (this.avatars.exists(avatar)) {
         avatar.die();
         avatar.destroy();
+
+        if (this.getPresentAvatars().isEmpty()) {
+            this.end();
+        }
     }
 };
 
@@ -188,13 +192,23 @@ BaseGame.prototype.getMaxScore = function(players)
 };
 
 /**
- * Get alive players
+ * Get alive avatars
  *
  * @return {Collection}
  */
 BaseGame.prototype.getAliveAvatars = function()
 {
     return this.avatars.filter(function () { return this.alive; });
+};
+
+/**
+ * Get present avatars
+ *
+ * @return {Collection}
+ */
+BaseGame.prototype.getPresentAvatars = function()
+{
+    return this.avatars.filter(function () { return this.present; });
 };
 
 /**
