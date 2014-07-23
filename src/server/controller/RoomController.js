@@ -219,14 +219,13 @@ RoomController.prototype.onAddPlayer = function(client, data, callback)
 RoomController.prototype.onTalk = function(client, data, callback)
 {
     var room = client.room,
-        data = new Message(client.players.getById(data.player), data.content).serialize();
+        message = new Message(client.players.getById(data.player), data.content),
+        success = room && data.content.length;
 
-    if (room && data.content.length) {
-        callback({success: true});
-        data.room = room.name;
-        room.client.addEvent('room:talk', data);
-    } else {
-        callback({success: false});
+    callback({success: success});
+
+    if (success) {
+        room.client.addEvent('room:talk', message.serialize());
     }
 };
 

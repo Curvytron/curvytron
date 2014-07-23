@@ -17,8 +17,10 @@
             <div class="room-chat">
                 <div class="chat-wrapper">
                     <div id="feed">
-                        <div class="one-message"><strong>Welcome!</strong></div>
-                        <div ng-repeat="message in room.messages" class="one-message">
+                        <div class="one-message">
+                            <strong>Welcome!</strong>
+                        </div>
+                        <div ng-repeat="message in messages" class="one-message">
                             <strong style="color: {{ message.player.color ? message.player.color : '#75858c' }};">
                                 {{ message.getPlayerName() }}:
                             </strong>

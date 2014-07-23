@@ -7,10 +7,32 @@
             <ul id="game-players">
                 <li ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="line-color-preview" style="background-color: {{ avatar.color }};"></span>
-                    {{ avatar.name }} <span class="round-points" ng-if="avatar.alive == false">(+ 4)</span>
+                    <span class="round-points pull-right" ng-if="avatar.lastScore && !game.inRound">(+ {{ avatar.lastScore }})</span>
+                    {{ avatar.name }}
                     <span class="score">{{ avatar.score }}</span>
                 </li>
             </ul>
+            <div class="chat-wrapper">
+                <div id="feed">
+                    <div class="one-message">
+                        <strong>Welcome!</strong>
+                    </div>
+                    <div ng-repeat="message in messages" class="one-message">
+                        <strong style="color: {{ message.player.color ? message.player.color : '#75858c' }};">
+                            {{ message.getPlayerName() }}:
+                        </strong>
+                        {{ message.content }}
+                    </div>
+                </div>
+                <form ng-submit="submitTalk()" name="talk" class="action-line">
+                    <div class="input-group">
+                        <input type="text" name="message" ng-model="currentMessage.content" class="sent-message form-control" placeholder="Enter message..." maxlength="{{ messageMaxLength }}" />
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-default"><i class="icon-angle-right"></i></button>
+                        </span>
+                    </div>
+                </form>
+            </div>
             <!--object width="295" height="90" id="radio"><param name="allowscriptaccess" value="always" /><param name="movie" value="http://static.radionomy.com/cdn/flash/BannerEmbed.swf?RadUID=46b6f68c-eaf7-4802-9bca-5d2536fd0e66&amp;titlesColor=dddddd&amp;color=2f2f2f&amp;autoPlay=no&amp;lang=fr" /><param name="wmode" value="transparent" /><embed src="http://static.radionomy.com/cdn/flash/BannerEmbed.swf?RadUID=46b6f68c-eaf7-4802-9bca-5d2536fd0e66&amp;titlesColor=dddddd&amp;color=2f2f2f&amp;autoPlay=yes&amp;lang=fr" wmode="transparent" type="application/x-shockwave-flash" allowscriptaccess="always" width="295" height="90"></embed></object-->
             <footer>
                 <span id="fps" class="pull-right">0</span>

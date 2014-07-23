@@ -5,8 +5,9 @@
  * @param {Object} $routeParams
  * @param {RoomRepository} repository
  * @param {SocketClient} client
+ * @param {Chat} chat
  */
-function GameController($scope, $routeParams, $location, repository, client)
+function GameController($scope, $routeParams, $location, repository, client, chat)
 {
     gamepadListener.start();
 
@@ -14,6 +15,7 @@ function GameController($scope, $routeParams, $location, repository, client)
     this.$location  = $location;
     this.repository = repository;
     this.client     = client;
+    this.chat       = chat;
     this.game       = null;
 
     createjs.Sound.alternateExtensions = ['mp3'];
@@ -45,6 +47,8 @@ function GameController($scope, $routeParams, $location, repository, client)
 
     // Hydrate scope:
     this.$scope.sortorder = '-score';
+
+    this.chat.setScope(this.$scope);
 
     this.loadGame($routeParams.name);
 }
@@ -280,6 +284,7 @@ GameController.prototype.onRoundNew = function(e)
 
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
+    this.applyScope();
 };
 
 /**

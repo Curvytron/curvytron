@@ -45,6 +45,18 @@ BaseRoom.prototype.addPlayer = function(player)
 };
 
 /**
+ * Equal
+ *
+ * @param {Room} room
+ *
+ * @return {Boolean}
+ */
+BaseRoom.prototype.equal = function(room)
+{
+    return this.name === room.name;
+};
+
+/**
  * Is name available?
  *
  * @param {String} name

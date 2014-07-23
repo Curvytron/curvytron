@@ -93,6 +93,20 @@ Avatar.prototype.setColor = function(color)
 };
 
 /**
+ * Set score
+ *
+ * @param {Number} score
+ */
+Avatar.prototype.setScore = function(score)
+{
+    var diff = score - this.score;
+
+    BaseAvatar.prototype.setScore.call(this, score);
+
+    this.lastScore = diff;
+};
+
+/**
  * Die
  */
 Avatar.prototype.die = function()

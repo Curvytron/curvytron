@@ -20,7 +20,8 @@ function GameController()
 
     this.callbacks = {
         onGameLoaded: function () { controller.onGameLoaded(this); },
-        onMove: function (data) { controller.onMove(this, data); }
+        onMove: function (data) { controller.onMove(this, data); },
+        onTalk: function (data) { controller.onTalk(this, data.data, data.callback); }
     };
 }
 
@@ -107,6 +108,7 @@ GameController.prototype.attachEvents = function(client)
 
     client.on('loaded', this.callbacks.onGameLoaded);
     client.on('player:move', this.callbacks.onMove);
+    client.on('room:talk', this.callbacks.onTalk);
 
     for (i = client.players.items.length - 1; i >= 0; i--) {
         avatar = client.players.items[i].avatar;
@@ -129,6 +131,7 @@ GameController.prototype.detachEvents = function(client)
 
     client.removeListener('loaded', this.callbacks.onGameLoaded);
     client.removeListener('player:move', this.callbacks.onMove);
+    client.removeListener('room:talk', this.callbacks.onTalk);
 
     for (var i = client.players.items.length - 1; i >= 0; i--) {
         avatar = client.players.items[i].avatar;
@@ -172,6 +175,26 @@ GameController.prototype.onMove = function(client, data)
 
     if (player && player.avatar) {
         player.avatar.setAngularVelocity(data.move);
+    }
+};
+
+/**
+ * On talk
+ *
+ * @param {SocketClient} client
+ * @param {Object} data
+ * @param {Function} callback
+ */
+GameController.prototype.onTalk = function(client, data, callback)
+{
+    var room = client.room,
+        message = new Message(client.players.getById(data.player), data.content),
+        success = room && data.content.length;
+
+    callback({success: success});
+
+    if (success) {
+        room.client.addEvent('room:talk', message.serialize());
     }
 };
 
