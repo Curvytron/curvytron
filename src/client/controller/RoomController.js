@@ -218,11 +218,10 @@ RoomController.prototype.setReady = function(player)
 RoomController.prototype.start = function(e)
 {
     // Get first player
-    var players = e.detail.room.players.filter(function () { return this.local; }),
-        player = players.getFirst();
+    var player = e.detail.room.players.filter(function () { return this.local; }).getFirst();
 
     // Set first player favorite name and color
-    if (player.client === this.client.id) {
+    if (player) {
         this.$cookies.favorite_color = player.color;
         this.$cookies.favorite_name  = player.name;
     }
