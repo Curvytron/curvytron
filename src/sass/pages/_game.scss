@@ -16,12 +16,15 @@
         width: 300px;
         min-width: 300px;
         max-width: 300px;
+        overflow: scroll;
         background: lighten($game-background, 5%);
         color: #EEE;
         font-weight: 300;
         left: 0;
         border-right: 4px solid #000;
         @include animation(gameBorder 20s infinite);
+        padding-top: $game-header-height;
+        padding-bottom: 48px;
         header {
             background: red;
             height: $game-header-height;
@@ -31,6 +34,11 @@
             font-size: 30px;
             text-align: left;
             display: block !important;
+            position: fixed;
+            width: 300px;
+            top: 0;
+            left: 0;
+            z-index: 100;
             a {
                 line-height: 60px;
             }
@@ -45,8 +53,11 @@
             // background: lighten($game-background, 10%);
         }
         .maxScore {
-            margin: 8px;
-            text-align: center;
+            padding: 10px 10px 10px 20px;
+            text-align: left;
+            background: lighten($game-background, 10%);
+            margin-bottom: 0;
+            font-size: 14px;
         }
         #game-players {
             @extend .no-bullet;
@@ -78,6 +89,14 @@
                         @include opacity(50);
                     }
                 }
+                .line-color-preview {
+                    width: 6px;
+                    height: 100%;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    bottom: 0;
+                }
             }
         }
         #radio {
@@ -98,10 +117,10 @@
             position: fixed;
             left: 0;
             bottom: 0px;
-            width: 300px;
-            min-width: 300px;
-            max-width: 300px;
-            background: transparent;
+            width: 296px;
+            min-width: 296;
+            max-width: 296;
+            background: lighten($game-background, 5%);
             padding: 10px 20px;
             margin: 0;
             .game-copy {
