@@ -55,6 +55,7 @@ Chat.prototype.setRoom = function(room)
 {
     if (!this.room || !this.room.equal(room)) {
         this.room = room;
+        this.messages.length = 0;
     }
 };
 
@@ -126,8 +127,8 @@ Chat.prototype.onTalk = function(e)
  */
 Chat.prototype.clear = function()
 {
-    this.currentMessage = new Message();
-    this.messages       = [];
-    this.room           = null;
-    this.$scope         = null;
+    this.currentMessage  = new Message();
+    this.room            = null;
+    this.$scope          = null;
+    this.messages.length = 0;
 };
