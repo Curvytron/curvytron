@@ -46,6 +46,91 @@
     }
 }
 
+
+.custom-toggle {
+  position: absolute;
+  margin-left: -9999px;
+  visibility: hidden;
+
+    & + label {
+        display: block;
+        position: relative;
+        cursor: pointer;
+        outline: none;
+        @include user-select(none);
+
+        padding: 2px;
+        width: 70px;
+        height: 40px;
+        background-color: $color-danger;
+        position: relative;
+        @include border-radius(40px);
+        @include transition(background 0.2s linear);
+
+        i {
+            position: absolute;
+            top: 7px;
+            left: 9px;
+            z-index: 100;
+            color: #FFF;
+            @include transition(all 0.2s linear);
+
+            &.icon-check {
+                display: none;
+            }
+        }
+
+        &:before, &:after {
+            display: block;
+            position: absolute;
+            content: "";
+        }
+
+        &:before {
+            top: 2px;
+            left: 2px;
+            bottom: 2px;
+            right: 2px;
+            background-color: #fff;
+            @include border-radius(40px);
+            @include transition(background 0.2s linear);
+        }
+
+        &:after {
+            top: 4px;
+            left: 4px;
+            bottom: 4px;
+            width: 32px;
+            background-color: $color-danger;
+            @include border-radius(32px);
+            @include transition(background 0.2s linear);
+            @include transition(margin 0.2s ease);
+        }
+    }
+
+    &:checked + label {
+        background-color: $color-success;
+
+        i {
+            left: 39px;
+
+            &.icon-check {
+                display: block;
+            }
+
+            &.icon-close {
+                display: none;
+            }
+        }
+
+        &:after {
+            margin-left: 30px;
+            background-color: $color-success;
+        }
+    }
+}
+
+
 .control {
     margin: 0 5px;
 }
@@ -94,7 +179,7 @@
     @include transition(none);
 }
 
-.col-ready { width: 160px; }
+.col-ready { width: 100px; }
 .col-player { width: auto; }
 .col-color { width: 200px; }
 .col-keys { width: 200px; }
@@ -119,7 +204,7 @@
         border: 2px solid #d9dad7;
         position: relative;
 
-        .feed {
+        #feed {
             max-height: 400px;
             overflow-y: scroll;
 
