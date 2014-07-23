@@ -235,7 +235,7 @@ GameController.prototype.onProperty = function(data)
 {
     var game = data.avatar.player.client.room.game;
 
-    if (data.property == 'angle' && game.isPlaying()) {
+    if (data.property === 'angle' && game.frame) {
         return;
     }
 

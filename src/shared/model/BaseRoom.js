@@ -14,6 +14,13 @@ BaseRoom.prototype = Object.create(EventEmitter.prototype);
 BaseRoom.prototype.constructor = BaseRoom;
 
 /**
+ * Number of player needed to start a room
+ *
+ * @type {Number}
+ */
+BaseRoom.prototype.minPlayer = 1;
+
+/**
  * Warmup time
  *
  * @type {Number}
@@ -64,7 +71,7 @@ BaseRoom.prototype.removePlayer = function(player)
  */
 BaseRoom.prototype.isReady = function()
 {
-    return /*this.players.count() > 1 &&*/ this.players.filter(function () { return !this.ready; }).isEmpty();
+    return this.players.count() >= this.minPlayer && this.players.filter(function () { return !this.ready; }).isEmpty();
 };
 
 /**
@@ -85,7 +92,8 @@ BaseRoom.prototype.newGame = function()
  */
 BaseRoom.prototype.closeGame = function()
 {
-    this.game = null;
+    this.game    = null;
+    this.players = this.players.filter(function () { return this.client; });
 
     for (var i = this.players.items.length - 1; i >= 0; i--) {
         this.players.items[i].reset();

@@ -10,7 +10,7 @@ function BaseAvatar(player)
     this.name            = player.name;
     this.color           = player.color;
     this.player          = player;
-    this.head            = [this.radius, this.radius];
+    this.head            = [-100, -100];
     this.trail           = new Trail(this);
     this.bonusStack      = new BonusStack(this);
     this.angle           = 0;
@@ -22,6 +22,7 @@ function BaseAvatar(player)
     this.printingTimeout = null;
     this.ready           = false;
     this.ownColor        = this.color;
+    this.present         = true;
 
     this.togglePrinting = this.togglePrinting.bind(this);
 
@@ -343,7 +344,9 @@ BaseAvatar.prototype.clear = function()
  */
 BaseAvatar.prototype.destroy = function()
 {
-    this.stopPrinting();
+    this.clear();
+    this.present = false;
+    this.alive   = false;
 };
 
 /**
