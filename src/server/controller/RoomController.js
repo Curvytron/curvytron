@@ -20,6 +20,7 @@ function RoomController(repository, gameController)
         emitAllRooms: function () { controller.emitAllRooms(this); },
         onCreateRoom: function (data) { controller.onCreateRoom(this, data.data, data.callback); },
         onJoinRoom: function (data) { controller.onJoinRoom(this, data.data, data.callback); },
+        onTalk: function (data) { controller.onTalk(this, data.data, data.callback); },
         onLeaveRoom: function () { controller.onLeaveRoom(this); },
         onAddPlayer: function (data) { controller.onAddPlayer(this, data.data, data.callback); },
         onReadyRoom: function (data) { controller.onReadyRoom(this, data.data, data.callback); },
@@ -64,6 +65,7 @@ RoomController.prototype.attachEvents = function(client)
     client.on('room:fetch', this.callbacks.emitAllRooms);
     client.on('room:create', this.callbacks.onCreateRoom);
     client.on('room:join', this.callbacks.onJoinRoom);
+    client.on('room:talk', this.callbacks.onTalk);
     client.on('room:leave', this.callbacks.onLeaveRoom);
     client.on('room:player:add', this.callbacks.onAddPlayer);
     client.on('room:ready', this.callbacks.onReadyRoom);
@@ -80,6 +82,7 @@ RoomController.prototype.detachEvents = function(client)
     client.removeListener('room:fetch', this.callbacks.emitAllRooms);
     client.removeListener('room:create', this.callbacks.onCreateRoom);
     client.removeListener('room:join', this.callbacks.onJoinRoom);
+    client.removeListener('room:talk', this.callbacks.onTalk);
     client.removeListener('room:leave', this.callbacks.onLeaveRoom);
     client.removeListener('room:player:add', this.callbacks.onAddPlayer);
     client.removeListener('room:ready', this.callbacks.onReadyRoom);
@@ -158,8 +161,8 @@ RoomController.prototype.onLeaveRoom = function(client)
 
         for (var i = client.players.items.length - 1; i >= 0; i--) {
             player = client.players.items[i];
-            this.socketGroup.addEvent('room:leave', {room: room.name, player: player.name});
             room.removePlayer(player);
+            this.socketGroup.addEvent('room:leave', {room: room.name, player: player.name});
         }
 
         client.players.clear();
@@ -207,6 +210,26 @@ RoomController.prototype.onAddPlayer = function(client, data, callback)
 };
 
 /**
+ * On talk
+ *
+ * @param {SocketClient} client
+ * @param {Object} data
+ * @param {Function} callback
+ */
+RoomController.prototype.onTalk = function(client, data, callback)
+{
+    var room = client.room,
+        message = new Message(client.players.getById(data.player), data.content),
+        success = room && data.content.length;
+
+    callback({success: success});
+
+    if (success) {
+        room.client.addEvent('room:talk', message.serialize());
+    }
+};
+
+/**
  * On new room
  *
  * @param {SocketClient} client
@@ -223,11 +246,7 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
 
         callback({success: true, color: player.color});
 
-        this.socketGroup.addEvent('room:player:color', {
-            room: room.name,
-            player: player.name,
-            color: player.color
-        });
+        room.client.addEvent('room:player:color', { player: player.name, color: player.color, room: room.name });
     }
 };
 
@@ -248,11 +267,7 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
 
         callback({success: true, ready: player.ready});
 
-        this.socketGroup.addEvent('room:player:ready', {
-            room: room.name,
-            player: player.name,
-            ready: player.ready
-        });
+        room.client.addEvent('room:player:ready', { player: player.name, ready: player.ready, room: room.name });
 
         if (room.isReady()) {
             this.startGame(room);

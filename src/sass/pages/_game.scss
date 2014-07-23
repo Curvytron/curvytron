@@ -16,12 +16,15 @@
         width: 300px;
         min-width: 300px;
         max-width: 300px;
+        overflow: auto;
         background: lighten($game-background, 5%);
         color: #EEE;
         font-weight: 300;
         left: 0;
         border-right: 4px solid #000;
         @include animation(gameBorder 20s infinite);
+        padding-top: $game-header-height;
+        padding-bottom: 298px;
         header {
             background: red;
             height: $game-header-height;
@@ -31,6 +34,11 @@
             font-size: 30px;
             text-align: left;
             display: block !important;
+            position: fixed;
+            width: 300px;
+            top: 0;
+            left: 0;
+            z-index: 100;
             a {
                 line-height: 60px;
             }
@@ -42,17 +50,20 @@
             margin: 0;
             color: #FFF;
             padding: 10px 20px;
-            // background: lighten($game-background, 10%);
         }
         .maxScore {
-            margin: 8px;
-            text-align: center;
+            padding: 10px 10px 10px 20px;
+            text-align: left;
+            background: lighten($game-background, 10%);
+            margin-bottom: 0;
+            font-size: 14px;
         }
         #game-players {
             @extend .no-bullet;
+            margin-bottom: 0;
             li {
                 border-bottom: 2px solid lighten($game-background, 10%);
-                padding: 10px 20px;
+                padding: 10px 60px 10px 20px;
                 position: relative;
                 .score {
                     display: block;
@@ -66,6 +77,10 @@
                     font-size: 24px;
                     border-left: 2px solid lighten($game-background, 10%);
                 }
+                .round-points {
+                    font-size: 18px;
+                    margin-left: 10px;
+                }
                 &:first-child {
                     border-top: 2px solid lighten($game-background, 10%);
                 }
@@ -77,6 +92,14 @@
                         @include transition(all 0.2s ease);
                         @include opacity(50);
                     }
+                }
+                .line-color-preview {
+                    width: 6px;
+                    height: 100%;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    bottom: 0;
                 }
             }
         }
@@ -90,18 +113,18 @@
             text-align: right;
         }
         #ping {
-            width: 32px;
+            width: 52px;
             text-align: right;
         }
         footer {
             display: block !important;
             position: fixed;
             left: 0;
-            bottom: 0px;
-            width: 300px;
-            min-width: 300px;
-            max-width: 300px;
-            background: transparent;
+            bottom: 250px;
+            width: 296px;
+            min-width: 296;
+            max-width: 296;
+            background: lighten($game-background, 5%);
             padding: 10px 20px;
             margin: 0;
             .game-copy {
@@ -170,7 +193,7 @@
             z-index: 150;
             height: 100%;
             background: transparentize(darken($game-background, 5%), 0.2);
-            overflow-y: scroll;
+            overflow-y: auto;
             display: none;
             #round-view, #game-view {
                 position: relative;
@@ -238,6 +261,64 @@
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    .chat-wrapper {
+        position: fixed;
+        bottom: 0;
+        left: 0px;
+        width: 296px;
+        padding: 10px;
+        height: 250px;
+        background: lighten($game-background, 10);
+        border-top: 2px solid lighten($game-background, 20%);
+        font-size: 14px;
+
+        #feed {
+            position: relative;
+            height: 175px;
+            overflow-y: auto;
+            padding: 10px 0;
+            border: 2px solid lighten($game-background, 20%);
+            @include border-radius(4px);
+            background: lighten($game-background, 5%);
+
+            .one-message {
+                margin: 0 15px;
+                font-size: 14px;
+                line-height: 22px;
+                padding: 3px 0;
+            }
+        }
+
+        .action-line {
+            margin-top: 10px;
+            height: 60px;
+
+            .form-control {
+                height: 44px;
+                font-size: 14px;
+                border-color: lighten($game-background, 20%);
+                color: #CCC;
+
+                &:focus {
+                    border-color: lighten($game-background, 20%);
+                }
+            }
+
+            .btn {
+                width: 44px;
+                padding-left: 0;
+                padding-right: 0;
+                text-align: center;
+                margin-left: -2px;
+                border-color: lighten($game-background, 20%);
+
+                &:hover {
+                    background: lighten($game-background, 20%);
                 }
             }
         }

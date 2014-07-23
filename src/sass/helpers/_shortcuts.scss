@@ -70,3 +70,7 @@ hr {
 }
 @include generatePct;
 
+.clearfix {
+  @include clearfix();
+}
+

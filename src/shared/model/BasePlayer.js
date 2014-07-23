@@ -55,6 +55,18 @@ BasePlayer.prototype.setColor = function(color)
 };
 
 /**
+ * Equal
+ *
+ * @param {Player} player
+ *
+ * @return {Boolean}
+ */
+BasePlayer.prototype.equal = function(player)
+{
+    return this.name === player.name;
+};
+
+/**
  * Toggle Ready
  *
  * @param {Boolean} toggle

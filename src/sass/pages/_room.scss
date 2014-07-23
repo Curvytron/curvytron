@@ -1,0 +1,243 @@
+
+#room {
+    tr.local {
+        .player-ready {
+            cursor: pointer;
+            width: auto !important;
+            height: auto !important;
+            padding: 0 15px 0 10px !important;
+            font-size: $base-font-size !important;
+            text-transform: uppercase;
+            background: transparentize($color-danger, 1);
+            i {
+                margin-right: 5px;
+            }
+            &.ready {
+                &, &:hover {
+                    color: #FFF;
+                    background: $color-success;
+                }
+            }
+            &:hover {
+                background: $color-danger;
+            }
+        }
+    }
+}
+
+.player-ready {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    @extend .rounded;
+    @include transition(all 0.2s linear);
+    border: 2px solid $color-danger;
+    color: $color-danger;
+    text-align: center;
+    i {
+        font-size: 20px;
+        line-height: 37px;
+        vertical-align: middle;
+    }
+    &.ready {
+        color: #FFF;
+        border-color: $color-success;
+        background: $color-success;
+    }
+}
+
+
+.custom-toggle {
+  position: absolute;
+  margin-left: -9999px;
+  visibility: hidden;
+
+    & + label {
+        display: block;
+        position: relative;
+        cursor: pointer;
+        outline: none;
+        @include user-select(none);
+
+        border: 2px solid $color-danger;
+        width: 70px;
+        height: 40px;
+        background-color: transparent;
+        position: relative;
+        @include border-radius(40px);
+        @include transition(background 0.2s linear);
+
+        i {
+            position: absolute;
+            top: 5px;
+            left: 8px;
+            z-index: 100;
+            font-size: 15px;
+            color: #FFF;
+            @include transition(opacity 0.2s linear);
+
+            &.icon-check {
+                left: 39px;
+                @include opacity(0);
+            }
+        }
+
+        &:before, &:after {
+            display: block;
+            position: absolute;
+            content: "";
+        }
+
+        &:before {
+            background-color: transparent;
+            @include border-radius(40px);
+            @include transition(background 0.2s linear);
+        }
+
+        &:after {
+            top: 2px;
+            left: 2px;
+            bottom: 2px;
+            width: 32px;
+            background-color: $color-danger;
+            @include border-radius(32px);
+            @include transition(background 0.2s linear);
+            @include transition(margin 0.2s ease);
+        }
+    }
+
+    &:checked + label {
+        border-color: $color-success;
+
+        i {
+
+            &.icon-check {
+                @include opacity(100);
+            }
+
+            &.icon-close {
+                @include opacity(0);
+            }
+        }
+
+        &:after {
+            margin-left: 30px;
+            background-color: $color-success;
+        }
+    }
+}
+
+
+.control {
+    margin: 0 5px;
+}
+
+.room-players {
+    tr {
+        td {
+            vertical-align: top;
+        }
+        td.player-color-col {
+            position: relative;
+            .color-preview {
+                display: inline-block;
+                margin-left: 10px;
+            }
+            p {
+                margin: 0 0 0 5px;
+                display: inline-block;
+            }
+        }
+        &.local {
+            td.player-color-col {
+                .color-preview {
+                    position: absolute;
+                    left: 23px;
+                    top: 22px;
+                    margin-left: 0;
+                }
+                input.form-control {
+                    width: 140px;
+                    padding-left: 35px;
+                }
+            }
+        }
+        .control {
+            width: auto;
+            height: 44px;
+            line-height: 40px;
+            padding: 0 10px;
+            font-size: 22px;
+        }
+    }
+}
+
+.player-color {
+    @include transition(none);
+}
+
+.col-ready { width: 100px; }
+.col-player { width: auto; }
+.col-color { width: 200px; }
+.col-keys { width: 200px; }
+
+
+
+.room-details {
+    padding-top: 10px;
+}
+
+.room-players {
+    width: 68%;
+    float: left;
+}
+
+.room-chat {
+    float: left;
+    width: 32%;
+    padding-right: 30px;
+
+    .chat-wrapper {
+        margin-top: 44px;
+
+        #feed {
+            @include border-radius(4px);
+            background-color: transparent;
+            padding: 15px 0;
+            border: 2px solid #c8cfd2;
+            position: relative;
+            max-height: 250px;
+            overflow-y: auto;
+            background: #e9eae7;
+
+            .one-message {
+                margin: 0 15px;
+                font-size: 14px;
+                line-height: 22px;
+                padding: 3px 0;
+            }
+        }
+
+        .action-line {
+            margin-top: 10px;
+            height: 60px;
+
+            .form-control {
+                height: 44px;
+                font-size: 14px;
+
+                &:focus {
+                    border-color: $text-color;
+                }
+            }
+
+            .btn {
+                width: 44px;
+                padding-left: 0;
+                padding-right: 0;
+                text-align: center;
+                margin-left: -2px;
+            }
+        }
+    }
+}
