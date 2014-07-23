@@ -1,68 +1,116 @@
 <section>
     <div id="room" class="container">
-        <h1>
-            <form ng-submit="submit()" class="top-right-form" name="addPlayer">
-                <div class="input-group input-group-lg">
-                    <input type="text" ng-model="username" class="form-control" name="username" placeholder="Add a player" maxlength="{{ nameMaxLength }}" />
-                    <span class="input-group-btn">
-                        <button type="submit" id="submit" class="btn btn-lg btn-default" name="submit" ><i class="icon-plus"></i></button>
-                    </span>
-                </div>
-            </form>
-            {{ room.name }}
-        </h1>
-        <table class="room-players table table-hover table-striped v-align-middle">
-            <thead>
-                <tr>
-                    <th class="col-ready">Ready</th>
-                    <th class="col-player">Name</th>
-                    <th class="col-color">Color</th>
-                    <th class="col-keys">Controls</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="player in room.players.items" ng-if="player.local" class="local">
-                    <td class="text-center">
-                        <button class="player-ready btn btn-default" ng-class="{ ready: player.ready }" ng-click="setReady(player)">
-                            <i ng-if="player.ready == true" class="icon-check success"></i>
-                            <i ng-if="player.ready == false" class="icon-close success"></i>
-                            <span>Ready ?</span>
-                        </button>
-                    </td>
-                    <td>
-                        {{ player.name }}
-                    </td>
-                    <td class="player-color-col">
-                        <span class="color-preview" style="background-color: {{ player.color }};"></span>
-                        <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-change="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ colorMaxLength }}" />
-                    </td>
-                    <td>
-                        <button class="btn btn-default control"
-                            ng-repeat="control in player.controls"
-                            ng-click="control.toggle()"
-                            ng-class="{ 'active': control.mapper.listening }"
-                        >
-                            {{ control.mapper.view }}
-                        </button>
-                    </td>
-                </tr>
-                <tr ng-repeat="player in room.players.items" ng-if="!player.local">
-                    <td class="text-center">
-                        <span class="player-ready" ng-class="{ ready: player.ready }">
-                            <i ng-if="player.ready == true" class="icon-check success"></i>
-                            <i ng-if="player.ready == false" class="icon-close success"></i>
+        <div class="room-details">
+            <h1>
+                <form ng-submit="submit()" class="top-right-form" name="addPlayer">
+                    <div class="input-group input-group-lg">
+                        <input type="text" ng-model="username" class="form-control" name="username" placeholder="Add a player" maxlength="{{ nameMaxLength }}" />
+                        <span class="input-group-btn">
+                            <button type="submit" id="submit" class="btn btn-lg btn-default" name="submit" ><i class="icon-plus"></i></button>
                         </span>
-                    </td>
-                    <td>
-                        {{ player.name }}
-                    </td>
-                    <td class="player-color-col">
-                        <span class="color-preview" style="background-color: {{ player.color }};"></span>
-                        <p>{{ player.color }}</p>
-                    </td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
+                    </div>
+                </form>
+                {{ room.name }}
+            </h1>
+            <table class="room-players table table-hover table-striped v-align-middle">
+                <thead>
+                    <tr>
+                        <th class="col-ready">Ready?</th>
+                        <th class="col-player">Name</th>
+                        <th class="col-color">Color</th>
+                        <th class="col-keys">Controls</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="player in room.players.items" ng-if="player.local" class="local">
+                        <td>
+                            <input id="player-ready-{{ player.name }}" class="custom-toggle" type="checkbox" ng-click="setReady(player)" ng-checked="player.ready">
+                            <label for="player-ready-{{ player.name }}"><i class="icon-close"></i><i class="icon-check"></i></label>
+                        </td>
+                        <td>
+                            {{ player.name }}
+                        </td>
+                        <td class="player-color-col">
+                            <span class="color-preview" style="background-color: {{ player.color }};"></span>
+                            <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-change="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ colorMaxLength }}" />
+                        </td>
+                        <td>
+                            <button class="btn btn-default control"
+                                ng-repeat="control in player.controls"
+                                ng-click="control.toggle()"
+                                ng-class="{ 'active': control.mapper.listening }"
+                            >
+                                {{ control.mapper.view }}
+                            </button>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="player in room.players.items" ng-if="!player.local">
+                        <td class="text-center">
+                            <span class="player-ready" ng-class="{ ready: player.ready }">
+                                <i ng-if="player.ready == true" class="icon-check success"></i>
+                                <i ng-if="player.ready == false" class="icon-close success"></i>
+                            </span>
+                        </td>
+                        <td>
+                            {{ player.name }}
+                        </td>
+                        <td class="player-color-col">
+                            <span class="color-preview" style="background-color: {{ player.color }};"></span>
+                            <p>{{ player.color }}</p>
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="room-chat">
+            <div class="chat-wrapper">
+                <div id="feed">
+                    <div class="one-message">
+                        <strong>JayJay :</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    </div>
+                    <div class="one-message">
+                        <strong>La famille :</strong> Dolor eum laudantium labore necessitatibus dolorem quae maiores rem.
+                    </div>
+                    <div class="one-message">
+                        <strong>JayJay :</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    </div>
+                    <div class="one-message">
+                        <strong>La famille :</strong> Dolor eum laudantium labore necessitatibus dolorem quae maiores rem.
+                    </div>
+                    <div class="one-message">
+                        <strong>JayJay :</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    </div>
+                    <div class="one-message">
+                        <strong>La famille :</strong> Dolor eum laudantium labore necessitatibus dolorem quae maiores rem.
+                    </div>
+                    <div class="one-message">
+                        <strong>JayJay :</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    </div>
+                    <div class="one-message">
+                        <strong>La famille :</strong> Dolor eum laudantium labore necessitatibus dolorem quae maiores rem.
+                    </div>
+                    <div class="one-message">
+                        <strong>JayJay :</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    </div>
+                    <div class="one-message">
+                        <strong>La famille :</strong> Dolor eum laudantium labore necessitatibus dolorem quae maiores rem.
+                    </div>
+                    <div class="one-message">
+                        <strong>JayJay :</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                    </div>
+                    <div class="one-message">
+                        <strong>La famille :</strong> Dolor eum laudantium labore necessitatibus dolorem quae maiores rem.
+                    </div>
+                </div>
+                <div class="action-line">
+                    <button class="btn"><i class="icon-angle-right"></i></button>
+                    <input type="text" class="sent-message form-control" placeholder="Enter message..." />
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
     </div>
 </section>

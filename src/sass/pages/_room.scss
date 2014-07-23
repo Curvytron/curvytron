@@ -1,0 +1,248 @@
+
+#room {
+    tr.local {
+        .player-ready {
+            cursor: pointer;
+            width: auto !important;
+            height: auto !important;
+            padding: 0 15px 0 10px !important;
+            font-size: $base-font-size !important;
+            text-transform: uppercase;
+            background: transparentize($color-danger, 1);
+            i {
+                margin-right: 5px;
+            }
+            &.ready {
+                &, &:hover {
+                    color: #FFF;
+                    background: $color-success;
+                }
+            }
+            &:hover {
+                background: $color-danger;
+            }
+        }
+    }
+}
+
+.player-ready {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    @extend .rounded;
+    @include transition(all 0.2s linear);
+    border: 2px solid $color-danger;
+    color: $color-danger;
+    text-align: center;
+    i {
+        font-size: 20px;
+        line-height: 37px;
+        vertical-align: middle;
+    }
+    &.ready {
+        color: #FFF;
+        border-color: $color-success;
+        background: $color-success;
+    }
+}
+
+
+.custom-toggle {
+  position: absolute;
+  margin-left: -9999px;
+  visibility: hidden;
+
+    & + label {
+        display: block;
+        position: relative;
+        cursor: pointer;
+        outline: none;
+        @include user-select(none);
+
+        padding: 2px;
+        width: 70px;
+        height: 40px;
+        background-color: $color-danger;
+        position: relative;
+        @include border-radius(40px);
+        @include transition(background 0.2s linear);
+
+        i {
+            position: absolute;
+            top: 7px;
+            left: 9px;
+            z-index: 100;
+            color: #FFF;
+            @include transition(all 0.2s linear);
+
+            &.icon-check {
+                display: none;
+            }
+        }
+
+        &:before, &:after {
+            display: block;
+            position: absolute;
+            content: "";
+        }
+
+        &:before {
+            top: 2px;
+            left: 2px;
+            bottom: 2px;
+            right: 2px;
+            background-color: #fff;
+            @include border-radius(40px);
+            @include transition(background 0.2s linear);
+        }
+
+        &:after {
+            top: 4px;
+            left: 4px;
+            bottom: 4px;
+            width: 32px;
+            background-color: $color-danger;
+            @include border-radius(32px);
+            @include transition(background 0.2s linear);
+            @include transition(margin 0.2s ease);
+        }
+    }
+
+    &:checked + label {
+        background-color: $color-success;
+
+        i {
+            left: 39px;
+
+            &.icon-check {
+                display: block;
+            }
+
+            &.icon-close {
+                display: none;
+            }
+        }
+
+        &:after {
+            margin-left: 30px;
+            background-color: $color-success;
+        }
+    }
+}
+
+
+.control {
+    margin: 0 5px;
+}
+
+.room-players {
+    tr {
+        td {
+            vertical-align: top;
+        }
+        td.player-color-col {
+            position: relative;
+            .color-preview {
+                display: inline-block;
+                margin-left: 10px;
+            }
+            p {
+                margin: 0 0 0 5px;
+                display: inline-block;
+            }
+        }
+        &.local {
+            td.player-color-col {
+                .color-preview {
+                    position: absolute;
+                    left: 23px;
+                    top: 22px;
+                    margin-left: 0;
+                }
+                input.form-control {
+                    width: 140px;
+                    padding-left: 35px;
+                }
+            }
+        }
+        .control {
+            width: auto;
+            height: 44px;
+            line-height: 40px;
+            padding: 0 10px;
+            font-size: 22px;
+        }
+    }
+}
+
+.player-color {
+    @include transition(none);
+}
+
+.col-ready { width: 100px; }
+.col-player { width: auto; }
+.col-color { width: 200px; }
+.col-keys { width: 200px; }
+
+
+
+.room-details {
+    width: 68%;
+    float: left;
+}
+
+.room-chat {
+    float: right;
+    width: 32%;
+    padding-top: 20px;
+    padding-left: 30px;
+
+    .chat-wrapper {
+        @include border-radius(4px);
+        background-color: #e9eae7;
+        padding: 15px 0 75px 0;
+        border: 2px solid #d9dad7;
+        position: relative;
+
+        #feed {
+            max-height: 400px;
+            overflow-y: scroll;
+
+            .one-message {
+                margin: 0 15px;
+                font-size: 14px;
+                line-height: 22px;
+                padding: 3px 0;
+            }
+        }
+
+        .action-line {
+            background: #d9dad7;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            padding: 10px 15px;
+
+            .form-control {
+                background: #FFF;
+                border-color: #c7c7c6;
+                font-size: 14px;
+                width: 255px;
+
+            }
+
+            button {
+                margin-top: 1px;
+                width: 40px;
+                height: 40px;
+                float: right;
+                background: $text-color;
+                color: #FFF;
+                padding: 0;
+                text-align: center;
+            }
+        }
+    }
+}

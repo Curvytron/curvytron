@@ -29,7 +29,7 @@ li.player-row {
 
 .top-right-form {
     float: right;
-    max-width: 400px;
+    max-width: 320px;
     .form-control {
         border: 2px solid $text-color !important;
     }
@@ -51,23 +51,19 @@ li.player-row {
     h3 {
         margin: 0;
     }
+    .room-enter-col {
+        width: 150px;
+    }
     .room-enter {
-        padding-left: 0;
         padding-right: 5px;
         font-size: 24px;
         line-height: 40px;
         @include transition(all 0.2s ease);
-        &:hover {
-            padding-right: 0;
-            padding-left: 5px;
-            @include opacity(50);
-        }
     }
     tr {
         &:hover {
             .room-enter {
-                padding-right: 0;
-                padding-left: 5px;
+                padding-right: 0px;
                 @include opacity(50);
             }
         }
@@ -82,103 +78,3 @@ li.player-row {
         cursor: wait;
     }
 }
-#room {
-    tr.local {
-        .player-ready {
-            cursor: pointer;
-            width: auto !important;
-            height: auto !important;
-            padding: 0 15px 0 10px !important;
-            font-size: $base-font-size !important;
-            text-transform: uppercase;
-            background: transparentize($color-danger, 1);
-            i {
-                margin-right: 5px;
-            }
-            &.ready {
-                &, &:hover {
-                    color: #FFF;
-                    background: $color-success;
-                }
-            }
-            &:hover {
-                background: $color-danger;
-            }
-        }
-    }
-}
-
-.player-ready {
-    width: 40px;
-    height: 40px;
-    display: inline-block;
-    @extend .rounded;
-    @include transition(all 0.2s linear);
-    border: 2px solid $color-danger;
-    color: $color-danger;
-    text-align: center;
-    i {
-        font-size: 20px;
-        line-height: 37px;
-        vertical-align: middle;
-    }
-    &.ready {
-        color: #FFF;
-        border-color: $color-success;
-        background: $color-success;
-    }
-}
-
-.control {
-    margin: 0 5px;
-}
-
-.room-players {
-    tr {
-        td {
-            vertical-align: top;
-        }
-        td.player-color-col {
-            position: relative;
-            .color-preview {
-                display: inline-block;
-                margin-left: 10px;
-            }
-            p {
-                margin: 0 0 0 5px;
-                display: inline-block;
-            }
-        }
-        &.local {
-            td.player-color-col {
-                .color-preview {
-                    position: absolute;
-                    left: 23px;
-                    top: 22px;
-                    margin-left: 0;
-                }
-                input.form-control {
-                    width: 140px;
-                    padding-left: 35px;
-                }
-            }
-        }
-        .control {
-            width: auto;
-            height: 44px;
-            line-height: 40px;
-            padding: 0 10px;
-            font-size: 22px;
-        }
-    }
-}
-
-.player-color {
-    @include transition(none);
-}
-
-.col-ready { width: 160px; }
-.col-player { width: auto; }
-.col-color { width: 200px; }
-.col-keys { width: 315px; }
-
