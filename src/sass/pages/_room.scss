@@ -59,24 +59,26 @@
         outline: none;
         @include user-select(none);
 
-        padding: 2px;
+        border: 2px solid $color-danger;
         width: 70px;
         height: 40px;
-        background-color: $color-danger;
+        background-color: transparent;
         position: relative;
         @include border-radius(40px);
         @include transition(background 0.2s linear);
 
         i {
             position: absolute;
-            top: 7px;
-            left: 9px;
+            top: 5px;
+            left: 8px;
             z-index: 100;
+            font-size: 15px;
             color: #FFF;
-            @include transition(all 0.2s linear);
+            @include transition(opacity 0.2s linear);
 
             &.icon-check {
-                display: none;
+                left: 39px;
+                @include opacity(0);
             }
         }
 
@@ -87,19 +89,15 @@
         }
 
         &:before {
-            top: 2px;
-            left: 2px;
-            bottom: 2px;
-            right: 2px;
-            background-color: #fff;
+            background-color: transparent;
             @include border-radius(40px);
             @include transition(background 0.2s linear);
         }
 
         &:after {
-            top: 4px;
-            left: 4px;
-            bottom: 4px;
+            top: 2px;
+            left: 2px;
+            bottom: 2px;
             width: 32px;
             background-color: $color-danger;
             @include border-radius(32px);
@@ -109,17 +107,16 @@
     }
 
     &:checked + label {
-        background-color: $color-success;
+        border-color: $color-success;
 
         i {
-            left: 39px;
 
             &.icon-check {
-                display: block;
+                @include opacity(100);
             }
 
             &.icon-close {
-                display: none;
+                @include opacity(0);
             }
         }
 
