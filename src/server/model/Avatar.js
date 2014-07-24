@@ -127,11 +127,7 @@ Avatar.prototype.addPoint = function(point, important)
 {
     if (this.game.isPlaying()) {
         BaseAvatar.prototype.addPoint.call(this, point);
-        this.emit('point', {
-            avatar: this,
-            point: point,
-            important: important || this.angularVelocity
-        });
+        this.emit('point', { avatar: this, point: point, important: important || this.angularVelocity });
     }
 };
 

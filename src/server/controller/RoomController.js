@@ -6,6 +6,8 @@
  */
 function RoomController(repository, gameController)
 {
+    EventEmitter.call(this);
+
     var controller = this;
 
     this.socketGroup    = new SocketGroup();
@@ -24,6 +26,9 @@ function RoomController(repository, gameController)
         onColorRoom: function (data) { controller.onColorRoom(this, data.data, data.callback); }
     };
 }
+
+RoomController.prototype = Object.create(EventEmitter.prototype);
+RoomController.prototype.constructor = RoomController;
 
 /**
  * Attach events
@@ -263,6 +268,8 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
 RoomController.prototype.startGame = function(room)
 {
     var game = room.newGame();
+
+    this.emit('game:new', {game: game});
 
     this.socketGroup.addEvent('room:game:start', {room: room.name});
 

@@ -19,6 +19,7 @@ function BaseGame(room)
     this.started      = false;
     this.running      = false;
     this.bonusManager = new BonusManager(this);
+    this.rounds       = 0;
 
     this.start    = this.start.bind(this);
     this.stop     = this.stop.bind(this);
@@ -223,6 +224,7 @@ BaseGame.prototype.newRound = function()
 BaseGame.prototype.endRound = function()
 {
     this.stop();
+    this.rounds++;
 };
 
 /**
