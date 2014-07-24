@@ -4,6 +4,16 @@ body {
   font-size: $base-font-size;
   line-height: $base-line-height;
   color: $text-color;
+  font-weight: $base-font-weight;
+}
+
+::selection {
+  background: $text-color;
+  color: #FFF;
+}
+::-moz-selection {
+  background: $text-color;
+  color: #FFF;
 }
 
 .container {
@@ -49,7 +59,6 @@ body {
 }
 
 header {
-  background: $header-background;
   color: $header-color;
   font-family: $base-font-family;
   font-weight: 300;
@@ -60,8 +69,10 @@ header {
   padding: 40px 20px;
   margin: 0 0 30px 0;
   position: relative;
-  @include transition(all 0.2s ease);
-  @include animation(headerRainbow 20s infinite);
+  // @include transition(all 0.2s ease);
+  // @include animation(headerRainbow 20s infinite);
+  @include gradient($header-background-from, $header-background-to);
+
   a, a:visited {
     color: $header-color;
     &.animated {

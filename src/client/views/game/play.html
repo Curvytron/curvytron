@@ -1,9 +1,9 @@
 <section>
     <section id="game-wrapper">
         <aside id="game-infos">
-            <header><a href="/">Curvytron</a></header>
-            <h3>{{ game.name }}</h3>
-            <p class="maxScore">First to score <strong>{{ game.maxScore }}</strong> points win the game!</p>
+            <header><a href="/"><img src="images/logo.png" alt="Curvytron" id="logo" /> Curvytron</a></header>
+            <div class="maxScore"><i class="icon-trophy"></i><span>{{ game.maxScore }}</span></div>
+            <h3 title="{{ game.name }}">{{ game.name }}</h3>
             <ul id="game-players">
                 <li ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
@@ -55,7 +55,7 @@
                         <span class="strong" style="color: {{ avatar.player.color }}">{{ avatar.name }}</span> won the game !
                     </p>
                     <div>
-                        <a href="#/room/{{ game.name }}" class="btn">
+                        <a href="#/room/{{ game.name }}" class="btn-back-to-room">
                             Back to the room
                         </a>
                     </div>
@@ -69,7 +69,7 @@
                         </tbody>
                     </table>
                     <div>
-                        <a href="#/room/{{ game.name }}" class="btn">
+                        <a href="#/room/{{ game.name }}" class="btn-back-to-room">
                             Back to the room
                         </a>
                     </div>

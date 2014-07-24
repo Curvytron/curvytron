@@ -29,6 +29,7 @@
 
 @mixin animation($animation) {
   -webkit-animation: $animation;
+     -moz-animation: $animation;
        -o-animation: $animation;
           animation: $animation;
 }
@@ -87,4 +88,14 @@
   &:after {
     clear: both;
   }
+}
+
+
+@mixin gradient($from, $to) {
+  background-color: $from;
+  background-image: linear-gradient($from, $to);
+  background-image: -moz-linear-gradient($from, $to);
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from($from), to($to));
+  background-image: -webkit-linear-gradient($from, $to);
+  background-image: -o-linear-gradient($from, $to);
 }

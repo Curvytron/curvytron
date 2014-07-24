@@ -32,8 +32,11 @@ li.player-row {
     max-width: 320px;
     .form-control {
         border: 2px solid $text-color !important;
+        font-weight: $base-font-weight;
+        line-height: 44px;
     }
     .btn-default {
+        line-height: 44px;
         &:hover {
             background: $text-color;
             color: $background-color;
@@ -52,7 +55,7 @@ li.player-row {
         margin: 0;
     }
     .room-enter-col {
-        width: 150px;
+        width: 200px;
     }
     .room-enter {
         padding-right: 5px;

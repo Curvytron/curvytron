@@ -72,12 +72,12 @@
 
 
 @mixin headerRainbow {
-  0%   { background-color: $header-background; }
-  20%  { background-color: #16a085; }
-  40%  { background-color: #2C3E50; }
-  60%  { background-color: #95A5A6; }
-  80%  { background-color: #913D88; }
-  100% { background-color: $header-background; }
+  0%   { @include gradient($header-background-1-from, $header-background-1-to); }
+  20%  { @include gradient($header-background-2-from, $header-background-2-to); }
+  40%  { @include gradient($header-background-3-from, $header-background-3-to); }
+  60%  { @include gradient($header-background-4-from, $header-background-4-to); }
+  80%  { @include gradient($header-background-5-from, $header-background-5-to); }
+  100% { @include gradient($header-background-1-from, $header-background-1-to); }
 }
 @-webkit-keyframes headerRainbow {
     @include headerRainbow;
