@@ -134,10 +134,8 @@ BaseAvatar.prototype.updatePosition = function(step)
  */
 BaseAvatar.prototype.setVelocity = function(velocity)
 {
-    if (velocity > 0) {
-        this.velocity = velocity;
-        this.updateVelocities();
-    }
+    this.velocity = Math.max(velocity, BaseAvatar.prototype.velocity/2);
+    this.updateVelocities();
 };
 
 /**
@@ -158,9 +156,7 @@ BaseAvatar.prototype.updateVelocities = function()
  */
 BaseAvatar.prototype.setRadius = function(radius)
 {
-    if (radius > 0) {
-        this.radius = radius;
-    }
+    this.radius = Math.max(radius, BaseAvatar.prototype.radius);
 };
 
 /**
@@ -257,18 +253,16 @@ BaseAvatar.prototype.setPrintingWithTimeout = function(printing)
  */
 BaseAvatar.prototype.setPrinting = function(printing)
 {
-    if (!printing) {
+    printing = printing ? true : false;
+
+    if (this.printing !== printing) {
+        this.printing = printing;
+
         this.addPoint(this.head.slice(0), true);
-    }
 
-    this.printing = printing;
-
-    if (!this.printing) {
-        this.trail.clear();
-    }
-
-    if (printing) {
-        this.addPoint(this.head.slice(0), true);
+        if (!this.printing) {
+            this.trail.clear();
+        }
     }
 };
 

@@ -44,7 +44,7 @@ BaseBonusStack.prototype.remove = function(bonus)
 BaseBonusStack.prototype.resolve = function(bonus)
 {
     var properties = {},
-        effects, property, value, i;
+        effects, property, value, i, j;
 
     if (typeof(bonus) !== 'undefined') {
         effects = bonus.getEffects(this.avatar);
@@ -56,14 +56,14 @@ BaseBonusStack.prototype.resolve = function(bonus)
 
     for (i = this.bonuses.items.length - 1; i >= 0; i--) {
         effects = this.bonuses.items[i].getEffects(this.avatar);
-        for (i = effects.length - 1; i >= 0; i--) {
-            property = effects[i][0];
+        for (j = effects.length - 1; j >= 0; j--) {
+            property = effects[j][0];
 
             if (typeof(properties[property]) === 'undefined') {
                 properties[property] = this.getDefaultProperty(property);
             }
 
-            properties = this.append(properties, property, effects[i][1]);
+            properties = this.append(properties, property, effects[j][1]);
         }
     }
 

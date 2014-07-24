@@ -63,14 +63,9 @@ RoomController.prototype.joinRoom = function(name)
         function (result) {
             if (result.success) {
                 controller.$scope.room = controller.repository.get(name);
-
-                /*if (controller.$scope.room.inGame) {
-                    controller.start();
-                } else {*/
-                    controller.attachEvents(name);
-                    controller.setFavoriteName();
-                    controller.updateCurrentMessage();
-                //}
+                controller.attachEvents(name);
+                controller.setFavoriteName();
+                controller.updateCurrentMessage();
             } else {
                 console.error('Could not join room %s', name);
                 controller.goHome();
@@ -115,12 +110,12 @@ RoomController.prototype.attachEvents = function(name)
  */
 RoomController.prototype.detachEvents = function(name)
 {
-    this.repository.on('room:close:' + name, this.goHome);
-    this.repository.on('room:join:' + name, this.onJoin);
-    this.repository.on('room:leave:' + name, this.applyScope);
-    this.repository.on('room:player:ready:' + name, this.applyScope);
-    this.repository.on('room:player:color:' + name, this.applyScope);
-    this.repository.on('room:game:start:' + name, this.start);
+    this.repository.off('room:close:' + name, this.goHome);
+    this.repository.off('room:join:' + name, this.onJoin);
+    this.repository.off('room:leave:' + name, this.applyScope);
+    this.repository.off('room:player:ready:' + name, this.applyScope);
+    this.repository.off('room:player:color:' + name, this.applyScope);
+    this.repository.off('room:game:start:' + name, this.start);
 
     for (var i = this.$scope.room.players.items.length - 1; i >= 0; i--) {
         this.$scope.room.players.items[i].off('control:change', this.applyScope);
@@ -228,10 +223,8 @@ RoomController.prototype.setReady = function(player)
  */
 RoomController.prototype.start = function(e)
 {
-    // Get first player
     var player = this.$scope.room.getLocalPlayers().getFirst();
 
-    // Set first player favorite name and color
     if (player) {
         this.$cookies.favorite_color = player.color;
         this.$cookies.favorite_name  = player.name;

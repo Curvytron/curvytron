@@ -267,8 +267,7 @@ GameController.prototype.onDie = function(e)
         avatar.die();
         this.applyScope();
 
-        var loose = createjs.Sound.play('loose');
-        loose.volume = 0.2;
+        createjs.Sound.play('loose').volume = 0.2;
     }
 };
 
