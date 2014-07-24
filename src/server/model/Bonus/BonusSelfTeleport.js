@@ -23,6 +23,6 @@ BonusSelfTeleport.prototype.getEffects = function(avatar)
     var point = avatar.game.world.getRandomPosition(avatar.radius, 0.1);
 
     return [
-        ['printing', -1],
-        ['position', point]];
+        ['position', point],
+        ['printing', -1]];
 };
