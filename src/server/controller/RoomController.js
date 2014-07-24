@@ -320,7 +320,7 @@ RoomController.prototype.endGame = function(data)
     this.gameController.removeGame(game);
 
     for (var i = room.clients.items.length - 1; i >= 0; i--) {
-        room.clients.items[i].emitAllRooms(client);
+        this.emitAllRooms(room.clients.items[i]);
     }
 
     room.closeGame();
