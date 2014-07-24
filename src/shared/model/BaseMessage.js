@@ -6,7 +6,7 @@
  */
 function BaseMessage (player, content)
 {
-    this.content = typeof(content) !== 'undefined' ? content : "";
+    this.content = typeof(content) !== 'undefined' ? content : '';
     this.player  = typeof(player) !== 'undefined' ? player : null;
 }
 
@@ -22,7 +22,7 @@ BaseMessage.prototype.maxLength = 140;
  */
 BaseMessage.prototype.clear = function()
 {
-    this.content = "";
+    this.content = '';
 };
 
 /**

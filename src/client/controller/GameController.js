@@ -185,7 +185,7 @@ GameController.prototype.onProperty = function(e)
             this.game.draw();
         }
 
-        if (data.property == 'score') {
+        if (data.property === 'score') {
             this.applyScope();
         }
     }

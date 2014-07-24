@@ -14,7 +14,7 @@
     "nonbsp"   : true,
     "quotmark" : "single",
     "undef"    : false,
-    "unused"   : true,
+    "unused"   : false,
     "trailing" : true,
     "predef"   : [
         "window",

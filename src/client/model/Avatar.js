@@ -177,7 +177,7 @@ Avatar.prototype.set = function(property, value)
     if (typeof(this[method]) !== 'undefined') {
         this[method](value);
     } else {
-        throw "Unknown setter " + method;
+        throw 'Unknown setter ' + method;
     }
 };
 
