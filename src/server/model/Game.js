@@ -138,13 +138,13 @@ Game.prototype.setScores = function()
         var total = this.avatars.count();
 
         for (var i = this.deaths.items.length - 1; i >= 0; i--) {
-            this.deaths.items[i].addScore(i+1);
+            this.deaths.items[i].addScore(i);
         }
 
         if (this.deaths.count() < total) {
             var winner = this.avatars.match(function () { return this.alive; });
 
-            winner.addScore(total);
+            winner.addScore(total-1);
             this.emit('round:winner', {game: this, winner: winner});
         }
     }
