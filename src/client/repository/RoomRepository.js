@@ -29,6 +29,7 @@ function RoomRepository(client)
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
+RoomRepository.prototype.constructor = RoomRepository;
 
 /**
  * Attach events

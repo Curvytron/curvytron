@@ -96,7 +96,7 @@
 @mixin deadAnim {
   0%   { background-color: transparent; }
   50%  { background-color: transparentize($color-danger, 0.5); }
-  100% { background-color: transparent; @include opacity(50); }
+  100% { background-color: transparent; color: transparentize(#EEE, 0.7); }
 }
 @-webkit-keyframes deadAnim {
     @include deadAnim;

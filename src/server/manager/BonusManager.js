@@ -9,32 +9,34 @@ function BonusManager(game)
 
     this.world         = new World(this.game.size, 1);
     this.popingTimeout = null;
-    this.timeouts      = [];
 
     this.popBonus = this.popBonus.bind(this);
 }
 
 BonusManager.prototype = Object.create(BaseBonusManager.prototype);
+BonusManager.prototype.constructor = BonusManager;
 
 /**
- * Available onus types
+ * Available bonus types
  *
  * @type {Array}
  */
 BonusManager.prototype.bonusTypes = [
-    TurtleSelfBonus,
-    RabbitSelfBonus,
-    TurtleEnemyBonus,
-    RabbitEnemyBonus,
-    GodzillaEnemyBonus,
-    SmallerEnemyBonus,
-    SmallerSelfBonus,
-    ColorSelfBonus,
-    ColorEnemyBonus,
-    PositionSelfBonus,
-    PositionEnemyBonus,
-    FlySelfBonus,
-    FlyEnemyBonus
+    BonusSelfSlow,
+    BonusSelfFast,
+    BonusSelfMaster,
+    BonusSelfSmall,
+    BonusSelfInverse,
+    BonusSelfTeleport,
+    BonusEnemySlow,
+    BonusEnemyFast,
+    BonusEnemyBig,
+    BonusEnemyInverse,
+    BonusEnemySmall,
+    BonusEnemyMaster,
+    BonusEnemyTeleport,
+    BonusAllColor,
+    BonusSelfGodzilla,
 ];
 
 /**
@@ -58,8 +60,6 @@ BonusManager.prototype.stop = function()
 
     clearTimeout(this.popingTimeout);
     this.popingTimeout = null;
-
-    this.clearTimeouts();
 };
 
 /**
@@ -80,7 +80,7 @@ BonusManager.prototype.popBonus = function ()
     this.popingTimeout = null;
 
     if (this.bonuses.count() < this.bonusCap) {
-        var position = this.game.world.getRandomPosition(BaseBonus.prototype.radius, 0.03),
+        var position = this.game.world.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
             bonus = this.getRandomBonus(position);
 
         this.add(bonus);
@@ -103,7 +103,7 @@ BonusManager.prototype.testCatch = function(avatar)
         bonus = body ? body.data : null;
 
     if (bonus && this.remove(bonus)) {
-        this.timeouts.push(bonus.applyTo(avatar, this.game));
+        bonus.applyTo(avatar, this.game);
     }
 };
 
@@ -139,18 +139,6 @@ BonusManager.prototype.remove = function(bonus)
     }
 
     return false;
-};
-
-/**
- * Clear timeouts
- */
-BonusManager.prototype.clearTimeouts = function()
-{
-    for (var i = this.timeouts.length - 1; i >= 0; i--) {
-        clearTimeout(this.timeouts[i]);
-    }
-
-    this.timeouts = [];
 };
 
 /**

@@ -11,6 +11,7 @@ function Room(name)
 }
 
 Room.prototype = Object.create(BaseRoom.prototype);
+Room.prototype.constructor = Room;
 
 /**
  * Add client

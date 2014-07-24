@@ -12,13 +12,7 @@ function BaseBonus(position)
 }
 
 BaseBonus.prototype = Object.create(EventEmitter.prototype);
-
-/**
- * Bonus type
- *
- * @type {String}
- */
-BaseBonus.prototype.type = 'default';
+BaseBonus.prototype.constructor = BaseBonus;
 
 /**
  * Target affected
@@ -32,7 +26,7 @@ BaseBonus.prototype.affect = 'self';
  *
  * @type {Number}
  */
-BaseBonus.prototype.radius = 2.4;
+BaseBonus.prototype.radius = 3;
 
 /**
  * Effect duration
@@ -67,7 +61,7 @@ BaseBonus.prototype.serialize = function ()
 {
     return {
         id: this.id,
-        type: this.type,
+        type: this.constructor.name,
         radius: this.radius,
         position: this.position,
         affect: this.affect

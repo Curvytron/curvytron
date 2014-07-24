@@ -11,6 +11,7 @@ function BaseRoom(name)
 }
 
 BaseRoom.prototype = Object.create(EventEmitter.prototype);
+BaseRoom.prototype.constructor = BaseRoom;
 
 /**
  * Warmup time

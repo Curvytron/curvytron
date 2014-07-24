@@ -27,6 +27,7 @@ function PlayerControl(value, icon)
 }
 
 PlayerControl.prototype = Object.create(EventEmitter.prototype);
+PlayerControl.prototype.constructor = PlayerControl;
 
 /**
  * On change
