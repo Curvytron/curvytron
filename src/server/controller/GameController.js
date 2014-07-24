@@ -107,8 +107,11 @@ GameController.prototype.attachEvents = function(client)
     var avatar, i;
 
     client.on('loaded', this.callbacks.onGameLoaded);
-    client.on('player:move', this.callbacks.onMove);
     client.on('room:talk', this.callbacks.onTalk);
+
+    if (client.players.items.length) {
+        client.on('player:move', this.callbacks.onMove);
+    }
 
     for (i = client.players.items.length - 1; i >= 0; i--) {
         avatar = client.players.items[i].avatar;
@@ -130,8 +133,11 @@ GameController.prototype.detachEvents = function(client)
     var avatar;
 
     client.removeListener('loaded', this.callbacks.onGameLoaded);
-    client.removeListener('player:move', this.callbacks.onMove);
     client.removeListener('room:talk', this.callbacks.onTalk);
+
+    if (client.players.items.length) {
+        client.removeListener('player:move', this.callbacks.onMove);
+    }
 
     for (var i = client.players.items.length - 1; i >= 0; i--) {
         avatar = client.players.items[i].avatar;
@@ -143,6 +149,11 @@ GameController.prototype.detachEvents = function(client)
     }
 };
 
+GameController.prototype.attachSpectator = function()
+{
+    client.on('room:talk', this.callbacks.onTalk);
+};
+
 /**
  * On game loaded
  *
@@ -152,6 +163,10 @@ GameController.prototype.onGameLoaded = function(client)
 {
     var game = client.room.game,
         avatar;
+
+    if (game.started) {
+        return;
+    }
 
     for (var i = client.players.items.length - 1; i >= 0; i--) {
         avatar = client.players.items[i].avatar;

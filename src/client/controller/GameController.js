@@ -46,7 +46,8 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     this.attachSocketEvents();
 
     // Hydrate scope:
-    this.$scope.sortorder = '-score';
+    this.$scope.sortorder   = '-score';
+    this.$scope.countFinish = true;
 
     this.chat.setScope(this.$scope);
 

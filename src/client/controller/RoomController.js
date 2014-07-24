@@ -63,9 +63,14 @@ RoomController.prototype.joinRoom = function(name)
         function (result) {
             if (result.success) {
                 controller.$scope.room = controller.repository.get(name);
-                controller.attachEvents(name);
-                controller.setFavoriteName();
-                controller.updateCurrentMessage();
+
+                /*if (controller.$scope.room.inGame) {
+                    controller.start();
+                } else {*/
+                    controller.attachEvents(name);
+                    controller.setFavoriteName();
+                    controller.updateCurrentMessage();
+                //}
             } else {
                 console.error('Could not join room %s', name);
                 controller.goHome();
@@ -224,7 +229,7 @@ RoomController.prototype.setReady = function(player)
 RoomController.prototype.start = function(e)
 {
     // Get first player
-    var player = e.detail.room.getLocalPlayers().getFirst();
+    var player = this.$scope.room.getLocalPlayers().getFirst();
 
     // Set first player favorite name and color
     if (player) {
@@ -233,7 +238,7 @@ RoomController.prototype.start = function(e)
     }
 
     this.repository.stop();
-    this.$location.path('/game/' + e.detail.room.name);
+    this.$location.path('/game/' + this.$scope.room.name);
     this.applyScope();
 };
 

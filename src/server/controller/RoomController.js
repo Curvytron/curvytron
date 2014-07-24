@@ -136,9 +136,15 @@ RoomController.prototype.onJoinRoom = function(client, data, callback)
 {
     var room = this.repository.get(data.room);
 
-    if (room && !room.game) {
+    if (room) {
         room.addClient(client);
         callback({success: true});
+
+        if (room.game) {
+            this.detach(client);
+            this.gameController.attach(client);
+            client.addEvent('room:game:start', {room: room.name});
+        }
     } else {
         callback({success: false});
     }
