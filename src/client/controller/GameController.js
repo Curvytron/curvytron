@@ -234,6 +234,25 @@ GameController.prototype.onBonusClear = function(e)
 };
 
 /**
+ * On color
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onColor = function(e)
+{
+    var data = e.detail,
+        avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.setColor(data.color);
+
+        if (!this.game.running) {
+            this.game.draw();
+        }
+    }
+};
+
+/**
  * On point
  *
  * @param {Event} e

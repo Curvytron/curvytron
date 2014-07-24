@@ -63,6 +63,11 @@ BaseAvatar.prototype.setPosition = function(point)
     this.head[1] = point[1];
 };
 
+BaseAvatar.prototype.setInvincible = function(invincible)
+{
+    this.invincible = invincible;
+};
+
 /**
  * Add Point
  *
@@ -204,7 +209,9 @@ BaseAvatar.prototype.getDistance = function(from, to)
  */
 BaseAvatar.prototype.die = function()
 {
-    this.alive = false;
+    if (!this.invincible) {
+        this.alive = false;
+    }
 };
 
 /**

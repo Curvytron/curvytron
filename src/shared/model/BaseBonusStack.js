@@ -105,6 +105,12 @@ BaseBonusStack.prototype.apply = function(property, value)
     if (property === 'color') {
         return this.avatar.setColor(value);
     }
+
+    if (property === 'position') {
+        if (typeof(value) !== 'undefined') {
+            return this.avatar.setPosition(value);
+        }
+    }
 };
 
 /**
@@ -141,6 +147,10 @@ BaseBonusStack.prototype.append = function(properties, property, value)
     switch (property) {
 
         case 'color':
+            properties[property] = value;
+            break;
+
+        case 'position':
             properties[property] = value;
             break;
 

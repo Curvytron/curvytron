@@ -63,6 +63,17 @@ Avatar.prototype.setAngle = function(angle)
 };
 
 /**
+ * Set color
+ *
+ * @param {Color} color
+ */
+Avatar.prototype.setColor = function(color)
+{
+    BaseAvatar.prototype.setColor.call(this, color);
+    this.emit('color', {avatar: this, color: this.color});
+};
+
+/**
  * Set radius
  *
  * @param {Number} radius
@@ -137,8 +148,11 @@ Avatar.prototype.setPrinting = function(printing)
 Avatar.prototype.die = function()
 {
     BaseAvatar.prototype.die.call(this);
-    this.addPoint(this.head.slice(0));
-    this.emit('die', {avatar: this});
+    
+    if (!this.invincible) {
+        this.addPoint(this.head.slice(0));
+        this.emit('die', {avatar: this});
+    }
 };
 
 /**

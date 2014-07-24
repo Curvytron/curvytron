@@ -1,4 +1,4 @@
-var server = new Server({ port: 8080 })
+var server = new Server({ port: 9000 })
 
 new Inspector(server, 'stats');
 
