@@ -313,7 +313,7 @@ GameController.prototype.onEnd = function(e)
     document.getElementById('game-view').style.display = 'block';
     document.getElementById('round-view').style.display = 'none';
 
-    //createjs.Sound.play('win').volume = 0.2;
+    createjs.Sound.play('win').volume = 0.2;
 };
 
 /**

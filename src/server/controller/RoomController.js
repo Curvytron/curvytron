@@ -300,10 +300,6 @@ RoomController.prototype.startGame = function(room)
 
     this.socketGroup.addEvent('room:game:start', {room: room.name});
 
-    /*for (var i = room.clients.items.length - 1; i >= 0; i--) {
-        this.detach(room.clients.items[i]);
-    }*/
-
     this.gameController.addGame(game);
     game.on('end', this.endGame);
 };
@@ -323,11 +319,9 @@ RoomController.prototype.endGame = function(data)
 
     this.gameController.removeGame(game);
 
-    /*for (var i = room.clients.items.length - 1; i >= 0; i--) {
-        client = room.clients.items[i];
-        this.attach(client);
-        this.emitAllRooms(client);
-    }*/
+    for (var i = room.clients.items.length - 1; i >= 0; i--) {
+        room.clients.items[i].emitAllRooms(client);
+    }
 
     room.closeGame();
 };
