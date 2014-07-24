@@ -121,7 +121,7 @@ BaseBonusStack.prototype.getDefaultProperty = function(property, avatar)
     }
 
     if (property === 'color') {
-        return this.avatar.ownColor;
+        return this.avatar.player.color;
     }
 
     return Avatar.prototype[property];

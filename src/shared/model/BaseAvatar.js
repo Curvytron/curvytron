@@ -21,7 +21,6 @@ function BaseAvatar(player)
     this.score           = 0;
     this.printingTimeout = null;
     this.ready           = false;
-    this.ownColor        = this.color;
     this.present         = true;
 
     this.togglePrinting = this.togglePrinting.bind(this);
@@ -325,7 +324,7 @@ BaseAvatar.prototype.clear = function()
     this.velocity        = BaseAvatar.prototype.velocity;
     this.alive           = true;
     this.printing        = false;
-    this.color           = this.ownColor;
+    this.color           = this.player.color;
     this.radius          = BaseAvatar.prototype.radius;
     this.inverse         = BaseAvatar.prototype.inverse;
     this.invincible      = BaseAvatar.prototype.invincible;

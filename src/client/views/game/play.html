@@ -6,7 +6,7 @@
             <p class="maxScore">First to score <strong>{{ game.maxScore }}</strong> points win the game!</p>
             <ul id="game-players">
                 <li ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
-                    <span class="line-color-preview" style="background-color: {{ avatar.color }};"></span>
+                    <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
                     <span class="round-points pull-right" ng-if="avatar.lastScore && !game.inRound">+{{ avatar.lastScore }}</span>
                     {{ avatar.name }}
                     <span class="score">{{ avatar.score }}</span>
@@ -47,12 +47,12 @@
             <section id="end">
                 <section id="round-view">
                     <i class="icon-trophy"></i>
-                    <p><span class="strong" style="color: {{ roundWinner.color }}">{{ roundWinner.name }}</span> won the round ! </p>
+                    <p><span class="strong" style="color: {{ roundWinner.player.color }}">{{ roundWinner.name }}</span> won the round ! </p>
                 </section>
                 <section id="game-view">
                     <i class="icon-trophy"></i>
                     <p ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-show="$first">
-                        <span class="strong" style="color: {{ avatar.color }}">{{ avatar.name }}</span> won the game !
+                        <span class="strong" style="color: {{ avatar.player.color }}">{{ avatar.name }}</span> won the game !
                     </p>
                     <div>
                         <a href="#/room/{{ game.name }}" class="btn">
@@ -63,7 +63,7 @@
                         <tbody>
                             <tr ng-repeat="avatar in game.avatars.items | orderBy:sortorder">
                                 <td class="rank">{{ $index + 1 }}</td>
-                                <td class="name"><span style="color: {{ avatar.color }}">{{ avatar.name }}</span></td>
+                                <td class="name"><span style="color: {{ avatar.player.color }}">{{ avatar.name }}</span></td>
                                 <td class="points"><strong>{{ avatar.score }}</strong> points</td>
                             </tr>
                         </tbody>
