@@ -11,7 +11,7 @@ function BonusManager(game)
 
     this.onLoad = this.onLoad.bind(this);
 
-    this.sprite = new SpriteAsset('images/bonus.png', 3, 4, this.onLoad, true);
+    this.sprite = new SpriteAsset('images/bonus.png', 4, 4, this.onLoad, true);
     this.assets = {};
 }
 
@@ -24,21 +24,21 @@ BonusManager.prototype.constructor = BonusManager;
  * @type {Array}
  */
 BonusManager.prototype.spritePosition = [
-    'BonusSelfSlow',
-    'BonusSelfFast',
-    'BonusSelfMaster',
-    'BonusSelfSmall',
-    'BonusSelfInverse',
-    'BonusSelfTeleport',
-    'BonusEnemySlow',
-    'BonusEnemyFast',
-    'BonusEnemyBig',
-    'BonusEnemyInverse',
-    'BonusEnemySmall',
-    'BonusEnemyMaster',
-    'BonusEnemyTeleport',
-    'BonusAllColor',
-    'BonusSelfGodzilla',
+      'BonusSelfFast',
+      'BonusEnemyFast',
+      'BonusSelfSlow',
+      'BonusSelfInverse',
+      'BonusEnemySlow',
+      'BonusAllBorderless',
+      'BonusSelfMaster',
+      'BonusSelfTeleport',
+      'BonusEnemyBig',
+      'BonusAllColor',
+      'BonusEnemyInverse',
+      'BonusEnemyTeleport',
+      'BonusSelfGodzilla',
+      'BonusEnemySmall',
+      'BonusSelfSmall',
 ];
 
 /**
