@@ -42,8 +42,11 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     this.onRoundWinner = this.onRoundWinner.bind(this);
     this.onEnd         = this.onEnd.bind(this);
     this.onLeave       = this.onLeave.bind(this);
+    this.leaveGame     = this.leaveGame.bind(this);
 
     this.attachSocketEvents();
+
+    this.$scope.$on('$destroy', this.leaveGame);
 
     // Hydrate scope:
     this.$scope.sortorder   = '-score';
@@ -304,25 +307,13 @@ GameController.prototype.onRoundEnd = function(e)
  */
 GameController.prototype.onEnd = function(e)
 {
-    this.detachSocketEvents();
-    this.game.end();
-
-    this.repository.start();
-
-    avatars = this.game.avatars.filter(function () { return this.local; }).items;
-
-    for (var i = avatars.length - 1; i >= 0; i--) {
-        avatars[i].input.off('move', this.onMove);
-    }
-
-    this.room.closeGame();
-    this.game = null;
+    this.close();
 
     document.getElementById('end').style.display = 'block';
     document.getElementById('game-view').style.display = 'block';
     document.getElementById('round-view').style.display = 'none';
 
-    createjs.Sound.play('win').volume = 0.2;
+    //createjs.Sound.play('win').volume = 0.2;
 };
 
 /**
@@ -357,6 +348,41 @@ GameController.prototype.onLeave = function(e)
     if (avatar) {
         this.game.removeAvatar(avatar);
         this.applyScope();
+    }
+};
+
+/**
+ * Leave room
+ */
+GameController.prototype.leaveGame = function()
+{
+    if (this.game) {
+        this.repository.leave();
+        this.repository.refresh();
+    }
+
+    this.close();
+};
+
+/**
+ * Close game
+ */
+GameController.prototype.close = function()
+{
+    if (this.game) {
+        this.detachSocketEvents();
+        this.game.end();
+
+        avatars = this.game.avatars.filter(function () { return this.local; }).items;
+
+        for (var i = avatars.length - 1; i >= 0; i--) {
+            avatars[i].input.off('move', this.onMove);
+        }
+
+        this.room.closeGame();
+        this.game = null;
+
+        this.repository.start();
     }
 };
 

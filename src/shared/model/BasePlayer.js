@@ -129,3 +129,18 @@ BasePlayer.prototype.getRandomColor = function()
 
     return '#' + code + (miss ? new Array(miss +1).join('0') : '');
 };
+
+/**
+ * Validatre color
+ *
+ * @param {String} color
+ *
+ * @return {Boolean}
+ */
+BasePlayer.prototype.validateColor = function(color)
+{
+    var matches = color.match(new RegExp('^#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$')),
+        yiq = ((parseInt(matches[1], 16) * 0.4) + (parseInt(matches[2], 16) * 0.5) + (parseInt(matches[3], 16) * 0.3)) / 255;
+
+    return yiq > 0.3;
+};

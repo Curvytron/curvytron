@@ -14,7 +14,8 @@ function RoomController(repository, gameController)
     this.repository     = repository;
     this.gameController = gameController;
 
-    this.endGame = this.endGame.bind(this);
+    this.endGame       = this.endGame.bind(this);
+    this.onPlayerLeave = this.onPlayerLeave.bind(this);
 
     this.callbacks = {
         emitAllRooms: function () { controller.emitAllRooms(this); },
@@ -121,6 +122,7 @@ RoomController.prototype.onCreateRoom = function(client, data, callback)
     callback({success: room ? true : false, room: room? room.name : null});
 
     if (room) {
+        room.on('player:leave', this.onPlayerLeave);
         this.socketGroup.addEvent('room:new', room.serialize());
     }
 };
@@ -165,16 +167,19 @@ RoomController.prototype.onLeaveRoom = function(client)
             this.gameController.detach(client);
         }
 
-        for (var i = client.players.items.length - 1; i >= 0; i--) {
-            player = client.players.items[i];
-            room.removePlayer(player);
-            this.socketGroup.addEvent('room:leave', {room: room.name, player: player.name});
-        }
-
-        client.players.clear();
         room.removeClient(client);
         this.checkRoomClose(room);
     }
+};
+
+/**
+ * On player leave
+ *
+ * @param {Object} data
+ */
+RoomController.prototype.onPlayerLeave = function(data)
+{
+    this.socketGroup.addEvent('room:leave', {room: data.room.name, player: data.player.name});
 };
 
 /**
@@ -247,12 +252,13 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
     var room = client.room,
         player = client.players.getById(data.player);
 
-    if (room && player) {
-        player.setColor(data.color.substr(0, Player.prototype.colorMaxLength));
-
+    if (room && player && player.validateColor(data.color)) {
+        player.setColor(data.color);
         callback({success: true, color: player.color});
 
         room.client.addEvent('room:player:color', { player: player.name, color: player.color, room: room.name });
+    } else {
+        callback({success: false, color: player.color});
     }
 };
 
@@ -294,9 +300,9 @@ RoomController.prototype.startGame = function(room)
 
     this.socketGroup.addEvent('room:game:start', {room: room.name});
 
-    for (var i = room.clients.items.length - 1; i >= 0; i--) {
+    /*for (var i = room.clients.items.length - 1; i >= 0; i--) {
         this.detach(room.clients.items[i]);
-    }
+    }*/
 
     this.gameController.addGame(game);
     game.on('end', this.endGame);
@@ -317,11 +323,11 @@ RoomController.prototype.endGame = function(data)
 
     this.gameController.removeGame(game);
 
-    for (var i = room.clients.items.length - 1; i >= 0; i--) {
+    /*for (var i = room.clients.items.length - 1; i >= 0; i--) {
         client = room.clients.items[i];
         this.attach(client);
         this.emitAllRooms(client);
-    }
+    }*/
 
     room.closeGame();
 };

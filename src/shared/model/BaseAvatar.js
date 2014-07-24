@@ -10,7 +10,7 @@ function BaseAvatar(player)
     this.name            = player.name;
     this.color           = player.color;
     this.player          = player;
-    this.head            = [-100, -100];
+    this.head            = new Array(2);
     this.trail           = new Trail(this);
     this.bonusStack      = new BonusStack(this);
     this.angle           = 0;

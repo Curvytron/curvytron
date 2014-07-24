@@ -19,9 +19,9 @@ function GameController()
     this.onEnd         = this.onEnd.bind(this);
 
     this.callbacks = {
-        onGameLoaded: function () { controller.onGameLoaded(this); },
+        onLoaded: function () { controller.onLoaded(this); },
         onMove: function (data) { controller.onMove(this, data); },
-        onTalk: function (data) { controller.onTalk(this, data.data, data.callback); }
+        onTalk: function (data) { controller.onTalk(this, data.data, data.callback); },
     };
 }
 
@@ -106,7 +106,7 @@ GameController.prototype.attachEvents = function(client)
 {
     var avatar, i;
 
-    client.on('loaded', this.callbacks.onGameLoaded);
+    client.on('loaded', this.callbacks.onLoaded);
     client.on('room:talk', this.callbacks.onTalk);
 
     if (client.players.items.length) {
@@ -132,7 +132,7 @@ GameController.prototype.detachEvents = function(client)
 {
     var avatar;
 
-    client.removeListener('loaded', this.callbacks.onGameLoaded);
+    client.removeListener('loaded', this.callbacks.onLoaded);
     client.removeListener('room:talk', this.callbacks.onTalk);
 
     if (client.players.items.length) {
@@ -159,7 +159,7 @@ GameController.prototype.attachSpectator = function()
  *
  * @param {SocketClient} client
  */
-GameController.prototype.onGameLoaded = function(client)
+GameController.prototype.onLoaded = function(client)
 {
     var game = client.room.game,
         avatar;

@@ -35,5 +35,28 @@ Room.prototype.removeClient = function(client)
 {
     if (this.clients.remove(client)) {
         client.room = null;
+
+        for (var i = client.players.items.length - 1; i >= 0; i--) {
+            player = client.players.items[i];
+            this.removePlayer(player);
+        }
+
+        client.players.clear();
     }
+};
+
+/**
+ * Remove player
+ *
+ * @param {Player} player
+ */
+Room.prototype.removePlayer = function(player)
+{
+    var result = BaseRoom.prototype.removePlayer.call(this, player);
+
+    if (result) {
+        this.emit('player:leave', {room: this, player: player});
+    }
+
+    return result;
 };

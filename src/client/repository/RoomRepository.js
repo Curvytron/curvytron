@@ -21,11 +21,7 @@ function RoomRepository(client)
     this.onPlayerReady   = this.onPlayerReady.bind(this);
     this.onPlayerColor   = this.onPlayerColor.bind(this);
 
-    if (this.client.connected) {
-        this.start();
-    } else {
-        this.client.on('connected', this.start);
-    }
+    this.start();
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
@@ -325,8 +321,24 @@ RoomRepository.prototype.setSynced = function()
 RoomRepository.prototype.start = function()
 {
     if (!this.synced) {
-        this.attachEvents();
-        this.client.addEvent('room:fetch');
+        if (this.client.connected) {
+            this.attachEvents();
+            this.client.addEvent('room:fetch');
+        } else {
+            this.client.on('connected', this.start);
+        }
+    }
+};
+
+/**
+ * Refresh room
+ */
+RoomRepository.prototype.refresh = function()
+{
+    if (this.client.connected) {
+        this.stop();
+        this.rooms.clear();
+        this.start();
     }
 };
 

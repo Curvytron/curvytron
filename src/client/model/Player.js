@@ -9,8 +9,8 @@ function Player(client, name, color, mail)
 {
     BasePlayer.call(this, client, name, color, mail);
 
-    this.local    = false;
-    this.controls = null;
+    this.local       = false;
+    this.controls    = null;
 
     this.onControlChange = this.onControlChange.bind(this);
 }
