@@ -20,7 +20,6 @@ function RoomController($scope, $rootScope, $routeParams, $location, $cookies, r
     this.repository = repository;
     this.client     = client;
     this.chat       = chat;
-    this.startGame  = false;
 
     // Binding:
     this.addPlayer  = this.addPlayer.bind(this);
@@ -82,9 +81,10 @@ RoomController.prototype.joinRoom = function(name)
  */
 RoomController.prototype.leaveRoom = function()
 {
-    if (!this.startGame) {
+    if (this.$location.path() !== ('/game/' + this.room.name)) {
         this.repository.leave();
     }
+
     this.detachEvents();
 };
 
@@ -241,7 +241,6 @@ RoomController.prototype.start = function(e)
     }
 
     this.repository.stop();
-    this.startGame = true;
     this.$location.path('/game/' + this.room.name);
     this.applyScope();
 };
