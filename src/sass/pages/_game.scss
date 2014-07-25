@@ -175,7 +175,7 @@
             width: $aside-width - $aside-border-size;
             min-width: $aside-width - $aside-border-size;
             max-width: $aside-width - $aside-border-size;
-            background: lighten($aside-background, 5%);
+            background: $aside-background;
             padding: 10px 20px;
             margin: 0;
             .game-copy {
@@ -321,26 +321,25 @@
     .chat-wrapper {
         position: fixed;
         bottom: 0;
-        left: 0px;
+        left: 0;
         width: $aside-width - $aside-border-size;
-        padding: 10px;
         height: 250px;
-        background: lighten($aside-background, 10);
-        border-top: 2px solid lighten($aside-background, 20%);
+        background: lighten($aside-background, 5);
         font-size: 14px;
 
         #feed {
             position: relative;
-            height: 175px;
+            height: 195px;
             overflow-y: auto;
-            padding: 10px 0;
-            border: 2px solid lighten($aside-background, 20%);
-            @include border-radius(4px);
-            background: lighten($aside-background, 5%);
+            padding: 15px 20px 15px;
+            background: #1c1c1c;
 
+            .welcome {
+                text-transform: uppercase;
+                font-size: 16px;
+            }
             .one-message {
-                margin: 0 15px;
-                font-size: 14px;
+                font-size: 16px;
                 line-height: 22px;
                 padding: 3px 0;
                 word-wrap: break-word;
@@ -348,31 +347,34 @@
         }
 
         .action-line {
-            margin-top: 10px;
             height: 60px;
 
             .form-control {
-                height: 47px;
+                height: 55px;
                 font-size: 14px;
-                border-color: lighten($aside-background, 20%);
-                color: #CCC;
+                border: none;
+                color: $aside-background;
+                background: #ffffff;
+                border-radius: 0;
 
-                &:focus {
-                    border-color: lighten($aside-background, 20%);
-                }
+                // &:focus {
+                //     border-color: lighten($aside-background, 20%);
+                // }
             }
 
             .btn {
-                width: 44px;
+                width: 60px;
                 padding-left: 0;
                 padding-right: 0;
                 text-align: center;
-                margin-left: -2px;
-                border-color: lighten($aside-background, 20%);
+                border: none;
+                background: #ff6e90;
+                line-height: 42.5px;
+                border-radius: 0;
 
-                &:hover {
-                    background: lighten($aside-background, 20%);
-                }
+                // &:hover {
+                //     background: lighten(#ff6e90, 5%);
+                // }
             }
         }
     }
