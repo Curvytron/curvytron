@@ -124,10 +124,14 @@ BasePlayer.prototype.serialize = function()
  */
 BasePlayer.prototype.getRandomColor = function()
 {
-    var code = Math.floor(Math.random()*16777215).toString(16),
-        miss = 6 - code.length;
+    var color = '',
+        randomNum = function () { return Math.ceil(Math.random() * 255).toString(16); };
 
-    return '#' + code + (miss ? new Array(miss +1).join('0') : '');
+    while (!this.validateColor(color, true)) {
+        color = '#' + randomNum() + randomNum() + randomNum();
+    }
+
+    return color;
 };
 
 /**
@@ -137,10 +141,17 @@ BasePlayer.prototype.getRandomColor = function()
  *
  * @return {Boolean}
  */
-BasePlayer.prototype.validateColor = function(color)
+BasePlayer.prototype.validateColor = function(color, yiq)
 {
-    var matches = color.match(new RegExp('^#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$')),
-        yiq = ((parseInt(matches[1], 16) * 0.4) + (parseInt(matches[2], 16) * 0.5) + (parseInt(matches[3], 16) * 0.3)) / 255;
+    var matches = color.match(new RegExp('^#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$'));
 
-    return yiq > 0.3;
+
+
+    if (matches && yiq) {
+        var ratio = ((parseInt(matches[1], 16) * 0.4) + (parseInt(matches[2], 16) * 0.5) + (parseInt(matches[3], 16) * 0.3)) / 255;
+
+        return ratio > 0.3;
+    }
+
+    return matches ? true : false;
 };
