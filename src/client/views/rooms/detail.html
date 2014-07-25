@@ -58,7 +58,7 @@
                         </td>
                         <td class="player-color-col">
                             <span class="color-preview" style="background-color: {{ player.color }};"></span>
-                            <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-change="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ colorMaxLength }}" />
+                            <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-blur="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ colorMaxLength }}" />
                         </td>
                         <td>
                             <button class="btn btn-default control"

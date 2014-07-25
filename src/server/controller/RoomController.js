@@ -252,10 +252,11 @@ RoomController.prototype.onTalk = function(client, data, callback)
 RoomController.prototype.onColorRoom = function(client, data, callback)
 {
     var room = client.room,
-        player = client.players.getById(data.player);
+        player = client.players.getById(data.player)
+        color = data.color.toLowerCase();
 
-    if (room && player && player.validateColor(data.color)) {
-        player.setColor(data.color);
+    if (room && player && player.validateColor(color)) {
+        player.setColor(color);
         callback({success: true, color: player.color});
 
         room.client.addEvent('room:player:color', { player: player.name, color: player.color, room: room.name });
