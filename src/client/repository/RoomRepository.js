@@ -20,6 +20,7 @@ function RoomRepository(client)
     this.onRoomGameEnd   = this.onRoomGameEnd.bind(this);
     this.onPlayerReady   = this.onPlayerReady.bind(this);
     this.onPlayerColor   = this.onPlayerColor.bind(this);
+    this.setSynced       = this.setSynced.bind(this);
 
     this.start();
 }
@@ -40,6 +41,7 @@ RoomRepository.prototype.attachEvents = function()
     this.client.on('room:game:end', this.onRoomGameEnd);
     this.client.on('room:player:ready', this.onPlayerReady);
     this.client.on('room:player:color', this.onPlayerColor);
+    this.client.on('fetched', this.setSynced);
 };
 
 /**
@@ -55,6 +57,7 @@ RoomRepository.prototype.detachEvents = function()
     this.client.off('room:game:end', this.onRoomGameEnd);
     this.client.off('room:player:ready', this.onPlayerReady);
     this.client.off('room:player:color', this.onPlayerColor);
+    this.client.off('fetched', this.onFetched);
 };
 
 /**
@@ -169,8 +172,6 @@ RoomRepository.prototype.onNewRoom = function(e)
     if(this.rooms.add(room)) {
         this.emit('room:new', {room: room});
     }
-
-    this.setSynced();
 };
 
 /**

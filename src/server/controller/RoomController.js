@@ -103,6 +103,8 @@ RoomController.prototype.emitAllRooms = function(client)
         events.push(['room:new', this.repository.rooms.items[i].serialize()]);
     }
 
+    events.push(['fetched']);
+
     client.addEvents(events);
 };
 

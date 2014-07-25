@@ -121,8 +121,10 @@ RoomController.prototype.detachEvents = function(name)
     this.repository.off('room:player:color:' + name, this.applyScope);
     this.repository.off('room:game:start:' + name, this.start);
 
-    for (var i = this.room.players.items.length - 1; i >= 0; i--) {
-        this.room.players.items[i].off('control:change', this.applyScope);
+    if (this.room) {
+        for (var i = this.room.players.items.length - 1; i >= 0; i--) {
+            this.room.players.items[i].off('control:change', this.applyScope);
+        }
     }
 };
 
