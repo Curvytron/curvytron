@@ -22,13 +22,13 @@ BonusManager.prototype.constructor = BonusManager;
  * @type {Array}
  */
 BonusManager.prototype.bonusTypes = [
-    /*BonusSelfSlow,
+    BonusSelfSlow,
     BonusSelfFast,
     BonusSelfMaster,
     BonusEnemySlow,
     BonusEnemyFast,
     BonusEnemyBig,
-    BonusEnemyInverse,*/
+    BonusEnemyInverse,
     BonusAllColor/*,
     BonusSelfGodzilla*/
 ];
