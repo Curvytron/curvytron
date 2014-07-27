@@ -147,6 +147,7 @@ RoomController.prototype.onJoinRoom = function(client, data, callback)
         if (room.game) {
             this.detach(client);
             this.gameController.attach(client);
+            client.on('room:talk', this.callbacks.onTalk);
             client.addEvent('room:game:start', {room: room.name});
         }
     } else {
