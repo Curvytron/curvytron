@@ -1,7 +1,7 @@
 
 #room {
     .room-details {
-        padding-top: 10px;
+        padding-top: 50px;
     }
 
     .room-chat {
@@ -15,7 +15,8 @@
             #feed {
                 padding: 15px 0;
                 position: relative;
-                max-height: 250px;
+                height: 270px;
+                max-height: 270px;
                 overflow-y: auto;
                 background: darken($background-color, 7%);
 
@@ -132,7 +133,7 @@
                 }
 
                 .col-color {
-                    padding-left: 17px;
+                    // padding-left: 17px;
                 }
             }
         }
@@ -141,23 +142,24 @@
 
     .col-color {
         position: relative;
-        padding-left: 20px;
+        // padding-left: 20px;
 
         .line-color-preview {
-            width: 10px;
-            height: 100%;
+            width: 12px;
             position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
+            left: 12px;
+            top: 10px;
+            bottom: 10px;
         }
 
         .form-control {
             height: 40px;
+            border-left-width: 12px;
         }
 
         p {
             margin: 0;
+            padding-left: 22px;
             font-weight: 400;
         }
     }
