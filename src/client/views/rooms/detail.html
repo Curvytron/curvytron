@@ -10,6 +10,7 @@
                 </div>
             </form>
             {{ room.name }}
+            <div class="clearfix"></div>
         </h1>
 
         <div class="room-details">
@@ -28,41 +29,31 @@
                         </div>
                     </div>
                     <form ng-submit="submitTalk()" name="talk" class="action-line">
-                        <div class="input-group">
+                            <button type="submit" class="btn btn-default"><span><i class="icon-angle-right"></i></span></button>
                             <input type="text" name="message" ng-model="currentMessage.content" class="sent-message form-control" placeholder="Enter message..." maxlength="{{ messageMaxLength }}" />
-                            <span class="input-group-btn">
-                                <button type="submit" class="btn btn-default"><i class="icon-angle-right"></i></button>
-                            </span>
-                        </div>
+                            <div class="clearfix"></div>
                     </form>
                 </div>
             </div>
 
-            <table class="room-players table table-hover table-striped v-align-middle">
+            <table class="room-players table v-align-middle">
                 <thead>
                     <tr>
-                        <th class="col-ready">Remove</th>
-                        <th class="col-ready">Ready?</th>
                         <th class="col-player">Name</th>
                         <th class="col-color">Color</th>
                         <th class="col-keys">Controls</th>
+                        <th class="col-ready">Ready?</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="player in room.players.items" ng-if="player.local" class="local">
-                        <td>
-                            <button type="button" class="btn btn-default btn-sm" ng-click="removePlayer(player)">
+                        <td class="col-player">
+                            <button type="button" class="btn btn-default btn-sm pull-left" ng-click="removePlayer(player)">
                                 <span class="icon-close"></span>
                             </button>
-                        </td>
-                        <td>
-                            <input id="player-ready-{{ player.id }}" class="custom-toggle" type="checkbox" ng-click="setReady(player)" ng-checked="player.ready">
-                            <label for="player-ready-{{ player.id }}"><i class="icon-close"></i><i class="icon-check"></i></label>
-                        </td>
-                        <td>
                             {{ player.name }}
                         </td>
-                        <td class="player-color-col">
+                        <td class="col-color">
                             <span class="color-preview" style="background-color: {{ player.color }};"></span>
                             <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-blur="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ colorMaxLength }}" />
                         </td>
@@ -75,23 +66,29 @@
                                 {{ control.mapper.view }}
                             </button>
                         </td>
-                    </tr>
-                    <tr ng-repeat="player in room.players.items" ng-if="!player.local">
-                        <td></td>
-                        <td class="text-center">
-                            <span class="player-ready" ng-class="{ ready: player.ready }">
-                                <i ng-if="player.ready == true" class="icon-check success"></i>
-                                <i ng-if="player.ready == false" class="icon-close success"></i>
+                        <td class="col-ready">
+                            <span class="player-ready" ng-click="setReady(player)" ng-class="{ ready: player.ready }">
+                                <span>Ready?</span>
                             </span>
                         </td>
-                        <td>
+                    </tr>
+                    <tr ng-repeat="player in room.players.items" ng-if="!player.local">
+                        <td class="col-player">
                             {{ player.name }}
                         </td>
-                        <td class="player-color-col">
-                            <span class="color-preview" style="background-color: {{ player.color }};"></span>
+                        <td class="col-color">
+                            <span class="line-color-preview" style="background-color: {{ player.color }};"></span>
                             <p>{{ player.color }}</p>
                         </td>
                         <td></td>
+                        <td class="col-ready">
+                            <span class="player-ready" ng-class="{ ready: player.ready }">
+                                <span>
+                                    <i ng-if="player.ready == true" class="icon-check success"></i>
+                                    <i ng-if="player.ready == false" class="icon-close success"></i>
+                                </span>
+                            </span>
+                        </td>
                     </tr>
                 </tbody>
             </table>

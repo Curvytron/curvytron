@@ -70,10 +70,30 @@ header {
   margin: 0 0 40px 0;
   position: relative;
   border-bottom: 10px solid #FFF;
+  position: relative;
   @include gradient($header-background-from, $header-background-to);
+
+  &:after {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    content: '';
+  }
+
+  &:after {
+    @include gradient($header-background-to, $header-background-from);
+    @include opacity(0);
+    @include animation(headerGradient 10s infinite);
+  }
 
   a, a:visited {
     color: $header-color;
+    z-index: 100;
+    position: relative;
+
     &.animated {
       &:after {
         height: 3px;
@@ -83,6 +103,8 @@ header {
   }
   #logo {
     width: 150px;
+    position: relative;
+    z-index: 100;
   }
   .game-copy {
     display: none;
