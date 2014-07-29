@@ -17,36 +17,30 @@
         <table id="rooms" class="table table-hover v-align-middle">
             <tbody>
                 <tr ng-repeat="room in rooms.items" ng-if="!room.inGame" ng-click="join(room)" class="room">
-                    <td><h3><a href="#/room/{{ room.name }}">{{ room.name }}</a></h3></td>
-                    <td>
-                        <h4>
-                            <ng-pluralize count="room.players.items.length "
-                                             when="{'0': 'No player',
-                                                 'one': '1 player',
-                                                 'other': '{} players'}">
-                        </h4>
+                    <td class="room-name"><a href="#/room/{{ room.name }}">{{ room.name }}</a></td>
+                    <td class="room-nb-players">
+                        <ng-pluralize count="room.players.items.length "
+                                         when="{'0': 'No player',
+                                             'one': '1 player',
+                                             'other': '{} players'}">
                     </td>
-                    <td class="text-right room-enter-col">
+                    <td class="room-enter-col">
                         <a href="#/room/{{ room.name }}" class="room-enter">
-                            Join
-                            <i class="icon-angle-right"></i>
+                            <span><i class="icon-game"></i> Join</span>
                         </a>
                     </td>
                 </tr>
                 <tr ng-repeat="room in rooms.items" ng-if="room.inGame" class="room in-game">
-                    <td><h3><a href="#/room/{{ room.name }}">{{ room.name }}</a></h3></td>
-                    <td>
-                        <h4>
-                            <ng-pluralize count="room.players.items.length "
-                                             when="{'0': 'No player',
-                                                 'one': '1 player',
-                                                 'other': '{} players'}">
-                        </h4>
+                    <td class="room-name"><a href="#/room/{{ room.name }}">{{ room.name }}</a></td>
+                    <td class="room-nb-players">
+                        <ng-pluralize count="room.players.items.length "
+                                         when="{'0': 'No player',
+                                             'one': '1 player',
+                                             'other': '{} players'}">
                     </td>
-                    <td class="text-right room-enter-col">
+                    <td class="room-enter-col">
                         <a href="#/room/{{ room.name }}" class="room-enter">
-                            Spectate
-                            <i class="icon-angle-right"></i>
+                            <span><i class="icon-game"></i> Spectate</span>
                         </a>
                     </td>
                 </tr>
