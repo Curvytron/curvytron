@@ -234,11 +234,16 @@
             padding: 20px;
             font-size: 100px;
             line-height: 140px;
-            font-weight: 300;
+            font-weight: normal;
             text-align: center;
             color: #FFF;
             background: transparent;
-            @extend .rounded;
+            @include border-radius(20px);
+            @include transform(rotate(45deg));
+
+            .count {
+                @include transform(rotate(-45deg));
+            }
         }
 
         .countdown-anim {
@@ -250,10 +255,25 @@
             margin-top: -125px;
             margin-left: -125px;
             background: transparentize(lighten($game-background, 10%), 0.8);
-            border: 4px solid lighten($game-background, 10%);
-            @include animation(countdownAnim 1s infinite);
+            @include animation(spin 4s infinite);
             z-index: 90;
-            @extend .rounded;
+            @include border-radius(15px);
+            @include transform(rotate(45deg));
+
+            border-top: 10px solid $header-background-from;
+            border-bottom: 10px solid $header-background-to;
+            background-image: -webkit-gradient(linear, 0 0, 0 100%, from($header-background-from), to($header-background-to));
+            background-image: -webkit-linear-gradient($header-background-from, $header-background-to);
+            background-image: -moz-linear-gradient($header-background-from, $header-background-to),
+            -moz-linear-gradient($header-background-from, $header-background-to);
+            background-image: -o-linear-gradient($header-background-from, $header-background-to),
+            -o-linear-gradient($header-background-from, $header-background-to);
+            background-image: linear-gradient($header-background-from, $header-background-to),
+            linear-gradient($header-background-from, $header-background-to);
+            -moz-background-size: 10px 100%;
+            background-size: 10px 100%;
+            background-position: 0 0, 100% 0;
+            background-repeat: no-repeat;
         }
 
         #game {
