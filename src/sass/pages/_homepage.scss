@@ -7,6 +7,7 @@
 }
 li.player-row {
     vertical-align: middle;
+
     img {
         width: 40px;
         border-radius: 50%;
@@ -20,18 +21,22 @@ li.player-row {
 .top-right-form {
     float: right;
     max-width: 320px;
+
     .form-control {
         border: 2px solid $text-color !important;
         font-weight: $base-font-weight;
         line-height: 44px;
     }
+
     .btn-default {
         line-height: 44px;
+
         &:hover {
             background: $text-color;
             color: $background-color;
         }
     }
+
     .input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group {
         margin-left: -2px;
     }
@@ -53,6 +58,7 @@ li.player-row {
         &.in-game {
             td {
                 cursor: wait;
+
                 &, a {
                     color: transparentize($text-color, 0.5) !important;
                 }

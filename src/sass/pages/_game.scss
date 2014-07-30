@@ -7,11 +7,13 @@
     height: 100%;
     width: 100%;
     background: $game-background;
+
     aside, #col-right {
         position: fixed;
         top: 0;
         bottom: 0;
     }
+
     aside {
         width: $aside-width;
         min-width: $aside-width;
@@ -24,6 +26,7 @@
         border-right: $aside-border-size solid $header-background-to;
         padding-top: $game-header-height + 160px;
         padding-bottom: 298px;
+
         header {
             height: $game-header-height;
             line-height: $game-header-height;
@@ -39,11 +42,13 @@
             z-index: 100;
             text-align: left;
             border: 0;
+
             a {
                 display: block;
                 line-height: $game-header-height - 4px;
                 height: $game-header-height;
                 @include transition(opacity 0.15s linear);
+
                 img {
                     height: 80px;
                     width: 80px;
@@ -58,6 +63,7 @@
                 }
             }
         }
+
         .maxScore {
             padding: 0 10px 0 20px;
             text-align: left;
@@ -90,6 +96,7 @@
                 font-weight: bold;
             }
         }
+
         h3 {
             margin: 0;
             color: #FFF;
@@ -108,14 +115,17 @@
             -o-text-overflow: ellipsis; /* pour Opera 9 */
             text-overflow: ellipsis;
         }
+
         #game-players {
             @extend .no-bullet;
             margin-bottom: 0;
+
             li {
                 border-bottom: 2px solid lighten($game-background, 10%);
                 padding: 15px 65px 15px 20px;
                 position: relative;
                 font-size: 18px;
+
                 .score {
                     display: block;
                     text-align: center;
@@ -128,14 +138,17 @@
                     font-size: 26px;
                     font-weight: bold;
                 }
+
                 .round-points {
                     font-size: 18px;
                     margin-left: 10px;
                     font-weight: 300;
                 }
+
                 &:first-child {
                     border-top: 2px solid lighten($game-background, 10%);
                 }
+
                 &.dead {
                     @include animation(deadAnim 1s forwards);
                     @include transition(all 0.2s ease);
@@ -145,6 +158,7 @@
                         @include opacity(50);
                     }
                 }
+
                 .line-color-preview {
                     width: 6px;
                     height: 100%;
@@ -155,19 +169,23 @@
                 }
             }
         }
+
         #radio {
             position: fixed;
             left: 0;
             bottom: 0;
         }
+
         #fps {
             width: 30px;
             text-align: right;
         }
+
         #ping {
             width: 52px;
             text-align: right;
         }
+
         footer {
             display: block !important;
             position: fixed;
@@ -179,6 +197,7 @@
             background: $aside-background;
             padding: 10px 20px;
             margin: 0;
+
             .game-copy {
                 color: #FFF;
                 display: block;
@@ -188,6 +207,7 @@
                 cursor: pointer;
                 @include opacity(50);
                 @include transition(all 0.2s ease);
+
                 &:hover {
                     @include opacity(100);
                     text-decoration: none;
@@ -195,11 +215,13 @@
             }
         }
     }
+
     #col-right {
         bottom: 0;
         right: 0;
         left: $aside-width;
         text-align: center;
+
         .countdown {
             position: absolute;
             top: 50%;
@@ -218,6 +240,7 @@
             background: transparent;
             @extend .rounded;
         }
+
         .countdown-anim {
             width: 250px;
             height: 250px;
@@ -232,11 +255,13 @@
             z-index: 90;
             @extend .rounded;
         }
+
         #game {
             z-index: 50;
             border: 4px solid lighten($game-background, 30%);
         }
-       #end {
+
+        #end {
             position: absolute;
             top: 0;
             right: 0;
@@ -247,19 +272,23 @@
             background: transparentize(darken($game-background, 5%), 0.2);
             overflow-y: auto;
             display: none;
+
             #round-view, #game-view {
                 position: relative;
                 color: #FFF;
                 display: none;
+
                 i {
                     display: block;
                     font-size: 100px;
                 }
+
                 p {
                     font-size: 40px;
                     font-weight: 300;
                     line-height: 110px;
                     display: inline-block;
+
                     &:after {
                         content: '';
                         display: block;
@@ -271,18 +300,22 @@
                     }
                 }
             }
+
             #round-view {
                 top: 50%;
                 -webkit-transform: translateY(-50%);
                 -ms-transform: translateY(-50%);
                 transform: translateY(-50%);
             }
+
             #game-view {
                 padding: 60px 0 40px 0;
+
                 table.recap {
                     max-width: 700px;
                     margin: 0 auto;
                     text-align: left;
+
                     td {
                         border-top: 2px solid transparentize(#FFF, 0.95);
                         background: transparentize(#FFF, 0.95);
@@ -290,24 +323,29 @@
                         padding: 30px 25px;
                         font-size: 30px;
                         font-weight: 300;
+
                         &.rank {
                             width: 80px;
                             text-align: center;
                             font-weight: bold;
                         }
+
                         &.name {
                             font-weight: bold;
                         }
+
                         &.points {
                             width: 210px;
                         }
                     }
+
                     tr {
                         &:first-child {
                             td {
                                 border: 0;
                             }
                         }
+
                         &:hover {
                             td {
                                 background: transparentize(#FFF, 0.9);
@@ -339,6 +377,7 @@
                 text-transform: uppercase;
                 font-size: 16px;
             }
+
             .one-message {
                 font-size: 16px;
                 line-height: 22px;
@@ -398,7 +437,6 @@
 .btn-back-to-room {
     border: 2px solid #888;
     padding: 10px 25px;
-    @include border-radius(4px);
     color: #888 !important;
     font-weight: 400;
     margin: 40px 0;
