@@ -144,6 +144,17 @@ RoomController.prototype.onJoinRoom = function(client, data, callback)
         room.addClient(client);
         callback({success: true});
 
+        var events = [],
+            player, i;
+
+        for (i = room.players.items.length - 1; i >= 0; i--) {
+            player = room.players.items[i]
+            events.push(['room:player:color', { player: player.id, color: player.color, room: room.name }]);
+            events.push(['room:player:ready', { player: player.id, ready: player.ready, room: room.name }]);
+        }
+
+        client.addEvents(events);
+
         if (room.game) {
             this.detach(client);
             this.gameController.attach(client);
@@ -182,7 +193,7 @@ RoomController.prototype.onLeaveRoom = function(client)
  */
 RoomController.prototype.onPlayerLeave = function(data)
 {
-    this.socketGroup.addEvent('room:leave', {room: data.room.name, player: data.player.name});
+    this.socketGroup.addEvent('room:leave', {room: data.room.name, player: data.player.id});
 };
 
 /**
@@ -253,16 +264,16 @@ RoomController.prototype.onTalk = function(client, data, callback)
 RoomController.prototype.onColorRoom = function(client, data, callback)
 {
     var room = client.room,
-        player = client.players.getById(data.player)
+        player = client.players.getById(data.player),
         color = data.color.toLowerCase();
 
     if (room && player && player.validateColor(color)) {
         player.setColor(color);
         callback({success: true, color: player.color});
 
-        room.client.addEvent('room:player:color', { player: player.name, color: player.color, room: room.name });
+        room.client.addEvent('room:player:color', { player: player.id, color: player.color, room: room.name });
     } else {
-        callback({success: false, color: player.color});
+        callback({success: false});
     }
 };
 
@@ -283,7 +294,7 @@ RoomController.prototype.onReadyRoom = function(client, data, callback)
 
         callback({success: true, ready: player.ready});
 
-        room.client.addEvent('room:player:ready', { player: player.name, ready: player.ready, room: room.name });
+        room.client.addEvent('room:player:ready', { player: player.id, ready: player.ready, room: room.name });
 
         if (room.isReady()) {
             this.startGame(room);

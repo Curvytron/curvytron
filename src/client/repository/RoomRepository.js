@@ -57,7 +57,7 @@ RoomRepository.prototype.detachEvents = function()
     this.client.off('room:game:end', this.onRoomGameEnd);
     this.client.off('room:player:ready', this.onPlayerReady);
     this.client.off('room:player:color', this.onPlayerColor);
-    this.client.off('fetched', this.onFetched);
+    this.client.off('fetched', this.setSynced);
 };
 
 /**
@@ -166,7 +166,7 @@ RoomRepository.prototype.onNewRoom = function(e)
     room.inGame = data.game;
 
     for (var i = data.players.length - 1; i >= 0; i--) {
-        room.addPlayer(new Player(data.players[i].client, data.players[i].name, data.players[i].color));
+        room.addPlayer(new Player(data.players[i].id, data.players[i].client, data.players[i].name, data.players[i].color));
     }
 
     if(this.rooms.add(room)) {
@@ -204,7 +204,7 @@ RoomRepository.prototype.onJoinRoom = function(e)
 {
     var data = e.detail,
         room = this.rooms.getById(data.room),
-        player = new Player(data.player.client, data.player.name, data.player.color);
+        player = new Player(data.player.id, data.player.client, data.player.name, data.player.color);
 
     if (room && room.addPlayer(player)) {
         data = {room: room, player: player};

@@ -6,7 +6,7 @@ function BaseRoom(name)
     EventEmitter.call(this);
 
     this.name    = name;
-    this.players = new Collection([], 'name');
+    this.players = new Collection([], 'id', true);
     this.warmup  = null;
 }
 
@@ -63,7 +63,7 @@ BaseRoom.prototype.equal = function(room)
  */
 BaseRoom.prototype.isNameAvailable = function(name)
 {
-    return !this.players.indexExists(name);
+    return !this.players.match(function () { return this.name === name; });
 };
 
 /**

@@ -90,7 +90,7 @@ GameController.prototype.detach = function(client)
     if (client.room.game) {
         for (var i = client.players.items.length - 1; i >= 0; i--) {
             avatar = client.players.items[i].avatar;
-            client.room.game.client.addEvent('game:leave', {avatar: avatar.name});
+            client.room.game.client.addEvent('game:leave', {avatar: avatar.id});
             client.room.game.removeAvatar(avatar);
         }
     }
@@ -196,7 +196,7 @@ GameController.prototype.onPoint = function(data)
         game = avatar.player.client.room.game,
         point = data.point;
 
-    game.client.addEvent('point', {avatar: avatar.name, point: point});
+    game.client.addEvent('point', {avatar: avatar.id, point: point});
 };
 
 /**
@@ -209,7 +209,7 @@ GameController.prototype.onDie = function(data)
     var avatar = data.avatar,
         game = avatar.player.client.room.game;
 
-    game.client.addEvent('die', {avatar: avatar.name});
+    game.client.addEvent('die', {avatar: avatar.id});
 };
 
 /**
@@ -249,7 +249,7 @@ GameController.prototype.onProperty = function(data)
         return;
     }
 
-    game.client.addEvent('property', {avatar: data.avatar.name, property: data.property, value: data.value});
+    game.client.addEvent('property', {avatar: data.avatar.id, property: data.property, value: data.value});
 };
 
 /**
@@ -261,7 +261,7 @@ GameController.prototype.onBonusStack = function(data)
 {
     var game = data.avatar.player.client.room.game;
 
-    game.client.addEvent('bonus:stack', {avatar: data.avatar.name, method: data.method, bonus: data.bonus.serialize()});
+    game.client.addEvent('bonus:stack', {avatar: data.avatar.id, method: data.method, bonus: data.bonus.serialize()});
 };
 
 // Game events:

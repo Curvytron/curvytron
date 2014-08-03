@@ -192,7 +192,7 @@ RoomController.prototype.setColor = function(player)
 
     this.repository.setColor(
         this.room.name,
-        player.name,
+        player.id,
         player.color,
         function (result) {
             if (!result.success) {
@@ -217,7 +217,7 @@ RoomController.prototype.setReady = function(player)
 
     this.repository.setReady(
         this.room.name,
-        player.name,
+        player.id,
         function (result) {
             if (!result.success) {
                 console.error('Could not set player %s ready', player.name);

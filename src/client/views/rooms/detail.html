@@ -50,8 +50,8 @@
                 <tbody>
                     <tr ng-repeat="player in room.players.items" ng-if="player.local" class="local">
                         <td>
-                            <input id="player-ready-{{ player.name }}" class="custom-toggle" type="checkbox" ng-click="setReady(player)" ng-checked="player.ready">
-                            <label for="player-ready-{{ player.name }}"><i class="icon-close"></i><i class="icon-check"></i></label>
+                            <input id="player-ready-{{ player.id }}" class="custom-toggle" type="checkbox" ng-click="setReady(player)" ng-checked="player.ready">
+                            <label for="player-ready-{{ player.id }}"><i class="icon-close"></i><i class="icon-check"></i></label>
                         </td>
                         <td>
                             {{ player.name }}

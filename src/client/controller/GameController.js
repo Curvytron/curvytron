@@ -169,7 +169,7 @@ GameController.prototype.endWarmup = function(interval)
  */
 GameController.prototype.onMove = function(e)
 {
-    this.client.addEvent('player:move', {avatar: e.detail.avatar.name, move: e.detail.move});
+    this.client.addEvent('player:move', {avatar: e.detail.avatar.id, move: e.detail.move});
 };
 
 /**

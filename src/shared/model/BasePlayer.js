@@ -14,6 +14,7 @@ function BasePlayer(client, name, color, mail)
     this.color  = typeof(color) !== 'undefined' ? color : this.getRandomColor();
     this.mail   = mail;
     this.ready  = false;
+    this.id     = null;
     this.avatar = null;
 }
 
@@ -63,7 +64,7 @@ BasePlayer.prototype.setColor = function(color)
  */
 BasePlayer.prototype.equal = function(player)
 {
-    return this.name === player.name;
+    return this.id === player.id;
 };
 
 /**
@@ -110,6 +111,7 @@ BasePlayer.prototype.serialize = function()
 {
     return {
         client: this.client.id,
+        id: this.id,
         name: this.name,
         color: this.color,
         mail: this.mail,

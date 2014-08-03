@@ -1,16 +1,18 @@
 /**
  * Player
  *
+ * @param {Number} id
  * @param {String} client
  * @param {String} name
  * @param {String} color
  */
-function Player(client, name, color, mail)
+function Player(id, client, name, color, mail)
 {
     BasePlayer.call(this, client, name, color, mail);
 
-    this.local       = false;
-    this.controls    = null;
+    this.id       = id;
+    this.local    = false;
+    this.controls = null;
 
     this.onControlChange = this.onControlChange.bind(this);
 }

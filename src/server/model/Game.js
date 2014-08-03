@@ -8,7 +8,7 @@ function Game(room)
     BaseGame.call(this, room);
 
     this.world   = new World(this.size);
-    this.deaths  = new Collection([], 'name');
+    this.deaths  = new Collection([], 'id');
     this.clients = this.room.clients;
     this.client  = this.room.client;
 

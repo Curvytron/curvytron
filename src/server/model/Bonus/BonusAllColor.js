@@ -57,7 +57,7 @@ BonusAllColor.prototype.getEffects = function(avatar)
  */
 BonusAllColor.prototype.getColor = function(avatar)
 {
-    var index = this.avatars.indexOf(avatar.name);
+    var index = this.avatars.indexOf(avatar.id);
 
     return this.colors[(index + 1) % this.colors.length];
 };

@@ -7,6 +7,7 @@ function BaseAvatar(player)
 {
     EventEmitter.call(this);
 
+    this.id              = player.id;
     this.name            = player.name;
     this.color           = player.color;
     this.player          = player;
@@ -49,7 +50,7 @@ BaseAvatar.prototype.invincible          = false;
  */
 BaseAvatar.prototype.equal = function(avatar)
 {
-    return this.name === avatar.name;
+    return this.id === avatar.id;
 };
 
 /**

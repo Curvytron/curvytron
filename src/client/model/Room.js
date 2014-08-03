@@ -6,6 +6,8 @@ function Room(name)
     BaseRoom.call(this, name);
 
     this.inGame = false;
+
+    this.players.index = false;
 }
 
 Room.prototype = Object.create(BaseRoom.prototype);
@@ -29,7 +31,7 @@ Room.prototype.newGame = function()
     this.inGame = true;
 
     return BaseRoom.prototype.newGame.call(this);
-}
+};
 
 /**
  * Close game
@@ -45,4 +47,4 @@ Room.prototype.closeGame = function()
     }
 
     return BaseRoom.prototype.closeGame.call(this);
-}
+};

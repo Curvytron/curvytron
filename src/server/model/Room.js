@@ -54,7 +54,7 @@ Room.prototype.removePlayer = function(player)
 {
     var result = BaseRoom.prototype.removePlayer.call(this, player);
 
-    if (result) {
+    if (result) {
         this.emit('player:leave', {room: this, player: player});
     }
 
