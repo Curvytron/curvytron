@@ -22,19 +22,21 @@ function RoomController($scope, $rootScope, $routeParams, $location, $cookies, r
     this.chat       = chat;
 
     // Binding:
-    this.addPlayer  = this.addPlayer.bind(this);
-    this.applyScope = this.applyScope.bind(this);
-    this.onJoin     = this.onJoin.bind(this);
-    this.joinRoom   = this.joinRoom.bind(this);
-    this.leaveRoom  = this.leaveRoom.bind(this);
-    this.setColor   = this.setColor.bind(this);
-    this.setReady   = this.setReady.bind(this);
-    this.start      = this.start.bind(this);
+    this.addPlayer    = this.addPlayer.bind(this);
+    this.removePlayer = this.removePlayer.bind(this);
+    this.applyScope   = this.applyScope.bind(this);
+    this.onJoin       = this.onJoin.bind(this);
+    this.joinRoom     = this.joinRoom.bind(this);
+    this.leaveRoom    = this.leaveRoom.bind(this);
+    this.setColor     = this.setColor.bind(this);
+    this.setReady     = this.setReady.bind(this);
+    this.start        = this.start.bind(this);
 
     this.$scope.$on('$destroy', this.leaveRoom);
 
     // Hydrating scope:
     this.$scope.submitAddPlayer     = this.addPlayer;
+    this.$scope.removePlayer        = this.removePlayer;
     this.$scope.setColor            = this.setColor;
     this.$scope.setReady            = this.setReady;
     this.$scope.nameMaxLength       = Player.prototype.maxLength;
@@ -159,6 +161,27 @@ RoomController.prototype.addPlayer = function()
 };
 
 /**
+ * Remove player
+ */
+RoomController.prototype.removePlayer = function(player)
+{
+    if (!player.local) {
+        return;
+    }
+
+    var controller = this;
+
+    this.repository.removePlayer(
+        player.id,
+        function (result) {
+            if (!result.success) {
+                console.error('Could not remove player %s', player.name);
+            }
+        }
+    );
+};
+
+/**
  * On join
  *
  * @param {Event} e
@@ -191,7 +214,6 @@ RoomController.prototype.setColor = function(player)
     var controller = this;
 
     this.repository.setColor(
-        this.room.name,
         player.id,
         player.color,
         function (result) {
@@ -216,7 +238,6 @@ RoomController.prototype.setReady = function(player)
     }
 
     this.repository.setReady(
-        this.room.name,
         player.id,
         function (result) {
             if (!result.success) {

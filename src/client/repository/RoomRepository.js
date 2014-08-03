@@ -114,39 +114,49 @@ RoomRepository.prototype.addPlayer = function(name, callback)
 };
 
 /**
+ * Remove player
+ *
+ * @param {Number} player
+ * @param {Function} callback
+ */
+RoomRepository.prototype.removePlayer = function(player, callback)
+{
+    this.client.addEvent('room:player:remove', {player: player}, callback);
+};
+
+/**
  * Leave
  *
- * @return {Array}
  * @param {Function} callback
  */
 RoomRepository.prototype.leave = function(callback)
 {
-    return this.client.addEvent('room:leave', callback);
+    this.client.addEvent('room:leave', callback);
 };
 
 /**
  * Set color
  *
- * @return {Array}
+ * @param {Room} room
+ * @param {Number} player
+ * @param {String} color
  * @param {Function} callback
  */
-RoomRepository.prototype.setColor = function(room, player, color, callback)
+RoomRepository.prototype.setColor = function(player, color, callback)
 {
-    return this.client.addEvent('room:color', {room: room, player: player, color: color.substr(0, Player.prototype.colorMaxLength)}, callback);
+    this.client.addEvent('room:color', {player: player, color: color.substr(0, Player.prototype.colorMaxLength)}, callback);
 };
 
 /**
  * Set ready
  *
  * @param {Room} room
- * @param {Boolean} ready
+ * @param {Number} player
  * @param {Function} callback
- *
- * @return {Array}
  */
-RoomRepository.prototype.setReady = function(room, player, callback)
+RoomRepository.prototype.setReady = function(player, callback)
 {
-    return this.client.addEvent('room:ready', {room: room, player: player}, callback);
+    this.client.addEvent('room:ready', {player: player}, callback);
 };
 
 // EVENTS:

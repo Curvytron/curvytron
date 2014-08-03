@@ -24,6 +24,7 @@ function RoomController(repository, gameController)
         onTalk: function (data) { controller.onTalk(this, data.data, data.callback); },
         onLeaveRoom: function () { controller.onLeaveRoom(this); },
         onAddPlayer: function (data) { controller.onAddPlayer(this, data.data, data.callback); },
+        onRemovePlayer: function (data) { controller.onRemovePlayer(this, data.data, data.callback); },
         onReadyRoom: function (data) { controller.onReadyRoom(this, data.data, data.callback); },
         onColorRoom: function (data) { controller.onColorRoom(this, data.data, data.callback); }
     };
@@ -69,6 +70,7 @@ RoomController.prototype.attachEvents = function(client)
     client.on('room:talk', this.callbacks.onTalk);
     client.on('room:leave', this.callbacks.onLeaveRoom);
     client.on('room:player:add', this.callbacks.onAddPlayer);
+    client.on('room:player:remove', this.callbacks.onRemovePlayer);
     client.on('room:ready', this.callbacks.onReadyRoom);
     client.on('room:color', this.callbacks.onColorRoom);
 };
@@ -86,6 +88,7 @@ RoomController.prototype.detachEvents = function(client)
     client.removeListener('room:talk', this.callbacks.onTalk);
     client.removeListener('room:leave', this.callbacks.onLeaveRoom);
     client.removeListener('room:player:add', this.callbacks.onAddPlayer);
+    client.removeListener('room:player:remove', this.callbacks.onRemovePlayer);
     client.removeListener('room:ready', this.callbacks.onReadyRoom);
     client.removeListener('room:color', this.callbacks.onColorRoom);
 };
@@ -229,6 +232,27 @@ RoomController.prototype.onAddPlayer = function(client, data, callback)
         callback({success: true});
 
         this.socketGroup.addEvent('room:join', {room: client.room.name, player: player.serialize()});
+    } else {
+        callback({success: false});
+    }
+};
+
+/**
+ * On remove player from room
+ *
+ * @param {SocketClient} client
+ * @param {Object} data
+ * @param {Function} callback
+ */
+RoomController.prototype.onRemovePlayer = function(client, data, callback)
+{
+    var room = client.room,
+        player = client.players.getById(data.player);
+
+    if (room && player) {
+        client.room.removePlayer(player);
+        client.players.remove(player);
+        callback({success: true});
     } else {
         callback({success: false});
     }
