@@ -351,6 +351,7 @@ BaseAvatar.prototype.destroy = function()
 BaseAvatar.prototype.serialize = function()
 {
     return {
+        id: this.id,
         name: this.name,
         color: this.color,
         score: this.score
