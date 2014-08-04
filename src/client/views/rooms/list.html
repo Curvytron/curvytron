@@ -2,12 +2,9 @@
     <div id="rooms" class="container">
         <h1>
             <form ng-submit="submit()" class="top-right-form">
-                <div class="input-group input-group-lg">
-                    <input type="text" ng-model="name" class="form-control" name="name" placeholder="Create room" maxlength="{{ roomMaxLength }}" />
-                    <span class="input-group-btn">
-                        <button type="submit" id="submit" class="btn btn-lg btn-default"><i class="icon-plus"></i></button>
-                    </span>
-                </div>
+                <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
+                <input type="text" ng-model="name" class="form-control" name="name" placeholder="Create room" maxlength="{{ roomMaxLength }}" />
+                <div class="clearfix"></div>
             </form>
             <ng-pluralize count="rooms.items.length"
                              when="{'0': 'No room yet...',

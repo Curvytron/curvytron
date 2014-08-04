@@ -20,25 +20,67 @@ li.player-row {
 
 .top-right-form {
     float: right;
-    max-width: 320px;
+    max-width: 350px;
+    height: 60px;
+    position: relative;
+    overflow: hidden;
 
     .form-control {
-        border: 2px solid $text-color !important;
+        border: 0;
         font-weight: $base-font-weight;
-        line-height: 44px;
+        line-height: 40px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-right: 85px;
+        height: 60px;
+        background: #FFF;
+        font-size: 24px;
     }
 
-    .btn-default {
-        line-height: 44px;
+    button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        height: 60px;
+        width: 80px;
+        text-align: center;
+        border: 0;
+        border-left: 10px solid $background-color;
+        color: #FFF;
+        margin: 0 -10px 0 20px;
+        padding: 0 28px 0 15px;
+        @include horizontal-gradient($header-background-from, $header-background-to);
+        @include skew(-10deg, 0);
+        @include transition(all 0.1s linear);
+        -webkit-backface-visibility: hidden;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        span {
+            display: block;
+            @include skew(10deg, 0);
+            -webkit-backface-visibility: hidden;
+            font-size: 26px;
+
+            i {
+                float: right;
+                display: inline;
+                font-size: 20px;
+                @include transition(all 0.2s ease);
+            }
+        }
 
         &:hover {
-            background: $text-color;
-            color: $background-color;
+            span {
+                i {
+                    @include transform(rotate(90deg));
+                }
+            }
         }
-    }
 
-    .input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group {
-        margin-left: -2px;
     }
 }
 

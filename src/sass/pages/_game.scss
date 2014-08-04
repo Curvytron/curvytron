@@ -243,6 +243,7 @@
 
             .count {
                 @include transform(rotate(-45deg));
+                margin-left: -10px;
             }
         }
 
@@ -382,7 +383,7 @@
         bottom: 0;
         left: 0;
         width: $aside-width - $aside-border-size;
-        height: 250px;
+        height: 245px;
         background: lighten($aside-background, 5);
         font-size: 14px;
 
@@ -407,45 +408,51 @@
         }
 
         .action-line {
-            height: 60px;
+            height: 50px;
+            position: relative;
+            overflow: hidden;
 
             .form-control {
-                height: 55px;
-                font-size: 14px;
-                border: none;
-                color: $aside-background;
-                background: #ffffff;
-                border-radius: 0;
+                height: 50px;
+                font-size: 16px;
+                background: #FFF;
+                border: 0;
+                padding-right: 85px;
+
                 &:focus {
-                    border: none;
+                    border-color: $text-color;
                 }
             }
 
-            .btn {
+            button {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                height: 50px;
                 width: 60px;
-                height: 55px;
-                overflow: hidden;
-                margin-left: 0;
-                padding-left: 0;
-                padding-right: 0;
                 text-align: center;
-                border: none;
-                background: $header-background-to;
-                line-height: 42.5px;
-                border-radius: 0;
+                border: 0;
                 color: #FFF;
+                margin: 0 -10px 0 20px;
+                padding: 0 25px 0 15px;
+                @include horizontal-gradient($header-background-from, $header-background-to);
+                @include skew(-10deg, 0);
                 @include transition(all 0.1s linear);
+                -webkit-backface-visibility: hidden;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
 
-                i {
-                    margin-left: 4px;
-                    @include transition(all 0.1s linear);
+                span {
+                    display: block;
+                    @include skew(10deg, 0);
+                    -webkit-backface-visibility: hidden;
                 }
 
                 &:hover {
-                    i {
-                        margin-left: 10px;
-                        color: rgba(255,255,255,0.7);
-                    }
+                    padding-right: 20px;
                 }
             }
         }
