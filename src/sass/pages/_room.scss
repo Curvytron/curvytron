@@ -96,10 +96,6 @@
             height: 40px !important;
             border-bottom: 0;
 
-            &.col-player {
-                padding-left: 20px;
-            }
-
             &.col-ready {
                 text-align: center;
                 padding-left: 45px;
@@ -114,7 +110,6 @@
 
                 &.col-player {
                     font-weight: bold;
-                    padding-left: 20px;
                 }
 
                 &.col-ready {
@@ -243,7 +238,18 @@
     .col-color { width: 150px; }
     .col-keys { width: 150px; }
     .col-ready { width: 150px; }
+    .col-remove {
+        width: 27px;
+        padding-right: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
 
+    .btn-remove {
+        padding: 0;
+        margin: 0;
+        border: none;
+    }
 }
 
 
