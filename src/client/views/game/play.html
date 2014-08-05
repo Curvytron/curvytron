@@ -1,9 +1,9 @@
 <section>
     <section id="game-wrapper">
         <aside id="game-infos">
-            <header><a href="/">Curvytron</a></header>
-            <h3>{{ game.name }}</h3>
-            <p class="maxScore">First to score <strong>{{ game.maxScore }}</strong> points win the game!</p>
+            <header><a href="/"><img src="images/logo.png" alt="Curvytron" id="logo" /> Curvytron</a></header>
+            <div class="maxScore"><i class="icon-trophy"></i><span>{{ game.maxScore }}</span></div>
+            <h3 title="{{ game.name }}">{{ game.name }}</h3>
             <ul id="game-players">
                 <li ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
@@ -19,8 +19,8 @@
             </footer>
             <div class="chat-wrapper">
                 <div id="feed">
-                    <div class="one-message">
-                        <strong>Welcome!</strong>
+                    <div class="welcome">
+                        <strong>Welcome !</strong>
                     </div>
                     <div ng-repeat="message in messages" class="one-message">
                         <strong style="color: {{ message.player.color ? message.player.color : '#75858c' }};">
@@ -30,12 +30,8 @@
                     </div>
                 </div>
                 <form ng-submit="submitTalk()" name="talk" class="action-line">
-                    <div class="input-group">
-                        <input type="text" name="message" ng-model="currentMessage.content" class="sent-message form-control" placeholder="Enter message..." maxlength="{{ messageMaxLength }}" />
-                        <span class="input-group-btn">
-                            <button type="submit" class="btn btn-default"><i class="icon-angle-right"></i></button>
-                        </span>
-                    </div>
+                    <button type="submit"><span><i class="icon-angle-right"></i></span></button>
+                    <input type="text" name="message" ng-model="currentMessage.content" class="sent-message form-control" placeholder="Enter message..." maxlength="{{ messageMaxLength }}" />
                 </form>
             </div>
         </aside>
@@ -55,7 +51,7 @@
                         <span class="strong" style="color: {{ avatar.player.color }}">{{ avatar.name }}</span> won the game !
                     </p>
                     <div>
-                        <a href="#/room/{{ game.name }}" class="btn">
+                        <a href="#/room/{{ game.name }}" class="btn-back-to-room">
                             Back to the room
                         </a>
                     </div>
@@ -69,7 +65,7 @@
                         </tbody>
                     </table>
                     <div>
-                        <a href="#/room/{{ game.name }}" class="btn">
+                        <a href="#/room/{{ game.name }}" class="btn-back-to-room">
                             Back to the room
                         </a>
                     </div>

@@ -1,17 +1,18 @@
 ///////////////////////////
 /// BASE
 ///////////////////////////
-$font-raleway: "Raleway", "Helvetica Neue", "Helvetica";
-$background-color: #f6f7f3;
+$font-raleway: "Lato", "Helvetica Neue", "Helvetica";
+$background-color: #F3F3F3;
 $base-font-family: $font-raleway;
-$base-font-size: 16px;
+$base-font-size: 18px;
 $base-line-height: $base-font-size * 1.75; // 26px
-$text-color: #75858C;
+$base-font-weight: 300;
+$text-color: #666;
 $link-color: $text-color;
 $link-hover-color: darken($text-color, 25%);
 $container-max-width: 1200px;
 $base-margin: 20px;
-$bold-font-weight: bold;
+$bold-font-weight: 700;
 
 $color-primary: #346b9a !default;
 $color-success: #60a760 !default;
@@ -77,14 +78,30 @@ $container-lg-desktop:        ((1140px + $grid-gutter-width));
 /// HEADER
 ///////////////////////////
 $header-background: #bb2924;
+$header-background-1-from: #36b0bb;
+$header-background-1-to: #36bb81;
+$header-background-2-from: #14f7f7;
+$header-background-2-to: #0073df;
+$header-background-3-from: #f153ff;
+$header-background-3-to: #ff539e;
+$header-background-4-from: #ffed52;
+$header-background-4-to: #ff7d36;
+$header-background-5-from: #b493ff;
+$header-background-5-to: #4b5ff4;
+$header-background-6-from: #ff8069;
+$header-background-6-to: #ff6e90;
+
+$header-background-from: $header-background-6-from;
+$header-background-to: $header-background-6-to;
+
 $header-color: #FFF;
-$game-header-height: 80px;
+$game-header-height: 120px;
 
 
 ///////////////////////////
 /// FOOTER
 ///////////////////////////
-$footer-background: lighten(#75858C, 30%);
+$footer-background: darken($background-color, 7%);
 $footer-color: darken($footer-background, 20%);
 $game-footer-height: 40px;
 
@@ -114,9 +131,9 @@ $padding-xs-vertical: 1px !default;
 $padding-xs-horizontal: 5px !default;
 
 
-$border-radius-base: 4px !default;
-$border-radius-large: 6px !default;
-$border-radius-small: 3px !default;
+$border-radius-base: 0 !default;
+$border-radius-large: 0 !default;
+$border-radius-small: 0 !default;
 
 $input-height-base: ceil($base-line-height + ($padding-base-vertical * 2) + 2) !default;
 $input-height-small: ceil($base-line-height*0.75 + ($padding-small-vertical * 2) + 2) !default;
@@ -184,11 +201,11 @@ $caret-width-large:              5px !default;
 ///////////////////////////
 /// TABLES
 ///////////////////////////
-$table-cell-padding:            8px 12px !default;
+$table-cell-padding:            0px 12px !default;
 $table-condensed-cell-padding:  5px !default;
 
 $table-bg:                      transparent !default;
-$table-bg-accent:               #e9eae7 !default;
+$table-bg-accent:               darken($background-color, 3%) !default;
 $table-bg-hover:                darken($table-bg-accent, 5%) !default;
 $table-bg-active:               $table-bg-hover !default;
 
@@ -271,3 +288,7 @@ $hr-border:                     #DDD;
 /// GAME
 ///////////////////////////
 $game-background:               #222;
+$aside-width:                   375px;
+$aside-border-size:             4px;
+$aside-background:              $game-background;
+

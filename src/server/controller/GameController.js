@@ -293,7 +293,7 @@ GameController.prototype.onRoundEnd = function(data)
  */
 GameController.prototype.onRoundWinner = function(data)
 {
-    data.game.client.addEvent('round:winner', {winner: data.winner.name});
+    data.game.client.addEvent('round:winner', {winner: data.winner.id});
 };
 
 /**

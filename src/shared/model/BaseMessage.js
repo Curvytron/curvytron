@@ -44,6 +44,6 @@ BaseMessage.prototype.serialize = function()
 {
     return {
         content: this.content.substr(0, this.maxLength),
-        player: this.player ? this.player.name : null
+        player: this.player ? this.player.id : null
     };
 };

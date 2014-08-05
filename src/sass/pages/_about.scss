@@ -1,14 +1,18 @@
 #about {
     text-align: center;
+
     &.container {
         max-width: 900px;
     }
+
     > section {
         padding: 40px 0;
+
         h1 {
             display: inline-block;
             line-height: 70px;
             padding-bottom: 40px;
+
             &:after {
                 content: '';
                 display: block;
@@ -19,6 +23,7 @@
                 bottom: 0;
             }
         }
+
         h3 {
             margin-top: 10px;
             margin-bottom: 10px;

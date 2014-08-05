@@ -153,7 +153,7 @@ Game.prototype.onResize = function()
 {
     var w=window,d=document,e=d.documentElement,g=d.getElementsByTagName('body')[0],x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
 
-    var width = Math.min(x - 300 - 8, y - 8),
+    var width = Math.min(x - 375 - 8, y - 8),
         scale = width / this.size;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
