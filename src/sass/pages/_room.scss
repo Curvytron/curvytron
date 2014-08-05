@@ -233,6 +233,14 @@
         @include transition(none);
     }
 
+    .player-name {
+
+        height: 40px;
+
+        &:not(:focus) {
+            border-color: transparent;
+        }
+    }
 
     .col-player { width: auto; }
     .col-color { width: 150px; }

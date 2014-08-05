@@ -26,6 +26,7 @@ function RoomController(repository, gameController)
         onAddPlayer: function (data) { controller.onAddPlayer(this, data.data, data.callback); },
         onRemovePlayer: function (data) { controller.onRemovePlayer(this, data.data, data.callback); },
         onReadyRoom: function (data) { controller.onReadyRoom(this, data.data, data.callback); },
+        onNameRoom: function (data) { controller.onNameRoom(this, data.data, data.callback); },
         onColorRoom: function (data) { controller.onColorRoom(this, data.data, data.callback); }
     };
 }
@@ -73,6 +74,7 @@ RoomController.prototype.attachEvents = function(client)
     client.on('room:player:remove', this.callbacks.onRemovePlayer);
     client.on('room:ready', this.callbacks.onReadyRoom);
     client.on('room:color', this.callbacks.onColorRoom);
+    client.on('room:name', this.callbacks.onNameRoom);
 };
 
 /**
@@ -91,6 +93,7 @@ RoomController.prototype.detachEvents = function(client)
     client.removeListener('room:player:remove', this.callbacks.onRemovePlayer);
     client.removeListener('room:ready', this.callbacks.onReadyRoom);
     client.removeListener('room:color', this.callbacks.onColorRoom);
+    client.removeListener('room:name', this.callbacks.onNameRoom);
 };
 
 /**
@@ -122,7 +125,7 @@ RoomController.prototype.emitAllRooms = function(client)
  */
 RoomController.prototype.onCreateRoom = function(client, data, callback)
 {
-    var room = this.repository.create(data.name.substr(0, Room.prototype.maxLength));
+    var room = this.repository.create(data.name);
 
     callback({success: room ? true : false, room: room? room.name : null});
 
@@ -151,7 +154,8 @@ RoomController.prototype.onJoinRoom = function(client, data, callback)
             player, i;
 
         for (i = room.players.items.length - 1; i >= 0; i--) {
-            player = room.players.items[i]
+            player = room.players.items[i];
+            events.push(['room:player:name', { player: player.id, name: player.name, room: room.name }]);
             events.push(['room:player:color', { player: player.id, color: player.color, room: room.name }]);
             events.push(['room:player:ready', { player: player.id, ready: player.ready, room: room.name }]);
         }
@@ -279,7 +283,7 @@ RoomController.prototype.onTalk = function(client, data, callback)
 };
 
 /**
- * On new room
+ * On player change color
  *
  * @param {SocketClient} client
  * @param {Object} data
@@ -297,12 +301,35 @@ RoomController.prototype.onColorRoom = function(client, data, callback)
 
         room.client.addEvent('room:player:color', { player: player.id, color: player.color, room: room.name });
     } else {
-        callback({success: false});
+        callback({success: false, color: player.color});
     }
 };
 
 /**
- * On new room
+ * On player change name
+ *
+ * @param {SocketClient} client
+ * @param {Object} data
+ * @param {Function} callback
+ */
+RoomController.prototype.onNameRoom = function(client, data, callback)
+{
+    var room = client.room,
+        player = client.players.getById(data.player),
+        name = data.name.substr(0, Player.prototype.maxLength);
+
+    if (room && room.isNameAvailable(name)) {
+        player.setName(name);
+        callback({success: true, name: player.name});
+
+        room.client.addEvent('room:player:name', { player: player.id, name: player.name, room: room.name });
+    } else {
+        callback({success: false, name: player.name});
+    }
+};
+
+/**
+ * On player ready
  *
  * @param {SocketClient} client
  * @param {Object} data

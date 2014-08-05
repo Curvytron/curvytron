@@ -17,6 +17,7 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     this.client     = client;
     this.chat       = chat;
     this.game       = null;
+    this.room       = null;
 
     createjs.Sound.alternateExtensions = ['mp3'];
     createjs.Sound.registerManifest(
@@ -43,6 +44,7 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     this.onEnd         = this.onEnd.bind(this);
     this.onLeave       = this.onLeave.bind(this);
     this.leaveGame     = this.leaveGame.bind(this);
+    this.backToRoom    = this.backToRoom.bind(this);
 
     this.attachSocketEvents();
 
@@ -51,10 +53,11 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     // Hydrate scope:
     this.$scope.sortorder   = '-score';
     this.$scope.countFinish = true;
+    this.$scope.backToRoom  = this.backToRoom;
 
     this.chat.setScope(this.$scope);
 
-    this.loadGame($routeParams.name);
+    this.loadGame(decodeURIComponent($routeParams.name));
 }
 
 /**
@@ -356,7 +359,7 @@ GameController.prototype.onLeave = function(e)
  */
 GameController.prototype.leaveGame = function()
 {
-    if (this.$location.path() !== ('/room/' + this.room.name)) {
+    if (this.$location.path() !== this.room.url) {
         this.repository.leave();
         this.repository.refresh();
     }
@@ -384,6 +387,14 @@ GameController.prototype.close = function()
 
         this.repository.start();
     }
+};
+
+/**
+ * Go back to the room
+ */
+GameController.prototype.backToRoom = function()
+{
+    this.$location.path(this.room.url);
 };
 
 /**

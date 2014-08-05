@@ -5,7 +5,9 @@ function Room(name)
 {
     BaseRoom.call(this, name);
 
-    this.inGame = false;
+    this.inGame  = false;
+    this.url     = '/room/' + encodeURIComponent(this.name);
+    this.gameUrl = '/game/' + encodeURIComponent(this.name);
 
     this.players.index = false;
 }

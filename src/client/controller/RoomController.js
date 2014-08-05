@@ -30,6 +30,7 @@ function RoomController($scope, $rootScope, $routeParams, $location, $cookies, r
     this.leaveRoom    = this.leaveRoom.bind(this);
     this.setColor     = this.setColor.bind(this);
     this.setReady     = this.setReady.bind(this);
+    this.setName      = this.setName.bind(this);
     this.start        = this.start.bind(this);
 
     this.$scope.$on('$destroy', this.leaveRoom);
@@ -39,17 +40,20 @@ function RoomController($scope, $rootScope, $routeParams, $location, $cookies, r
     this.$scope.removePlayer        = this.removePlayer;
     this.$scope.setColor            = this.setColor;
     this.$scope.setReady            = this.setReady;
+    this.$scope.setName             = this.setName;
     this.$scope.nameMaxLength       = Player.prototype.maxLength;
     this.$scope.colorMaxLength      = Player.prototype.colorMaxLength;
     this.$scope.curvytron.bodyClass = null;
 
     this.chat.setScope(this.$scope);
 
+    var name = decodeURIComponent($routeParams.name);
+
     if (this.repository.synced) {
-        this.joinRoom($routeParams.name);
+        this.joinRoom(name);
     } else {
         var controller = this;
-        this.repository.on('synced', function () { controller.joinRoom($routeParams.name); });
+        this.repository.on('synced', function () { controller.joinRoom(name); });
     }
 }
 
@@ -83,7 +87,7 @@ RoomController.prototype.joinRoom = function(name)
  */
 RoomController.prototype.leaveRoom = function()
 {
-    if (this.$location.path() !== ('/game/' + this.room.name)) {
+    if (this.$location.path() !== this.room.gameUrl) {
         this.repository.leave();
     }
 
@@ -102,6 +106,7 @@ RoomController.prototype.attachEvents = function(name)
     this.repository.on('room:leave:' + name, this.applyScope);
     this.repository.on('room:player:ready:' + name, this.applyScope);
     this.repository.on('room:player:color:' + name, this.applyScope);
+    this.repository.on('room:player:name:' + name, this.applyScope);
     this.repository.on('room:game:start:' + name, this.start);
 
     for (var i = this.room.players.items.length - 1; i >= 0; i--) {
@@ -121,6 +126,7 @@ RoomController.prototype.detachEvents = function(name)
     this.repository.off('room:leave:' + name, this.applyScope);
     this.repository.off('room:player:ready:' + name, this.applyScope);
     this.repository.off('room:player:color:' + name, this.applyScope);
+    this.repository.off('room:player:name:' + name, this.applyScope);
     this.repository.off('room:game:start:' + name, this.start);
 
     if (this.room) {
@@ -201,7 +207,7 @@ RoomController.prototype.onJoin = function(e)
 };
 
 /**
- * Rooms action
+ * Set player color
  *
  * @return {Array}
  */
@@ -227,7 +233,33 @@ RoomController.prototype.setColor = function(player)
 };
 
 /**
- * Rooms action
+ * Set player name
+ *
+ * @return {Array}
+ */
+RoomController.prototype.setName = function(player)
+{
+    if (!player.local) {
+        return;
+    }
+
+    var controller = this;
+
+    this.repository.setName(
+        player.id,
+        player.name,
+        function (result) {
+            if (!result.success) {
+                console.error('Could not rename player %s to %s', result.name, player.name);
+                player.name = result.name;
+                controller.applyScope();
+            }
+        }
+    );
+};
+
+/**
+ * Set player ready
  *
  * @return {Array}
  */
@@ -262,7 +294,7 @@ RoomController.prototype.start = function(e)
     }
 
     this.repository.stop();
-    this.$location.path('/game/' + this.room.name);
+    this.$location.path(this.room.gameUrl);
     this.applyScope();
 };
 

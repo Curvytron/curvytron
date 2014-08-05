@@ -51,9 +51,9 @@
                         <span class="strong" style="color: {{ avatar.player.color }}">{{ avatar.name }}</span> won the game !
                     </p>
                     <div>
-                        <a href="#/room/{{ game.name }}" class="btn-back-to-room">
+                        <button ng-click="backToRoom()" type="button" class="btn btn-link btn-back-to-room">
                             Back to the room
-                        </a>
+                        </button>
                     </div>
                     <table class="table table-hover recap">
                         <tbody>
@@ -65,9 +65,9 @@
                         </tbody>
                     </table>
                     <div>
-                        <a href="#/room/{{ game.name }}" class="btn-back-to-room">
+                        <button ng-click="backToRoom()" type="button" class="btn btn-link btn-back-to-room">
                             Back to the room
-                        </a>
+                        </button>
                     </div>
                 </section>
             </section>

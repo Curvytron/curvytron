@@ -15,7 +15,7 @@
         <table id="rooms" class="table table-hover v-align-middle">
             <tbody>
                 <tr ng-repeat="room in rooms.items" ng-if="!room.inGame" ng-click="join(room)" class="room">
-                    <td class="room-name"><a href="#/room/{{ room.name }}">{{ room.name }}</a></td>
+                    <td class="room-name">{{ room.name }}</td>
                     <td class="room-nb-players">
                         <ng-pluralize count="room.players.items.length "
                                          when="{'0': 'No player',
@@ -23,13 +23,13 @@
                                              'other': '{} players'}">
                     </td>
                     <td class="room-enter-col">
-                        <a href="#/room/{{ room.name }}" class="room-enter">
+                        <p class="room-enter">
                             <span><i class="icon-game"></i> Join</span>
-                        </a>
+                        </p>
                     </td>
                 </tr>
-                <tr ng-repeat="room in rooms.items" ng-if="room.inGame" class="room in-game">
-                    <td class="room-name"><a href="#/room/{{ room.name }}">{{ room.name }}</a></td>
+                <tr ng-repeat="room in rooms.items" ng-if="room.inGame" ng-click="join(room)" class="room in-game">
+                    <td class="room-name">{{ room.name }}</td>
                     <td class="room-nb-players">
                         <ng-pluralize count="room.players.items.length "
                                          when="{'0': 'No player',
@@ -37,9 +37,9 @@
                                              'other': '{} players'}">
                     </td>
                     <td class="room-enter-col">
-                        <a href="#/room/{{ room.name }}" class="room-enter">
+                        <p class="room-enter">
                             <span><i class="icon-spectate"></i> Spectate</span>
-                        </a>
+                        </p>
                     </td>
                 </tr>
             </tbody>

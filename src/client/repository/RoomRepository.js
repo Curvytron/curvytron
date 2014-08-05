@@ -20,6 +20,7 @@ function RoomRepository(client)
     this.onRoomGameEnd   = this.onRoomGameEnd.bind(this);
     this.onPlayerReady   = this.onPlayerReady.bind(this);
     this.onPlayerColor   = this.onPlayerColor.bind(this);
+    this.onPlayerName    = this.onPlayerName.bind(this);
     this.setSynced       = this.setSynced.bind(this);
 
     this.start();
@@ -41,6 +42,7 @@ RoomRepository.prototype.attachEvents = function()
     this.client.on('room:game:end', this.onRoomGameEnd);
     this.client.on('room:player:ready', this.onPlayerReady);
     this.client.on('room:player:color', this.onPlayerColor);
+    this.client.on('room:player:name', this.onPlayerName);
     this.client.on('fetched', this.setSynced);
 };
 
@@ -57,6 +59,7 @@ RoomRepository.prototype.detachEvents = function()
     this.client.off('room:game:end', this.onRoomGameEnd);
     this.client.off('room:player:ready', this.onPlayerReady);
     this.client.off('room:player:color', this.onPlayerColor);
+    this.client.off('room:player:name', this.onPlayerName);
     this.client.off('fetched', this.setSynced);
 };
 
@@ -145,6 +148,23 @@ RoomRepository.prototype.leave = function(callback)
 RoomRepository.prototype.setColor = function(player, color, callback)
 {
     this.client.addEvent('room:color', {player: player, color: color.substr(0, Player.prototype.colorMaxLength)}, callback);
+};
+
+/**
+ * Set name
+ *
+ * @param {Room} room
+ * @param {Number} player
+ * @param {String} name
+ * @param {Function} callback
+ */
+RoomRepository.prototype.setName = function(player, name, callback)
+{
+    name = name.substr(0, Player.prototype.nameMaxLength);
+
+    if (name !== player.name) {
+        this.client.addEvent('room:name', {player: player, name: name}, callback);
+    }
 };
 
 /**
@@ -257,6 +277,23 @@ RoomRepository.prototype.onPlayerColor = function(e)
     if (player) {
         player.setColor(data.color);
         this.emit('room:player:color:' + room.name, {room: room, player: player});
+    }
+};
+
+/**
+ * On player change name
+ *
+ * @param {Event} e
+ */
+RoomRepository.prototype.onPlayerName = function(e)
+{
+    var data = e.detail,
+        room = this.rooms.getById(data.room),
+        player = room ? room.players.getById(data.player) : null;
+
+    if (player) {
+        player.setName(data.name);
+        this.emit('room:player:name:' + room.name, {room: room, player: player});
     }
 };
 
