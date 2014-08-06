@@ -105,8 +105,7 @@ Game.prototype.isWon = function()
 Game.prototype.onDie = function(data)
 {
     this.deaths.add(data.avatar);
-
-    this.setScores();
+    data.avatar.addScore(this.deaths.count() - 1);
     this.checkRoundEnd();
 };
 
@@ -131,18 +130,6 @@ Game.prototype.isReady = function()
 };
 
 /**
- * Set scores
- */
-Game.prototype.setScores = function()
-{
-    var survivors = this.getAliveAvatars();
-
-    for (var i = survivors.items.length - 1; i >= 0; i--) {
-        survivors.items[i].addScore(1);
-    }
-};
-
-/**
  * Resolve scores
  */
 Game.prototype.resolveScores = function()
@@ -151,6 +138,7 @@ Game.prototype.resolveScores = function()
         var winner = this.avatars.match(function () { return this.alive; });
 
         if (winner) {
+            winner.addScore(this.avatars.count() - 1);
             this.emit('round:winner', {game: this, winner: winner});
         }
 
