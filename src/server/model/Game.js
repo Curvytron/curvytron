@@ -106,6 +106,7 @@ Game.prototype.onDie = function(data)
 {
     this.deaths.add(data.avatar);
 
+    this.setScores();
     this.checkRoundEnd();
 };
 
@@ -134,18 +135,27 @@ Game.prototype.isReady = function()
  */
 Game.prototype.setScores = function()
 {
-    if (this.end) {
-        var total = this.avatars.count();
+    var survivors = this.getAliveAvatars();
 
-        for (var i = this.deaths.items.length - 1; i >= 0; i--) {
-            this.deaths.items[i].addScore(i);
+    for (var i = survivors.items.length - 1; i >= 0; i--) {
+        survivors.items[i].addScore(1);
+    }
+};
+
+/**
+ * Resolve scores
+ */
+Game.prototype.resolveScores = function()
+{
+    if (this.end) {
+        var winner = this.avatars.match(function () { return this.alive; });
+
+        if (winner) {
+            this.emit('round:winner', {game: this, winner: winner});
         }
 
-        if (this.deaths.count() < total) {
-            var winner = this.avatars.match(function () { return this.alive; });
-
-            winner.addScore(total-1);
-            this.emit('round:winner', {game: this, winner: winner});
+        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+            this.avatars.items[i].resolveScore();
         }
     }
 };
@@ -157,7 +167,7 @@ Game.prototype.onRoundEnd = function()
 {
     this.emit('round:end', {game: this});
     BaseGame.prototype.onRoundEnd.call(this);
-    this.setScores();
+    this.resolveScores();
 };
 
 /**

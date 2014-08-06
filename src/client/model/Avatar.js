@@ -103,7 +103,7 @@ Avatar.prototype.setScore = function(score)
 
     BaseAvatar.prototype.setScore.call(this, score);
 
-    this.lastScore = diff;
+    this.roundScore = diff;
 };
 
 /**

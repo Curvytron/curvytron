@@ -153,6 +153,17 @@ Avatar.prototype.setScore = function(score)
 };
 
 /**
+ * Set round score
+ *
+ * @param {Number} score
+ */
+Avatar.prototype.setRoundScore = function(score)
+{
+    BaseAvatar.prototype.setRoundScore.call(this, score);
+    this.emit('property', {avatar: this, property: 'roundScore', value: this.roundScore});
+};
+
+/**
  * Clear
  */
 Avatar.prototype.clear = function()

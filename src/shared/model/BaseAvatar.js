@@ -20,6 +20,7 @@ function BaseAvatar(player)
     this.alive           = true;
     this.printing        = false;
     this.score           = 0;
+    this.roundScore      = 0;
     this.printingTimeout = null;
     this.ready           = false;
     this.present         = true;
@@ -287,7 +288,28 @@ BaseAvatar.prototype.getRandomPrintingTime = function()
  */
 BaseAvatar.prototype.addScore = function(score)
 {
-    this.setScore(this.score + score);
+    this.setRoundScore(this.roundScore + score);
+};
+
+/**
+ * Resolve score
+ *
+ * @param {Number} score
+ */
+BaseAvatar.prototype.resolveScore = function()
+{
+    this.setScore(this.score + this.roundScore);
+    this.roundScore = 0;
+};
+
+/**
+ * This round score
+ *
+ * @param {Number} score
+ */
+BaseAvatar.prototype.setRoundScore = function(score)
+{
+    this.roundScore = score;
 };
 
 /**
@@ -322,6 +344,7 @@ BaseAvatar.prototype.clear = function()
     this.angle           = Math.random() * Math.PI;
     this.velocities      = [0,0];
     this.angularVelocity = 0;
+    this.roundScore      = 0;
     this.velocity        = BaseAvatar.prototype.velocity;
     this.alive           = true;
     this.printing        = false;
