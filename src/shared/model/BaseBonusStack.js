@@ -105,6 +105,10 @@ BaseBonusStack.prototype.apply = function(property, value)
     if (property === 'color') {
         return this.avatar.setColor(value);
     }
+
+    if (property === 'borderless') {
+        return this.avatar.setBorderless(value ? true : false);
+    }
 };
 
 /**

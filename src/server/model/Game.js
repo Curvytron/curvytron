@@ -38,7 +38,7 @@ Game.prototype.update = function(step)
 {
     BaseGame.prototype.update.call(this, step);
 
-    var avatar, i;
+    var avatar, border, i;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
@@ -46,9 +46,21 @@ Game.prototype.update = function(step)
         if (avatar.alive) {
             avatar.update(step);
 
-            if (!avatar.invincible && !this.world.testBody(avatar.body, true)) {
+            border = this.world.getBoundIntersect(avatar.body, avatar.borderless ? 0 : avatar.radius);
+
+            if (border) {
+                if (avatar.borderless) {
+                    if (this.testBorder(avatar.head, avatar.velocities, border)) {
+                        avatar.setPosition(this.world.getOposite(border));
+                    }
+                } else {
+                    avatar.die();
+                }
+            } else if (!avatar.invincible && !this.world.testBody(avatar.body)) {
                 avatar.die();
-            } else {
+            }
+
+            if (avatar.alive) {
                 this.bonusManager.testCatch(avatar);
             }
         }
@@ -146,6 +158,22 @@ Game.prototype.resolveScores = function()
             this.avatars.items[i].resolveScore();
         }
     }
+};
+
+/**
+ * Test border
+ *
+ * @param {Array} position
+ * @param {Array} velocities
+ * @param {Array} border
+ *
+ * @return {Boolean}
+ */
+Game.prototype.testBorder = function(position, velocities, border)
+{
+    var axis = border[2];
+
+    return (position[axis] > border[axis]) === (velocities[axis] < 0);
 };
 
 /**

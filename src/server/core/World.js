@@ -112,10 +112,6 @@ World.prototype.removeBody = function(body)
  */
 World.prototype.getBody = function(body)
 {
-    if (!this.bodyInBound(body, this.from, this.to)) {
-        return null;
-    }
-
     var islands = this.getIslandsByBody(body),
         match;
 
@@ -133,13 +129,11 @@ World.prototype.getBody = function(body)
  * Add body
  *
  * @param {Body} body
+ *
+ * @return {Boolean}
  */
 World.prototype.testBody = function(body)
 {
-    if (!this.bodyInBound(body, this.from, this.to)) {
-        return false;
-    }
-
     var islands = this.getIslandsByBody(body);
 
     for (var i = islands.length - 1; i >= 0; i--) {
@@ -150,7 +144,6 @@ World.prototype.testBody = function(body)
 
     return true;
 };
-
 /**
  * Random Position
  *
@@ -190,17 +183,58 @@ World.prototype.getRandomPoint = function(margin)
  * Is point in bound?
  *
  * @param {Body} body
- * @param {Array} from
- * @param {Array} to
  *
  * @return {Boolean}
  */
-World.prototype.bodyInBound = function(body, from, to)
+World.prototype.getBoundIntersect = function(body, margin)
 {
-    return body.position[0] - body.radius > from[0] &&
-           body.position[0] + body.radius < to[0]   &&
-           body.position[1] - body.radius > from[1] &&
-           body.position[1] + body.radius < to[1];
+    margin = typeof(margin) != 'undefined' ? margin : 0;
+
+    if (body.position[0] - margin < this.from[0]) {
+        return [this.from[0], body.position[1]];
+    }
+
+    if (body.position[0] + margin > this.to[0]) {
+        return [this.to[0], body.position[1]];
+    }
+
+    if (body.position[1] - margin < this.from[1]) {
+        return [body.position[0], this.from[1]];
+    }
+
+    if (body.position[1] + margin > this.to[1]) {
+        return [body.position[0], this.to[1]];
+    }
+
+    return null;
+};
+
+/**
+ * Get oposite
+ *
+ * @param {Array} point
+ *
+ * @return {Array}
+ */
+World.prototype.getOposite = function(point)
+{
+    if (point[0] === this.from[0]) {
+        return [this.to[0], point[1], 0];
+    }
+
+    if (point[0] === this.to[0]) {
+        return [this.from[0], point[1], 0];
+    }
+
+    if (point[1] === this.from[1]) {
+        return [point[0], this.to[1], 1];
+    }
+
+    if (point[1] === this.to[1]) {
+        return [point[0], this.from[1], 1];
+    }
+
+    return point;
 };
 
 /**

@@ -41,6 +41,7 @@ BaseAvatar.prototype.radius              = 0.6;
 BaseAvatar.prototype.trailLatency        = 3;
 BaseAvatar.prototype.inverse             = false;
 BaseAvatar.prototype.invincible          = false;
+BaseAvatar.prototype.borderless          = false;
 
 /**
  * Equal
@@ -182,6 +183,16 @@ BaseAvatar.prototype.setInverse = function(inverse)
 BaseAvatar.prototype.setInvincible = function(invincible)
 {
     this.invincible = invincible ? true : false;
+};
+
+/**
+ * Set borderless
+ *
+ * @param {Number} inverse
+ */
+BaseAvatar.prototype.setBorderless = function(borderless)
+{
+    this.borderless = borderless ? true : false;
 };
 
 /**
