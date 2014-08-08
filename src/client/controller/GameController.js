@@ -208,7 +208,7 @@ GameController.prototype.onBonusStack = function(e)
 {
     var data = e.detail,
         avatar = this.game.avatars.getById(data.avatar),
-        bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius);
+        bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration);
 
     if (avatar && avatar.local) {
         bonus.setScale(this.game.canvas.scale);
@@ -225,7 +225,7 @@ GameController.prototype.onBonusStack = function(e)
 GameController.prototype.onBonusPop = function(e)
 {
     var data = e.detail,
-        bonus = new Bonus(data.id, data.position, data.type, data.affect, data.radius);
+        bonus = new Bonus(data.id, data.position, data.type, data.affect, data.radius, data.duration);
 
     bonus.setScale(this.game.canvas.scale);
     this.game.bonusManager.add(bonus);

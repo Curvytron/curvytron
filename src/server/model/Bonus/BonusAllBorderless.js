@@ -12,6 +12,13 @@ BonusAllBorderless.prototype = Object.create(BonusAll.prototype);
 BonusAllBorderless.prototype.constructor = BonusAllBorderless;
 
 /**
+ * Duration
+ *
+ * @type {Number}
+ */
+BonusAllBorderless.prototype.duration = 10000;
+
+/**
  * Get effects
  *
  * @param {Avatar} avatar

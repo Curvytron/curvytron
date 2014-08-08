@@ -60,6 +60,7 @@ BaseAvatar.prototype.equal = function(avatar)
  *
  * @param {Array} point
  */
+
 BaseAvatar.prototype.setPosition = function(point)
 {
     this.head[0] = point[0];
@@ -149,6 +150,10 @@ BaseAvatar.prototype.updateVelocities = function()
         Math.cos(this.angle) * this.velocity/1000,
         Math.sin(this.angle) * this.velocity/1000
     ];
+
+    var ratio = this.velocity / BaseAvatar.prototype.velocity;
+
+    this.angularVelocityBase = ratio * BaseAvatar.prototype.angularVelocityBase + Math.log(1/ratio)/1000;
 };
 
 /**
@@ -158,7 +163,7 @@ BaseAvatar.prototype.updateVelocities = function()
  */
 BaseAvatar.prototype.setRadius = function(radius)
 {
-    this.radius = Math.max(radius, BaseAvatar.prototype.radius);
+    this.radius = Math.max(radius, BaseAvatar.prototype.radius/8);
 };
 
 /**
@@ -363,6 +368,11 @@ BaseAvatar.prototype.clear = function()
     this.radius          = BaseAvatar.prototype.radius;
     this.inverse         = BaseAvatar.prototype.inverse;
     this.invincible      = BaseAvatar.prototype.invincible;
+    this.borderless      = BaseAvatar.prototype.borderless;
+
+    if (this.body) {
+        this.body.radius = BaseAvatar.prototype.radius;
+    }
 
     this.updateVelocities();
 };

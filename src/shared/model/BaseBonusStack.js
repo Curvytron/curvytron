@@ -83,7 +83,7 @@ BaseBonusStack.prototype.resolve = function(bonus)
 BaseBonusStack.prototype.apply = function(property, value)
 {
     if (property === 'radius') {
-        return this.avatar.setRadius(value);
+        return this.avatar.setRadius(Avatar.prototype.radius * Math.pow(2, value));
     }
 
     if (property === 'velocity') {
@@ -122,6 +122,10 @@ BaseBonusStack.prototype.getDefaultProperty = function(property, avatar)
 {
     if (property === 'printing') {
         return 1;
+    }
+
+    if (property === 'radius') {
+        return 0;
     }
 
     if (property === 'color') {

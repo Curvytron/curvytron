@@ -11,7 +11,6 @@ function Avatar(player)
     this.canvas = new Canvas(100, 100);
     this.arrow  = new Canvas(100, 100);
     this.start  = new Array(2);
-    this.radius = this.radius * this.radiusMargin;
     this.width  = this.radius * 2;
 
     if (this.local) {
@@ -23,13 +22,6 @@ function Avatar(player)
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
 Avatar.prototype.constructor = Avatar;
-
-/**
- * Radius margin
- *
- * @type {Number}
- */
-Avatar.prototype.radiusMargin = 1;
 
 /**
  * Arrao width
@@ -75,8 +67,9 @@ Avatar.prototype.setScale = function(scale)
  */
 Avatar.prototype.setRadius = function(radius)
 {
-    this.radius = radius * this.radiusMargin;
-    this.width  = this.radius * 2;
+    BaseAvatar.prototype.setRadius.call(this, radius);
+
+    this.width = this.radius * 2;
 
     this.setScale(this.canvas.scale);
 };
@@ -162,6 +155,16 @@ Avatar.prototype.destroy = function()
     }
 
     BaseAvatar.prototype.destroy.call(this);
+};
+
+/**
+ * Clear
+ */
+Avatar.prototype.clear = function()
+{
+    BaseAvatar.prototype.clear.call(this);
+    this.drawArrow();
+    this.drawHead();
 };
 
 /**
