@@ -459,7 +459,12 @@
     }
 }
 
-
+#sound {
+    @include opacity(50);
+    &.active {
+        @include opacity(100);
+    }
+}
 
 .btn-back-to-room {
     border: 2px solid #888;

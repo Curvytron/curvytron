@@ -45,6 +45,7 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     this.onLeave       = this.onLeave.bind(this);
     this.leaveGame     = this.leaveGame.bind(this);
     this.backToRoom    = this.backToRoom.bind(this);
+    this.toggleSound   = this.toggleSound.bind(this);
 
     this.attachSocketEvents();
 
@@ -55,6 +56,7 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     this.$scope.countFinish = true;
     this.$scope.sound       = true;
     this.$scope.backToRoom  = this.backToRoom;
+    this.$scope.toggleSound = this.toggleSound;
 
     this.chat.setScope(this.$scope);
 
@@ -275,7 +277,7 @@ GameController.prototype.onDie = function(e)
         this.applyScope();
 
         if (this.$scope.sound) {
-            createjs.Sound.play('loose').volume = 0.2;
+            createjs.Sound.play('loose').volume = 0.3;
         }
     }
 };
@@ -400,6 +402,14 @@ GameController.prototype.close = function()
 GameController.prototype.backToRoom = function()
 {
     this.$location.path(this.room.url);
+};
+
+/**
+ * Toggle sound
+ */
+GameController.prototype.toggleSound = function()
+{
+    this.$scope.sound = !this.$scope.sound;
 };
 
 /**
