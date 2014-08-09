@@ -14,6 +14,13 @@ BonusAllColor.prototype = Object.create(BonusAll.prototype);
 BonusAllColor.prototype.constructor = BonusAllColor;
 
 /**
+ * Duration
+ *
+ * @type {Number}
+ */
+BonusAllColor.prototype.duration = 75000;
+
+/**
  * Get target
  *
  * @param {Avatar} avatar

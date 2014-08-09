@@ -41,10 +41,12 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
     this.onRoundWinner = this.onRoundWinner.bind(this);
+    this.onClear       = this.onClear.bind(this);
     this.onEnd         = this.onEnd.bind(this);
     this.onLeave       = this.onLeave.bind(this);
     this.leaveGame     = this.leaveGame.bind(this);
     this.backToRoom    = this.backToRoom.bind(this);
+    this.toggleSound   = this.toggleSound.bind(this);
 
     this.attachSocketEvents();
 
@@ -53,7 +55,9 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     // Hydrate scope:
     this.$scope.sortorder   = '-score';
     this.$scope.countFinish = true;
+    this.$scope.sound       = true;
     this.$scope.backToRoom  = this.backToRoom;
+    this.$scope.toggleSound = this.toggleSound;
 
     this.chat.setScope(this.$scope);
 
@@ -74,6 +78,7 @@ GameController.prototype.attachSocketEvents = function()
     this.client.on('round:new', this.onRoundNew);
     this.client.on('round:end', this.onRoundEnd);
     this.client.on('round:winner', this.onRoundWinner);
+    this.client.on('clear', this.onClear);
     this.client.on('end', this.onEnd);
     this.client.on('game:leave', this.onLeave);
 };
@@ -92,6 +97,7 @@ GameController.prototype.detachSocketEvents = function()
     this.client.off('round:new', this.onRoundNew);
     this.client.off('round:end', this.onRoundEnd);
     this.client.off('round:winner', this.onRoundWinner);
+    this.client.off('clear', this.onClear);
     this.client.off('end', this.onEnd);
     this.client.off('game:leave', this.onLeave);
 };
@@ -208,7 +214,7 @@ GameController.prototype.onBonusStack = function(e)
 {
     var data = e.detail,
         avatar = this.game.avatars.getById(data.avatar),
-        bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius);
+        bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration);
 
     if (avatar && avatar.local) {
         bonus.setScale(this.game.canvas.scale);
@@ -225,7 +231,7 @@ GameController.prototype.onBonusStack = function(e)
 GameController.prototype.onBonusPop = function(e)
 {
     var data = e.detail,
-        bonus = new Bonus(data.id, data.position, data.type, data.affect, data.radius);
+        bonus = new Bonus(data.id, data.position, data.type, data.affect, data.radius, data.duration);
 
     bonus.setScale(this.game.canvas.scale);
     this.game.bonusManager.add(bonus);
@@ -273,14 +279,16 @@ GameController.prototype.onDie = function(e)
         avatar.die();
         this.applyScope();
 
-        createjs.Sound.play('loose').volume = 0.2;
+        if (this.$scope.sound) {
+            createjs.Sound.play('loose').volume = 0.3;
+        }
     }
 };
 
 /**
  * On round new
  *
- * @param {Game} game
+ * @param {Event} e
  */
 GameController.prototype.onRoundNew = function(e)
 {
@@ -296,11 +304,21 @@ GameController.prototype.onRoundNew = function(e)
 /**
  * On round new
  *
- * @param {Game} game
+ * @param {Event} e
  */
 GameController.prototype.onRoundEnd = function(e)
 {
     this.game.endRound();
+};
+
+/**
+ * On clear
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onClear = function(e)
+{
+    this.game.clearTrails();
 };
 
 /**
@@ -316,13 +334,15 @@ GameController.prototype.onEnd = function(e)
     document.getElementById('game-view').style.display = 'block';
     document.getElementById('round-view').style.display = 'none';
 
-    createjs.Sound.play('win').volume = 0.2;
+    if (this.$scope.sound) {
+        createjs.Sound.play('win').volume = 0.2;
+    }
 };
 
 /**
- * On round new
+ * On round winner
  *
- * @param {Game} game
+ * @param {Event} e
  */
 GameController.prototype.onRoundWinner = function(e)
 {
@@ -395,6 +415,14 @@ GameController.prototype.close = function()
 GameController.prototype.backToRoom = function()
 {
     this.$location.path(this.room.url);
+};
+
+/**
+ * Toggle sound
+ */
+GameController.prototype.toggleSound = function()
+{
+    this.$scope.sound = !this.$scope.sound;
 };
 
 /**

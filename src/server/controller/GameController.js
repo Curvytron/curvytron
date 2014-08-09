@@ -16,6 +16,7 @@ function GameController()
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
     this.onRoundWinner = this.onRoundWinner.bind(this);
+    this.onClear       = this.onClear.bind(this);
     this.onEnd         = this.onEnd.bind(this);
 
     this.callbacks = {
@@ -33,6 +34,7 @@ GameController.prototype.addGame = function(game)
 {
     if (this.games.add(game)) {
         game.on('end', this.onEnd);
+        game.on('clear', this.onClear);
         game.on('round:new', this.onRoundNew);
         game.on('round:end', this.onRoundEnd);
         game.on('round:winner', this.onRoundWinner);
@@ -294,6 +296,16 @@ GameController.prototype.onRoundEnd = function(data)
 GameController.prototype.onRoundWinner = function(data)
 {
     data.game.client.addEvent('round:winner', {winner: data.winner.id});
+};
+
+/**
+ * On clear
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onClear = function(data)
+{
+    data.game.client.addEvent('clear');
 };
 
 /**

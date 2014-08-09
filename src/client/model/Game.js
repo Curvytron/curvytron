@@ -78,6 +78,14 @@ Game.prototype.onStop = function()
 };
 
 /**
+ * Clear trails
+ */
+Game.prototype.clearTrails = function()
+{
+    this.clearBackground();
+};
+
+/**
  * End
  */
 Game.prototype.end = function()

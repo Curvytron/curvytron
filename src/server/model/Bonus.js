@@ -21,7 +21,10 @@ Bonus.prototype.constructor = Bonus;
 Bonus.prototype.applyTo = function(avatar, game)
 {
     this.target  = this.getTarget(avatar, game);
-    this.timeout = setTimeout(this.off, this.duration);
+
+    if (this.duration) {
+        this.timeout = setTimeout(this.off, this.duration);
+    }
 
     this.on();
 };

@@ -12,6 +12,13 @@ BonusSelfFast.prototype = Object.create(BonusSelf.prototype);
 BonusSelfFast.prototype.constructor = BonusSelfFast;
 
 /**
+ * Duration
+ *
+ * @type {Number}
+ */
+BonusSelfFast.prototype.duration = 4000;
+
+/**
  * Get effects
  *
  * @param {Avatar} avatar
@@ -20,5 +27,5 @@ BonusSelfFast.prototype.constructor = BonusSelfFast;
  */
 BonusSelfFast.prototype.getEffects = function(avatar)
 {
-    return [['velocity', BaseAvatar.prototype.velocity/2]];
+    return [['velocity', 0.75 * BaseAvatar.prototype.velocity]];
 };

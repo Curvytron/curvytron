@@ -12,6 +12,13 @@ BonusEnemyBig.prototype = Object.create(BonusEnemy.prototype);
 BonusEnemyBig.prototype.constructor = BonusEnemyBig;
 
 /**
+ * Duration
+ *
+ * @type {Number}
+ */
+BonusEnemyBig.prototype.duration = 7500;
+
+/**
  * Get effects
  *
  * @param {Avatar} avatar
@@ -20,5 +27,5 @@ BonusEnemyBig.prototype.constructor = BonusEnemyBig;
  */
 BonusEnemyBig.prototype.getEffects = function(avatar)
 {
-    return [['radius', BaseAvatar.prototype.radius]];
+    return [['radius', 1]];
 };
