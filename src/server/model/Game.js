@@ -177,6 +177,16 @@ Game.prototype.testBorder = function(position, velocities, border)
 };
 
 /**
+ * Clear trails
+ */
+Game.prototype.clearTrails = function()
+{
+    this.world.clear();
+    this.world.activate();
+    this.emit('clear', {game: this});
+};
+
+/**
  * Check end of round
  */
 Game.prototype.onRoundEnd = function()

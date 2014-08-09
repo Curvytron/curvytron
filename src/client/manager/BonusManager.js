@@ -33,7 +33,8 @@ BonusManager.prototype.spritePosition = [
     'BonusEnemyBig',
     'BonusAllColor',
     'BonusEnemyInverse',
-    'BonusSelfSmall'
+    'BonusSelfSmall',
+    'BonusGameClear'
 ];
 
 /**

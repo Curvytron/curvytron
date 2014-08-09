@@ -41,6 +41,7 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
     this.onRoundWinner = this.onRoundWinner.bind(this);
+    this.onClear       = this.onClear.bind(this);
     this.onEnd         = this.onEnd.bind(this);
     this.onLeave       = this.onLeave.bind(this);
     this.leaveGame     = this.leaveGame.bind(this);
@@ -77,6 +78,7 @@ GameController.prototype.attachSocketEvents = function()
     this.client.on('round:new', this.onRoundNew);
     this.client.on('round:end', this.onRoundEnd);
     this.client.on('round:winner', this.onRoundWinner);
+    this.client.on('clear', this.onClear);
     this.client.on('end', this.onEnd);
     this.client.on('game:leave', this.onLeave);
 };
@@ -95,6 +97,7 @@ GameController.prototype.detachSocketEvents = function()
     this.client.off('round:new', this.onRoundNew);
     this.client.off('round:end', this.onRoundEnd);
     this.client.off('round:winner', this.onRoundWinner);
+    this.client.off('clear', this.onClear);
     this.client.off('end', this.onEnd);
     this.client.off('game:leave', this.onLeave);
 };
@@ -285,7 +288,7 @@ GameController.prototype.onDie = function(e)
 /**
  * On round new
  *
- * @param {Game} game
+ * @param {Event} e
  */
 GameController.prototype.onRoundNew = function(e)
 {
@@ -301,11 +304,21 @@ GameController.prototype.onRoundNew = function(e)
 /**
  * On round new
  *
- * @param {Game} game
+ * @param {Event} e
  */
 GameController.prototype.onRoundEnd = function(e)
 {
     this.game.endRound();
+};
+
+/**
+ * On clear
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onClear = function(e)
+{
+    this.game.clearTrails();
 };
 
 /**
@@ -327,9 +340,9 @@ GameController.prototype.onEnd = function(e)
 };
 
 /**
- * On round new
+ * On round winner
  *
- * @param {Game} game
+ * @param {Event} e
  */
 GameController.prototype.onRoundWinner = function(e)
 {
