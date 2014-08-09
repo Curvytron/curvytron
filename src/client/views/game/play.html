@@ -1,22 +1,40 @@
 <section>
     <section id="game-wrapper">
         <aside id="game-infos">
-            <header><a href="/">Curvytron</a></header>
-            <h3>{{ game.name }}</h3>
-            <p class="maxScore">First to score <strong>{{ game.maxScore }}</strong> points win the game!</p>
+            <header><a href="/"><img src="images/logo.png" alt="Curvytron" id="logo" /> Curvytron</a></header>
+            <div class="maxScore"><i class="icon-trophy"></i><span>{{ game.maxScore }}</span></div>
+            <h3 title="{{ game.name }}">{{ game.name }}</h3>
             <ul id="game-players">
                 <li ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
-                    <span class="color-preview" style="background-color: {{ avatar.color }};"></span>
+                    <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
+                    <span class="round-points pull-right" ng-if="avatar.roundScore && (!avatar.alive || !game.inRound)">+{{ avatar.roundScore }}</span>
                     {{ avatar.name }}
                     <span class="score">{{ avatar.score }}</span>
                 </li>
             </ul>
-            <!--object width="295" height="90" id="radio"><param name="allowscriptaccess" value="always" /><param name="movie" value="http://static.radionomy.com/cdn/flash/BannerEmbed.swf?RadUID=46b6f68c-eaf7-4802-9bca-5d2536fd0e66&amp;titlesColor=dddddd&amp;color=2f2f2f&amp;autoPlay=no&amp;lang=fr" /><param name="wmode" value="transparent" /><embed src="http://static.radionomy.com/cdn/flash/BannerEmbed.swf?RadUID=46b6f68c-eaf7-4802-9bca-5d2536fd0e66&amp;titlesColor=dddddd&amp;color=2f2f2f&amp;autoPlay=yes&amp;lang=fr" wmode="transparent" type="application/x-shockwave-flash" allowscriptaccess="always" width="295" height="90"></embed></object-->
             <footer>
                 <span id="fps" class="pull-right">0</span>
                 <span id="ping" class="pull-right">0</span>
-                <a href="http://www.elao.com" class="game-copy" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>
+                <span id="sound" class="pull-right" ng-class="{ active: sound }" ng-click="toggleSound()"><i class="icon-sound"></i></span>
+                <a href="http://www.elao.com" class="game-copy pull-left" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>
             </footer>
+            <div class="chat-wrapper">
+                <div id="feed">
+                    <div class="welcome">
+                        <strong>Welcome !</strong>
+                    </div>
+                    <div ng-repeat="message in messages" class="one-message">
+                        <strong style="color: {{ message.player.color ? message.player.color : '#75858c' }};">
+                            {{ message.getPlayerName() }}:
+                        </strong>
+                        {{ message.content }}
+                    </div>
+                </div>
+                <form ng-submit="submitTalk()" name="talk" class="action-line">
+                    <button type="submit"><span><i class="icon-angle-right"></i></span></button>
+                    <input type="text" name="message" ng-model="currentMessage.content" class="sent-message form-control" placeholder="Enter message..." maxlength="{{ messageMaxLength }}" />
+                </form>
+            </div>
         </aside>
         <div id="col-right">
             <section class="countdown" ng-hide="countFinish">
@@ -26,31 +44,31 @@
             <section id="end">
                 <section id="round-view">
                     <i class="icon-trophy"></i>
-                    <p><span class="strong" style="color: {{ roundWinner.color }}">{{ roundWinner.name }}</span> won the round ! </p>
+                    <p><span class="strong" style="color: {{ roundWinner.player.color }}">{{ roundWinner.name }}</span> won the round ! </p>
                 </section>
                 <section id="game-view">
                     <i class="icon-trophy"></i>
                     <p ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-show="$first">
-                        <span class="strong" style="color: {{ avatar.color }}">{{ avatar.name }}</span> won the game !
+                        <span class="strong" style="color: {{ avatar.player.color }}">{{ avatar.name }}</span> won the game !
                     </p>
                     <div>
-                        <a href="#/room/{{ game.name }}" class="btn">
+                        <button ng-click="backToRoom()" type="button" class="btn btn-link btn-back-to-room">
                             Back to the room
-                        </a>
+                        </button>
                     </div>
                     <table class="table table-hover recap">
                         <tbody>
                             <tr ng-repeat="avatar in game.avatars.items | orderBy:sortorder">
                                 <td class="rank">{{ $index + 1 }}</td>
-                                <td class="name"><span style="color: {{ avatar.color }}">{{ avatar.name }}</span></td>
+                                <td class="name"><span style="color: {{ avatar.player.color }}">{{ avatar.name }}</span></td>
                                 <td class="points"><strong>{{ avatar.score }}</strong> points</td>
                             </tr>
                         </tbody>
                     </table>
                     <div>
-                        <a href="#/room/{{ game.name }}" class="btn">
+                        <button ng-click="backToRoom()" type="button" class="btn btn-link btn-back-to-room">
                             Back to the room
-                        </a>
+                        </button>
                     </div>
                 </section>
             </section>

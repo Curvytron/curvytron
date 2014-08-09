@@ -86,6 +86,17 @@ Avatar.prototype.setInvincible = function(invincible)
 };
 
 /**
+ * Set borderless
+ *
+ * @param {Number} borderless
+ */
+Avatar.prototype.setBorderless = function(borderless)
+{
+    BaseAvatar.prototype.setBorderless.call(this, borderless);
+    this.emit('property', {avatar: this, property: 'borderless', value: this.borderless});
+};
+
+/**
  * Set inverse
  *
  * @param {Number} inverse
@@ -114,7 +125,7 @@ Avatar.prototype.setColor = function(color)
  */
 Avatar.prototype.addPoint = function(point, important)
 {
-    if (this.game.isPlaying()) {
+    if (this.game.frame) {
         BaseAvatar.prototype.addPoint.call(this, point);
         this.emit('point', { avatar: this, point: point, important: important || this.angularVelocity });
     }
@@ -150,6 +161,17 @@ Avatar.prototype.setScore = function(score)
 {
     BaseAvatar.prototype.setScore.call(this, score);
     this.emit('property', {avatar: this, property: 'score', value: this.score});
+};
+
+/**
+ * Set round score
+ *
+ * @param {Number} score
+ */
+Avatar.prototype.setRoundScore = function(score)
+{
+    BaseAvatar.prototype.setRoundScore.call(this, score);
+    this.emit('property', {avatar: this, property: 'roundScore', value: this.roundScore});
 };
 
 /**

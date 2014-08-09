@@ -7,7 +7,7 @@ function SocketClient(socket, interval)
 {
     BaseSocketClient.call(this, socket, interval);
 
-    this.players = new Collection([], 'name');
+    this.players = new Collection([], 'id');
     this.id      = null;
     this.room    = null;
 }

@@ -1,0 +1,265 @@
+
+#room {
+    .room-details {
+        padding-top: 50px;
+    }
+
+    .room-chat {
+        float: left;
+        width: 32%;
+        padding-right: 30px;
+
+        .chat-wrapper {
+            margin-top: 50px;
+
+            #feed {
+                padding: 15px 0;
+                position: relative;
+                height: 270px;
+                max-height: 270px;
+                overflow-y: auto;
+                background: #1c1c1c;
+                color:  #ffffff;
+
+                .one-message {
+                    margin: 0 15px;
+                    font-size: 16px;
+                    line-height: 22px;
+                    padding: 3px 0;
+                    word-wrap: break-word;
+                }
+            }
+
+            .action-line {
+                margin-top: 10px;
+                height: 60px;
+                position: relative;
+                overflow: hidden;
+
+                .form-control {
+                    height: 60px;
+                    font-size: 16px;
+                    background: #FFF;
+                    border: 0;
+                    padding-right: 85px;
+
+                    &:focus {
+                        border-color: $text-color;
+                    }
+                }
+
+                .btn {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    height: 60px;
+                    width: 80px;
+                    text-align: center;
+                    border: 0;
+                    border-left: 10px solid $background-color;
+                    color: #FFF;
+                    margin: 0 -10px 0 20px;
+                    padding: 0 25px 0 15px;
+                    @include horizontal-gradient($header-background-from, $header-background-to);
+                    @include skew(-10deg, 0);
+                    @include transition(all 0.1s linear);
+                    -webkit-backface-visibility: hidden;
+                    -webkit-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+
+                    span {
+                        display: block;
+                        @include skew(10deg, 0);
+                        -webkit-backface-visibility: hidden;
+                    }
+
+                    &:hover {
+                        padding-right: 20px;
+                    }
+                }
+            }
+        }
+    }
+
+
+    .room-players {
+        width: 68%;
+        float: left;
+        border-collapse: separate;
+
+        th {
+            text-transform: uppercase;
+            color: transparentize($text-color, 0.5);
+            font-weight: 400;
+            height: 40px !important;
+            border-bottom: 0;
+
+            &.col-ready {
+                text-align: center;
+                padding-left: 45px;
+            }
+        }
+        tr {
+            td {
+                overflow: hidden;
+                height: 60px;
+                min-height: 60px;
+                max-height: 60px;
+
+                &.col-player {
+                    font-weight: bold;
+                }
+
+                &.col-ready {
+                    padding: 0;
+                }
+            }
+
+            &.local {
+
+                .player-ready {
+                    cursor: pointer;
+
+                    span {
+                        font-size: 18px;
+                    }
+                }
+
+                .col-color {
+                    // padding-left: 17px;
+                }
+            }
+        }
+
+    }
+
+    .col-color {
+        position: relative;
+        // padding-left: 20px;
+
+        .line-color-preview {
+            width: 12px;
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            bottom: 10px;
+        }
+
+        .form-control {
+            height: 40px;
+            border-left-width: 12px;
+        }
+
+        p {
+            margin: 0;
+            padding-left: 22px;
+            font-weight: 400;
+        }
+    }
+
+    .player-ready {
+        display: block;
+        position: relative;
+        margin: 0 -10px 0 20px;
+        padding: 0 25px 0 20px;
+        line-height: 60px;
+        height: 60px;
+        border-left: 10px solid $background-color;
+        background: darken($background-color, 7%);
+        color: #FFF;
+        text-align: center;
+        @include transition(all 0.2s ease);
+        @include skew(-10deg, 0);
+        -webkit-backface-visibility: hidden;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        &:after {
+            position: absolute;
+            z-index: 50;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            background: $color-success;
+            @include horizontal-gradient(#60a760, #61ca61);
+            content: '';
+            @include transition(all 0.2s ease);
+            -webkit-backface-visibility: hidden;
+        }
+
+        &.ready {
+            &:after {
+                width: 100%;
+            }
+
+            span {
+                color: #FFF;
+            }
+        }
+
+        span {
+            display: block;
+            position: relative;
+            z-index: 100;
+            text-transform: uppercase;
+            font-size: 20px;
+            color: $text-color;
+            @include skew(10deg, 0);
+            @include transition(all 0.2s linear);
+            -webkit-backface-visibility: hidden;
+        }
+
+        &:hover {
+            background: darken($background-color, 12%);
+        }
+    }
+
+    .control {
+        margin: 0 5px;
+        height: 40px;
+        width: 40px;
+        overflow: hidden;
+        padding: 0;
+        line-height: 36px;
+        text-align: center;
+    }
+
+    .player-color {
+        @include transition(none);
+    }
+
+    .player-name {
+
+        height: 40px;
+
+        &:not(:focus) {
+            border-color: transparent;
+        }
+    }
+
+    .col-player { width: auto; }
+    .col-color { width: 150px; }
+    .col-keys { width: 150px; }
+    .col-ready { width: 150px; }
+    .col-remove {
+        width: 27px;
+        padding-right: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .btn-remove {
+        padding: 0;
+        margin: 0;
+        border: none;
+    }
+}
+
+
+

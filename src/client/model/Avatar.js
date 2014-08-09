@@ -11,7 +11,6 @@ function Avatar(player)
     this.canvas = new Canvas(100, 100);
     this.arrow  = new Canvas(100, 100);
     this.start  = new Array(2);
-    this.radius = this.radius * this.radiusMargin;
     this.width  = this.radius * 2;
 
     if (this.local) {
@@ -23,13 +22,6 @@ function Avatar(player)
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
 Avatar.prototype.constructor = Avatar;
-
-/**
- * Radius margin
- *
- * @type {Number}
- */
-Avatar.prototype.radiusMargin = 1;
 
 /**
  * Arrao width
@@ -75,10 +67,8 @@ Avatar.prototype.setScale = function(scale)
  */
 Avatar.prototype.setRadius = function(radius)
 {
-    this.radius = radius * this.radiusMargin;
-    this.width  = this.radius * 2;
-
-    this.setScale(this.canvas.scale);
+    BaseAvatar.prototype.setRadius.call(this, radius);
+    this.updateWidth();
 };
 
 /**
@@ -90,6 +80,20 @@ Avatar.prototype.setColor = function(color)
 {
     BaseAvatar.prototype.setColor.call(this, color);
     this.drawHead();
+};
+
+/**
+ * Set score
+ *
+ * @param {Number} score
+ */
+Avatar.prototype.setScore = function(score)
+{
+    var diff = score - this.score;
+
+    BaseAvatar.prototype.setScore.call(this, score);
+
+    this.roundScore = diff;
 };
 
 /**
@@ -134,12 +138,12 @@ Avatar.prototype.updateStart = function()
 };
 
 /**
- * Clear
+ * Update width
  */
-Avatar.prototype.clear = function()
+Avatar.prototype.updateWidth = function()
 {
-    BaseAvatar.prototype.clear.call(this);
-    this.setRadius(Avatar.prototype.radius);
+    this.width = this.radius * 2;
+    this.setScale(this.canvas.scale);
 };
 
 /**
@@ -160,6 +164,15 @@ Avatar.prototype.destroy = function()
 };
 
 /**
+ * Clear
+ */
+Avatar.prototype.clear = function()
+{
+    BaseAvatar.prototype.clear.call(this);
+    this.updateWidth();
+};
+
+/**
  * Set
  *
  * @param {String} property
@@ -172,7 +185,7 @@ Avatar.prototype.set = function(property, value)
     if (typeof(this[method]) !== 'undefined') {
         this[method](value);
     } else {
-        throw "Unknown setter " + method;
+        throw 'Unknown setter ' + method;
     }
 };
 

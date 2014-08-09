@@ -7,53 +7,125 @@
     height: 100%;
     width: 100%;
     background: $game-background;
+
     aside, #col-right {
         position: fixed;
         top: 0;
         bottom: 0;
     }
+
     aside {
-        width: 300px;
-        min-width: 300px;
-        max-width: 300px;
-        background: lighten($game-background, 5%);
+        width: $aside-width;
+        min-width: $aside-width;
+        max-width: $aside-width;
+        overflow: auto;
+        background: $aside-background;
         color: #EEE;
         font-weight: 300;
         left: 0;
-        border-right: 4px solid #000;
-        @include animation(gameBorder 20s infinite);
+        border-right: $aside-border-size solid $header-background-to;
+        padding-top: $game-header-height + 160px;
+        padding-bottom: 298px;
+
         header {
-            background: red;
             height: $game-header-height;
+            line-height: $game-header-height;
             overflow: hidden;
-            padding: 10px 20px;
+            padding: 0 20px;
             margin: 0;
-            font-size: 30px;
-            text-align: left;
             display: block !important;
+            position: fixed;
+            width: $aside-width;
+            font-size: 34px;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            text-align: left;
+            border: 0;
+
             a {
-                line-height: 60px;
-            }
-            a:hover {
-                text-decoration: none;
+                display: block;
+                line-height: $game-header-height - 4px;
+                height: $game-header-height;
+                @include transition(opacity 0.15s linear);
+
+                img {
+                    height: 80px;
+                    width: 80px;
+                    vertical-align: -25%;
+                    display: inline-block;
+                    margin-right: 10px;
+                }
+
+                &:hover {
+                    text-decoration: none;
+                    @include opacity(70);
+                }
             }
         }
+
+        .maxScore {
+            padding: 0 10px 0 20px;
+            text-align: left;
+            background: lighten($aside-background, 8%);
+            margin-bottom: 0;
+            font-size: 72px;
+            color: $aside-background;
+            position: fixed;
+            overflow: hidden;
+            left: 0;
+            top: $game-header-height;
+            width: $aside-width - $aside-border-size;
+            height: 80px;
+            line-height: 80px;
+            vertical-align: bottom;
+            z-index: 100;
+
+            i {
+                vertical-align: bottom;
+                position: absolute;
+                bottom: -2px;
+                left: 20px;
+            }
+
+            span {
+                position: absolute;
+                right: 20px;
+                bottom: 0;
+                font-size: 116px;
+                font-weight: bold;
+            }
+        }
+
         h3 {
             margin: 0;
             color: #FFF;
-            padding: 10px 20px;
-            // background: lighten($game-background, 10%);
+            padding: 0 20px;
+            font-size: 30px;
+            font-weight: 400;
+            height: 80px;
+            line-height: 80px;
+            position: fixed;
+            left: 0;
+            top: $game-header-height + 80px;
+            width: $aside-width - $aside-border-size;
+            background: $aside-background;
+            z-index: 100;
+            overflow: hidden;
+            -o-text-overflow: ellipsis; /* pour Opera 9 */
+            text-overflow: ellipsis;
         }
-        .maxScore {
-            margin: 8px;
-            text-align: center;
-        }
+
         #game-players {
             @extend .no-bullet;
+            margin-bottom: 0;
+
             li {
                 border-bottom: 2px solid lighten($game-background, 10%);
-                padding: 10px 20px;
+                padding: 15px 65px 15px 20px;
                 position: relative;
+                font-size: 18px;
+
                 .score {
                     display: block;
                     text-align: center;
@@ -61,14 +133,22 @@
                     top: 0;
                     right: 0;
                     bottom: 0;
-                    width: 50px;
-                    line-height: 44px;
-                    font-size: 24px;
-                    border-left: 2px solid lighten($game-background, 10%);
+                    width: 60px;
+                    line-height: 60px;
+                    font-size: 26px;
+                    font-weight: bold;
                 }
+
+                .round-points {
+                    font-size: 18px;
+                    margin-left: 10px;
+                    font-weight: 300;
+                }
+
                 &:first-child {
                     border-top: 2px solid lighten($game-background, 10%);
                 }
+
                 &.dead {
                     @include animation(deadAnim 1s forwards);
                     @include transition(all 0.2s ease);
@@ -78,32 +158,46 @@
                         @include opacity(50);
                     }
                 }
+
+                .line-color-preview {
+                    width: 6px;
+                    height: 100%;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    bottom: 0;
+                }
             }
         }
+
         #radio {
             position: fixed;
             left: 0;
             bottom: 0;
         }
+
         #fps {
-            width: 24px;
+            width: 30px;
             text-align: right;
         }
+
         #ping {
-            width: 32px;
+            width: 52px;
             text-align: right;
         }
+
         footer {
             display: block !important;
             position: fixed;
             left: 0;
-            bottom: 0px;
-            width: 300px;
-            min-width: 300px;
-            max-width: 300px;
-            background: transparent;
+            bottom: 245px;
+            width: $aside-width - $aside-border-size;
+            min-width: $aside-width - $aside-border-size;
+            max-width: $aside-width - $aside-border-size;
+            background: $aside-background;
             padding: 10px 20px;
             margin: 0;
+
             .game-copy {
                 color: #FFF;
                 display: block;
@@ -111,8 +205,9 @@
                 font-size: 14px;
                 text-transform: none;
                 cursor: pointer;
-                @include opacity(70);
+                @include opacity(50);
                 @include transition(all 0.2s ease);
+
                 &:hover {
                     @include opacity(100);
                     text-decoration: none;
@@ -120,11 +215,13 @@
             }
         }
     }
+
     #col-right {
         bottom: 0;
         right: 0;
-        left: 300px;
+        left: $aside-width;
         text-align: center;
+
         .countdown {
             position: absolute;
             top: 50%;
@@ -137,12 +234,19 @@
             padding: 20px;
             font-size: 100px;
             line-height: 140px;
-            font-weight: 300;
+            font-weight: normal;
             text-align: center;
             color: #FFF;
             background: transparent;
-            @extend .rounded;
+            @include border-radius(20px);
+            @include transform(rotate(45deg));
+
+            .count {
+                @include transform(rotate(-45deg));
+                margin-left: -10px;
+            }
         }
+
         .countdown-anim {
             width: 250px;
             height: 250px;
@@ -152,16 +256,33 @@
             margin-top: -125px;
             margin-left: -125px;
             background: transparentize(lighten($game-background, 10%), 0.8);
-            border: 4px solid lighten($game-background, 10%);
-            @include animation(countdownAnim 1s infinite);
+            @include animation(spin 4s infinite);
             z-index: 90;
-            @extend .rounded;
+            @include border-radius(15px);
+            @include transform(rotate(45deg));
+
+            border-top: 10px solid $header-background-from;
+            border-bottom: 10px solid $header-background-to;
+            background-image: -webkit-gradient(linear, 0 0, 0 100%, from($header-background-from), to($header-background-to));
+            background-image: -webkit-linear-gradient($header-background-from, $header-background-to);
+            background-image: -moz-linear-gradient($header-background-from, $header-background-to),
+            -moz-linear-gradient($header-background-from, $header-background-to);
+            background-image: -o-linear-gradient($header-background-from, $header-background-to),
+            -o-linear-gradient($header-background-from, $header-background-to);
+            background-image: linear-gradient($header-background-from, $header-background-to),
+            linear-gradient($header-background-from, $header-background-to);
+            -moz-background-size: 10px 100%;
+            background-size: 10px 100%;
+            background-position: 0 0, 100% 0;
+            background-repeat: no-repeat;
         }
+
         #game {
             z-index: 50;
-            border: 4px solid lighten($game-background, 10%);
+            border: 4px solid lighten($game-background, 30%);
         }
-       #end {
+
+        #end {
             position: absolute;
             top: 0;
             right: 0;
@@ -170,21 +291,25 @@
             z-index: 150;
             height: 100%;
             background: transparentize(darken($game-background, 5%), 0.2);
-            overflow-y: scroll;
+            overflow-y: auto;
             display: none;
+
             #round-view, #game-view {
                 position: relative;
                 color: #FFF;
                 display: none;
+
                 i {
                     display: block;
                     font-size: 100px;
                 }
+
                 p {
                     font-size: 40px;
                     font-weight: 300;
                     line-height: 110px;
                     display: inline-block;
+
                     &:after {
                         content: '';
                         display: block;
@@ -196,18 +321,22 @@
                     }
                 }
             }
+
             #round-view {
                 top: 50%;
                 -webkit-transform: translateY(-50%);
                 -ms-transform: translateY(-50%);
                 transform: translateY(-50%);
             }
+
             #game-view {
                 padding: 60px 0 40px 0;
+
                 table.recap {
                     max-width: 700px;
-                    margin: 50px auto 0 auto;
+                    margin: 0 auto;
                     text-align: left;
+
                     td {
                         border-top: 2px solid transparentize(#FFF, 0.95);
                         background: transparentize(#FFF, 0.95);
@@ -215,23 +344,29 @@
                         padding: 30px 25px;
                         font-size: 30px;
                         font-weight: 300;
+
                         &.rank {
                             width: 80px;
                             text-align: center;
+                            font-weight: bold;
                         }
+
                         &.name {
                             font-weight: bold;
                         }
+
                         &.points {
                             width: 210px;
                         }
                     }
+
                     tr {
                         &:first-child {
                             td {
                                 border: 0;
                             }
                         }
+
                         &:hover {
                             td {
                                 background: transparentize(#FFF, 0.9);
@@ -241,5 +376,109 @@
                 }
             }
         }
+    }
+
+    .chat-wrapper {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: $aside-width - $aside-border-size;
+        height: 245px;
+        background: lighten($aside-background, 5);
+        font-size: 14px;
+
+        #feed {
+            position: relative;
+            height: 195px;
+            overflow-y: auto;
+            padding: 15px 20px 15px;
+            background: #1c1c1c;
+
+            .welcome {
+                text-transform: uppercase;
+                font-size: 16px;
+            }
+
+            .one-message {
+                font-size: 16px;
+                line-height: 22px;
+                padding: 3px 0;
+                word-wrap: break-word;
+            }
+        }
+
+        .action-line {
+            height: 50px;
+            position: relative;
+            overflow: hidden;
+
+            .form-control {
+                height: 50px;
+                font-size: 16px;
+                background: #FFF;
+                border: 0;
+                padding-right: 85px;
+
+                &:focus {
+                    border-color: $text-color;
+                }
+            }
+
+            button {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                height: 50px;
+                width: 60px;
+                text-align: center;
+                border: 0;
+                color: #FFF;
+                margin: 0 -10px 0 20px;
+                padding: 0 25px 0 15px;
+                @include horizontal-gradient($header-background-from, $header-background-to);
+                @include skew(-10deg, 0);
+                @include transition(all 0.1s linear);
+                -webkit-backface-visibility: hidden;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+
+                span {
+                    display: block;
+                    @include skew(10deg, 0);
+                    -webkit-backface-visibility: hidden;
+                }
+
+                &:hover {
+                    padding-right: 20px;
+                }
+            }
+        }
+    }
+}
+
+#sound {
+    @include opacity(50);
+    &.active {
+        @include opacity(100);
+    }
+}
+
+.btn-back-to-room {
+    border: 2px solid #888;
+    padding: 10px 25px;
+    color: #888 !important;
+    font-weight: 400;
+    margin: 40px 0;
+    display: inline-block;
+    text-transform: uppercase;
+    @include transition(all 0.1s linear);
+
+    &:hover {
+        text-decoration: none;
+        background: #888;
+        color: #222 !important;
     }
 }

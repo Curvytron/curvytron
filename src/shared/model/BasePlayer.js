@@ -14,6 +14,7 @@ function BasePlayer(client, name, color, mail)
     this.color  = typeof(color) !== 'undefined' ? color : this.getRandomColor();
     this.mail   = mail;
     this.ready  = false;
+    this.id     = null;
     this.avatar = null;
 }
 
@@ -52,6 +53,18 @@ BasePlayer.prototype.setName = function(name)
 BasePlayer.prototype.setColor = function(color)
 {
     this.color = color;
+};
+
+/**
+ * Equal
+ *
+ * @param {Player} player
+ *
+ * @return {Boolean}
+ */
+BasePlayer.prototype.equal = function(player)
+{
+    return this.id === player.id;
 };
 
 /**
@@ -98,6 +111,7 @@ BasePlayer.prototype.serialize = function()
 {
     return {
         client: this.client.id,
+        id: this.id,
         name: this.name,
         color: this.color,
         mail: this.mail,
@@ -112,8 +126,34 @@ BasePlayer.prototype.serialize = function()
  */
 BasePlayer.prototype.getRandomColor = function()
 {
-    var code = Math.floor(Math.random()*16777215).toString(16),
-        miss = 6 - code.length;
+    var color = '',
+        randomNum = function () { return Math.ceil(Math.random() * 255).toString(16); };
 
-    return '#' + code + (miss ? new Array(miss +1).join('0') : '');
+    while (!this.validateColor(color, true)) {
+        color = '#' + randomNum() + randomNum() + randomNum();
+    }
+
+    return color;
+};
+
+/**
+ * Validatre color
+ *
+ * @param {String} color
+ *
+ * @return {Boolean}
+ */
+BasePlayer.prototype.validateColor = function(color, yiq)
+{
+    var matches = color.match(new RegExp('^#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$'));
+
+
+
+    if (matches && yiq) {
+        var ratio = ((parseInt(matches[1], 16) * 0.4) + (parseInt(matches[2], 16) * 0.5) + (parseInt(matches[3], 16) * 0.3)) / 255;
+
+        return ratio > 0.3;
+    }
+
+    return matches ? true : false;
 };

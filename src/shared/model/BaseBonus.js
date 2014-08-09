@@ -64,6 +64,7 @@ BaseBonus.prototype.serialize = function ()
         type: this.constructor.name,
         radius: this.radius,
         position: this.position,
-        affect: this.affect
+        affect: this.affect,
+        duration: this.duration,
     };
 };

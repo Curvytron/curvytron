@@ -57,61 +57,46 @@ Game.prototype.onFrame = function(step)
 };
 
 /**
- * New round
+ * On round new
  */
-Game.prototype.newRound = function()
+Game.prototype.onRoundNew = function()
 {
-    BaseGame.prototype.newRound.call(this);
-
-    this.clearBackground();
-    this.draw();
-
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        this.avatars.items[i].clear();
-    }
-};
-
-/**
- * End round
- */
-Game.prototype.endRound = function()
-{
-    BaseGame.prototype.endRound.call(this);
-
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-        this.avatars.items[i].clear();
-    }
+    BaseGame.prototype.onRoundNew.call(this);
 
     this.clearBackground();
     this.draw();
 };
 
 /**
- * FIN DU GAME
+ * On stop
+ */
+Game.prototype.onStop = function()
+{
+    BaseGame.prototype.onStop.call(this);
+    this.clearBackground();
+    this.draw();
+};
+
+/**
+ * Clear trails
+ */
+Game.prototype.clearTrails = function()
+{
+    this.clearBackground();
+};
+
+/**
+ * End
  */
 Game.prototype.end = function()
 {
-    BaseGame.prototype.end.call(this);
+    if (this.started) {
+        this.started = false;
 
-    for (var i = this.avatars.ids.length - 1; i >= 0; i--) {
-        this.avatars.items[i].clear();
+        this.stop();
+        this.fps.stop();
+        this.canvas.clear();
     }
-
-    this.clearBackground();
-    this.draw();
-};
-
-/**
- * Remove a avatar from the game
- *
- * @param {Avatar} avatar
- */
-Game.prototype.removeAvatar = function(avatar)
-{
-    avatar.destroy();
-    this.draw();
-
-    return BaseGame.prototype.removeAvatar.call(this, avatar);
 };
 
 /**
@@ -125,9 +110,12 @@ Game.prototype.draw = function()
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        points = avatar.trail.getLastSegment();
-        if (points) {
-            this.background.drawLineScaled(points, avatar.width, avatar.color);
+
+        if (avatar.present) {
+            points = avatar.trail.getLastSegment();
+            if (points) {
+                this.background.drawLineScaled(points, avatar.width, avatar.color);
+            }
         }
     }
 
@@ -136,20 +124,22 @@ Game.prototype.draw = function()
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
-        this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
+        if (avatar.present) {
+            this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
 
-        if (!avatar.alive && typeof(avatar.lastDraw) === 'undefined') {
-            avatar.lastDraw = true;
-        }
+            if (!avatar.alive && typeof(avatar.lastDraw) === 'undefined') {
+                avatar.lastDraw = true;
+            }
 
-        if (avatar.hasBonus()) {
-            this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
-        }
+            if (avatar.hasBonus()) {
+                this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
+            }
 
-        if (avatar.local && !this.running) {
-            width = 10;
-            position = [avatar.head[0] - width/2, avatar.head[1] - width/2];
-            this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
+            if (avatar.local && !this.frame) {
+                width = 10;
+                position = [avatar.head[0] - width/2, avatar.head[1] - width/2];
+                this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
+            }
         }
     }
 
@@ -171,7 +161,7 @@ Game.prototype.onResize = function()
 {
     var w=window,d=document,e=d.documentElement,g=d.getElementsByTagName('body')[0],x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
 
-    var width = Math.min(x - 300 - 8, y - 8),
+    var width = Math.min(x - 375 - 8, y - 8),
         scale = width / this.size;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {

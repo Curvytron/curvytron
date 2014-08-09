@@ -4,8 +4,6 @@
 function RoomRepository()
 {
     this.rooms = new Collection([], 'name');
-
-    this.create('elao');
 }
 
 /**
@@ -17,7 +15,7 @@ function RoomRepository()
  */
 RoomRepository.prototype.create = function(name)
 {
-    var room = new Room(name);
+    var room = new Room(name.substr(0, Room.prototype.maxLength));
 
     return this.rooms.add(room) ? room : null;
 };

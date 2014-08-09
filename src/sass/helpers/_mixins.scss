@@ -71,25 +71,25 @@
 }
 
 
-@mixin headerRainbow {
-  0%   { background-color: $header-background; }
-  20%  { background-color: #16a085; }
-  40%  { background-color: #2C3E50; }
-  60%  { background-color: #95A5A6; }
-  80%  { background-color: #913D88; }
-  100% { background-color: $header-background; }
+@mixin headerGradient {
+  0%   { @include opacity(0); }
+  20%  { @include opacity(0); }
+  40%  { @include opacity(100); }
+  60%  { @include opacity(100); }
+  80%  { @include opacity(0); }
+  100% { @include opacity(0); }
 }
-@-webkit-keyframes headerRainbow {
-    @include headerRainbow;
+@-webkit-keyframes headerGradient {
+    @include headerGradient;
 }
-@-moz-keyframes headerRainbow {
-    @include headerRainbow;
+@-moz-keyframes headerGradient {
+    @include headerGradient;
 }
-@-o-keyframes headerRainbow {
-    @include headerRainbow;
+@-o-keyframes headerGradient {
+    @include headerGradient;
 }
-@keyframes headerRainbow {
-    @include headerRainbow;
+@keyframes headerGradient {
+    @include headerGradient;
 }
 
 

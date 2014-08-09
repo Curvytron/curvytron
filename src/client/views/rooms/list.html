@@ -2,49 +2,44 @@
     <div id="rooms" class="container">
         <h1>
             <form ng-submit="submit()" class="top-right-form">
-                <div class="input-group input-group-lg">
-                    <input type="text" ng-model="name" class="form-control" name="name" placeholder="Create room" maxlength="{{ roomMaxLength }}" />
-                    <span class="input-group-btn">
-                        <button type="submit" id="submit" class="btn btn-lg btn-default"><i class="icon-plus"></i></button>
-                    </span>
-                </div>
+                <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
+                <input type="text" ng-model="name" class="form-control" name="name" placeholder="Create room" maxlength="{{ roomMaxLength }}" />
+                <div class="clearfix"></div>
             </form>
             <ng-pluralize count="rooms.items.length"
                              when="{'0': 'No room yet...',
                                  'one': '1 room',
                                  'other': '{} rooms'}">
+            <div class="clearfix"></div>
         </h1>
         <table id="rooms" class="table table-hover v-align-middle">
             <tbody>
                 <tr ng-repeat="room in rooms.items" ng-if="!room.inGame" ng-click="join(room)" class="room">
-                    <td><h3><a href="#/room/{{ room.name }}">{{ room.name }}</a></h3></td>
-                    <td>
-                        <h4>
-                            <ng-pluralize count="room.players.items.length "
-                                             when="{'0': 'No player',
-                                                 'one': '1 player',
-                                                 'other': '{} players'}">
-                        </h4>
+                    <td class="room-name">{{ room.name }}</td>
+                    <td class="room-nb-players">
+                        <ng-pluralize count="room.players.items.length "
+                                         when="{'0': 'No player',
+                                             'one': '1 player',
+                                             'other': '{} players'}">
                     </td>
-                    <td class="text-right ">
-                        <a href="#/room/{{ room.name }}" class="room-enter">
-                            Join
-                            <i class="icon-angle-right"></i>
-                        </a>
+                    <td class="room-enter-col">
+                        <p class="room-enter">
+                            <span><i class="icon-game"></i> Join</span>
+                        </p>
                     </td>
                 </tr>
-                <tr ng-repeat="room in rooms.items" ng-if="room.inGame" class="room in-game">
-                    <td><h3>{{ room.name }}</h3></td>
-                    <td>
-                        <h4>
-                            <ng-pluralize count="room.players.items.length "
-                                             when="{'0': 'No player',
-                                                 'one': '1 player',
-                                                 'other': '{} players'}">
-                        </h4>
+                <tr ng-repeat="room in rooms.items" ng-if="room.inGame" ng-click="join(room)" class="room in-game">
+                    <td class="room-name">{{ room.name }}</td>
+                    <td class="room-nb-players">
+                        <ng-pluralize count="room.players.items.length "
+                                         when="{'0': 'No player',
+                                             'one': '1 player',
+                                             'other': '{} players'}">
                     </td>
-                    <td>
-                        Playing...
+                    <td class="room-enter-col">
+                        <p class="room-enter">
+                            <span><i class="icon-spectate"></i> Spectate</span>
+                        </p>
                     </td>
                 </tr>
             </tbody>

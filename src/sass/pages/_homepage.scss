@@ -7,6 +7,7 @@
 }
 li.player-row {
     vertical-align: middle;
+
     img {
         width: 40px;
         border-radius: 50%;
@@ -16,169 +17,169 @@ li.player-row {
     }
 }
 
-.color-preview {
-    width: 14px;
-    height: 14px;
-    display: inline-block;
-    margin-right: 5px;
-    background: red;
-    @extend .rounded;
-    vertical-align: -6%;
-    // @include transition(all 0.2s linear);
-}
 
 .top-right-form {
     float: right;
-    max-width: 400px;
+    max-width: 350px;
+    height: 60px;
+    position: relative;
+    overflow: hidden;
+
     .form-control {
-        border: 2px solid $text-color !important;
+        border: 0;
+        font-weight: $base-font-weight;
+        line-height: 40px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-right: 85px;
+        height: 60px;
+        background: #FFF;
+        font-size: 24px;
     }
-    .btn-default {
-        &:hover {
-            background: $text-color;
-            color: $background-color;
+
+    button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        height: 60px;
+        width: 80px;
+        text-align: center;
+        border: 0;
+        border-left: 10px solid $background-color;
+        color: #FFF;
+        margin: 0 -10px 0 20px;
+        padding: 0 28px 0 15px;
+        @include horizontal-gradient($header-background-from, $header-background-to);
+        @include skew(-10deg, 0);
+        @include transition(all 0.1s linear);
+        -webkit-backface-visibility: hidden;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        span {
+            display: block;
+            @include skew(10deg, 0);
+            -webkit-backface-visibility: hidden;
+            font-size: 26px;
+
+            i {
+                float: right;
+                display: inline;
+                font-size: 20px;
+                @include transition(all 0.2s ease);
+            }
         }
-    }
-    .input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group {
-        margin-left: -2px;
+
+        &:hover {
+            span {
+                i {
+                    @include transform(rotate(90deg));
+                }
+            }
+        }
+
     }
 }
 
 
 
 #rooms, #room {
-    margin-top: 30px;
-    h3 {
-        margin: 0;
-    }
-    .room-enter {
-        padding-left: 0;
-        padding-right: 5px;
-        font-size: 24px;
-        line-height: 40px;
-        @include transition(all 0.2s ease);
-        &:hover {
-            padding-right: 0;
-            padding-left: 5px;
-            @include opacity(50);
-        }
-    }
+    margin-top: 50px;
+    border-collapse: separate;
+
     tr {
-        &:hover {
-            .room-enter {
-                padding-right: 0;
-                padding-left: 5px;
-                @include opacity(50);
+        &.room {
+            td {
+                cursor: pointer;
             }
         }
-    }
-}
-#rooms {
-    .room {
-        cursor: pointer;
-    }
-    .in-game {
-        @include opacity(70);
-        cursor: wait;
-    }
-}
-#room {
-    tr.local {
-        .player-ready {
-            cursor: pointer;
-            width: auto !important;
-            height: auto !important;
-            padding: 0 15px 0 10px !important;
-            font-size: $base-font-size !important;
-            text-transform: uppercase;
-            background: transparentize($color-danger, 1);
-            i {
-                margin-right: 5px;
-            }
-            &.ready {
-                &, &:hover {
-                    color: #FFF;
-                    background: $color-success;
+
+        &.in-game {
+            td {
+                cursor: wait;
+
+                &, a {
+                    color: transparentize($text-color, 0.5) !important;
+                }
+
+                &.room-enter-col {
+                    .room-enter {
+                        background: darken($background-color, 7%);
+                        @include horizontal-gradient(darken($background-color, 7%), darken($background-color, 7%));
+                        color: transparentize($text-color, 0.5);
+                    }
                 }
             }
-            &:hover {
-                background: $color-danger;
-            }
         }
-    }
-}
 
-.player-ready {
-    width: 40px;
-    height: 40px;
-    display: inline-block;
-    @extend .rounded;
-    @include transition(all 0.2s linear);
-    border: 2px solid $color-danger;
-    color: $color-danger;
-    text-align: center;
-    i {
-        font-size: 20px;
-        line-height: 37px;
-        vertical-align: middle;
-    }
-    &.ready {
-        color: #FFF;
-        border-color: $color-success;
-        background: $color-success;
-    }
-}
-
-.control {
-    margin: 0 5px;
-}
-
-.room-players {
-    tr {
         td {
-            vertical-align: top;
-        }
-        td.player-color-col {
-            position: relative;
-            .color-preview {
-                display: inline-block;
-                margin-left: 10px;
-            }
-            p {
-                margin: 0 0 0 5px;
-                display: inline-block;
-            }
-        }
-        &.local {
-            td.player-color-col {
-                .color-preview {
-                    position: absolute;
-                    left: 23px;
-                    top: 22px;
-                    margin-left: 0;
-                }
-                input.form-control {
-                    width: 140px;
-                    padding-left: 35px;
+            height: 100px;
+            background: #FFF;
+            border-top: 10px solid $background-color;
+            overflow: hidden;
+
+            a {
+                &:hover {
+                    text-decoration: none;
                 }
             }
+
+            &.room-name {
+                font-size: 30px;
+                font-weight: 400;
+                text-transform: uppercase;
+                padding-left: 20px;
+            }
+
+            &.room-nb-players {
+                font-size: 26px;
+                width: 350px;
+            }
+
+            &.room-enter-col {
+                width: 320px;
+                padding: 0;
+
+                .room-enter {
+                    display: block;
+                    margin: 0 -10px 0 20px;
+                    padding: 0 30px 0 25px;
+                    line-height: 100px;
+                    border-left: 10px solid $background-color;
+                    @include horizontal-gradient($header-background-from, $header-background-to);
+                    @include transition(all 0.2s ease);
+                    @include skew(-10deg, 0);
+                    color: #FFF;
+                    -webkit-backface-visibility: hidden;
+
+                    span {
+                        display: block;
+                        @include skew(10deg, 0);
+                        font-size: 26px;
+                        text-transform: uppercase;
+                        -webkit-backface-visibility: hidden;
+
+                        i {
+                            float: right;
+                            display: inline;
+                            font-size: 60px;
+                        }
+                    }
+                }
+            }
         }
-        .control {
-            width: auto;
-            height: 44px;
-            line-height: 40px;
-            padding: 0 10px;
-            font-size: 22px;
+
+        &:hover {
+            td.room-enter-col {
+                .room-enter {
+                    text-decoration: none;
+                    padding: 0 30px 0 30px;
+                }
+            }
         }
     }
 }
-
-.player-color {
-    @include transition(none);
-}
-
-.col-ready { width: 160px; }
-.col-player { width: auto; }
-.col-color { width: 200px; }
-.col-keys { width: 315px; }
 

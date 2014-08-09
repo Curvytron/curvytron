@@ -29,6 +29,7 @@
 
 @mixin animation($animation) {
   -webkit-animation: $animation;
+     -moz-animation: $animation;
        -o-animation: $animation;
           animation: $animation;
 }
@@ -87,4 +88,94 @@
   &:after {
     clear: both;
   }
+}
+
+
+@mixin gradient($from, $to) {
+  background-color: $from;
+  background-image: linear-gradient($from, $to);
+  background-image: -moz-linear-gradient($from, $to);
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from($from), to($to));
+  background-image: -webkit-linear-gradient($from, $to);
+  background-image: -o-linear-gradient($from, $to);
+}
+
+@mixin horizontal-gradient($from, $to, $stop: 100%) {
+  background-color: $from;
+  background-image: -moz-linear-gradient(left, $from 0%, $to $stop);
+  background-image: -webkit-gradient(linear, left top, right top, color-stop(0%, $from), color-stop($stop, $to));
+  background-image: -webkit-linear-gradient(left, $from 0%, $to $stop);
+  background-image: -o-linear-gradient(left, $from 0%, $to $stop);
+  background: -ms-linear-gradient(left, $from 0%, $to $stop);
+  background: linear-gradient(to right, $from 0%, $to $stop);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$from', endColorstr='$to',GradientType=1 );
+}
+
+@mixin transform($transforms) {
+  -webkit-transform: $transforms;
+     -moz-transform: $transforms;
+      -ms-transform: $transforms;
+       -o-transform: $transforms;
+          transform: $transforms;
+}
+
+@mixin skew($x, $y) {
+   @include transform(skew($x, $y));
+}
+
+
+@-moz-keyframes spin {
+  0%   { -moz-transform: rotate(45deg); }
+  20%  { -moz-transform: rotate(135deg); }
+  25%  { -moz-transform: rotate(135deg); }
+  45%  { -moz-transform: rotate(225deg); }
+  50%  { -moz-transform: rotate(225deg); }
+  70%  { -moz-transform: rotate(315deg); }
+  75%  { -moz-transform: rotate(315deg); }
+  95%  { -moz-transform: rotate(404deg); }
+  100% { -moz-transform: rotate(404deg); }
+}
+@-webkit-keyframes spin {
+  0%   { -webkit-transform: rotate(45deg); }
+  20%  { -webkit-transform: rotate(135deg); }
+  25%  { -webkit-transform: rotate(135deg); }
+  45%  { -webkit-transform: rotate(225deg); }
+  50%  { -webkit-transform: rotate(225deg); }
+  70%  { -webkit-transform: rotate(315deg); }
+  75%  { -webkit-transform: rotate(315deg); }
+  95%  { -webkit-transform: rotate(404deg); }
+  100% { -webkit-transform: rotate(404deg); }
+}
+@-o-keyframes spin {
+  0%   { -o-transform: rotate(45deg); }
+  20%  { -o-transform: rotate(135deg); }
+  25%  { -o-transform: rotate(135deg); }
+  45%  { -o-transform: rotate(225deg); }
+  50%  { -o-transform: rotate(225deg); }
+  70%  { -o-transform: rotate(315deg); }
+  75%  { -o-transform: rotate(315deg); }
+  95%  { -o-transform: rotate(404deg); }
+  100% { -o-transform: rotate(404deg); }
+}
+@-ms-keyframes spin {
+  0%   { -ms-transform: rotate(45deg); }
+  20%  { -ms-transform: rotate(135deg); }
+  25%  { -ms-transform: rotate(135deg); }
+  45%  { -ms-transform: rotate(225deg); }
+  50%  { -ms-transform: rotate(225deg); }
+  70%  { -ms-transform: rotate(315deg); }
+  75%  { -ms-transform: rotate(315deg); }
+  95%  { -ms-transform: rotate(404deg); }
+  100% { -ms-transform: rotate(404deg); }
+}
+@keyframes spin {
+  0%   { transform: rotate(45deg); }
+  20%  { transform: rotate(135deg); }
+  25%  { transform: rotate(135deg); }
+  45%  { transform: rotate(225deg); }
+  50%  { transform: rotate(225deg); }
+  70%  { transform: rotate(315deg); }
+  75%  { transform: rotate(315deg); }
+  95%  { transform: rotate(404deg); }
+  100% { transform: rotate(404deg); }
 }

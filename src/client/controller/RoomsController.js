@@ -16,7 +16,6 @@ function RoomsController($scope, $location, repository, client)
     // Binding:
     this.createRoom   = this.createRoom.bind(this);
     this.joinRoom     = this.joinRoom.bind(this);
-    this.spectateRoom = this.spectateRoom.bind(this);
     this.detachEvents = this.detachEvents.bind(this);
     this.applyScope   = this.applyScope.bind(this);
 
@@ -28,7 +27,6 @@ function RoomsController($scope, $location, repository, client)
     this.$scope.rooms         = this.repository.rooms;
     this.$scope.submit        = this.createRoom;
     this.$scope.join          = this.joinRoom;
-    this.$scope.spectate      = this.spectateRoom;
     this.$scope.roomMaxLength = Room.prototype.maxLength;
 
     this.$scope.curvytron.bodyClass = null;
@@ -69,14 +67,17 @@ RoomsController.prototype.createRoom = function(e)
         var $scope = this.$scope,
             controller = this;
 
-        this.repository.create(this.$scope.name, function (result) {
-            if (result.success) {
-                $scope.name = null;
-                controller.joinRoom({name: result.room});
-            } else {
-                console.error('Could not create room %s', $scope.name);
+        this.repository.create(
+            this.$scope.name,
+            function (result) {
+                if (result.success) {
+                    $scope.name = null;
+                    controller.joinRoom(new Room(result.room));
+                } else {
+                    console.error('Could not create room %s', $scope.name);
+                }
             }
-        });
+        );
     }
 };
 
@@ -85,15 +86,7 @@ RoomsController.prototype.createRoom = function(e)
  */
 RoomsController.prototype.joinRoom = function(room)
 {
-    this.$location.path('/room/' + room.name);
-};
-
-/**
- * Spectact a room
- */
-RoomsController.prototype.spectateRoom = function(room)
-{
-    this.$location.path('/game/' + room.name);
+    this.$location.path(room.url);
 };
 
 /**

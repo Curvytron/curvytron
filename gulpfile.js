@@ -19,6 +19,7 @@ var gulp      = require('gulp'),
         dependencies = [
             './bower_components/angular/angular.js',
             './bower_components/angular-route/angular-route.js',
+            './bower_components/angular-cookies/angular-cookies.js',
             './bower_components/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.js',
             './bower_components/createjs-soundjs/lib/soundjs-0.5.2.min.js',
             './bower_components/tom32i-event-emitter.js/dist/event-emitter.min.js',

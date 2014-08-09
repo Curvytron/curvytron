@@ -44,7 +44,7 @@ BaseBonusStack.prototype.remove = function(bonus)
 BaseBonusStack.prototype.resolve = function(bonus)
 {
     var properties = {},
-        effects, property, value, i;
+        effects, property, value, i, j;
 
     if (typeof(bonus) !== 'undefined') {
         effects = bonus.getEffects(this.avatar);
@@ -56,14 +56,14 @@ BaseBonusStack.prototype.resolve = function(bonus)
 
     for (i = this.bonuses.items.length - 1; i >= 0; i--) {
         effects = this.bonuses.items[i].getEffects(this.avatar);
-        for (i = effects.length - 1; i >= 0; i--) {
-            property = effects[i][0];
+        for (j = effects.length - 1; j >= 0; j--) {
+            property = effects[j][0];
 
             if (typeof(properties[property]) === 'undefined') {
                 properties[property] = this.getDefaultProperty(property);
             }
 
-            properties = this.append(properties, property, effects[i][1]);
+            properties = this.append(properties, property, effects[j][1]);
         }
     }
 
@@ -83,7 +83,7 @@ BaseBonusStack.prototype.resolve = function(bonus)
 BaseBonusStack.prototype.apply = function(property, value)
 {
     if (property === 'radius') {
-        return this.avatar.setRadius(value);
+        return this.avatar.setRadius(Avatar.prototype.radius * Math.pow(2, value));
     }
 
     if (property === 'velocity') {
@@ -105,6 +105,10 @@ BaseBonusStack.prototype.apply = function(property, value)
     if (property === 'color') {
         return this.avatar.setColor(value);
     }
+
+    if (property === 'borderless') {
+        return this.avatar.setBorderless(value ? true : false);
+    }
 };
 
 /**
@@ -120,8 +124,12 @@ BaseBonusStack.prototype.getDefaultProperty = function(property, avatar)
         return 1;
     }
 
+    if (property === 'radius') {
+        return 0;
+    }
+
     if (property === 'color') {
-        return this.avatar.ownColor;
+        return this.avatar.player.color;
     }
 
     return Avatar.prototype[property];
