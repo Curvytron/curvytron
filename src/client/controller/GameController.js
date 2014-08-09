@@ -53,6 +53,7 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     // Hydrate scope:
     this.$scope.sortorder   = '-score';
     this.$scope.countFinish = true;
+    this.$scope.sound       = true;
     this.$scope.backToRoom  = this.backToRoom;
 
     this.chat.setScope(this.$scope);
@@ -273,7 +274,9 @@ GameController.prototype.onDie = function(e)
         avatar.die();
         this.applyScope();
 
-        createjs.Sound.play('loose').volume = 0.2;
+        if (this.$scope.sound) {
+            createjs.Sound.play('loose').volume = 0.2;
+        }
     }
 };
 
@@ -316,7 +319,9 @@ GameController.prototype.onEnd = function(e)
     document.getElementById('game-view').style.display = 'block';
     document.getElementById('round-view').style.display = 'none';
 
-    createjs.Sound.play('win').volume = 0.2;
+    if (this.$scope.sound) {
+        createjs.Sound.play('win').volume = 0.2;
+    }
 };
 
 /**
