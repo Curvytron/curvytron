@@ -28,6 +28,6 @@ BonusAllBorderless.prototype.duration = 10000;
 BonusAllBorderless.prototype.getEffects = function(avatar)
 {
     return [
-        ['borderless', true],
+        ['borderless', true]
     ];
 };

@@ -65,6 +65,6 @@ BaseBonus.prototype.serialize = function ()
         radius: this.radius,
         position: this.position,
         affect: this.affect,
-        duration: this.duration,
+        duration: this.duration
     };
 };

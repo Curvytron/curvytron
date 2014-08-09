@@ -188,7 +188,7 @@ World.prototype.getRandomPoint = function(margin)
  */
 World.prototype.getBoundIntersect = function(body, margin)
 {
-    margin = typeof(margin) != 'undefined' ? margin : 0;
+    margin = typeof(margin) !== 'undefined' ? margin : 0;
 
     if (body.position[0] - margin < this.from[0]) {
         return [this.from[0], body.position[1]];
