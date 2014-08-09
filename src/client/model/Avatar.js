@@ -68,10 +68,7 @@ Avatar.prototype.setScale = function(scale)
 Avatar.prototype.setRadius = function(radius)
 {
     BaseAvatar.prototype.setRadius.call(this, radius);
-
-    this.width = this.radius * 2;
-
-    this.setScale(this.canvas.scale);
+    this.updateWidth();
 };
 
 /**
@@ -141,6 +138,15 @@ Avatar.prototype.updateStart = function()
 };
 
 /**
+ * Update width
+ */
+Avatar.prototype.updateWidth = function()
+{
+    this.width = this.radius * 2;
+    this.setScale(this.canvas.scale);
+};
+
+/**
  * Destroy
  */
 Avatar.prototype.destroy = function()
@@ -163,8 +169,7 @@ Avatar.prototype.destroy = function()
 Avatar.prototype.clear = function()
 {
     BaseAvatar.prototype.clear.call(this);
-    this.drawArrow();
-    this.drawHead();
+    this.updateWidth();
 };
 
 /**
