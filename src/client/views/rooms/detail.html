@@ -1,12 +1,71 @@
 <section>
     <div id="room" class="container">
         <h2 class="header">
+            {{ room.name }}
+            <i class="icon-params" ng-click="configureGame()"></i>
+        </h2>
+
+        <div id="room-parameters">
+            <div class="row">
+                <div class="col-lg-4 bonus-list">
+                    <div class="btn-group btn-group-xs">
+                        <button type="button" class="btn btn-default active">All</button>
+                        <button type="button" class="btn btn-default">Custom</button>
+                        <button type="button" class="btn btn-default">None</button>
+                    </div>
+                    <h2>Bonus</h2>
+                    <span class="bonus bonus-self-fast"><i class="icon-check"></i></span>
+                    <span class="bonus bonus-enemy-fast"><i class="icon-check"></i></span>
+                    <span class="bonus bonus-self-slow"><i class="icon-check"></i></span>
+                    <span class="bonus bonus-enemy-slow"><i class="icon-check"></i></span>
+                    <span class="bonus bonus-enemy-big"><i class="icon-check"></i></span>
+                    <span class="bonus bonus-self-small"><i class="icon-check"></i></span>
+                    <span class="bonus bonus-enemy-inverse"><i class="icon-check"></i></span>
+                    <span class="bonus bonus-self-master"><i class="icon-check"></i></span>
+                    <span class="bonus bonus-all-borderless"><i class="icon-check"></i></span>
+                    <span class="bonus bonus-all-color"><i class="icon-check"></i></span>
+                    <span class="bonus bonus-all-clear"><i class="icon-check"></i></span>
+                </div>
+                <div class="col-lg-5 params">
+                    <div>
+                        <label for="speed">Speed</label>
+                        <div>
+                            <span class="less-icon"><i class="icon-minus"></i></span>
+                            <span class="more-icon"><i class="icon-plus"></i></span>
+                            <input id="speed" type ="range" min ="10" max="100" step ="1" value ="70"/>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="curving">Curving</label>
+                        <div>
+                            <span class="less-icon"><i class="icon-minus"></i></span>
+                            <span class="more-icon"><i class="icon-plus"></i></span>
+                            <input id="curving" type ="range" min ="10" max="100" step ="1" value ="70"/>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="bonus-rate">Bonus rate</label>
+                        <div>
+                            <span class="less-icon"><i class="icon-minus"></i></span>
+                            <span class="more-icon"><i class="icon-plus"></i></span>
+                            <input id="bonus-rate" type ="range" min ="10" max="100" step ="1" value ="70"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 max-score">
+                    <h2>Max score</h2>
+                    <input type="text" class="form-control" id="max-score" value="80" placeholder="Max" maxlength="3" />
+                </div>
+            </div>
+
+        </div>
+
+        <h3>
             <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
                 <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
                 <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ nameMaxLength }}" />
                 <div class="clearfix"></div>
             </form>
-            {{ room.name }}
             <p class="count">
                 <ng-pluralize count="room.players.items.length" when="{
                     '0': 'No player',
@@ -15,7 +74,7 @@
                 />
             </p>
             <div class="clearfix"></div>
-        </h2>
+        </h3>
 
         <div class="room-details">
 
