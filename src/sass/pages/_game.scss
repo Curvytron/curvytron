@@ -536,7 +536,7 @@
     height: 80px;
     line-height: 80px;
     text-align: center;
-    font-size: 20px;
+    font-size: 30px;
     background: $aside-background;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -549,9 +549,24 @@
         opacity: 0.8;
     }
 
-    &.active .icon-volume {
-        @extend .icon-volume-up;
+    &::after {
+        content: " ";
+        width: 40px;
+        height: 2px;
+        background: #CCC;
+        top: 40px;
+        right: 20px;
+        position: absolute;
         @include opacity(100);
+        @include transform(rotate(-45deg));
+        @include transition(opacity 0.15s linear);
+    }
+
+    &.active {
+        .icon-volume {
+            @extend .icon-volume-up;
+            @include opacity(100);
+        }
 
         &::after {
             @include opacity(0);
