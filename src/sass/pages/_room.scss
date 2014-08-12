@@ -10,6 +10,12 @@
 
         .icon-params {
             font-size: 30px;
+            cursor: pointer;
+            @include transition(opacity 0.15s linear);
+
+            &:hover, &.active {
+                @include opacity(50);
+            }
         }
     }
 
@@ -296,7 +302,7 @@
 
         h2 {
             margin-top: 10px;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 400;
         }
 
@@ -331,7 +337,7 @@
                 label {
                     font-weight: 400;
                     text-transform: uppercase;
-                    font-size: 26px;
+                    font-size: 24px;
                     width: 180px;
                     text-align: right;
                     display: table-cell;
