@@ -18,7 +18,7 @@ BonusAllColor.prototype.constructor = BonusAllColor;
  *
  * @type {Number}
  */
-BonusAllColor.prototype.duration = 75000;
+BonusAllColor.prototype.duration = 7500;
 
 /**
  * Get target
