@@ -362,12 +362,14 @@ RoomController.prototype.startGame = function(room)
 {
     var game = room.newGame();
 
-    this.emit('game:new', {game: game});
+    if (game) {
+        this.emit('game:new', {game: game});
 
-    this.socketGroup.addEvent('room:game:start', {room: room.name});
+        this.socketGroup.addEvent('room:game:start', {room: room.name});
 
-    this.gameController.addGame(game);
-    game.on('end', this.endGame);
+        this.gameController.addGame(game);
+        game.on('end', this.endGame);
+    }
 };
 
 /**
