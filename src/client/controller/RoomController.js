@@ -92,6 +92,8 @@ RoomController.prototype.leaveRoom = function()
     }
 
     this.detachEvents();
+
+    console.log(this.room);
 };
 
 /**
@@ -292,7 +294,7 @@ RoomController.prototype.start = function(e)
         this.$cookies.favorite_color = player.color;
         this.$cookies.favorite_name  = player.name;
     }
-
+    console.log('room start');
     this.repository.stop();
     this.$location.path(this.room.gameUrl);
     this.applyScope();

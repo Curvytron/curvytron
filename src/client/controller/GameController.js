@@ -81,6 +81,7 @@ GameController.prototype.attachSocketEvents = function()
     this.client.on('clear', this.onClear);
     this.client.on('end', this.onEnd);
     this.client.on('game:leave', this.onLeave);
+    this.client.on('spectate', function () { console.log('spectating'); });
 };
 
 /**
@@ -129,6 +130,7 @@ GameController.prototype.loadGame = function(name)
         this.$scope.curvytron.bodyClass = 'game-mode';
         this.$scope.game = this.game;
 
+        console.log('loaded', this.room.inGame);
         this.client.addEvent('loaded');
     } else {
         this.goHome();
@@ -292,6 +294,8 @@ GameController.prototype.onDie = function(e)
  */
 GameController.prototype.onRoundNew = function(e)
 {
+    console.log('onRoundNew');
+
     document.getElementById('end').style.display        = 'none';
     document.getElementById('game-view').style.display  = 'none';
     document.getElementById('round-view').style.display = 'none';
@@ -385,6 +389,8 @@ GameController.prototype.leaveGame = function()
     }
 
     this.close();
+
+    console.log(this.room);
 };
 
 /**

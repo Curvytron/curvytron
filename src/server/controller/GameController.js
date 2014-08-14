@@ -75,7 +75,11 @@ GameController.prototype.removeGame = function(game)
  */
 GameController.prototype.attach = function(client)
 {
-    this.attachEvents(client);
+    if (client.room.game.started) {
+        this.attachSpectator(client);
+    } else {
+        this.attachEvents(client);
+    }
 };
 
 /**
@@ -146,6 +150,44 @@ GameController.prototype.detachEvents = function(client)
         avatar.removeListener('property', this.onProperty);
         avatar.bonusStack.removeListener('change', this.onBonusStack);
     }
+};
+
+/**
+ * Attach spectator
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.attachSpectator = function(client)
+{
+    var properties = {
+            position: 'head',
+            angle: 'angle',
+            radius: 'radius',
+            color: 'color',
+            printing: 'printing',
+            score: 'score'
+        },
+        game = client.room.game,
+        events = [['spectate'], ['round:new']],
+        avatar, i;
+
+    for (i = game.avatars.items.length - 1; i >= 0; i--) {
+        avatar = game.avatars.items[i];
+
+        for (var property in properties) {
+            events.push(['property', {avatar: avatar.id, property: property, value: avatar[properties[property]]}]);
+        }
+
+        if (!avatar.alive) {
+            events.push(['die', {avatar: avatar.id}]);
+        }
+    }
+
+    for (var i = game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
+        cevents.push(['bonus:pop', game.bonusManager.bonuses.items[i].serialize()]);
+    }
+
+    client.addEvents(events);
 };
 
 /**
