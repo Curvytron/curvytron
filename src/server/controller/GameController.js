@@ -75,11 +75,7 @@ GameController.prototype.removeGame = function(game)
  */
 GameController.prototype.attach = function(client)
 {
-    if (client.room.game.started) {
-        this.attachSpectator(client);
-    } else {
-        this.attachEvents(client);
-    }
+    this.attachEvents(client);
 };
 
 /**
@@ -168,7 +164,7 @@ GameController.prototype.attachSpectator = function(client)
             score: 'score'
         },
         game = client.room.game,
-        events = [['spectate'], ['round:new']],
+        events = [['spectate']],
         avatar, i;
 
     for (i = game.avatars.items.length - 1; i >= 0; i--) {
@@ -201,16 +197,16 @@ GameController.prototype.onLoaded = function(client)
         avatar;
 
     if (game.started) {
-        return;
-    }
+        this.attachSpectator(client);
+    } else {
+        for (var i = client.players.items.length - 1; i >= 0; i--) {
+            avatar = client.players.items[i].avatar;
+            avatar.ready = true;
+        }
 
-    for (var i = client.players.items.length - 1; i >= 0; i--) {
-        avatar = client.players.items[i].avatar;
-        avatar.ready = true;
-    }
-
-    if (game.isReady()) {
-        game.newRound();
+        if (game.isReady()) {
+            game.newRound();
+        }
     }
 };
 

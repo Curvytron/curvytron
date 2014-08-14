@@ -44,6 +44,7 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     this.onClear       = this.onClear.bind(this);
     this.onEnd         = this.onEnd.bind(this);
     this.onLeave       = this.onLeave.bind(this);
+    this.onSpectate    = this.onSpectate.bind(this);
     this.leaveGame     = this.leaveGame.bind(this);
     this.backToRoom    = this.backToRoom.bind(this);
     this.toggleSound   = this.toggleSound.bind(this);
@@ -81,7 +82,7 @@ GameController.prototype.attachSocketEvents = function()
     this.client.on('clear', this.onClear);
     this.client.on('end', this.onEnd);
     this.client.on('game:leave', this.onLeave);
-    this.client.on('spectate', function () { console.log('spectating'); });
+    this.client.on('spectate', this.onSpectate);
 };
 
 /**
@@ -101,6 +102,7 @@ GameController.prototype.detachSocketEvents = function()
     this.client.off('clear', this.onClear);
     this.client.off('end', this.onEnd);
     this.client.off('game:leave', this.onLeave);
+    this.client.off('spectate', this.onSpectate);
 };
 
 /**
@@ -130,7 +132,6 @@ GameController.prototype.loadGame = function(name)
         this.$scope.curvytron.bodyClass = 'game-mode';
         this.$scope.game = this.game;
 
-        console.log('loaded', this.room.inGame);
         this.client.addEvent('loaded');
     } else {
         this.goHome();
@@ -288,14 +289,20 @@ GameController.prototype.onDie = function(e)
 };
 
 /**
+ * On spectate
+ */
+GameController.prototype.onSpectate = function()
+{
+    this.game.newRound(0);
+};
+
+/**
  * On round new
  *
  * @param {Event} e
  */
 GameController.prototype.onRoundNew = function(e)
 {
-    console.log('onRoundNew');
-
     document.getElementById('end').style.display        = 'none';
     document.getElementById('game-view').style.display  = 'none';
     document.getElementById('round-view').style.display = 'none';
@@ -389,8 +396,6 @@ GameController.prototype.leaveGame = function()
     }
 
     this.close();
-
-    console.log(this.room);
 };
 
 /**

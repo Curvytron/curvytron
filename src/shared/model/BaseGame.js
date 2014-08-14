@@ -227,13 +227,13 @@ BaseGame.prototype.serialize = function()
 /**
  * New round
  */
-BaseGame.prototype.newRound = function()
+BaseGame.prototype.newRound = function(time)
 {
     this.started = true;
 
     if (!this.inRound) {
         this.inRound = true;
-        setTimeout(this.start, this.warmupTime);
+        setTimeout(this.start, typeof(time) !== 'undefined' ? time : this.warmupTime);
         this.onRoundNew();
     }
 };
