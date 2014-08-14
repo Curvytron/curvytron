@@ -180,7 +180,7 @@ GameController.prototype.attachSpectator = function(client)
     }
 
     for (var i = game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
-        cevents.push(['bonus:pop', game.bonusManager.bonuses.items[i].serialize()]);
+        events.push(['bonus:pop', game.bonusManager.bonuses.items[i].serialize()]);
     }
 
     client.addEvents(events);
