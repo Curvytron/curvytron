@@ -86,7 +86,7 @@ BaseAvatar.prototype.setAngularVelocity = function(factor)
 {
     if (typeof(factor) === 'undefined') {
         if (this.angularVelocity === 0) { return; }
-        var factor = (this.angularVelocity > 0 ? 1 : -1) * (this.inverse ? -1 : 1);
+        factor = (this.angularVelocity > 0 ? 1 : -1) * (this.inverse ? -1 : 1);
     }
 
     this.angularVelocity = factor * this.angularVelocityBase * (this.inverse ? -1 : 1);
