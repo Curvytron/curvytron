@@ -84,7 +84,7 @@ BaseAvatar.prototype.addPoint = function(point)
  */
 BaseAvatar.prototype.setAngularVelocity = function(factor)
 {
-    factor = typeof(factor) !== 'undefined' ? factor : (this.angularVelocity > 0 ? 1 : -1);
+    factor = typeof(factor) !== 'undefined' ? factor : (this.angularVelocity === 0 ? 0 : (this.angularVelocity > 0 ? 1 : -1));
 
     this.angularVelocity = factor * this.angularVelocityBase * (this.inverse ? -1 : 1);
 };
