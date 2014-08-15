@@ -84,7 +84,10 @@ BaseAvatar.prototype.addPoint = function(point)
  */
 BaseAvatar.prototype.setAngularVelocity = function(factor)
 {
-    factor = typeof(factor) !== 'undefined' ? factor : (this.angularVelocity === 0 ? 0 : (this.angularVelocity > 0 ? 1 : -1));
+    if (typeof(factor) === 'undefined') {
+        if (this.angularVelocity === 0) { return; }
+        var factor = (this.angularVelocity > 0 ? 1 : -1) * (this.inverse ? -1 : 1);
+    }
 
     this.angularVelocity = factor * this.angularVelocityBase * (this.inverse ? -1 : 1);
 };
@@ -183,7 +186,7 @@ BaseAvatar.prototype.setInverse = function(inverse)
 /**
  * Set invincible
  *
- * @param {Number} inverse
+ * @param {Number} invincible
  */
 BaseAvatar.prototype.setInvincible = function(invincible)
 {
@@ -193,7 +196,7 @@ BaseAvatar.prototype.setInvincible = function(invincible)
 /**
  * Set borderless
  *
- * @param {Number} inverse
+ * @param {Number} borderless
  */
 BaseAvatar.prototype.setBorderless = function(borderless)
 {
