@@ -87,7 +87,7 @@ RoomController.prototype.joinRoom = function(name)
  */
 RoomController.prototype.leaveRoom = function()
 {
-    if (this.$location.path() !== this.room.gameUrl) {
+    if (this.room && this.$location.path() !== this.room.gameUrl) {
         this.repository.leave();
     }
 
