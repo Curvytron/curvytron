@@ -1,14 +1,9 @@
-@media (max-width: $screen-xs - 1) {
-  #small-screen {
-    display: block;
-  }
-}
-
 @media (max-width: $screen-sm - 1) {
   header {
     font-size: 20px;
     line-height: 40px;
-    padding: 20px 20px;
+    padding: 10px 20px;
+    margin: 0;
     #logo {
       width: 100px;
     }
@@ -18,16 +13,35 @@
     max-width: 100%;
     margin-bottom: 20px;
   }
-  #room tr.local .player-ready {
-    width: 44px !important;
-    height: 44px !important;
-    line-height: 40px;
-    padding: 0 !important;
-    i {
-      margin: 0;
+  #room {
+    margin-top: 0;
+    tr.local .player-ready {
+      width: 44px !important;
+      height: 44px !important;
+      line-height: 40px;
+      padding: 0 !important;
+      i {
+        margin: 0;
+      }
+      span {
+        display: none;
+      }
     }
-    span {
-      display: none;
+    .room-details {
+      margin-top: 10px;
+    }
+    .room-players {
+      width: 100%;
+      padding: 0;
+      float: none;
+    }
+    .room-chat {
+      width: 100%;
+      padding: 0;
+      float: none;
+      .chat-wrapper {
+        margin-top: 0;
+      }
     }
   }
   .col-ready { width: 80px; }
@@ -40,14 +54,13 @@
   .room-players tr.local td.player-color-col input.form-control {
     width: 120px;
   }
-
   body {
     font-size: 14px;
     line-height: 20px;
   }
 
   h1 {
-    font-size: 30px;
+    font-size: 24px;
   }
 
 }
