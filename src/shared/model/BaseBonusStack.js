@@ -99,7 +99,11 @@ BaseBonusStack.prototype.apply = function(property, value)
     }
 
     if (property === 'printing') {
-        return this.avatar.setPrintingWithTimeout(value > 0);
+        if (value > 0) {
+            this.avatar.printManager.start();
+        } else {
+            this.avatar.printManager.stop();
+        }
     }
 
     if (property === 'color') {

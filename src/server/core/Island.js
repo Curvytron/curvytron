@@ -92,7 +92,7 @@ Island.prototype.bodyInBound = function(body, from, to)
 };
 
 /**
- * get Distance
+ * Get distance
  *
  * @param {Array} from
  * @param {Array} to

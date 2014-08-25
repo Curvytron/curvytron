@@ -21,11 +21,8 @@ function BaseAvatar(player)
     this.printing        = false;
     this.score           = 0;
     this.roundScore      = 0;
-    this.printingTimeout = null;
     this.ready           = false;
     this.present         = true;
-
-    this.togglePrinting = this.togglePrinting.bind(this);
 
     this.updateVelocities();
 }
@@ -35,8 +32,6 @@ BaseAvatar.prototype.constructor = BaseAvatar;
 
 BaseAvatar.prototype.velocity            = 16;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
-BaseAvatar.prototype.noPrintingTime      = 300;
-BaseAvatar.prototype.printingTime        = 3000;
 BaseAvatar.prototype.radius              = 0.6;
 BaseAvatar.prototype.trailLatency        = 3;
 BaseAvatar.prototype.inverse             = false;
@@ -224,49 +219,6 @@ BaseAvatar.prototype.die = function()
     this.alive = false;
 
     this.bonusStack.clear();
-    this.stopPrinting();
-};
-
-/**
- * Start printing
- */
-BaseAvatar.prototype.togglePrinting = function()
-{
-    if (this.printingTimeout) {
-        clearTimeout(this.printingTimeout);
-        this.printingTimeout = null;
-    }
-
-    this.setPrinting(!this.printing);
-
-    this.printingTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
-};
-
-/**
- * Stop printing
- */
-BaseAvatar.prototype.stopPrinting = function()
-{
-    if (this.printingTimeout) {
-        clearTimeout(this.printingTimeout);
-        this.printingTimeout = null;
-    }
-
-    this.setPrinting(false);
-};
-
-/**
- * Set printing with timeout start/stop
- *
- * @param {Boolean} printing
- */
-BaseAvatar.prototype.setPrintingWithTimeout = function(printing)
-{
-    if (!printing) {
-        this.stopPrinting();
-    } else if (!this.printingTimeout) {
-        this.togglePrinting();
-    }
 };
 
 /**
@@ -286,20 +238,6 @@ BaseAvatar.prototype.setPrinting = function(printing)
         if (!this.printing) {
             this.trail.clear();
         }
-    }
-};
-
-/**
- * Get random printing time
- *
- * @return {Number}
- */
-BaseAvatar.prototype.getRandomPrintingTime = function()
-{
-    if (this.printing) {
-        return this.printingTime * (0.2 + Math.random() * 0.8);
-    } else {
-        return this.noPrintingTime * (0.8 + Math.random() * 0.5);
     }
 };
 
@@ -359,7 +297,6 @@ BaseAvatar.prototype.setColor = function(color)
  */
 BaseAvatar.prototype.clear = function()
 {
-    this.stopPrinting();
     this.bonusStack.clear();
 
     this.head            = [this.radius, this.radius];
