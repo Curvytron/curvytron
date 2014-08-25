@@ -83,7 +83,9 @@ BaseRoom.prototype.removePlayer = function(player)
  */
 BaseRoom.prototype.isReady = function()
 {
-    return this.players.count() >= this.minPlayer && this.players.filter(function () { return !this.ready; }).isEmpty();
+    return !this.game
+        && this.players.count() >= this.minPlayer
+        && this.players.filter(function () { return !this.ready; }).isEmpty();
 };
 
 /**
@@ -94,9 +96,11 @@ BaseRoom.prototype.newGame = function()
     if (!this.game) {
         this.game = new Game(this);
         this.emit('game:new', {room: this, game: this.game});
+
+        return this.game;
     }
 
-    return this.game;
+    return null;
 };
 
 /**

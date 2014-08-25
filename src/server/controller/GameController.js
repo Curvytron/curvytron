@@ -149,6 +149,44 @@ GameController.prototype.detachEvents = function(client)
 };
 
 /**
+ * Attach spectator
+ *
+ * @param {SocketClient} client
+ */
+GameController.prototype.attachSpectator = function(client)
+{
+    var properties = {
+            position: 'head',
+            angle: 'angle',
+            radius: 'radius',
+            color: 'color',
+            printing: 'printing',
+            score: 'score'
+        },
+        game = client.room.game,
+        events = [['spectate']],
+        avatar, i;
+
+    for (i = game.avatars.items.length - 1; i >= 0; i--) {
+        avatar = game.avatars.items[i];
+
+        for (var property in properties) {
+            events.push(['property', {avatar: avatar.id, property: property, value: avatar[properties[property]]}]);
+        }
+
+        if (!avatar.alive) {
+            events.push(['die', {avatar: avatar.id}]);
+        }
+    }
+
+    for (var i = game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
+        events.push(['bonus:pop', game.bonusManager.bonuses.items[i].serialize()]);
+    }
+
+    client.addEvents(events);
+};
+
+/**
  * On game loaded
  *
  * @param {SocketClient} client
@@ -159,16 +197,16 @@ GameController.prototype.onLoaded = function(client)
         avatar;
 
     if (game.started) {
-        return;
-    }
+        this.attachSpectator(client);
+    } else {
+        for (var i = client.players.items.length - 1; i >= 0; i--) {
+            avatar = client.players.items[i].avatar;
+            avatar.ready = true;
+        }
 
-    for (var i = client.players.items.length - 1; i >= 0; i--) {
-        avatar = client.players.items[i].avatar;
-        avatar.ready = true;
-    }
-
-    if (game.isReady()) {
-        game.newRound();
+        if (game.isReady()) {
+            game.newRound();
+        }
     }
 };
 

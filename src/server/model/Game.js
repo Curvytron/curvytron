@@ -61,6 +61,7 @@ Game.prototype.update = function(step)
             }
 
             if (avatar.alive) {
+                avatar.printManager.test();
                 this.bonusManager.testCatch(avatar);
             }
         }
@@ -229,7 +230,7 @@ Game.prototype.onStart = function()
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        avatar.printingTimeout = setTimeout(avatar.togglePrinting, 3000);
+        setTimeout(avatar.printManager.start, 3000);
     }
 
     this.world.activate();

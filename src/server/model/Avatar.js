@@ -7,9 +7,10 @@ function Avatar(player)
 {
     BaseAvatar.call(this, player);
 
-    this.game      = null;
-    this.bodyCount = 0;
-    this.body      = new AvatarBody(this.head, this);
+    this.game         = null;
+    this.bodyCount    = 0;
+    this.body         = new AvatarBody(this.head, this);
+    this.printManager = new PrintManager(this);
 }
 
 Avatar.prototype = Object.create(BaseAvatar.prototype);
@@ -148,6 +149,8 @@ Avatar.prototype.setPrinting = function(printing)
 Avatar.prototype.die = function()
 {
     BaseAvatar.prototype.die.call(this);
+
+    this.printManager.stop();
     this.addPoint(this.head.slice(0));
     this.emit('die', {avatar: this});
 };
@@ -180,5 +183,6 @@ Avatar.prototype.setRoundScore = function(score)
 Avatar.prototype.clear = function()
 {
     BaseAvatar.prototype.clear.call(this);
+    this.printManager.stop();
     this.bodyCount = 0;
 };

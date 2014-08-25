@@ -21,11 +21,8 @@ function BaseAvatar(player)
     this.printing        = false;
     this.score           = 0;
     this.roundScore      = 0;
-    this.printingTimeout = null;
     this.ready           = false;
     this.present         = true;
-
-    this.togglePrinting = this.togglePrinting.bind(this);
 
     this.updateVelocities();
 }
@@ -35,8 +32,6 @@ BaseAvatar.prototype.constructor = BaseAvatar;
 
 BaseAvatar.prototype.velocity            = 16;
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
-BaseAvatar.prototype.noPrintingTime      = 300;
-BaseAvatar.prototype.printingTime        = 3000;
 BaseAvatar.prototype.radius              = 0.6;
 BaseAvatar.prototype.trailLatency        = 3;
 BaseAvatar.prototype.inverse             = false;
@@ -84,6 +79,11 @@ BaseAvatar.prototype.addPoint = function(point)
  */
 BaseAvatar.prototype.setAngularVelocity = function(factor)
 {
+    if (typeof(factor) === 'undefined') {
+        if (this.angularVelocity === 0) { return; }
+        factor = (this.angularVelocity > 0 ? 1 : -1) * (this.inverse ? -1 : 1);
+    }
+
     this.angularVelocity = factor * this.angularVelocityBase * (this.inverse ? -1 : 1);
 };
 
@@ -154,6 +154,7 @@ BaseAvatar.prototype.updateVelocities = function()
     var ratio = this.velocity / BaseAvatar.prototype.velocity;
 
     this.angularVelocityBase = ratio * BaseAvatar.prototype.angularVelocityBase + Math.log(1/ratio)/1000;
+    this.setAngularVelocity();
 };
 
 /**
@@ -174,16 +175,13 @@ BaseAvatar.prototype.setRadius = function(radius)
 BaseAvatar.prototype.setInverse = function(inverse)
 {
     this.inverse = inverse ? true : false;
-
-    if (this.angularVelocity !== 0) {
-        this.setAngularVelocity(this.angularVelocity > 0 ? 1 : -1);
-    }
+    this.setAngularVelocity();
 };
 
 /**
  * Set invincible
  *
- * @param {Number} inverse
+ * @param {Number} invincible
  */
 BaseAvatar.prototype.setInvincible = function(invincible)
 {
@@ -193,7 +191,7 @@ BaseAvatar.prototype.setInvincible = function(invincible)
 /**
  * Set borderless
  *
- * @param {Number} inverse
+ * @param {Number} borderless
  */
 BaseAvatar.prototype.setBorderless = function(borderless)
 {
@@ -221,49 +219,6 @@ BaseAvatar.prototype.die = function()
     this.alive = false;
 
     this.bonusStack.clear();
-    this.stopPrinting();
-};
-
-/**
- * Start printing
- */
-BaseAvatar.prototype.togglePrinting = function()
-{
-    if (this.printingTimeout) {
-        clearTimeout(this.printingTimeout);
-        this.printingTimeout = null;
-    }
-
-    this.setPrinting(!this.printing);
-
-    this.printingTimeout = setTimeout(this.togglePrinting, this.getRandomPrintingTime());
-};
-
-/**
- * Stop printing
- */
-BaseAvatar.prototype.stopPrinting = function()
-{
-    if (this.printingTimeout) {
-        clearTimeout(this.printingTimeout);
-        this.printingTimeout = null;
-    }
-
-    this.setPrinting(false);
-};
-
-/**
- * Set printing with timeout start/stop
- *
- * @param {Boolean} printing
- */
-BaseAvatar.prototype.setPrintingWithTimeout = function(printing)
-{
-    if (!printing) {
-        this.stopPrinting();
-    } else if (!this.printingTimeout) {
-        this.togglePrinting();
-    }
 };
 
 /**
@@ -283,20 +238,6 @@ BaseAvatar.prototype.setPrinting = function(printing)
         if (!this.printing) {
             this.trail.clear();
         }
-    }
-};
-
-/**
- * Get random printing time
- *
- * @return {Number}
- */
-BaseAvatar.prototype.getRandomPrintingTime = function()
-{
-    if (this.printing) {
-        return this.printingTime * (0.2 + Math.random() * 0.8);
-    } else {
-        return this.noPrintingTime * (0.8 + Math.random() * 0.5);
     }
 };
 
@@ -356,7 +297,6 @@ BaseAvatar.prototype.setColor = function(color)
  */
 BaseAvatar.prototype.clear = function()
 {
-    this.stopPrinting();
     this.bonusStack.clear();
 
     this.head            = [this.radius, this.radius];
