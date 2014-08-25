@@ -124,12 +124,8 @@ Game.prototype.draw = function()
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
-        if (avatar.present) {
+        if (avatar.present && avatar.alive) {
             this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
-
-            if (!avatar.alive && typeof(avatar.lastDraw) === 'undefined') {
-                avatar.lastDraw = true;
-            }
 
             if (avatar.hasBonus()) {
                 this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
