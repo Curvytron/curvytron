@@ -42,7 +42,7 @@ GameController.prototype.addGame = function(game)
         game.bonusManager.on('bonus:clear', this.onBonusClear);
 
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
-            this.attach(game.clients.items[i], game);
+            this.attach(game.clients.items[i]);
         }
     }
 };
