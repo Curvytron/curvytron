@@ -54,7 +54,7 @@ PrintManager.prototype.start = function()
 {
     if (!this.active) {
         this.active    = true;
-        this.lastPoint = avatar.head.slice(0);
+        this.lastPoint = this.avatar.head.slice(0);
 
         this.setPrinting(true);
     }
@@ -109,6 +109,7 @@ PrintManager.prototype.getDistance = function(from, to)
  */
 PrintManager.prototype.clear = function()
 {
-    this.distance = 0;
-    this.last     = null;
+    this.active    = false;
+    this.distance  = 0;
+    this.lastPoint = new Array(2);
 };
