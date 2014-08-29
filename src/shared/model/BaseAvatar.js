@@ -145,7 +145,6 @@ BaseAvatar.prototype.setVelocity = function(velocity)
 {
     this.velocity = Math.max(velocity, BaseAvatar.prototype.velocity/2);
     this.updateVelocities();
-    this.updateAngularVelocity();
 };
 
 /**
@@ -157,6 +156,8 @@ BaseAvatar.prototype.updateVelocities = function()
         Math.cos(this.angle) * this.velocity/1000,
         Math.sin(this.angle) * this.velocity/1000
     ];
+
+    this.updateAngularVelocity();
 };
 
 /**
@@ -314,19 +315,21 @@ BaseAvatar.prototype.clear = function()
 {
     this.bonusStack.clear();
 
-    this.head            = [this.radius, this.radius];
-    this.angle           = Math.random() * Math.PI;
-    this.velocities      = [0,0];
-    this.angularVelocity = 0;
-    this.roundScore      = 0;
-    this.velocity        = BaseAvatar.prototype.velocity;
-    this.alive           = true;
-    this.printing        = false;
-    this.color           = this.player.color;
-    this.radius          = BaseAvatar.prototype.radius;
-    this.inverse         = BaseAvatar.prototype.inverse;
-    this.invincible      = BaseAvatar.prototype.invincible;
-    this.borderless      = BaseAvatar.prototype.borderless;
+    this.head                = [this.radius, this.radius];
+    this.angle               = Math.random() * Math.PI;
+    this.velocities          = [0,0];
+    this.angularVelocity     = 0;
+    this.roundScore          = 0;
+    this.velocity            = BaseAvatar.prototype.velocity;
+    this.alive               = true;
+    this.printing            = false;
+    this.color               = this.player.color;
+    this.radius              = BaseAvatar.prototype.radius;
+    this.inverse             = BaseAvatar.prototype.inverse;
+    this.invincible          = BaseAvatar.prototype.invincible;
+    this.borderless          = BaseAvatar.prototype.borderless;
+    this.directionInLoop     = BaseAvatar.prototype.directionInLoop;
+    this.angularVelocityBase = BaseAvatar.prototype.angularVelocityBase;
 
     if (this.body) {
         this.body.radius = BaseAvatar.prototype.radius;
