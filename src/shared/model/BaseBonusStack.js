@@ -113,6 +113,8 @@ BaseBonusStack.prototype.apply = function(property, value)
     if (property === 'borderless') {
         return this.avatar.setBorderless(value ? true : false);
     }
+
+    return this.avatar[property] = value;
 };
 
 /**
@@ -152,6 +154,8 @@ BaseBonusStack.prototype.append = function(properties, property, value)
 {
     switch (property) {
 
+        case 'directionInLoop':
+        case 'angularVelocityBase':
         case 'color':
             properties[property] = value;
             break;
