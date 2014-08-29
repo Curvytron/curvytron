@@ -37,6 +37,7 @@ BaseAvatar.prototype.trailLatency        = 3;
 BaseAvatar.prototype.inverse             = false;
 BaseAvatar.prototype.invincible          = false;
 BaseAvatar.prototype.borderless          = false;
+BaseAvatar.prototype.directionInLoop     = true;
 
 /**
  * Equal
@@ -113,7 +114,12 @@ BaseAvatar.prototype.update = function(step) {};
 BaseAvatar.prototype.updateAngle = function(step)
 {
     if (this.angularVelocity) {
-        this.setAngle(this.angle + this.angularVelocity * step);
+        if (this.directionInLoop) {
+            this.setAngle(this.angle + this.angularVelocity * step);
+        } else {
+            this.setAngle(this.angle + this.angularVelocity);
+            this.setAngularVelocity(0);
+        }
     }
 };
 
@@ -139,6 +145,7 @@ BaseAvatar.prototype.setVelocity = function(velocity)
 {
     this.velocity = Math.max(velocity, BaseAvatar.prototype.velocity/2);
     this.updateVelocities();
+    this.updateAngularVelocity();
 };
 
 /**
@@ -150,11 +157,19 @@ BaseAvatar.prototype.updateVelocities = function()
         Math.cos(this.angle) * this.velocity/1000,
         Math.sin(this.angle) * this.velocity/1000
     ];
+};
 
-    var ratio = this.velocity / BaseAvatar.prototype.velocity;
+/**
+ * Update angular velocity
+ */
+BaseAvatar.prototype.updateAngularVelocity = function()
+{
+    if (this.directionInLoop) {
+        var ratio = this.velocity / BaseAvatar.prototype.velocity;
 
-    this.angularVelocityBase = ratio * BaseAvatar.prototype.angularVelocityBase + Math.log(1/ratio)/1000;
-    this.setAngularVelocity();
+        this.angularVelocityBase = ratio * BaseAvatar.prototype.angularVelocityBase + Math.log(1/ratio)/1000;
+        this.setAngularVelocity();
+    }
 };
 
 /**
