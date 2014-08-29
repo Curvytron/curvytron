@@ -390,7 +390,7 @@ GameController.prototype.onLeave = function(e)
  */
 GameController.prototype.leaveGame = function()
 {
-    if (this.$location.path() !== this.room.url) {
+    if (this.room && this.$location.path() !== this.room.url) {
         this.repository.leave();
         this.repository.refresh();
     }
