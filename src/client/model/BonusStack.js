@@ -76,6 +76,6 @@ BonusStack.prototype.draw = function()
 
     for (var i = this.bonuses.items.length - 1; i >= 0; i--) {
         bonus = this.bonuses.items[i];
-        this.canvas.drawImage(bonus.canvas.element, [i * this.bonusWidth, 0], this.bonusWidth, this.bonusWidth, 0, bonus.opacity);
+        this.canvas.drawImage(bonus.asset, [i * this.bonusWidth, 0], this.bonusWidth, this.bonusWidth, 0, bonus.opacity);
     }
 };

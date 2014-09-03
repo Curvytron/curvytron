@@ -71,16 +71,12 @@ BonusManager.prototype.onLoad = function()
  */
 BonusManager.prototype.draw = function(canvas)
 {
-    var i, bonus;
+    var i, bonus, width;
 
     for (i = this.bonuses.items.length - 1; i >= 0; i--) {
         bonus = this.bonuses.items[i];
-        canvas.drawImage(
-            bonus.canvas.element,
-            [
-                bonus.position[0] * canvas.scale,
-                bonus.position[1] * canvas.scale
-            ]
-        );
+        width = bonus.getDrawWidth();
+
+        canvas.drawImageScaled(bonus.asset, [(bonus.position[0] - width/2), (bonus.position[1] - width/2)], width, width);
     }
 };

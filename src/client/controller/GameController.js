@@ -220,7 +220,6 @@ GameController.prototype.onBonusStack = function(e)
         bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration);
 
     if (avatar && avatar.local) {
-        bonus.setScale(this.game.canvas.scale);
         avatar.bonusStack[data.method](bonus);
     }
 };
@@ -236,7 +235,6 @@ GameController.prototype.onBonusPop = function(e)
     var data = e.detail,
         bonus = new Bonus(data.id, data.position, data.type, data.affect, data.radius, data.duration);
 
-    bonus.setScale(this.game.canvas.scale);
     this.game.bonusManager.add(bonus);
 };
 
