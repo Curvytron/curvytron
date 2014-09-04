@@ -18,7 +18,7 @@ function Bonus(id, position, type, affect, radius, duration)
     this.radius    = radius;
     this.duration  = duration;
     this.asset     = this.assets[this.type];
-    this.animation = new BounceIn(500);
+    this.animation = new BounceIn(300);
     this.width     = this.radius * 2;
 
     this.setEnding     = this.setEnding.bind(this);
