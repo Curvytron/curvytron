@@ -7,11 +7,12 @@ function Avatar(player)
 {
     BaseAvatar.call(this, player);
 
-    this.local  = player.local;
-    this.canvas = new Canvas(100, 100);
-    this.arrow  = new Canvas(100, 100);
-    this.start  = new Array(2);
-    this.width  = this.radius * 2;
+    this.local     = player.local;
+    this.canvas    = new Canvas(100, 100);
+    this.arrow     = new Canvas(100, 100);
+    this.start     = new Array(2);
+    this.width     = this.radius * 2;
+    this.animation = null;
 
     if (this.local) {
         this.input = new PlayerInput(this, player.getBinding());
@@ -103,6 +104,8 @@ Avatar.prototype.die = function()
 {
     BaseAvatar.prototype.die.call(this);
     this.addPoint(this.head);
+
+    this.animation = new EaseOut(500, this.head, this.velocity/1000, this.angle);
 };
 
 /**
@@ -170,6 +173,7 @@ Avatar.prototype.clear = function()
 {
     BaseAvatar.prototype.clear.call(this);
     this.updateWidth();
+    this.animation = null;
 };
 
 /**

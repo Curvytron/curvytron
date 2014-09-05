@@ -219,6 +219,23 @@ Canvas.prototype.drawCircle = function(position, radius, fill, stroke, alpha)
 };
 
 /**
+ * Draw circle scaled
+ *
+ * @param {Array} position
+ * @param {Number} radius
+ * @param {String} fill
+ * @param {String} stroke
+ * @param {Number} alpha
+ */
+Canvas.prototype.drawCircleScaled = function(position, radius, fill, stroke, alpha)
+{
+    position = [position[0] * this.scale, position[1] * this.scale];
+    radius   = radius * this.scale;
+
+    this.drawCircle(position, radius, fill, stroke, alpha);
+}
+
+/**
  * Draw line
  *
  * @param {Array} points
