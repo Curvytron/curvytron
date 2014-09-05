@@ -82,37 +82,33 @@ BaseBonusStack.prototype.resolve = function(bonus)
  */
 BaseBonusStack.prototype.apply = function(property, value)
 {
-    if (property === 'radius') {
-        return this.avatar.setRadius(Avatar.prototype.radius * Math.pow(2, value));
+    switch (property) {
+        case 'radius':
+            this.avatar.setRadius(Avatar.prototype.radius * Math.pow(2, value));
+            break;
+        case 'velocity':
+            this.avatar.setVelocity(value);
+            break;
+        case 'inverse':
+            this.avatar.setInverse(value%2 !== 0);
+            break;
+        case 'invincible':
+            this.avatar.setInvincible(value ? true : false);
+            break;
+        case 'printing':
+            this.avatar.printManager[value > 0 ? 'start' : 'stop']();
+            break;
+        case 'color':
+            this.avatar.setColor(value);
+            break;
+        case 'borderless':
+            this.avatar.setBorderless(value ? true : false);
+            break;
+        default:
+            this.avatar[property] = value;
+            break;
     }
 
-    if (property === 'velocity') {
-        return this.avatar.setVelocity(value);
-    }
-
-    if (property === 'inverse') {
-        return this.avatar.setInverse(value%2 !== 0);
-    }
-
-    if (property === 'invincible') {
-        return this.avatar.setInvincible(value ? true : false);
-    }
-
-    if (property === 'printing') {
-        if (value > 0) {
-            this.avatar.printManager.start();
-        } else {
-            this.avatar.printManager.stop();
-        }
-    }
-
-    if (property === 'color') {
-        return this.avatar.setColor(value);
-    }
-
-    if (property === 'borderless') {
-        return this.avatar.setBorderless(value ? true : false);
-    }
 };
 
 /**
@@ -124,19 +120,16 @@ BaseBonusStack.prototype.apply = function(property, value)
  */
 BaseBonusStack.prototype.getDefaultProperty = function(property, avatar)
 {
-    if (property === 'printing') {
-        return 1;
+    switch (property) {
+        case 'printing':
+            return 1;
+        case 'radius':
+            return 0;
+        case 'color':
+            return this.avatar.player.color;
+        default:
+            return Avatar.prototype[property];
     }
-
-    if (property === 'radius') {
-        return 0;
-    }
-
-    if (property === 'color') {
-        return this.avatar.player.color;
-    }
-
-    return Avatar.prototype[property];
 };
 
 /**
@@ -152,6 +145,8 @@ BaseBonusStack.prototype.append = function(properties, property, value)
 {
     switch (property) {
 
+        case 'directionInLoop':
+        case 'angularVelocityBase':
         case 'color':
             properties[property] = value;
             break;

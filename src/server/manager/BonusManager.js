@@ -32,7 +32,8 @@ BonusManager.prototype.bonusTypes = [
     BonusEnemyInverse,
     BonusAllBorderless,
     BonusAllColor,
-    BonusGameClear
+    BonusGameClear,
+    BonusEnemyStraightAngle
 ];
 
 /**

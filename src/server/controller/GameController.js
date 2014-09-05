@@ -42,7 +42,7 @@ GameController.prototype.addGame = function(game)
         game.bonusManager.on('bonus:clear', this.onBonusClear);
 
         for (var i = game.clients.items.length - 1; i >= 0; i--) {
-            this.attach(game.clients.items[i], game);
+            this.attach(game.clients.items[i]);
         }
     }
 };
@@ -175,11 +175,11 @@ GameController.prototype.attachSpectator = function(client)
         }
 
         if (!avatar.alive) {
-            events.push(['die', {avatar: avatar.id}]);
+            events.push(['die', {avatar: avatar.id, angle: avatar.angle}]);
         }
     }
 
-    for (var i = game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
+    for (i = game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
         events.push(['bonus:pop', game.bonusManager.bonuses.items[i].serialize()]);
     }
 
@@ -249,7 +249,7 @@ GameController.prototype.onDie = function(data)
     var avatar = data.avatar,
         game = avatar.player.client.room.game;
 
-    game.client.addEvent('die', {avatar: avatar.id});
+    game.client.addEvent('die', {avatar: avatar.id, angle: avatar.angle});
 };
 
 /**
@@ -285,7 +285,7 @@ GameController.prototype.onProperty = function(data)
 {
     var game = data.avatar.player.client.room.game;
 
-    if (data.property === 'angle' && game.frame) {
+    if (data.property === 'angle' && game.frame && data.avatar.alive) {
         return;
     }
 

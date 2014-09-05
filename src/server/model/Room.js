@@ -23,6 +23,7 @@ Room.prototype.addClient = function(client)
 {
     if (this.clients.add(client)) {
         client.room = this;
+        client.players.clear();
     }
 };
 

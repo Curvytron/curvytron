@@ -17,7 +17,7 @@ Trail.prototype.constructor = Trail;
  *
  * @type {Number}
  */
-Trail.prototype.tolerance = 5;
+Trail.prototype.tolerance = 1;
 
 /**
  * Get last segment

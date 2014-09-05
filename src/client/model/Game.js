@@ -127,11 +127,7 @@ Game.prototype.draw = function()
         if (avatar.present) {
             this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
 
-            if (!avatar.alive && typeof(avatar.lastDraw) === 'undefined') {
-                avatar.lastDraw = true;
-            }
-
-            if (avatar.hasBonus()) {
+            if (avatar.alive && avatar.hasBonus()) {
                 this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
             }
 
@@ -139,6 +135,10 @@ Game.prototype.draw = function()
                 width = 10;
                 position = [avatar.head[0] - width/2, avatar.head[1] - width/2];
                 this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
+            }
+
+            if (avatar.animation) {
+                avatar.animation.draw(this.canvas);
             }
         }
     }

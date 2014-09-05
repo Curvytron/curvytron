@@ -12,15 +12,14 @@ function Bonus(id, position, type, affect, radius, duration)
 {
     BaseBonus.call(this, position);
 
-    this.id       = id;
-    this.type     = type;
-    this.affect   = affect;
-    this.radius   = radius;
-    this.duration = duration;
-    this.canvas   = new Canvas();
-
-    this.position[0] = this.position[0] - this.radius;
-    this.position[1] = this.position[1] - this.radius;
+    this.id        = id;
+    this.type      = type;
+    this.affect    = affect;
+    this.radius    = radius;
+    this.duration  = duration;
+    this.asset     = this.assets[this.type];
+    this.animation = new BounceIn(300);
+    this.width     = this.radius * 2;
 
     this.setEnding     = this.setEnding.bind(this);
     this.toggleOpacity = this.toggleOpacity.bind(this);
@@ -37,28 +36,15 @@ Bonus.prototype.constructor = Bonus;
 Bonus.prototype.opacity = 1;
 
 /**
- * Set scale
+ * Get drawing width
  *
- * @param {Number} scale
+ * @param {Float} scale
+ *
+ * @return {Float}
  */
-Bonus.prototype.setScale = function(scale)
+Bonus.prototype.getDrawWidth = function()
 {
-    var width = Math.ceil(this.radius * 2 * scale);
-
-    this.canvas.setDimension(width, width);
-    this.draw();
-};
-
-/**
- * Draw
- */
-Bonus.prototype.draw = function()
-{
-    var middle = this.canvas.element.width/2,
-        iconWidth = this.canvas.element.width,
-        iconMiddle = middle - iconWidth/2;
-
-    this.canvas.drawImage(this.assets[this.type], [iconMiddle, iconMiddle], iconWidth, iconWidth);
+    return this.width * this.animation.getValue();
 };
 
 /**
@@ -66,8 +52,6 @@ Bonus.prototype.draw = function()
  */
 Bonus.prototype.clear = function()
 {
-    this.canvas.clear();
-
     if (this.timeout) {
         clearInterval(this.timeout);
     }
