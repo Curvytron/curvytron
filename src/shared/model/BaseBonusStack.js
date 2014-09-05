@@ -96,7 +96,7 @@ BaseBonusStack.prototype.apply = function(property, value)
             this.avatar.setInvincible(value ? true : false);
             break;
         case 'printing':
-            this.avatar.printManager[value > 0 ? 'start' : 'stop'].call();
+            this.avatar.printManager[value > 0 ? 'start' : 'stop']();
             break;
         case 'color':
             this.avatar.setColor(value);

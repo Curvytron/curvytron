@@ -136,6 +136,10 @@ Game.prototype.draw = function()
                 position = [avatar.head[0] - width/2, avatar.head[1] - width/2];
                 this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
             }
+
+            if (avatar.animation) {
+                avatar.animation.draw(this.canvas);
+            }
         }
     }
 

@@ -136,9 +136,9 @@ Canvas.prototype.reverse = function()
  * @param {Number} height
  * @param {Number} angle
  */
-Canvas.prototype.drawImageScaled = function(image, position, width, height, angle)
+Canvas.prototype.drawImageScaled = function(image, position, width, height, angle, opacity)
 {
-    this.drawImage(image, [position[0] * this.scale, position[1] * this.scale], width * this.scale, height * this.scale, angle);
+    this.drawImage(image, [position[0] * this.scale, position[1] * this.scale], width * this.scale, height * this.scale, angle, opacity);
 };
 
 /**
@@ -202,21 +202,38 @@ Canvas.prototype.drawCircle = function(position, radius, fill, stroke, alpha)
     this.context.beginPath();
     this.context.arc(position[0], position[1], radius, 0, 2 * Math.PI, false);
 
-    if (typeof(fill) !== 'undefined') {
+    if (typeof(fill) !== 'undefined' && fill !== null) {
         this.context.fillStyle = fill;
         this.context.fill();
     }
 
-    if (typeof(stroke) !== 'undefined') {
+    if (typeof(stroke) !== 'undefined' && stroke !== null) {
         this.context.lineWidth = 1;
         this.context.strokeStyle = stroke;
         this.context.stroke();
     }
 
-    if (typeof(alpha) !== 'undefined') {
+    if (typeof(alpha) !== 'undefined' && alpha !== null) {
         this.context.globalAlpha = previous;
     }
 };
+
+/**
+ * Draw circle scaled
+ *
+ * @param {Array} position
+ * @param {Number} radius
+ * @param {String} fill
+ * @param {String} stroke
+ * @param {Number} alpha
+ */
+Canvas.prototype.drawCircleScaled = function(position, radius, fill, stroke, alpha)
+{
+    position = [position[0] * this.scale, position[1] * this.scale];
+    radius   = radius * this.scale;
+
+    this.drawCircle(position, radius, fill, stroke, alpha);
+}
 
 /**
  * Draw line
