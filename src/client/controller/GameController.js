@@ -277,6 +277,7 @@ GameController.prototype.onDie = function(e)
         avatar = this.game.avatars.getById(data.avatar);
 
     if (avatar) {
+        avatar.setAngle(data.angle);
         avatar.die();
         this.applyScope();
 

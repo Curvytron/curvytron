@@ -18,6 +18,8 @@ function Avatar(player)
         this.input = new PlayerInput(this, player.getBinding());
     }
 
+    this.clearAnimation = this.clearAnimation.bind(this);
+
     this.drawArrow();
 }
 
@@ -105,7 +107,8 @@ Avatar.prototype.die = function()
     BaseAvatar.prototype.die.call(this);
     this.addPoint(this.head);
 
-    this.animation = new EaseOut(500, this.head, this.velocity/1000, this.angle);
+    setTimeout(this.clearAnimation, Explode.prototype.duration);
+    this.animation = new Explode(this);
 };
 
 /**
@@ -173,8 +176,16 @@ Avatar.prototype.clear = function()
 {
     BaseAvatar.prototype.clear.call(this);
     this.updateWidth();
-    this.animation = null;
+    this.clearAnimation();
 };
+
+/**
+ * Clear animation
+ */
+Avatar.prototype.clearAnimation = function ()
+{
+    this.animation = null;
+}
 
 /**
  * Set

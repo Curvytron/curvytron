@@ -138,7 +138,7 @@ Game.prototype.draw = function()
             }
 
             if (avatar.animation) {
-                this.canvas.drawCircleScaled(avatar.animation.update(), avatar.radius, avatar.color);
+                avatar.animation.draw(this.canvas);
             }
         }
     }
