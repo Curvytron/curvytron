@@ -112,7 +112,7 @@ Game.prototype.isWon = function()
     players.sort(function (a, b) { return a.score > b.score ? -1 : (a.score < b.score ? 1 : 0); });
 
     return players.items[0].score === players.items[1].score ? null : players.getFirst();
-}
+};
 
 /**
  * On die

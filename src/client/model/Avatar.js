@@ -185,7 +185,7 @@ Avatar.prototype.clear = function()
 Avatar.prototype.clearAnimation = function ()
 {
     this.animation = null;
-}
+};
 
 /**
  * Set
