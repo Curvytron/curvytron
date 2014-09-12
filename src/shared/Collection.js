@@ -342,10 +342,10 @@ Collection.prototype.sort = function(callable)
  */
 Collection.prototype.rebuildIds = function()
 {
-    var ids = [];
+    var ids = new Array(this.items.length);
 
     for (var i = this.items.length - 1; i >= 0; i--) {
-        ids.push(this.items[i][this.key]);
+        ids[i] = this.items[i][this.key];
     }
 
     this.ids = ids;
