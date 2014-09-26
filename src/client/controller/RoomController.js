@@ -91,8 +91,6 @@ RoomController.prototype.joinRoom = function(name)
  */
 RoomController.prototype.onJoined = function(result)
 {
-    console.log(result);
-
     if (result.success) {
         this.room = this.repository.get(result.room);
 
