@@ -104,7 +104,7 @@ PlayerInput.prototype.detachEvents = function()
  */
 PlayerInput.prototype.getBindingType = function(binding)
 {
-    if (binding instanceof Touch) {
+    if (typeof(Touch) !== 'undefined' && binding instanceof Touch) {
         return 'touch';
     }
 
@@ -182,6 +182,8 @@ PlayerInput.prototype.onButton = function(e)
  */
 PlayerInput.prototype.onTouch = function(e)
 {
+    e.preventDefault();
+
     var value = e.touches[0],
         center = this.width/2,
         tests = [],

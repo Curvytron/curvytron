@@ -96,7 +96,7 @@ RoomsController.prototype.joinRoom = function(room)
  */
 RoomsController.prototype.quickPlay = function()
 {
-    var room = this.repository.rooms.getRandomItem();
+    var room = this.repository.rooms.filter(function () { return !this.inGame; }).getRandomItem();
 
     if (room) {
         this.joinRoom(room);
