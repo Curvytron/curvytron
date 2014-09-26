@@ -162,11 +162,17 @@ Game.prototype.onResize = function()
     var w=window,d=document,e=d.documentElement,g=d.getElementsByTagName('body')[0],x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
 
     var width = Math.min(x - document.getElementById('game-infos').clientWidth - 8, y - 8),
-        scale = width / this.size;
+        scale = width / this.size,
+        avatar;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
-        this.avatars.items[i].setScale(scale);
-        this.avatars.items[i].input.setWidth(x);
+        avatar = this.avatars.items[i];
+
+        avatar.setScale(scale);
+
+        if (avatar.local) {
+            avatar.input.setWidth(x);
+        }
     }
 
     this.bonusManager.setScale(scale);

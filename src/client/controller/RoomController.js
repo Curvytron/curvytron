@@ -20,6 +20,7 @@ function RoomController($scope, $rootScope, $routeParams, $location, $cookies, r
     this.repository = repository;
     this.client     = client;
     this.chat       = chat;
+    this.hasTouch   = typeof(window.ontouchstart) !== 'undefined';
 
     // Binding:
     this.addPlayer    = this.addPlayer.bind(this);
@@ -201,6 +202,10 @@ RoomController.prototype.onJoin = function(e)
         player.on('control:change', this.applyScope);
         this.updateCurrentMessage();
         this.setFavoriteColor(player);
+
+        if (this.hasTouch) {
+            player.setTouch();
+        }
     }
 
     this.applyScope();
