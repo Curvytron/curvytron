@@ -182,6 +182,8 @@ PlayerInput.prototype.onButton = function(e)
  */
 PlayerInput.prototype.onTouch = function(e)
 {
+    e.preventDefault();
+
     var value = e.touches[0],
         center = this.width/2,
         tests = [],

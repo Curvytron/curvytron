@@ -119,12 +119,13 @@ GameController.prototype.loadGame = function(name)
         this.room = room;
         this.game = room.newGame();
 
-        avatars = this.game.avatars.filter(function () { return this.local; }).items;
+        avatars = this.game.avatars.filter(function () { return this.local; });
 
-        for (var i = avatars.length - 1; i >= 0; i--) {
-            avatars[i].input.on('move', this.onMove);
+        for (var i = avatars.items.length - 1; i >= 0; i--) {
+            avatars.items[i].input.on('move', this.onMove);
         }
 
+        this.game.setSpectate(avatars.isEmpty());
         this.game.fps.setElement(document.getElementById('fps'));
         this.client.pingLogger.setElement(document.getElementById('ping'));
 
