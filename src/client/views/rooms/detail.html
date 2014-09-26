@@ -23,6 +23,11 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <tr ng-if="room.players.isEmpty()">
+                        <td colspan="5" class="empty">
+                            Waiting for players...
+                        </th>
+                    </tr>
                     <tr ng-repeat="player in room.players.items" ng-if="player.local" class="local">
                         <td class="col-remove">
                             <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="removePlayer(player)">
@@ -92,8 +97,6 @@
                     </form>
                 </div>
             </div>
-
-            <p class="notice pull-right">Tips: Curvytron also supports <strong>gamepads</strong> and <strong>touch devices</strong> as controllers!</p>
 
             <div class="clearfix"></div>
 

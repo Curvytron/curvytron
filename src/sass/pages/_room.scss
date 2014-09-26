@@ -116,6 +116,11 @@
                 &.col-ready {
                     padding: 0;
                 }
+
+                &.empty {
+                  background-color: none;
+                  text-align: center;
+                }
             }
 
             &.local {
