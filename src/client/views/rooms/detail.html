@@ -3,7 +3,7 @@
         <h1>
             <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
                 <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
-                <input type="text" ng-model="username" class="form-control" name="username" placeholder="Add a player" maxlength="{{ nameMaxLength }}" />
+                <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a player" maxlength="{{ nameMaxLength }}" />
                 <div class="clearfix"></div>
             </form>
             {{ room.name }}
@@ -92,6 +92,8 @@
                     </form>
                 </div>
             </div>
+
+            <p class="notice pull-right">Tips: Curvytron also supports <strong>gamepads</strong> and <strong>touch devices</strong> as controllers!</p>
 
             <div class="clearfix"></div>
 
