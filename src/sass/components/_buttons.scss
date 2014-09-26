@@ -64,6 +64,22 @@
   @include button-variant($btn-danger-color, $btn-danger-bg, $btn-danger-border);
 }
 
+.btn-hero {
+  @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+  font-size: $base-font-size * 1.5;
+  font-weight: 300;
+  @include button-size($padding-base-vertical * 1.5, $padding-base-horizontal * 1.5, $base-font-size * 1.5, $base-line-height * 1.5, $border-radius-base * 1.5);
+  margin: 40px auto;
+  display: block;
+
+  &:hover {
+    border-color: white;
+    color: white;
+    text-decoration: none;
+    @include horizontal-gradient($header-background-from, $header-background-to);
+  }
+}
+
 
 // Link buttons
 // -------------------------

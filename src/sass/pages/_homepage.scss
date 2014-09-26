@@ -17,6 +17,11 @@ li.player-row {
     }
 }
 
+.header {
+    .title {
+        float: left
+    }
+}
 
 .top-right-form {
     float: right;
@@ -83,8 +88,6 @@ li.player-row {
 
     }
 }
-
-
 
 #rooms, #room {
     margin-top: 50px;

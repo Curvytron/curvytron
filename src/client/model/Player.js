@@ -48,6 +48,17 @@ Player.prototype.initControls = function()
         }
     }
 };
+
+/**
+ * Set touch
+ */
+Player.prototype.setTouch = function()
+{
+    for (var i = this.controls.length - 1; i >= 0; i--) {
+        this.controls[i].touchMapper.setValue(document.createTouch(window, window, new Date().getTime(), 0, 0, 0, 0));
+    }
+};
+
 /**
  * On change
  *

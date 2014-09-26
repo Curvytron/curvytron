@@ -58,6 +58,10 @@ p {
   margin: 0 0 $base-margin / 2;
 }
 
+.notice {
+  font-variant: italic;
+  color: lighten($text-color, 20%);
+}
 
 // Lists
 // -------------------------
