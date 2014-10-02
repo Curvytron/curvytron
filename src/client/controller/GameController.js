@@ -134,6 +134,8 @@ GameController.prototype.loadGame = function(name)
         this.$scope.game = this.game;
 
         this.client.addEvent('loaded');
+
+        setTimeout(this.chat.scrollDown, 0);
     } else {
         this.goHome();
     }

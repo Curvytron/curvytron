@@ -12,8 +12,9 @@ function Chat(client)
     this.$scope         = null;
     this.feed           = null;
 
-    this.talk   = this.talk.bind(this);
-    this.onTalk = this.onTalk.bind(this);
+    this.talk       = this.talk.bind(this);
+    this.onTalk     = this.onTalk.bind(this);
+    this.scrollDown = this.scrollDown.bind(this);
 
     this.attachEvents();
 }
@@ -71,6 +72,8 @@ Chat.prototype.setScope = function($scope)
     this.$scope.submitTalk       = this.talk;
     this.$scope.currentMessage   = this.currentMessage;
     this.$scope.messageMaxLength = Message.prototype.maxLength;
+
+    this.scrollDown();
 };
 
 /**
@@ -84,6 +87,14 @@ Chat.prototype.refresh = function()
 
     }
 
+    this.scrollDown();
+};
+
+/**
+ * Scroll down
+ */
+Chat.prototype.scrollDown = function()
+{
     this.feed.scrollTop = this.feed.scrollHeight;
 };
 

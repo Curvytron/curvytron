@@ -102,6 +102,7 @@ RoomController.prototype.onJoined = function(result)
         this.addTip();
 
         document.getElementById('add-user-name').focus();
+        setTimeout(this.chat.scrollDown, 0);
     } else {
         console.error('Could not join room %s', name);
         this.goHome();
