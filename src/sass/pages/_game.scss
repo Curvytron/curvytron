@@ -108,7 +108,7 @@
             position: fixed;
             left: 0;
             top: $game-header-height + 80px;
-            width: $aside-width - $aside-border-size;
+            width: $aside-width - $aside-border-size - 80px;
             background: $aside-background;
             z-index: 100;
             overflow: hidden;
@@ -464,6 +464,22 @@
     @include opacity(50);
     &.active {
         @include opacity(100);
+    }
+    left: $aside-width - $aside-border-size - 80px;
+    top: $game-header-height + 80px;
+    width: 80px;
+    position: fixed;
+    z-index: 100;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+    font-size: 40px;
+    background: $aside-background;
+
+    span {
+        display: block;
+        height: 80px;
+        line-height: 80px;
     }
 }
 
