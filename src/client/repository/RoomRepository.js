@@ -111,9 +111,12 @@ RoomRepository.prototype.join = function(room, callback)
  * @param {String} name
  * @param {Function} callback
  */
-RoomRepository.prototype.addPlayer = function(name, callback)
+RoomRepository.prototype.addPlayer = function(name, color, callback)
 {
-    this.client.addEvent('room:player:add', {name: name.substr(0, Player.prototype.maxLength)}, callback);
+    this.client.addEvent('room:player:add', {
+        name: name.substr(0, Player.prototype.maxLength),
+        color: color.substr(0, Player.prototype.colorMaxLength)
+    }, callback);
 };
 
 /**
@@ -147,7 +150,10 @@ RoomRepository.prototype.leave = function(callback)
  */
 RoomRepository.prototype.setColor = function(player, color, callback)
 {
-    this.client.addEvent('room:color', {player: player, color: color.substr(0, Player.prototype.colorMaxLength)}, callback);
+    this.client.addEvent('room:color', {
+        player: player,
+        color: color.substr(0, Player.prototype.colorMaxLength)
+    }, callback);
 };
 
 /**

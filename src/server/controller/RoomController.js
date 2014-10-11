@@ -233,6 +233,10 @@ RoomController.prototype.onAddPlayer = function(client, data, callback)
         client.room.addPlayer(player);
         client.players.add(player);
 
+        if (typeof(data.color) !== 'undefined' && data.color) {
+            player.setColor(data.color);
+        }
+
         callback({success: true});
 
         this.socketGroup.addEvent('room:join', {room: client.room.name, player: player.serialize()});
