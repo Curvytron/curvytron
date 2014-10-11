@@ -20,12 +20,14 @@ function RoomController($scope, $rootScope, $routeParams, $location, $cookies, r
     this.repository = repository;
     this.client     = client;
     this.chat       = chat;
+    this.hasTouch   = typeof(window.ontouchstart) !== 'undefined';
 
     // Binding:
     this.addPlayer    = this.addPlayer.bind(this);
     this.removePlayer = this.removePlayer.bind(this);
     this.applyScope   = this.applyScope.bind(this);
     this.onJoin       = this.onJoin.bind(this);
+    this.onJoined     = this.onJoined.bind(this);
     this.joinRoom     = this.joinRoom.bind(this);
     this.leaveRoom    = this.leaveRoom.bind(this);
     this.setColor     = this.setColor.bind(this);
@@ -58,28 +60,55 @@ function RoomController($scope, $rootScope, $routeParams, $location, $cookies, r
 }
 
 /**
+ * Tips
+ *
+ * @type {Array}
+ */
+RoomController.prototype.tips = [
+    'To customize your left/right controls, click the [←]/[→] buttons and press any key.',
+    'Curvytron supports gamepads! Connect it, press A, then setup your controls.',
+    'Yes, you can play Curvytron on your smartphone ;)',
+    'You can add multiple players on the same computer.',
+    'Green bonuses apply only to you.',
+    'Red bonuses target your ennemies.',
+    'White bonuses affect everyone.',
+    'Making a Snail™ is a sure way to win, but other players might hate you for it.',
+    'The Enrichment Center regrets to inform you that this next test is impossible. Make no attempt to solve it.'
+];
+
+/**
  * Join room and load scope
  */
 RoomController.prototype.joinRoom = function(name)
 {
-    var controller = this;
+    this.repository.join(name, this.onJoined);
+};
 
-    this.repository.join(
-        name,
-        function (result) {
-            if (result.success) {
-                controller.room = controller.repository.get(name);
-                controller.$scope.room = controller.room;
-                controller.attachEvents(name);
-                controller.setFavoriteName();
-                controller.updateCurrentMessage();
-            } else {
-                console.error('Could not join room %s', name);
-                controller.goHome();
-            }
-            controller.applyScope();
-        }
-    );
+/**
+ * On room joined
+ *
+ * @param {Object} result
+ */
+RoomController.prototype.onJoined = function(result)
+{
+    if (result.success) {
+        this.room = this.repository.get(result.room);
+
+        this.$scope.room = this.room;
+
+        this.attachEvents(this.room.name);
+        this.setFavoriteName();
+        this.updateCurrentMessage();
+        this.addTip();
+
+        document.getElementById('add-user-name').focus();
+        setTimeout(this.chat.scrollDown, 0);
+    } else {
+        console.error('Could not join room %s', name);
+        this.goHome();
+    }
+
+    this.applyScope();
 };
 
 /**
@@ -201,6 +230,10 @@ RoomController.prototype.onJoin = function(e)
         player.on('control:change', this.applyScope);
         this.updateCurrentMessage();
         this.setFavoriteColor(player);
+
+        if (this.hasTouch) {
+            player.setTouch();
+        }
     }
 
     this.applyScope();
@@ -326,6 +359,17 @@ RoomController.prototype.updateCurrentMessage = function()
 {
     this.chat.setRoom(this.room);
     this.chat.setPlayer(this.room.getLocalPlayers().getFirst());
+};
+
+/**
+ * Add tutorial messages
+ */
+RoomController.prototype.addTip = function()
+{
+    this.chat.messages.push(new Message(
+        {name: 'Tips', color: '#ff8069'},
+        this.tips[Math.floor(Math.random() * this.tips.length)]
+    ));
 };
 
 /**

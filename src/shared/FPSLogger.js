@@ -50,7 +50,7 @@ FPSLogger.prototype.setElement = function(element)
 FPSLogger.prototype.draw = function()
 {
     if (this.element) {
-        this.element.innerHTML = this.fps;
+        this.element.innerHTML = this.fps + 'fps';
     }
 };
 

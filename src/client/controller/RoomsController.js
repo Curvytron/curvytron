@@ -16,6 +16,7 @@ function RoomsController($scope, $location, repository, client)
     // Binding:
     this.createRoom   = this.createRoom.bind(this);
     this.joinRoom     = this.joinRoom.bind(this);
+    this.quickPlay    = this.quickPlay.bind(this);
     this.detachEvents = this.detachEvents.bind(this);
     this.applyScope   = this.applyScope.bind(this);
 
@@ -27,6 +28,7 @@ function RoomsController($scope, $location, repository, client)
     this.$scope.rooms         = this.repository.rooms;
     this.$scope.submit        = this.createRoom;
     this.$scope.join          = this.joinRoom;
+    this.$scope.quickPlay     = this.quickPlay;
     this.$scope.roomMaxLength = Room.prototype.maxLength;
 
     this.$scope.curvytron.bodyClass = null;
@@ -87,6 +89,21 @@ RoomsController.prototype.createRoom = function(e)
 RoomsController.prototype.joinRoom = function(room)
 {
     this.$location.path(room.url);
+};
+
+/**
+ * Quick play
+ */
+RoomsController.prototype.quickPlay = function()
+{
+    var room = this.repository.rooms.filter(function () { return !this.inGame; }).getRandomItem();
+
+    if (room) {
+        this.joinRoom(room);
+    } else {
+        this.$scope.name = 'Hello Curvytron!';
+        this.createRoom();
+    }
 };
 
 /**

@@ -148,7 +148,7 @@ RoomController.prototype.onJoinRoom = function(client, data, callback)
 
     if (room) {
         room.addClient(client);
-        callback({success: true});
+        callback({success: true, room: room.name});
 
         var events = [],
             player, i;

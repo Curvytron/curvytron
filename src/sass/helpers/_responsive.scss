@@ -1,67 +1,89 @@
-@media (max-width: $screen-sm - 1) {
-  header {
-    font-size: 20px;
-    line-height: 40px;
-    padding: 10px 20px;
-    margin: 0;
-    #logo {
-      width: 100px;
-    }
-  }
-  .top-right-form {
-    float: none;
-    max-width: 100%;
-    margin-bottom: 20px;
-  }
-  #room {
-    margin-top: 0;
-    tr.local .player-ready {
-      width: 44px !important;
-      height: 44px !important;
-      line-height: 40px;
-      padding: 0 !important;
-      i {
+@media (max-width: $screen-sm - 1)
+{
+    header {
+        font-size: 20px;
+        line-height: 40px;
+        padding: 10px 20px;
         margin: 0;
-      }
-      span {
-        display: none;
-      }
+        #logo {
+            width: 100px;
+        }
     }
-    .room-details {
-      margin-top: 10px;
-    }
-    .room-players {
-      width: 100%;
-      padding: 0;
-      float: none;
-    }
-    .room-chat {
-      width: 100%;
-      padding: 0;
-      float: none;
-      .chat-wrapper {
-        margin-top: 0;
-      }
-    }
-  }
-  .col-ready { width: 80px; }
-  .col-player { width: auto; }
-  .col-color { width: 140px; }
-  .col-keys { width: 126px; }
-  .room-players tr .btn {
-    margin: 0 2px;
-  }
-  .room-players tr.local td.player-color-col input.form-control {
-    width: 120px;
-  }
-  body {
-    font-size: 14px;
-    line-height: 20px;
-  }
 
-  h1 {
-    font-size: 24px;
-  }
+    .top-right-form {
+        float: none;
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+
+    #room {
+        margin-top: 0;
+
+        .room-details {
+            margin-top: 10px;
+            padding-top: 0;
+        }
+
+        .room-players {
+            width: 100%;
+            padding: 0;
+            float: none;
+        }
+
+        .room-chat {
+            width: 100%;
+            padding: 0;
+            float: none;
+            .chat-wrapper {
+                margin-top: 0;
+            }
+        }
+
+        .col-ready { width: 80px; }
+
+        .col-player { width: auto; }
+
+        .col-color {
+            width: 40px;
+
+            p {
+                font-size: 0;
+            }
+
+            .form-control {
+                border-left-width: 40px;
+                width: 0;
+                padding: 0;
+            }
+        }
+        .col-keys { width: 126px; }
+
+        .room-players tr .btn {
+            margin: 0 2px;
+        }
+
+        .room-players tr.local td.player-color-col input.form-control {
+            width: 120px;
+        }
+    }
+    body {
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    #game-wrapper {
+        #game-infos {
+            display: none;
+        }
+
+        #col-right {
+            left: 0;
+        }
+    }
 
 }
 

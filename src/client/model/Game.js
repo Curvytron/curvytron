@@ -9,6 +9,7 @@ function Game(room)
 
     this.canvas     = new Canvas(0, 0, document.getElementById('game'));
     this.background = new Canvas(0, 0);
+    this.spectate   = false;
 
     this.onResize = this.onResize.bind(this);
 
@@ -131,7 +132,7 @@ Game.prototype.draw = function()
                 this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
             }
 
-            if (avatar.local && !this.frame) {
+            if (!this.frame && (this.spectate || avatar.local)) {
                 width = 10;
                 position = [avatar.head[0] - width/2, avatar.head[1] - width/2];
                 this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
@@ -155,17 +156,34 @@ Game.prototype.clearBackground = function()
 };
 
 /**
+ * Set spectate
+ *
+ * @param {Boolean} spectate
+ */
+Game.prototype.setSpectate = function(spectate)
+{
+    this.spectate = spectate;
+};
+
+/**
  * On resize
  */
 Game.prototype.onResize = function()
 {
     var w=window,d=document,e=d.documentElement,g=d.getElementsByTagName('body')[0],x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
 
-    var width = Math.min(x - 375 - 8, y - 8),
-        scale = width / this.size;
+    var width = Math.min(x - document.getElementById('game-infos').clientWidth - 8, y - 8),
+        scale = width / this.size,
+        avatar;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
-        this.avatars.items[i].setScale(scale);
+        avatar = this.avatars.items[i];
+
+        avatar.setScale(scale);
+
+        if (avatar.local) {
+            avatar.input.setWidth(x);
+        }
     }
 
     this.bonusManager.setScale(scale);

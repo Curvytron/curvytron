@@ -98,16 +98,20 @@ Game.prototype.addPoint = function(data)
  */
 Game.prototype.isWon = function()
 {
-    var presents = this.getPresentAvatars(),
-        maxScore = this.maxScore;
+    var maxScore = this.maxScore,
+        players = this.avatars.filter(function () { return this.present && this.score >= maxScore; });
 
-    if (presents.count() === 1) {
-        return presents.getFirst();
+    if (players.count() === 0) {
+        return null;
     }
 
-    presents.sort(function (a, b) { return a.score > b.score ? 1 : (a.score < b.score ? -1 : 0); });
+    if (players.count() === 1) {
+        return players.getFirst();
+    }
 
-    return presents.match(function () { return this.score >= maxScore; });
+    players.sort(function (a, b) { return a.score > b.score ? -1 : (a.score < b.score ? 1 : 0); });
+
+    return players.items[0].score === players.items[1].score ? null : players.getFirst();
 };
 
 /**

@@ -54,4 +54,4 @@ BounceIn.prototype.easeOutBack = function(time, begin, target, duration, factor)
     var ts = (time/=duration)*time,
         tc = ts*time;
     return begin+target*(factor*tc*ts + 4*tc + -9*ts + 6*time);
-}
+};

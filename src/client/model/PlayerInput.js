@@ -9,12 +9,14 @@ function PlayerInput(avatar, binding)
     this.key     = false;
     this.active  = [false, false];
     this.move    = 0;
+    this.width   = 0;
     this.binding = typeof(binding) !== 'undefined' ? binding : this.defaultBinding;
 
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onKeyUp   = this.onKeyUp.bind(this);
     this.onAxis    = this.onAxis.bind(this);
     this.onButton  = this.onButton.bind(this);
+    this.onTouch   = this.onTouch.bind(this);
 
     this.attachEvents();
 }
@@ -47,6 +49,11 @@ PlayerInput.prototype.attachEvents = function()
             if (type === 'keyboard') {
                 window.addEventListener('keydown', this.onKeyDown);
                 window.addEventListener('keyup', this.onKeyUp);
+            } else if (type === 'touch') {
+                window.addEventListener('touchstart', this.onTouch);
+                window.addEventListener('touchend', this.onTouch);
+                window.addEventListener('touchleave', this.onTouch);
+                window.addEventListener('touchcancel', this.onTouch);
             } else if (new RegExp('^gamepad:\\d+:button').test(type)) {
                 gamepadListener.on(type, this.onButton);
             } else {
@@ -74,6 +81,11 @@ PlayerInput.prototype.detachEvents = function()
             if (type === 'keyboard') {
                 window.removeEventListener('keydown', this.onKeyDown);
                 window.removeEventListener('keyup', this.onKeyUp);
+            } else if (type === 'touch') {
+                window.removeEventListener('touchstart', this.onTouch);
+                window.removeEventListener('touchend', this.onTouch);
+                window.removeEventListener('touchleave', this.onTouch);
+                window.removeEventListener('touchcancel', this.onTouch);
             } else if (new RegExp('^gamepad:\\d+:button').test(type)) {
                 gamepadListener.off(type, this.onButton);
             } else {
@@ -92,6 +104,10 @@ PlayerInput.prototype.detachEvents = function()
  */
 PlayerInput.prototype.getBindingType = function(binding)
 {
+    if (typeof(Touch) !== 'undefined' && binding instanceof Touch) {
+        return 'touch';
+    }
+
     var matches = new RegExp('^(gamepad:(\\d+):(button|axis):(\\d+))').exec(binding);
 
     return matches ? matches[1] : 'keyboard';
@@ -160,6 +176,40 @@ PlayerInput.prototype.onButton = function(e)
 };
 
 /**
+ * On touch start
+ *
+ * @param {Event} e
+ */
+PlayerInput.prototype.onTouch = function(e)
+{
+    e.preventDefault();
+
+    var value = e.touches[0],
+        center = this.width/2,
+        tests = [],
+        t, i, x;
+
+    for (var i = this.binding.length - 1; i >= 0; i--) {
+        if (this.binding[i] instanceof Touch) {
+            tests.push({index: i, result: false});
+        }
+    }
+
+    for (i = e.touches.length - 1; i >= 0; i--) {
+        for (t = tests.length - 1; t >= 0; t--) {
+            x = e.touches[i].screenX;
+            if (tests[t].index === 0 ? x < center : x >= center) {
+                tests[t].result = true;
+            }
+        }
+    }
+
+    for (i = tests.length - 1; i >= 0; i--) {
+        this.setActive(tests[i].index, tests[i].result);
+    }
+};
+
+/**
  * Resolve
  *
  * @param {Number} index
@@ -167,8 +217,10 @@ PlayerInput.prototype.onButton = function(e)
  */
 PlayerInput.prototype.setActive = function(index, pressed)
 {
-    this.active[index] = pressed;
-    this.resolve();
+    if (this.active[index] !== pressed) {
+        this.active[index] = pressed;
+        this.resolve();
+    }
 };
 
 /**
@@ -192,4 +244,14 @@ PlayerInput.prototype.setMove = function(move)
 {
     this.move = move;
     this.emit('move', {avatar: this.avatar, move: move});
+};
+
+/**
+ * Set width
+ *
+ * @param {Number} width
+ */
+PlayerInput.prototype.setWidth = function(width)
+{
+    this.width = width;
 };

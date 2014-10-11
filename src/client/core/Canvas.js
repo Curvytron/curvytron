@@ -233,7 +233,7 @@ Canvas.prototype.drawCircleScaled = function(position, radius, fill, stroke, alp
     radius   = radius * this.scale;
 
     this.drawCircle(position, radius, fill, stroke, alpha);
-}
+};
 
 /**
  * Draw line
