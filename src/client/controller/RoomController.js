@@ -7,33 +7,35 @@
  * @param {Object} $location
  * @param {RoomRepository} RoomRepository
  * @param {SocketClient} SocketClient
+ * @param {Profuile} profile
  * @param {Chat} chat
  */
-function RoomController($scope, $rootScope, $routeParams, $location, $cookies, repository, client, chat)
+function RoomController($scope, $rootScope, $routeParams, $location, repository, client, profile, chat)
 {
     gamepadListener.start();
 
     this.$scope     = $scope;
     this.$rootScope = $rootScope;
     this.$location  = $location;
-    this.$cookies   = $cookies;
     this.repository = repository;
     this.client     = client;
+    this.profile    = profile;
     this.chat       = chat;
     this.hasTouch   = typeof(window.ontouchstart) !== 'undefined';
 
     // Binding:
-    this.addPlayer    = this.addPlayer.bind(this);
-    this.removePlayer = this.removePlayer.bind(this);
-    this.applyScope   = this.applyScope.bind(this);
-    this.onJoin       = this.onJoin.bind(this);
-    this.onJoined     = this.onJoined.bind(this);
-    this.joinRoom     = this.joinRoom.bind(this);
-    this.leaveRoom    = this.leaveRoom.bind(this);
-    this.setColor     = this.setColor.bind(this);
-    this.setReady     = this.setReady.bind(this);
-    this.setName      = this.setName.bind(this);
-    this.start        = this.start.bind(this);
+    this.addPlayer      = this.addPlayer.bind(this);
+    this.addProfileUser = this.addProfileUser.bind(this);
+    this.removePlayer   = this.removePlayer.bind(this);
+    this.applyScope     = this.applyScope.bind(this);
+    this.onJoin         = this.onJoin.bind(this);
+    this.onJoined       = this.onJoined.bind(this);
+    this.joinRoom       = this.joinRoom.bind(this);
+    this.leaveRoom      = this.leaveRoom.bind(this);
+    this.setColor       = this.setColor.bind(this);
+    this.setReady       = this.setReady.bind(this);
+    this.setName        = this.setName.bind(this);
+    this.start          = this.start.bind(this);
 
     this.$scope.$on('$destroy', this.leaveRoom);
 
@@ -97,11 +99,10 @@ RoomController.prototype.onJoined = function(result)
         this.$scope.room = this.room;
 
         this.attachEvents(this.room.name);
-        this.setFavoriteName();
         this.updateCurrentMessage();
         this.addTip();
+        this.addProfileUser();
 
-        document.getElementById('add-user-name').focus();
         setTimeout(this.chat.scrollDown, 0);
     } else {
         console.error('Could not join room %s', name);
@@ -176,13 +177,17 @@ RoomController.prototype.goHome = function()
 /**
  * Add player
  */
-RoomController.prototype.addPlayer = function()
+RoomController.prototype.addPlayer = function(name, color, callback)
 {
     var $scope = this.$scope;
 
-    if ($scope.username) {
+    name  = typeof(name) !== 'undefined' ? name : $scope.username;
+    color = typeof(color) !== 'undefined' ? color : null;
+
+    if (name) {
         this.repository.addPlayer(
-            $scope.username,
+            name,
+            color,
             function (result) {
                 if (result.success) {
                     $scope.username = null;
@@ -229,7 +234,7 @@ RoomController.prototype.onJoin = function(e)
         player.setLocal(true);
         player.on('control:change', this.applyScope);
         this.updateCurrentMessage();
-        this.setFavoriteColor(player);
+        this.setProfileControls(player);
 
         if (this.hasTouch) {
             player.setTouch();
@@ -246,9 +251,7 @@ RoomController.prototype.onJoin = function(e)
  */
 RoomController.prototype.setColor = function(player)
 {
-    if (!player.local) {
-        return;
-    }
+    if (!player.local) { return; }
 
     var controller = this;
 
@@ -322,8 +325,8 @@ RoomController.prototype.start = function(e)
     var player = this.room.getLocalPlayers().getFirst();
 
     if (player) {
-        this.$cookies.favorite_color = player.color;
-        this.$cookies.favorite_name  = player.name;
+        this.profile.setName(player.name);
+        this.profile.setColor(player.color);
     }
 
     this.repository.stop();
@@ -332,23 +335,23 @@ RoomController.prototype.start = function(e)
 };
 
 /**
- * Set favorite name
+ * Add profile user
  */
-RoomController.prototype.setFavoriteName = function()
+RoomController.prototype.addProfileUser = function()
 {
-    if (this.$cookies.favorite_name && this.room.players.ids.indexOf(this.$cookies.favorite_name) < 0) {
-        this.$scope.username = this.$cookies.favorite_name;
-    }
+    this.addPlayer(this.profile.name, this.profile.color);
 };
 
 /**
- * Set favorite color
+ * Set profile controls
  */
-RoomController.prototype.setFavoriteColor = function(player)
+RoomController.prototype.setProfileControls = function(player)
 {
-    if (this.$cookies.favorite_color && player.name === this.$cookies.favorite_name) {
-        player.color = this.$cookies.favorite_color;
-        this.setColor(player);
+    if (player.name === this.profile.name) {
+        for (var i = this.profile.controls.length - 1; i >= 0; i--) {
+            player.controls[i].loadMapping(this.profile.controls[i].getMapping());
+        }
+        this.applyScope();
     }
 };
 

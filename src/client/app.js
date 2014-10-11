@@ -9,6 +9,7 @@ curvytronApp.controller('CurvytronController', ['$scope', function($scope) {
 curvytronApp.service('SocketClient', SocketClient);
 curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);
 curvytronApp.service('Chat', ['SocketClient', Chat]);
+curvytronApp.service('Profile', ['$cookies', Profile]);
 
 curvytronApp.controller(
     'RoomsController',
@@ -16,11 +17,15 @@ curvytronApp.controller(
 );
 curvytronApp.controller(
     'RoomController',
-    ['$scope', '$rootScope', '$routeParams', '$location', '$cookies', 'RoomRepository', 'SocketClient', 'Chat', RoomController]
+    ['$scope', '$rootScope', '$routeParams', '$location', 'RoomRepository', 'SocketClient', 'Profile', 'Chat', RoomController]
 );
 curvytronApp.controller(
     'GameController',
     ['$scope', '$routeParams', '$location', 'RoomRepository', 'SocketClient', 'Chat', GameController]
+);
+curvytronApp.controller(
+    'ProfileController',
+    ['$scope', 'Profile', ProfileController]
 );
 
 curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
@@ -29,6 +34,10 @@ curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvi
         .when('/', {
             templateUrl: 'js/views/rooms/list.html',
             controller: 'RoomsController'
+        })
+        .when('/profile', {
+            templateUrl: 'js/views/profile/profile.html',
+            controller: 'ProfileController'
         })
         .when('/about', {
             templateUrl: 'js/views/pages/about.html'
