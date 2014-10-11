@@ -38,7 +38,10 @@
         </aside>
         <div id="col-right">
             <section class="countdown" ng-hide="countFinish">
-                <div class="count">{{ count }}</div>
+                <div class="count">
+                    <span ng-if="game.sortAvatars().getFirst().score >= game.maxScore">Tie break</span>
+                    {{ count }}
+                </div>
             </section>
             <div class="countdown-anim" ng-hide="countFinish"></div>
             <section id="end">

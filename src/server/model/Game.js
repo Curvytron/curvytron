@@ -109,7 +109,7 @@ Game.prototype.isWon = function()
         return players.getFirst();
     }
 
-    players.sort(function (a, b) { return a.score > b.score ? -1 : (a.score < b.score ? 1 : 0); });
+    this.sortAvatars(players);
 
     return players.items[0].score === players.items[1].score ? null : players.getFirst();
 };
