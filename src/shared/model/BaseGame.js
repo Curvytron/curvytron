@@ -212,6 +212,23 @@ BaseGame.prototype.getPresentAvatars = function()
 };
 
 /**
+ * Sort avatars
+ *
+ * @param {Object} avatars
+ *
+ * @return {Object}
+ */
+BaseGame.prototype.sortAvatars = function(avatars)
+{
+    var avatars = typeof(avatars) !== 'undefined' ? avatars : this.avatars;
+
+    avatars.sort(function (a, b) { return a.score > b.score ? -1 : (a.score < b.score ? 1 : 0); })
+
+    return avatars;
+};
+
+
+/**
  * Serialize
  *
  * @return {Object}
