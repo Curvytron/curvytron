@@ -65,13 +65,13 @@ function RoomController($scope, $rootScope, $routeParams, $location, $cookies, r
  * @type {Array}
  */
 RoomController.prototype.tips = [
-    'To customize your left/right controls, click the [←]/[→] buttons and pressing any key.',
+    'To customize your left/right controls, click the [←]/[→] buttons and press any key.',
     'Curvytron supports gamepads! Connect it, press A, then setup your controls.',
     'Yes, you can play Curvytron on your smartphone ;)',
     'You can add multiple players on the same computer.',
-    'Green bonus applies only to you.',
-    'Red bonus targets your ennemies',
-    'White bonus affects everyone.',
+    'Green bonuses apply only to you.',
+    'Red bonuses target your ennemies.',
+    'White bonuses affect everyone.',
     'Making a Snail™ is a sure way to win, but other players might hate you for it.',
     'The Enrichment Center regrets to inform you that this next test is impossible. Make no attempt to solve it.'
 ];
