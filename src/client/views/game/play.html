@@ -4,6 +4,7 @@
             <header><a href="/"><img src="images/logo.png" alt="Curvytron" id="logo" /> Curvytron</a></header>
             <div class="maxScore"><i class="icon-trophy"></i><span>{{ game.maxScore }}</span></div>
             <h3 title="{{ game.name }}">{{ game.name }}</h3>
+            <span id="sound" class="pull-right" ng-class="{ active: sound }" ng-click="toggleSound()"><i class="icon-sound"></i></span>
             <ul id="game-players">
                 <li ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
@@ -15,7 +16,6 @@
             <footer>
                 <span id="fps" class="pull-right">0</span>
                 <span id="ping" class="pull-right">0</span>
-                <span id="sound" class="pull-right" ng-class="{ active: sound }" ng-click="toggleSound()"><i class="icon-sound"></i></span>
                 <a href="http://www.elao.com" class="game-copy pull-left" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>
             </footer>
             <div class="chat-wrapper">
