@@ -5,9 +5,12 @@
  * @param {Object} $location
  * @param {RoomRepository} repository
  * @param {SocketClient} client
+ * @param {Profile} profile
  */
-function RoomsController($scope, $location, repository, client)
+function RoomsController($scope, $location, repository, client, profile)
 {
+    gamepadListener.start();
+
     this.$scope     = $scope;
     this.$location  = $location;
     this.repository = repository;
@@ -22,8 +25,6 @@ function RoomsController($scope, $location, repository, client)
 
     this.$scope.$on('$destroy', this.detachEvents);
 
-    this.attachEvents();
-
     // Hydrating the scope:
     this.$scope.rooms         = this.repository.rooms;
     this.$scope.submit        = this.createRoom;
@@ -32,6 +33,8 @@ function RoomsController($scope, $location, repository, client)
     this.$scope.roomMaxLength = Room.prototype.maxLength;
 
     this.$scope.curvytron.bodyClass = null;
+
+    this.attachEvents();
 }
 
 /**

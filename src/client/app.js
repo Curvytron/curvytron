@@ -9,11 +9,11 @@ curvytronApp.controller('CurvytronController', ['$scope', function($scope) {
 curvytronApp.service('SocketClient', SocketClient);
 curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);
 curvytronApp.service('Chat', ['SocketClient', Chat]);
-curvytronApp.service('Profile', ['$cookies', Profile]);
+curvytronApp.service('Profile', ['$rootScope', Profile]);
 
 curvytronApp.controller(
     'RoomsController',
-    ['$scope', '$location', 'RoomRepository', 'SocketClient', RoomsController]
+    ['$scope', '$location', 'RoomRepository', 'SocketClient', 'Profile', RoomsController]
 );
 curvytronApp.controller(
     'RoomController',
@@ -32,7 +32,7 @@ curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvi
     //$locationProvider.html5Mode(true);
     $routeProvider
         .when('/', {
-            templateUrl: 'js/views/rooms/list.html',
+            templateUrl: 'js/views/index.html',
             controller: 'RoomsController'
         })
         .when('/profile', {
