@@ -1,7 +1,7 @@
 /**
  * Remembered profile
  */
-function Profile()
+function Profile($rootScope)
 {
     EventEmitter.call(this);
 
@@ -21,6 +21,8 @@ function Profile()
 
     this.load();
     this.persist();
+
+    $rootScope.profile = this;
 }
 
 Profile.prototype = Object.create(EventEmitter.prototype);
