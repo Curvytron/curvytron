@@ -1,6 +1,58 @@
 #profile {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: -$profile-width;
+    width: $profile-width;
+    z-index: 10;
+    @include gradient($header-background-from, $header-background-to);
+    @include transition(all 0.25s ease);
+
+    &.active {
+        @include transform(translateX(-$profile-width))
+    }
+
+    h1 {
+        position: fixed;
+        z-index: 20;
+        top: 0;
+        right: 0;
+        left: 0;
+        font-size: 30px;
+        height: 80px;
+        line-height: 80px;
+        margin: 0;
+        color: #FFF;
+        padding: 0 20px;
+
+        .close {
+            float: right;
+            color: #FFF;
+            line-height: 30px;
+            height: 30px;
+            margin-top: 25px;
+            @include transition(all 0.25s ease);
+
+            &:hover {
+                text-decoration: none;
+                @include opacity(70);
+            }
+        }
+    }
+
+    .inner {
+        background: $profile-background;
+        padding: 10px 20px;
+        margin-left: $profile-border-size;
+        overflow-y: auto;
+        position: absolute;
+        top: 80px;
+        right: 0;
+        left: 0;
+        bottom: 0;
+    }
 
     fieldset {
-        margin: 40px 0;
+        margin: 20px 0 40px 0;
     }
 }
