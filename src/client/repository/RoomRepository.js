@@ -115,7 +115,7 @@ RoomRepository.prototype.addPlayer = function(name, color, callback)
 {
     this.client.addEvent('room:player:add', {
         name: name.substr(0, Player.prototype.maxLength),
-        color: color.substr(0, Player.prototype.colorMaxLength)
+        color: color ? color.substr(0, Player.prototype.colorMaxLength) : null
     }, callback);
 };
 
