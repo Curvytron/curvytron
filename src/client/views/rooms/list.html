@@ -28,10 +28,11 @@
                 <tr ng-repeat="room in rooms.items" ng-if="!room.inGame" ng-click="join(room)" class="room">
                     <td class="room-name">{{ room.name }}</td>
                     <td class="room-nb-players">
-                        <ng-pluralize count="room.players.items.length "
-                                         when="{'0': 'No player',
-                                             'one': '1 player',
-                                             'other': '{} players'}">
+                        <ng-pluralize count="room.players.items.length" when="{
+                            '0': 'No player',
+                            'one': '1 player',
+                            'other': '{} players'}"
+                        />
                     </td>
                     <td class="room-enter-col">
                         <p class="room-enter">
@@ -42,10 +43,11 @@
                 <tr ng-repeat="room in rooms.items" ng-if="room.inGame" ng-click="join(room)" class="room in-game">
                     <td class="room-name">{{ room.name }}</td>
                     <td class="room-nb-players">
-                        <ng-pluralize count="room.players.items.length "
-                                         when="{'0': 'No player',
-                                             'one': '1 player',
-                                             'other': '{} players'}">
+                        <ng-pluralize count="room.players.items.length " when="{
+                            '0': 'No player',
+                            'one': '1 player',
+                            'other': '{} players'}"
+                        />
                     </td>
                     <td class="room-enter-col">
                         <p class="room-enter">
