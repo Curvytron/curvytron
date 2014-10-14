@@ -4,6 +4,11 @@ var curvytronApp = angular.module('curvytronApp', ['ngRoute', 'ngCookies', 'colo
 curvytronApp.controller('CurvytronController', ['$scope', function($scope) {
     $scope.curvytron = {};
     $scope.curvytron.bodyClass = null;
+
+    $scope.profileOpen   = false;
+    $scope.toggleProfile = function() {
+        $scope.profileOpen = !$scope.profileOpen;
+    };
 }]);
 
 curvytronApp.service('SocketClient', SocketClient);
