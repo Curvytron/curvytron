@@ -5,14 +5,16 @@
     right: -$profile-width;
     width: $profile-width;
     z-index: 10;
+    display: none;
     @include gradient($header-background-from, $header-background-to);
     @include transition(all 0.25s ease);
 
     &.active {
+        display: block;
         @include transform(translateX(-$profile-width))
     }
 
-    h1 {
+    .title {
         position: fixed;
         z-index: 20;
         top: 0;
@@ -38,6 +40,14 @@
                 @include opacity(70);
             }
         }
+    }
+
+    .close {
+        font-family: $base-font-family;
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
     }
 
     .inner {

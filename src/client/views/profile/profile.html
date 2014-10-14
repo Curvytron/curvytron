@@ -1,8 +1,10 @@
-<div id="profile" class="active">
-    <h1>
-        <a href="#" class="close">&times;</a>
+<div id="profile" ng-class="{ active: profileOpen }">
+    <h3 class="title">
+        <button type="button" class="close" ng-click="toggleProfile()">
+            &times;
+        </button>
         My profile
-    </h1>
+    </h3>
     <div class="inner">
 
         <fieldset>
