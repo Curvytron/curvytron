@@ -32,7 +32,7 @@ curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvi
     //$locationProvider.html5Mode(true);
     $routeProvider
         .when('/', {
-            templateUrl: 'js/views/index.html',
+            templateUrl: 'js/views/rooms/list.html',
             controller: 'RoomsController'
         })
         .when('/profile', {

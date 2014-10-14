@@ -27,10 +27,11 @@ function RoomsController($scope, $location, repository, client, profile)
 
     // Hydrating the scope:
     this.$scope.rooms         = this.repository.rooms;
-    this.$scope.submit        = this.createRoom;
+    this.$scope.createRoom    = this.createRoom;
     this.$scope.join          = this.joinRoom;
     this.$scope.quickPlay     = this.quickPlay;
     this.$scope.roomMaxLength = Room.prototype.maxLength;
+    this.$scope.roomName      = '';
 
     this.$scope.curvytron.bodyClass = null;
 
@@ -68,12 +69,14 @@ RoomsController.prototype.detachEvents = function()
  */
 RoomsController.prototype.createRoom = function(e)
 {
-    if (this.$scope.name) {
+    console.log(this.$scope.roomName);
+
+    if (this.$scope.roomName) {
         var $scope = this.$scope,
             controller = this;
 
         this.repository.create(
-            this.$scope.name,
+            this.$scope.roomName,
             function (result) {
                 if (result.success) {
                     $scope.name = null;
@@ -104,7 +107,7 @@ RoomsController.prototype.quickPlay = function()
     if (room) {
         this.joinRoom(room);
     } else {
-        this.$scope.name = 'Hello Curvytron!';
+        this.$scope.roomName = 'Hello Curvytron!';
         this.createRoom();
     }
 };
