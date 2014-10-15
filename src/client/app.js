@@ -1,15 +1,7 @@
 var curvytronApp = angular.module('curvytronApp', ['ngRoute', 'ngCookies', 'colorpicker.module']),
     gamepadListener = new GamepadListener({analog: false, deadZone: 0.4});
 
-curvytronApp.controller('CurvytronController', ['$scope', function($scope) {
-    $scope.curvytron = {};
-    $scope.curvytron.bodyClass = null;
-
-    $scope.profileOpen   = false;
-    $scope.toggleProfile = function() {
-        $scope.profileOpen = !$scope.profileOpen;
-    };
-}]);
+gamepadListener.start();
 
 curvytronApp.service('SocketClient', SocketClient);
 curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);
@@ -17,8 +9,13 @@ curvytronApp.service('Chat', ['SocketClient', Chat]);
 curvytronApp.service('Profile', ['$rootScope', Profile]);
 
 curvytronApp.controller(
+    'CurvytronController',
+    ['$scope', 'Profile', CurvytronController]
+);
+
+curvytronApp.controller(
     'RoomsController',
-    ['$scope', '$location', 'RoomRepository', 'SocketClient', 'Profile', RoomsController]
+    ['$scope', '$location', 'RoomRepository', 'SocketClient', RoomsController]
 );
 curvytronApp.controller(
     'RoomController',
@@ -28,10 +25,6 @@ curvytronApp.controller(
     'GameController',
     ['$scope', '$routeParams', '$location', 'RoomRepository', 'SocketClient', 'Chat', GameController]
 );
-curvytronApp.controller(
-    'ProfileController',
-    ['$scope', 'Profile', ProfileController]
-);
 
 curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
     //$locationProvider.html5Mode(true);
@@ -39,10 +32,6 @@ curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvi
         .when('/', {
             templateUrl: 'js/views/rooms/list.html',
             controller: 'RoomsController'
-        })
-        .when('/profile', {
-            templateUrl: 'js/views/profile/profile.html',
-            controller: 'ProfileController'
         })
         .when('/about', {
             templateUrl: 'js/views/pages/about.html'

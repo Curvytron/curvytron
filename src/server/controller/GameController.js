@@ -171,7 +171,9 @@ GameController.prototype.attachSpectator = function(client)
         avatar = game.avatars.items[i];
 
         for (var property in properties) {
-            events.push(['property', {avatar: avatar.id, property: property, value: avatar[properties[property]]}]);
+            if (properties.hasOwnProperty(property)) {
+                events.push(['property', {avatar: avatar.id, property: property, value: avatar[properties[property]]}]);
+            }
         }
 
         if (!avatar.alive) {

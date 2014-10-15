@@ -31,8 +31,6 @@
             <ng-include ng-if="profile" src="'js/views/profile/link.html'"></ng-include>
         </header>
 
-        <ng-include src="'js/views/profile/profile.html'"></ng-include>
-
         <div id="main" ng-view></div>
 
         <footer>
@@ -47,6 +45,8 @@
                 </div>
             </div>
         </footer>
+
+        <ng-include src="'js/views/profile/profile.html'"></ng-include>
 
         <script src="js/dependencies.js"></script>
         <script src="js/curvytron.js"></script>

@@ -14,7 +14,7 @@
             <input
                 id="profile-name"
                 type="text"
-                ng-change="save()"
+                ng-change="profile.persist()"
                 ng-model="profile.name"
                 class="form-control"
                 name="name"
@@ -26,7 +26,7 @@
             <input
                 id="profile-color"
                 type="text"
-                ng-change="save()"
+                ng-change="profile.persist()"
                 colorpicker="hex"
                 colorpicker-position="right"
                 ng-model="profile.color"
@@ -51,7 +51,7 @@
                     ng-name="control[{{ $index }}]"
                     ng-focus="control.start()"
                     ng-blur="control.stop()"
-                    ng-keypress="blur()"
+                    ng-keyup="blurProfile()"
                     ng-class="{ 'active': control.mapper.listening }"
                 />
             </div>

@@ -12,8 +12,6 @@
  */
 function RoomController($scope, $rootScope, $routeParams, $location, repository, client, profile, chat)
 {
-    gamepadListener.start();
-
     this.$scope     = $scope;
     this.$rootScope = $rootScope;
     this.$location  = $location;
