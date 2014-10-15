@@ -24,17 +24,17 @@
     }
   ],
   "devDependencies": {
-    "gulp": "^3.7.*",
+    "gulp": "^3.8.8",
     "gulp-concat": "^2.2.*",
     "gulp-header": "^1.0.*",
     "gulp-jshint": "^1.6.*",
-    "gulp-uglify": "^0.3.*",
+    "gulp-minify-css": "~0.3.*",
+    "gulp-nodemon": "~1.0.*",
     "gulp-plumber": "^0.5.*",
     "gulp-rename": "^1.2.*",
     "gulp-sass": "^0.7.*",
-    "gulp-util": "^2.2.*",
-    "gulp-minify-css": "~0.3.*",
-    "gulp-nodemon": "~1.0.*"
+    "gulp-uglify": "^0.3.*",
+    "gulp-util": "^2.2.*"
   },
   "dependencies": {
     "faye-websocket": "^0.7.*",
