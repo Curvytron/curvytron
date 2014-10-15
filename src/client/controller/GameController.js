@@ -9,8 +9,6 @@
  */
 function GameController($scope, $routeParams, $location, repository, client, chat)
 {
-    gamepadListener.start();
-
     this.$scope     = $scope;
     this.$location  = $location;
     this.repository = repository;

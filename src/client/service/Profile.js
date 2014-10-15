@@ -1,7 +1,7 @@
 /**
  * Remembered profile
  */
-function Profile($rootScope)
+function Profile()
 {
     EventEmitter.call(this);
 
@@ -15,14 +15,15 @@ function Profile($rootScope)
     // Binding
     this.onControlChange = this.onControlChange.bind(this);
 
+    var labels = ['Left', 'Right'];
+
     for (var i = this.controls.length - 1; i >= 0; i--) {
+        this.controls[i].label = labels[i];
         this.controls[i].on('change', this.onControlChange);
     }
 
     this.load();
     this.persist();
-
-    $rootScope.profile = this;
 }
 
 Profile.prototype = Object.create(EventEmitter.prototype);

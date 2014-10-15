@@ -9,8 +9,6 @@
  */
 function RoomsController($scope, $location, repository, client, profile)
 {
-    gamepadListener.start();
-
     this.$scope     = $scope;
     this.$location  = $location;
     this.repository = repository;
