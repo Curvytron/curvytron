@@ -461,9 +461,15 @@
 }
 
 #sound {
-    @include opacity(50);
     &.active {
-        @include opacity(100);
+        .icon-volume-off {
+            display: none;
+        }
+    }
+    &:not(.active){
+        .icon-volume-up {
+            display: none;
+        }
     }
     left: $aside-width - $aside-border-size - 80px;
     top: $game-header-height + 80px;
@@ -473,7 +479,7 @@
     height: 80px;
     line-height: 80px;
     text-align: center;
-    font-size: 40px;
+    font-size: 20px;
     background: $aside-background;
 
     span {

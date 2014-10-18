@@ -4,7 +4,10 @@
             <header><a href="/"><img src="images/logo.png" alt="Curvytron" id="logo" /> Curvytron</a></header>
             <div class="maxScore"><i class="icon-trophy"></i><span>{{ game.maxScore }}</span></div>
             <h3 title="{{ game.name }}">{{ game.name }}</h3>
-            <span id="sound" class="pull-right" ng-class="{ active: sound }" ng-click="toggleSound()"><i class="icon-sound"></i></span>
+            <span id="sound" class="pull-right" ng-class="{ active: sound }" ng-click="toggleSound()">
+                <i class="icon-volume-up"></i>
+                <i class="icon-volume-off"></i>
+            </span>
             <ul id="game-players">
                 <li ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
