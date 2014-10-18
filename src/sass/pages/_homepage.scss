@@ -44,14 +44,29 @@ li.player-row {
         width: 40px;
         height: 40px;
     }
+
     .quote {
         text-align: center;
         font-size: $font-size-h2;
         font-weight: 100;
-        font-style: italic;
+    }
+
+    .tuto {
+        text-align: center;
+        width: 33%;
+        display: block;
+        float: left;
+
+        img.circle {
+            border-radius: 200px;
+        }
+
+        .content {
+            font-style: italic;
+            padding: 0 30px;
+        }
     }
 }
-
 
 .top-right-form {
     float: right;

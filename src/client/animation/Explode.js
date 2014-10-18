@@ -19,7 +19,7 @@ function Explode(avatar)
             avatar.head,
             this.randomize(avatar.velocity/750, 0.2),
             this.randomize(avatar.angle, 0.2),
-            this.randomize(avatar.radius, 0.2)
+            this.randomize(avatar.radius * 1.3, 0.2)
         );
     }
 }
@@ -36,7 +36,7 @@ Explode.prototype.width = 20;
  *
  * @type {Number}
  */
-Explode.prototype.particleTotal = 10;
+Explode.prototype.particleTotal = 20;
 
 /**
  * Animation duration
