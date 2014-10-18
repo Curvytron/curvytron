@@ -1,4 +1,4 @@
 <button type="button" ng-click="toggleProfile()" class="profile-link" style="border-color: {{ profile.color }};">
-    <span class="circle" style="background-color: {{ profile.color }};"></span>
-    {{ profile.name }}
+    <span ng-if="profile.isComplete()" class="circle" style="background-color: {{ profile.color }};"></span>
+    {{ profile.isComplete() ? profile.name : "What's your name?" }}
 </button>
