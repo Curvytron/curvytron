@@ -24,31 +24,12 @@ li.player-row {
 }
 
 .intro {
-    .form-control {
-        display: inline;
-        width: auto;
-        padding: 2px;
-        border: none;
-        margin: 0 2px;
-        background-color: #ffffff;
-        text-align: center;
-    }
-    .profile-color {
-        border-radius: 20px;
-        font-family: 0;
-        width: 40px;
-        height: 40px;
-        display: inline-block;
-    }
-    .profile-control {
-        width: 40px;
-        height: 40px;
-    }
 
     .quote {
         text-align: center;
         font-size: $font-size-h2;
         font-weight: 100;
+        margin: 0 0 40px;
     }
 
     .tuto {
@@ -63,7 +44,7 @@ li.player-row {
 
         .content {
             font-style: italic;
-            padding: 0 30px;
+            padding: 0 40px;
         }
     }
 }

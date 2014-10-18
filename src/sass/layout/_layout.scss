@@ -50,7 +50,7 @@ header {
   position: relative;
   border-bottom: 10px solid #FFF;
   position: relative;
-  background-color: $game-background;
+  @include gradient($header-background-from, $header-background-to);
 
   // &:after {
   //   position: absolute;
@@ -106,9 +106,10 @@ header {
     vertical-align: top;
     padding: 8px;
     padding-right: 16px;
-    background: none;
+    background-color: $game-background;
+    border: none;
+    //border: 3px solid #ffffff;
     border-radius: 40px;
-    border: 3px solid #ffffff;
 
     &,&:visited {
       color: #ffffff;
