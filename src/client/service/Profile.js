@@ -148,3 +148,13 @@ Profile.prototype.onControlChange = function(e)
     this.persist();
     this.emit('change');
 };
+
+/**
+ * Is profile complete?
+ *
+ * @return {Boolean}
+ */
+Profile.prototype.isComplete = function()
+{
+    return this.name ? true : false;
+};

@@ -43,7 +43,7 @@ Explode.prototype.particleTotal = 20;
  *
  * @type {Number}
  */
-Explode.prototype.duration = 300;
+Explode.prototype.duration = 500;
 
 /**
  * Randomize value
