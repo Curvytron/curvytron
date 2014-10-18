@@ -5,8 +5,8 @@ function Profile()
 {
     EventEmitter.call(this);
 
-    this.name     = 'Random';
-    this.color    = '#FF0000';
+    this.name     = null;
+    this.color    = '#FFFFFF';
     this.controls = [
         new PlayerControl(37, 'icon-left-dir'),
         new PlayerControl(39, 'icon-right-dir')
@@ -58,7 +58,7 @@ Profile.prototype.serialize = function()
 Profile.prototype.unserialize = function(data)
 {
     if (typeof(data.name) !== 'undefined') {
-        this.name  = data.name;
+        this.name = data.name;
     }
 
     if (typeof(data.color) !== 'undefined') {
@@ -77,7 +77,9 @@ Profile.prototype.unserialize = function(data)
  */
 Profile.prototype.persist = function()
 {
-    window.localStorage.setItem(this.localKey, JSON.stringify(this.serialize()));
+    if (this.name) {
+        window.localStorage.setItem(this.localKey, JSON.stringify(this.serialize()));
+    }
 };
 
 /**
