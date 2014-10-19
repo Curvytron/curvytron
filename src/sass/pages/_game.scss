@@ -461,16 +461,16 @@
 }
 
 #sound {
-    &.active {
-        .icon-volume-off {
-            display: none;
-        }
+    .icon-volume {
+        @extend .icon-volume-off;
+        opacity: 0.8;
     }
-    &:not(.active){
-        .icon-volume-up {
-            display: none;
-        }
+
+    &.active .icon-volume {
+        @extend .icon-volume-up;
+        opacity: 1;
     }
+
     left: $aside-width - $aside-border-size - 80px;
     top: $game-header-height + 80px;
     width: 80px;
