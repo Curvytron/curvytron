@@ -104,8 +104,7 @@ header {
     line-height: $base-font-size;
     font-family: $base-font-family;
     vertical-align: top;
-    padding: 8px;
-    padding-right: 16px;
+    padding: 8px 16px;
     background-color: $game-background;
     border: none;
     //border: 3px solid #ffffff;
@@ -120,6 +119,7 @@ header {
       height: $base-font-size;
       border-radius: $base-font-size;
       display: inline-block;
+      margin-left: -8px;
       margin-right: 8px;
       background-color: #ffffff;
     }
