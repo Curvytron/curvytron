@@ -51,7 +51,10 @@
                         </td>
                         <td class="col-ready">
                             <span class="player-ready" ng-click="setReady(player)" ng-class="{ ready: player.ready }">
-                                <span>Ready?</span>
+                                <span ng-if="player.ready == false">Ready?</span>
+                                <span ng-if="player.ready == true">
+                                    <i class="icon-check success"></i>
+                                </span>
                             </span>
                         </td>
                     </tr>
