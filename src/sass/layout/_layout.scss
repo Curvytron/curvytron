@@ -75,7 +75,7 @@ header {
     text-transform: uppercase;
     font-size: 30px;
     color: $header-color;
-    z-index: 100;
+    z-index: 10;
     position: relative;
 
     &.animated {

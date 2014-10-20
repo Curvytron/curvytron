@@ -6,7 +6,7 @@ function Profile()
     EventEmitter.call(this);
 
     this.name     = null;
-    this.color    = '#FFFFFF';
+    this.color    = null;
     this.controls = [
         new PlayerControl(37, 'icon-left-dir'),
         new PlayerControl(39, 'icon-right-dir')
@@ -156,5 +156,5 @@ Profile.prototype.onControlChange = function(e)
  */
 Profile.prototype.isComplete = function()
 {
-    return this.name ? true : false;
+    return this.name && this.color ? true : false;
 };

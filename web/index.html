@@ -46,7 +46,10 @@
             </div>
         </footer>
 
-        <ng-include src="'js/views/profile/profile.html'"></ng-include>
+        <div id="profile" ng-class="{ 'active': profileOpen }">
+            <ng-include src="'js/views/profile/tuto.html'"></ng-include>
+            <ng-include src="'js/views/profile/profile.html'"></ng-include>
+        </div>
 
         <script src="js/dependencies.js"></script>
         <script src="js/curvytron.js"></script>

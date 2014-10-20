@@ -20,6 +20,7 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
     this.profile    = profile;
     this.chat       = chat;
     this.hasTouch   = typeof(window.ontouchstart) !== 'undefined';
+    this.name       = decodeURIComponent($routeParams.name);
 
     // Binding:
     this.addPlayer      = this.addPlayer.bind(this);
@@ -47,15 +48,13 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
     this.$scope.colorMaxLength      = Player.prototype.colorMaxLength;
     this.$scope.curvytron.bodyClass = null;
 
-    this.chat.setScope(this.$scope);
-
-    var name = decodeURIComponent($routeParams.name);
-
-    if (this.repository.synced) {
-        this.joinRoom(name);
+    if (!this.profile.isComplete()) {
+        this.profile.on('close', this.joinRoom);
+        this.$scope.openProfile();
+    } else if (this.repository.synced) {
+        this.joinRoom();
     } else {
-        var controller = this;
-        this.repository.on('synced', function () { controller.joinRoom(name); });
+        this.repository.on('synced', this.joinRoom);
     }
 }
 
@@ -79,9 +78,12 @@ RoomController.prototype.tips = [
 /**
  * Join room and load scope
  */
-RoomController.prototype.joinRoom = function(name)
+RoomController.prototype.joinRoom = function()
 {
-    this.repository.join(name, this.onJoined);
+    this.profile.off('close', this.joinRoom);
+    this.repository.off('synced', this.joinRoom);
+
+    this.repository.join(this.name, this.onJoined);
 };
 
 /**
@@ -96,6 +98,7 @@ RoomController.prototype.onJoined = function(result)
 
         this.$scope.room = this.room;
 
+        this.chat.setScope(this.$scope);
         this.attachEvents(this.room.name);
         this.updateCurrentMessage();
         this.addTip();

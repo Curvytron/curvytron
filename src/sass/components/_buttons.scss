@@ -71,6 +71,7 @@
   @include button-size($padding-base-vertical * 1.5, $padding-base-horizontal * 1.5, $base-font-size * 1.5, $base-line-height * 1.5, $border-radius-base * 1.5);
   margin: 40px auto;
   display: block;
+  text-transform: uppercase;
 
   &:hover {
     border-color: white;
