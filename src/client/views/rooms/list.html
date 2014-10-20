@@ -20,19 +20,19 @@
     </div>
 
     <div id="rooms" class="container">
-        <h2 class="header">
+        <h2 class="header" ng-class="{ 'empty': rooms.isEmpty() }">
             <form ng-submit="createRoom()" class="top-right-form">
                 <button type="submit" id="submit">
                     <span><i class="icon-plus"></i></span>
                 </button>
-                <input type="text" ng-model="roomName" class="form-control clearfix" name="name" placeholder="Create a new room" maxlength="{{ roomMaxLength }}" />
+                <input type="text" ng-model="roomName" class="form-control clearfix" name="name" placeholder="Create a new room..." maxlength="{{ roomMaxLength }}" />
             </form>
 
             <span class="title">
                 <ng-pluralize count="rooms.items.length" when="{
-                    '0': 'No room yet...',
-                    'one': '1 room',
-                    'other': '{} rooms'}"
+                    '0': 'Start by creating a room:',
+                    'one': 'You can join 1 room!',
+                    'other': 'You can join {} rooms!'}"
                 />
             </span>
         </h2>

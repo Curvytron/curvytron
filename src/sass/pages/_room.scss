@@ -1,7 +1,13 @@
 
 #room {
+
+    .header .count {
+        font-size: 0.7em;
+        color: $headings-small-color;
+    }
+
     .room-details {
-        padding-top: 50px;
+        padding-top: 10px;
     }
 
     .room-chat {
@@ -84,7 +90,6 @@
         }
     }
 
-
     .room-players {
         width: 68%;
         float: right;
@@ -102,6 +107,7 @@
                 padding-left: 45px;
             }
         }
+
         tr {
             td {
                 overflow: hidden;
@@ -124,17 +130,12 @@
             }
 
             &.local {
-
                 .player-ready {
                     cursor: pointer;
 
-                    span {
-                        font-size: 18px;
+                    &:hover {
+                        background: darken($background-color, 12%);
                     }
-                }
-
-                .col-color {
-                    // padding-left: 17px;
                 }
             }
         }
@@ -208,7 +209,7 @@
             }
         }
 
-        span {
+        > span {
             display: block;
             position: relative;
             z-index: 100;
@@ -219,11 +220,9 @@
             @include transition(all 0.2s linear);
             -webkit-backface-visibility: hidden;
         }
-
-        &:hover {
-            background: darken($background-color, 12%);
-        }
     }
+
+
 
     .control {
         margin: 0 5px;
@@ -233,6 +232,15 @@
         padding: 0;
         line-height: 36px;
         text-align: center;
+
+        &.active {
+            font-size: 0;
+
+            &:before {
+                content: "?";
+                font-size: $base-font-size;
+            }
+        }
     }
 
     .player-color {
@@ -242,9 +250,13 @@
     .player-name {
 
         height: 40px;
+        padding: 5px 10px;
+        margin: 0;
+        border: 2px solid transparent;
+        font-weight: bold;
 
-        &:not(:focus) {
-            border-color: transparent;
+        &:focus {
+            border-color: $input-border-focus;
         }
     }
 
@@ -253,7 +265,7 @@
     .col-keys { width: 150px; }
     .col-ready { width: 150px; }
     .col-remove {
-        width: 27px;
+        width: 32px;
         padding-right: 0;
         padding-top: 0;
         padding-bottom: 0;
