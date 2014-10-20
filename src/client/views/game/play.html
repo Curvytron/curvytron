@@ -39,13 +39,17 @@
             </div>
         </aside>
         <div id="col-right">
-            <section class="countdown" ng-hide="countFinish">
-                <div class="count">
-                    <span ng-if="game.sortAvatars().getFirst().score >= game.maxScore">Tie break</span>
-                    {{ count }}
-                </div>
-            </section>
-            <div class="countdown-anim" ng-hide="countFinish"></div>
+            <div ng-hide="countFinish">
+                <p class="tie-break" ng-if="game.sortAvatars().getFirst().score >= game.maxScore">
+                    Tie break
+                </p>
+                <section class="countdown">
+                    <div class="count">
+                        {{ count }}
+                    </div>
+                </section>
+                <div class="countdown-anim"></div>
+            </div>
             <section id="end">
                 <section id="round-view">
                     <i class="icon-trophy"></i>

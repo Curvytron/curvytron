@@ -244,8 +244,17 @@
 
             .count {
                 @include transform(rotate(-45deg));
+                margin-top: 10px;
                 margin-left: -10px;
             }
+        }
+
+        .tie-break {
+            font-size: $font-size-h1;
+            position:   absolute;
+            top: 25%;
+            color: #FFF;
+            width: 100%;
         }
 
         .countdown-anim {
