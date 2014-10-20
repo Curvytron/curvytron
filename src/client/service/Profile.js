@@ -58,17 +58,15 @@ Profile.prototype.serialize = function()
 Profile.prototype.unserialize = function(data)
 {
     if (typeof(data.name) !== 'undefined') {
-        this.name = data.name;
+        this.setName(data.name);
     }
 
     if (typeof(data.color) !== 'undefined') {
-        this.color = data.color;
+        this.setColor(data.color);
     }
 
     if (typeof(data.controls) !== 'undefined') {
-        for (var i = data.controls.length - 1; i >= 0; i--) {
-            this.controls[i].loadMapping(data.controls[i]);
-        }
+        this.setControls(data.controls);
     }
 };
 
@@ -135,6 +133,19 @@ Profile.prototype.setColor = function(color)
         this.color = color;
         this.persist();
     }
+};
+
+/**
+ * Set controls
+ *
+ * @param {Object} controls
+ */
+Profile.prototype.setControls = function(controls)
+{
+    for (var i = controls.length - 1; i >= 0; i--) {
+        this.controls[i].loadMapping(controls[i]);
+    }
+    this.persist();
 };
 
 /**

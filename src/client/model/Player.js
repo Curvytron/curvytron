@@ -50,6 +50,22 @@ Player.prototype.initControls = function()
 };
 
 /**
+ * Get controls mapping
+ *
+ * @return {Array}
+ */
+Player.prototype.getMapping = function()
+{
+    var mapping = new Array(this.controls.length);
+
+    for (var i = this.controls.length - 1; i >= 0; i--) {
+        mapping[i] = this.controls[i].getMapping();
+    }
+
+    return mapping;
+};
+
+/**
  * Set touch
  */
 Player.prototype.setTouch = function()

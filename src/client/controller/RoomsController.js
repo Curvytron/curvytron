@@ -67,8 +67,6 @@ RoomsController.prototype.detachEvents = function()
  */
 RoomsController.prototype.createRoom = function(e)
 {
-    console.log(this.$scope.roomName);
-
     if (this.$scope.roomName) {
         var $scope = this.$scope,
             controller = this;
