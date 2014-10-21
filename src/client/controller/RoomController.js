@@ -104,8 +104,8 @@ RoomController.prototype.onJoined = function(result)
         this.chat.setScope(this.$scope);
         this.attachEvents(this.room.name);
         this.updateCurrentMessage();
-        this.addTip();
         this.addProfileUser();
+        this.addTip();
 
         setTimeout(this.chat.scrollDown, 0);
     } else {
@@ -238,6 +238,8 @@ RoomController.prototype.onJoin = function(e)
 
         player.profile = this.profile.name === player.name;
 
+        this.updateCurrentMessage();
+
         if (player.profile) {
             this.setProfileControls();
         } else if (this.hasTouch) {
@@ -346,8 +348,13 @@ RoomController.prototype.addProfileUser = function()
  */
 RoomController.prototype.updateCurrentMessage = function()
 {
+    var profile = this.room.players.match(function (player) { return this.profile; }),
+        player = this.room.players.match(function (player) { return this.local; });
+
+    console.log(profile, player);
+
     this.chat.setRoom(this.room);
-    this.chat.setPlayer(this.room.getLocalPlayers().getFirst());
+    this.chat.setPlayer(profile ? profile : player);
 };
 
 /**

@@ -73,7 +73,7 @@ Chat.prototype.setScope = function($scope)
     this.$scope.currentMessage   = this.currentMessage;
     this.$scope.messageMaxLength = Message.prototype.maxLength;
 
-    this.scrollDown();
+    setTimeout(this.scrollDown, 0);
 };
 
 /**
