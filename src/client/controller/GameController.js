@@ -50,6 +50,8 @@ function GameController($scope, $routeParams, $location, repository, client, pro
     this.$scope.sound       = this.profile.sound;
     this.$scope.backToRoom  = this.backToRoom;
     this.$scope.toggleSound = this.toggleSound;
+    this.$scope.roundWinner = null;
+    this.$scope.gameWinner  = null;
 
     this.chat.setScope(this.$scope);
     this.initSound();
@@ -356,10 +358,13 @@ GameController.prototype.onClear = function(e)
  */
 GameController.prototype.onEnd = function(e)
 {
+    this.$scope.gameWinner = this.game.sortAvatars().getFirst();
+    this.applyScope();
+
     this.close();
 
-    document.getElementById('end').style.display = 'block';
-    document.getElementById('game-view').style.display = 'block';
+    document.getElementById('end').style.display        = 'block';
+    document.getElementById('game-view').style.display  = 'block';
     document.getElementById('round-view').style.display = 'none';
 
     createjs.Sound.play('win');

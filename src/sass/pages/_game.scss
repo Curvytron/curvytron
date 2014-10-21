@@ -122,7 +122,7 @@
 
             li {
                 border-bottom: 2px solid lighten($game-background, 10%);
-                padding: 15px 65px 15px 20px;
+                padding: 10px 65px 10px 20px;
                 position: relative;
                 font-size: 18px;
 
@@ -133,9 +133,9 @@
                     top: 0;
                     right: 0;
                     bottom: 0;
-                    width: 60px;
-                    line-height: 60px;
-                    font-size: 26px;
+                    width: 50px;
+                    line-height: 50px;
+                    font-size: 25px;
                     font-weight: bold;
                 }
 
@@ -309,12 +309,8 @@
                 color: #FFF;
                 display: none;
 
-                i {
-                    display: block;
-                    font-size: 100px;
-                }
+                .victory {
 
-                p {
                     font-size: 40px;
                     font-weight: 300;
                     line-height: 110px;
@@ -327,7 +323,12 @@
                         width: 40%;
                         margin: 0 auto;
                         background-color: #FFF;
-                        bottom: -30px;
+                        margin-top: 15px;
+                    }
+
+                    .icon-trophy {
+                        display: block;
+                        font-size: 100px;
                     }
                 }
             }
@@ -342,6 +343,11 @@
             #game-view {
                 padding: 60px 0 40px 0;
 
+                .victory .icon-trophy {
+                    float: left;
+                    margin-right: 20px;
+                }
+
                 table.recap {
                     max-width: 700px;
                     margin: 0 auto;
@@ -351,7 +357,7 @@
                         border-top: 2px solid transparentize(#FFF, 0.95);
                         background: transparentize(#FFF, 0.95);
                         @include transition(background 0.2s ease);
-                        padding: 30px 25px;
+                        padding: 20px 10px;
                         font-size: 30px;
                         font-weight: 300;
 
@@ -499,18 +505,18 @@
 }
 
 .btn-back-to-room {
-    border: 2px solid #888;
+   // border: 2px solid #888;
     padding: 10px 25px;
-    color: #888 !important;
-    font-weight: 400;
+    //color: #888 !important;
+    //font-weight: 400;
     margin: 40px 0;
     display: inline-block;
-    text-transform: uppercase;
-    @include transition(all 0.1s linear);
+    //text-transform: uppercase;
+    //@include transition(all 0.1s linear);
 
-    &:hover {
+    /*&:hover {
         text-decoration: none;
         background: #888;
         color: #222 !important;
-    }
+    }*/
 }

@@ -52,16 +52,25 @@
             </div>
             <section id="end">
                 <section id="round-view">
-                    <i class="icon-trophy"></i>
-                    <p><span class="strong" style="color: {{ roundWinner.player.color }}">{{ roundWinner.name }}</span> won the round ! </p>
+                    <p class="victory">
+                        <i class="icon-trophy"></i>
+                        <span class="strong" style="color: {{ roundWinner.player.color }}">
+                            {{ roundWinner.name }}
+                        </span>
+                        won the round !
+                    </p>
                 </section>
                 <section id="game-view">
-                    <i class="icon-trophy"></i>
-                    <p ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-show="$first">
-                        <span class="strong" style="color: {{ avatar.player.color }}">{{ avatar.name }}</span> won the game !
+                    <p class="victory">
+                        <i class="icon-trophy"></i>
+                        <span class="strong" style="color: {{ gameWinner.color }}">
+                            {{ gameWinner.name }}
+                        </span>
+                        won the game !
                     </p>
+
                     <div>
-                        <button ng-click="backToRoom()" type="button" class="btn btn-link btn-back-to-room">
+                        <button ng-click="backToRoom()" type="button" class="btn btn-hero btn-back-to-room">
                             Back to the room
                         </button>
                     </div>
@@ -75,7 +84,7 @@
                         </tbody>
                     </table>
                     <div>
-                        <button ng-click="backToRoom()" type="button" class="btn btn-link btn-back-to-room">
+                        <button ng-click="backToRoom()" type="button" class="btn btn-hero btn-back-to-room">
                             Back to the room
                         </button>
                     </div>
