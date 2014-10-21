@@ -23,7 +23,7 @@ curvytronApp.controller(
 );
 curvytronApp.controller(
     'GameController',
-    ['$scope', '$routeParams', '$location', 'RoomRepository', 'SocketClient', 'Chat', GameController]
+    ['$scope', '$routeParams', '$location', 'RoomRepository', 'SocketClient', 'Profile', 'Chat', GameController]
 );
 
 curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {

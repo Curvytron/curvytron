@@ -7,6 +7,7 @@ function Profile()
 
     this.name     = null;
     this.color    = null;
+    this.sound    = true;
     this.controls = [
         new PlayerControl(37, 'icon-left-dir'),
         new PlayerControl(39, 'icon-right-dir')
@@ -46,6 +47,7 @@ Profile.prototype.serialize = function()
     return {
         name: this.name,
         color: this.color,
+        sound: this.sound,
         controls: this.getMapping()
     };
 };
@@ -63,6 +65,10 @@ Profile.prototype.unserialize = function(data)
 
     if (typeof(data.color) !== 'undefined') {
         this.setColor(data.color);
+    }
+
+    if (typeof(data.sound) !== 'undefined') {
+        this.setSound(data.sound);
     }
 
     if (typeof(data.controls) !== 'undefined') {
@@ -125,7 +131,7 @@ Profile.prototype.setName = function(name)
 /**
  * Set color
  *
- * @param {Name} color
+ * @param {String} color
  */
 Profile.prototype.setColor = function(color)
 {
@@ -146,6 +152,19 @@ Profile.prototype.setControls = function(controls)
         this.controls[i].loadMapping(controls[i]);
     }
     this.persist();
+};
+
+/**
+ * Set sound
+ *
+ * @param {Boolean} sound
+ */
+Profile.prototype.setSound = function(sound)
+{
+    if (this.sound !== sound) {
+        this.sound = sound;
+        this.persist();
+    }
 };
 
 /**

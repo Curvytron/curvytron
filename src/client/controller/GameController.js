@@ -5,26 +5,19 @@
  * @param {Object} $routeParams
  * @param {RoomRepository} repository
  * @param {SocketClient} client
+ * @param {Profile} profile
  * @param {Chat} chat
  */
-function GameController($scope, $routeParams, $location, repository, client, chat)
+function GameController($scope, $routeParams, $location, repository, client, profile, chat)
 {
     this.$scope     = $scope;
     this.$location  = $location;
     this.repository = repository;
     this.client     = client;
+    this.profile    = profile;
     this.chat       = chat;
     this.game       = null;
     this.room       = null;
-
-    createjs.Sound.alternateExtensions = ['mp3'];
-    createjs.Sound.registerManifest(
-        [
-            {id:'loose', src:'loose.ogg'},
-            {id:'win', src:'win.ogg'}
-        ],
-        'sounds/'
-    );
 
     // Binding
     this.onMove        = this.onMove.bind(this);
@@ -54,14 +47,40 @@ function GameController($scope, $routeParams, $location, repository, client, cha
     // Hydrate scope:
     this.$scope.sortorder   = '-score';
     this.$scope.countFinish = true;
-    this.$scope.sound       = true;
+    this.$scope.sound       = this.profile.sound;
     this.$scope.backToRoom  = this.backToRoom;
     this.$scope.toggleSound = this.toggleSound;
 
     this.chat.setScope(this.$scope);
+    this.initSound();
 
     this.loadGame(decodeURIComponent($routeParams.name));
 }
+
+/**
+ * Audio volume
+ *
+ * @type {Number}
+ */
+GameController.prototype.volume = 0.5;
+
+/**
+ * Initialize sound
+ */
+GameController.prototype.initSound = function()
+{
+    createjs.Sound.alternateExtensions = ['mp3'];
+
+    createjs.Sound.registerManifest(
+        [
+            {id:'loose', src:'loose.ogg'},
+            {id:'win', src:'win.ogg'}
+        ],
+        'sounds/'
+    );
+
+    createjs.Sound.setVolume(this.$scope.sound ? this.volume : 0);
+};
 
 /**
  * Attach socket Events
@@ -282,9 +301,7 @@ GameController.prototype.onDie = function(e)
         avatar.die();
         this.applyScope();
 
-        if (this.$scope.sound) {
-            createjs.Sound.play('loose').volume = 0.3;
-        }
+        createjs.Sound.play('loose');
     }
 };
 
@@ -345,9 +362,7 @@ GameController.prototype.onEnd = function(e)
     document.getElementById('game-view').style.display = 'block';
     document.getElementById('round-view').style.display = 'none';
 
-    if (this.$scope.sound) {
-        createjs.Sound.play('win').volume = 0.2;
-    }
+    createjs.Sound.play('win');
 };
 
 /**
@@ -434,6 +449,9 @@ GameController.prototype.backToRoom = function()
 GameController.prototype.toggleSound = function()
 {
     this.$scope.sound = !this.$scope.sound;
+
+    createjs.Sound.setVolume(this.$scope.sound ? this.volume : 0);
+    this.profile.setSound(this.$scope.sound);
 };
 
 /**
