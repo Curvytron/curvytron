@@ -6,7 +6,7 @@
     left: 0;
     height: 100%;
     width: 100%;
-    background: $game-background;
+    background: #000;
 
     aside, #col-right {
         position: fixed;
@@ -23,9 +23,7 @@
         color: #EEE;
         font-weight: 300;
         left: 0;
-        border-right: $aside-border-size solid $header-background-to;
-        padding-top: $game-header-height + 160px;
-        padding-bottom: 298px;
+        border-right: $aside-border-size solid lighten($aside-background, 8%);
 
         header {
             height: $game-header-height;
@@ -119,10 +117,31 @@
         #game-players {
             @extend .no-bullet;
             margin-bottom: 0;
+            position: fixed;
+            overflow: auto;
+
+            top: $game-header-height + 160px;
+            bottom: 298px;
+            left: 0;
+            width: $aside-width;
+
+            &::-webkit-scrollbar {
+                width: $aside-border-size;
+                height: 1px;
+                border-left: 0;
+                @include gradient($header-background-from, $header-background-to);
+            }
+            &::-webkit-scrollbar-track {
+                background: none;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: #FFF;
+                border-radius: 0;
+            }
 
             li {
                 border-bottom: 2px solid lighten($game-background, 10%);
-                padding: 10px 65px 10px 20px;
+                padding: 10px 65px 10px 23px;
                 position: relative;
                 font-size: 18px;
 
@@ -131,7 +150,7 @@
                     text-align: center;
                     position: absolute;
                     top: 0;
-                    right: 0;
+                    right: 2px;
                     bottom: 0;
                     width: 50px;
                     line-height: 50px;
@@ -166,6 +185,21 @@
                     left: 0;
                     top: 0;
                     bottom: 0;
+                }
+
+                .local-avatar {
+                    left: 6px;
+                    top: 50%;
+                    border: solid transparent;
+                    content: " ";
+                    height: 0;
+                    width: 0;
+                    position: absolute;
+                    pointer-events: none;
+                    border-color: rgba(136, 183, 213, 0);
+                    border-left-color: transparent;
+                    border-width: 6px;
+                    margin-top: -6px;
                 }
             }
         }
@@ -399,7 +433,7 @@
         position: fixed;
         bottom: 0;
         left: 0;
-        width: $aside-width - $aside-border-size;
+        width: $aside-width;
         height: 245px;
         background: lighten($aside-background, 5);
         font-size: 14px;
@@ -410,6 +444,21 @@
             overflow-y: auto;
             padding: 15px 20px 15px;
             background: #1c1c1c;
+            // border-right: $aside-border-size solid lighten($aside-background, 8%);
+
+            &::-webkit-scrollbar {
+                width: $aside-border-size;
+                height: 1px;
+                border-left: 0;
+                @include gradient($header-background-from, $header-background-to);
+            }
+            &::-webkit-scrollbar-track {
+                background: none;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: #FFF;
+                border-radius: 0;
+            }
 
             .welcome {
                 text-transform: uppercase;
@@ -428,6 +477,7 @@
             height: 50px;
             position: relative;
             overflow: hidden;
+            border-right: $aside-border-size solid $header-background-to;
 
             .form-control {
                 height: 50px;
@@ -452,7 +502,7 @@
                 border: 0;
                 color: #FFF;
                 margin: 0 -10px 0 20px;
-                padding: 0 25px 0 15px;
+                padding: 0 20px 0 15px;
                 @include horizontal-gradient($header-background-from, $header-background-to);
                 @include skew(-10deg, 0);
                 @include transition(all 0.1s linear);
