@@ -13,10 +13,10 @@ function BaseGame(room)
     this.avatars      = this.room.players.map(function () { return this.getAvatar(); });
     this.size         = this.getSize(this.avatars.count());
     this.rendered     = null;
-    this.maxScore     = this.getMaxScore(this.avatars.count());
+    this.maxScore     = room.config.getMaxScore();
     this.fps          = new FPSLogger();
     this.started      = false;
-    this.bonusManager = new BonusManager(this);
+    this.bonusManager = new BonusManager(this, room.config.getBonuses());
     this.inRound      = false;
     this.rounds       = 0;
 
@@ -195,18 +195,6 @@ BaseGame.prototype.getSize = function(players)
     var baseSquareSize = this.perPlayerSize * this.perPlayerSize;
 
     return Math.sqrt(baseSquareSize + ((players - 1) * baseSquareSize / 5));
-};
-
-/**
- * Get max score
- *
- * @param {Number} players
- *
- * @return {Number}
- */
-BaseGame.prototype.getMaxScore = function(players)
-{
-    return Math.max(1, (players-1) * 10);
 };
 
 /**
