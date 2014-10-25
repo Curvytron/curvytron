@@ -7,44 +7,39 @@ function Room(name)
 {
     BaseRoom.call(this, name);
 
-    this.clients = new Collection();
-    this.client  = new SocketGroup(this.clients);
+    this.controller = new RoomController(this);
+
+    /*this.clients = new Collection();
+    this.client  = new SocketGroup(this.clients);*/
 }
 
 Room.prototype = Object.create(BaseRoom.prototype);
 Room.prototype.constructor = Room;
 
 /**
- * Add client
- *
- * @param {Client} client
+ * Close
  */
-Room.prototype.addClient = function(client)
+Room.prototype.close = function()
 {
-    if (this.clients.add(client)) {
-        client.room = this;
-        client.players.clear();
-    }
+    this.emit('close', {room: this});
 };
 
 /**
- * Remove client
+ * Add player
  *
- * @param {Client} client
+ * @param {Player} player
  */
-Room.prototype.removeClient = function(client)
+Room.prototype.addPlayer = function(player)
 {
-    if (this.clients.remove(client)) {
-        client.room = null;
+    var result = BaseRoom.prototype.addPlayer.call(this, player);
 
-        for (var i = client.players.items.length - 1; i >= 0; i--) {
-            player = client.players.items[i];
-            this.removePlayer(player);
-        }
-
-        client.players.clear();
+    if (result) {
+        this.emit('player:join', {room: this, player: player});
     }
+
+    return result;
 };
+
 
 /**
  * Remove player
@@ -61,3 +56,35 @@ Room.prototype.removePlayer = function(player)
 
     return result;
 };
+
+/**
+ * Add client
+ *
+ * @param {Client} client
+ */
+/*Room.prototype.addClient = function(client)
+{
+    if (this.clients.add(client)) {
+        client.room = this;
+        client.players.clear();
+    }
+};*/
+
+/**
+ * Remove client
+ *
+ * @param {Client} client
+ */
+/*Room.prototype.removeClient = function(client)
+{
+    if (this.clients.remove(client)) {
+        client.room = null;
+
+        for (var i = client.players.items.length - 1; i >= 0; i--) {
+            player = client.players.items[i];
+            this.removePlayer(player);
+        }
+
+        client.players.clear();
+    }
+};*/

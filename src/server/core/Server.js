@@ -3,14 +3,13 @@
  */
 function Server(config)
 {
-    this.config      = config;
-    this.app         = express();
-    this.server      = new http.Server(this.app);
-    this.clients     = new Collection([], 'id', true);
+    this.config  = config;
+    this.app     = express();
+    this.server  = new http.Server(this.app);
+    this.clients = new Collection([], 'id', true);
 
-    this.roomRepository = new RoomRepository();
-    this.gameController = new GameController();
-    this.roomController = new RoomController(this.roomRepository, this.gameController);
+    this.roomRepository  = new RoomRepository();
+    this.roomsController = new RoomsController(this.roomRepository);
 
     this.authorizationHandler  = this.authorizationHandler.bind(this);
     this.onSocketConnection    = this.onSocketConnection.bind(this);
@@ -49,11 +48,12 @@ Server.prototype.onSocketConnection = function(socket)
         client = new SocketClient(socket, 3);
 
     this.clients.add(client);
-    socket.on('close', function (e) { server.onSocketDisconnection(client); });
+
+    client.on('close', this.onSocketDisconnection);
+
+    this.roomsController.attach(client);
 
     client.addEvent('open', client.id);
-
-    this.roomController.attach(client);
 
     console.info('Client connected', client.id);
 };
@@ -67,11 +67,10 @@ Server.prototype.onSocketDisconnection = function(client)
 {
     console.info('Client disconnected', client.id);
 
-    this.roomController.onLeaveRoom(client);
-    this.roomController.detach(client);
+    //this.roomsController.onLeaveRoom(client);
+    //this.roomsController.detach(client);
 
     this.clients.remove(client);
-    client = null;
 };
 
 /**

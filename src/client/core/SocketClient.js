@@ -3,27 +3,24 @@
  */
 function SocketClient()
 {
-    this.connected  = false;
-    this.id         = null;
-
-    this.sendPing              = this.sendPing.bind(this);
-    this.onError               = this.onError.bind(this);
-    this.onOpen                = this.onOpen.bind(this);
-    this.onSocketConnection    = this.onSocketConnection.bind(this);
-    this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
-
-    this.pingLogger = new PingLogger(this.sendPing, 1000);
-
     var Socket = window.MozWebSocket || window.WebSocket;
 
     BaseSocketClient.call(this, new Socket('ws://' + document.location.host + document.location.pathname, ['websocket']));
 
-    this.on('pong', this.pingLogger.pong);
-    this.on('open', this.onOpen);
+    this.sendPing = this.sendPing.bind(this);
+    this.onError  = this.onError.bind(this);
+    this.onOpen   = this.onOpen.bind(this);
+    this.onSocket = this.onSocket.bind(this);
 
-    this.socket.onopen  = this.onSocketConnection;
-    this.socket.onclose = this.onSocketDisconnection;
+    this.id         = null;
+    this.connected  = false;
+    //this.pingLogger = new PingLogger(this.sendPing, 1000);
+
+    this.socket.onopen  = this.onSocket;
     this.socket.onerror = this.onError;
+
+    //this.on('pong', this.pingLogger.pong);
+    this.on('open', this.onOpen);
 }
 
 SocketClient.prototype = Object.create(BaseSocketClient.prototype);
@@ -34,35 +31,16 @@ SocketClient.prototype.constructor = SocketClient;
  *
  * @param {Socket} socket
  */
-SocketClient.prototype.onSocketConnection = function(e)
+SocketClient.prototype.onSocket = function(e)
 {
     console.info('Connected');
 
     this.connected = true;
-    this.start();
 
-    this.pingLogger.start();
+    this.start();
+    //this.pingLogger.start();
 
     this.emit('connected');
-};
-
-/**
- * On socket connection
- *
- * @param {Socket} socket
- */
-SocketClient.prototype.onSocketDisconnection = function(e)
-{
-    console.info('Disconnect');
-
-    this.connected = false;
-    this.id        = null;
-
-    this.pingLogger.stop();
-
-    this.emit('disconnected');
-
-    throw 'Connexion lost';
 };
 
 /**
@@ -73,6 +51,25 @@ SocketClient.prototype.onSocketDisconnection = function(e)
 SocketClient.prototype.onOpen = function(e)
 {
     this.id = e.detail;
+};
+
+/**
+ * On open
+ *
+ * @param {Event} e
+ */
+SocketClient.prototype.onClose = function(e)
+{
+    console.info('Disconnect');
+
+    this.connected = false;
+    this.id        = null;
+
+    //this.pingLogger.stop();
+
+    this.emit('disconnected');
+
+    throw 'Connexion lost';
 };
 
 /**

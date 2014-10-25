@@ -8,19 +8,16 @@ function BaseSocketClient(socket, interval)
 {
     EventEmitter.call(this);
 
-    this.socket        = socket;
-    this.interval      = typeof(interval) === 'number' ? interval : 0;
-    this.events        = [];
-    this.callbackQueue = [];
-    this.callbacks     = [];
-    this.loop          = null;
-    this.empty         = 0;
+    this.socket    = socket;
+    this.interval  = typeof(interval) === 'number' ? interval : 0;
+    this.events    = [];
+    this.callbacks = {};
+    this.loop      = null;
 
     this.flush     = this.flush.bind(this);
     this.onMessage = this.onMessage.bind(this);
+    this.onClose   = this.onClose.bind(this);
     this.ping      = this.onPing.bind(this);
-
-    this.socket.onmessage = this.onMessage;
 
     this.attachEvents();
     this.start();
@@ -42,6 +39,17 @@ BaseSocketClient.prototype.eventPrefix = 'evt/';
  * @type {String}
  */
 BaseSocketClient.prototype.callbackPrefix = 'clb/';
+
+/**
+ * On socket close
+ */
+BaseSocketClient.prototype.onClose = function()
+{
+    this.emit('close', this);
+    this.stop();
+    this.detachEvents();
+};
+
 
 /**
  * Set interval
@@ -85,6 +93,9 @@ BaseSocketClient.prototype.stop = function()
  */
 BaseSocketClient.prototype.attachEvents = function()
 {
+    this.socket.onmessage = this.onMessage;
+    this.socket.onclose   = this.onClose;
+
     this.on('ping', this.onPing);
 };
 
@@ -93,6 +104,9 @@ BaseSocketClient.prototype.attachEvents = function()
  */
 BaseSocketClient.prototype.detachEvents = function()
 {
+    this.socket.removeEventListener('mesage', this.onMessage);
+    this.socket.removeEventListener('close', this.onClose);
+
     this.removeListener('ping', this.onPing);
 };
 
@@ -113,8 +127,8 @@ BaseSocketClient.prototype.addEvent = function (name, data, callback, force)
     }
 
     if (typeof(callback) !== 'undefined') {
-        this.callbacks.push(callback);
-        event[2] = this.callbacks.indexOf(callback);
+        event[2] = new Date().getTime();
+        this.callbacks[event[2]] = callback;
     }
 
     if (!this.interval || (typeof(force) !== 'undefined' && force)) {
@@ -145,8 +159,8 @@ BaseSocketClient.prototype.addEvents = function (sources, force)
         }
 
         if (typeof(sources[i][2]) !== 'undefined') {
-            this.callbacks.push(sources[i][2]);
-            event[2] = this.callbacks.indexOf(sources[i][2]);
+            event[2] = new Date().getTime();
+            this.callbacks[event[2]] = sources[i][2];
         }
 
         events.push(event);
@@ -232,7 +246,7 @@ BaseSocketClient.prototype.onMessage = function (e)
 
             if(typeof(this.callbacks[id]) !== 'undefined') {
                 this.callbacks[id](typeof(data[i][1]) !== 'undefined' ? data[i][1] : null);
-                this.callbacks.splice(id, 1);
+                delete this.callbacks[id];
             }
         }
     }

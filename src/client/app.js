@@ -4,7 +4,6 @@ var curvytronApp = angular.module('curvytronApp', ['ngRoute', 'ngCookies', 'colo
 gamepadListener.start();
 
 curvytronApp.service('SocketClient', SocketClient);
-curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);
 curvytronApp.service('Chat', ['SocketClient', Chat]);
 curvytronApp.service('Profile', ['$rootScope', Profile]);
 
@@ -15,15 +14,15 @@ curvytronApp.controller(
 
 curvytronApp.controller(
     'RoomsController',
-    ['$scope', '$location', 'RoomRepository', 'SocketClient', RoomsController]
+    ['$scope', '$location', 'SocketClient', RoomsController]
 );
 curvytronApp.controller(
     'RoomController',
-    ['$scope', '$rootScope', '$routeParams', '$location', 'RoomRepository', 'SocketClient', 'Profile', 'Chat', RoomController]
+    ['$scope', '$routeParams', '$location', 'SocketClient', 'Profile', 'Chat', RoomController]
 );
 curvytronApp.controller(
     'GameController',
-    ['$scope', '$routeParams', '$location', 'RoomRepository', 'SocketClient', 'Profile', 'Chat', GameController]
+    ['$scope', '$routeParams', '$location', 'SocketClient', 'Profile', 'Chat', GameController]
 );
 
 curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
