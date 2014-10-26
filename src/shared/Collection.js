@@ -11,10 +11,7 @@ function Collection(items, key, index)
     this.items = [];
     this.key   = typeof(key) !== 'undefined' && key ? key : 'id';
     this.index = typeof(index) !== 'undefined' && index;
-
-    if (this.index) {
-        this.id = 1;
-    }
+    this.id    = 0;
 
     if (items) {
         for (var i = items.length - 1; i >= 0; i--) {
@@ -30,10 +27,7 @@ Collection.prototype.clear = function()
 {
     this.ids   = [];
     this.items = [];
-
-    if (this.index) {
-        this.id = 1;
-    }
+    this.id    = 0;
 };
 
 /**
@@ -68,9 +62,7 @@ Collection.prototype.add = function(element, ttl)
 {
     this.setId(element);
 
-    if (this.exists(element)) {
-        return false;
-    }
+    if (this.exists(element)) { return false; }
 
     this.ids.push(element[this.key]);
 
@@ -131,9 +123,14 @@ Collection.prototype.removeById = function(id)
  */
 Collection.prototype.setId = function(element)
 {
-    if (this.index && (typeof(element[this.key]) === 'undefined' || element[this.key] === null)) {
-        element[this.key] = this.id;
-        this.id++;
+    if (this.index) {
+        if (typeof(element[this.key]) !== 'undefined' && element[this.key]) {
+            if (element[this.key] > this.id) {
+                this.id = element[this.key];
+            }
+        } else {
+            element[this.key] = ++this.id;
+        }
     }
 };
 

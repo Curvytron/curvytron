@@ -69,7 +69,6 @@ RoomRepository.prototype.join = function(name, callback)
             repository.room = new Room(result.room.name);
 
             for (var i = result.room.players.length - 1; i >= 0; i--) {
-                console.log(result.room.players[i]);
                 repository.room.addPlayer(new Player(
                     result.room.players[i].id,
                     result.room.players[i].client,
