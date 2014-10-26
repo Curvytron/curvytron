@@ -30,7 +30,7 @@ function RoomController(room)
 
         onConfigMaxScore: function (data) { controller.onConfigMaxScore(this, data.data, data.callback); },
         onConfigVariable:  function (data) { controller.onConfigVariable(this, data.data, data.callback); },
-        onConfigBonus:  function (data) { controller.onConfigBonus(this, data.data, data.callback); },
+        onConfigBonus:  function (data) { controller.onConfigBonus(this, data.data, data.callback); }
     };
 
     this.loadRoom();

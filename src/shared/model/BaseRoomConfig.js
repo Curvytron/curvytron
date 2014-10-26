@@ -30,7 +30,7 @@ function BaseRoomConfig(room)
 
 BaseRoomConfig.prototype.setMaxScore = function(maxScore)
 {
-    maxScore = parseInt(maxScore);
+    maxScore = parseInt(maxScore, 10);
 
     this.maxScore = maxScore ? maxScore : null;
 
@@ -171,6 +171,6 @@ BaseRoomConfig.prototype.serialize = function()
     return {
         maxScore: this.maxScore,
         variables: this.variables,
-        bonuses: this.bonuses,
+        bonuses: this.bonuses
     };
 };

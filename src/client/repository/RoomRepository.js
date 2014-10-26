@@ -90,11 +90,15 @@ RoomRepository.prototype.join = function(name, callback)
             repository.room.config.setMaxScore(result.room.config.maxScore);
 
             for (var variable in result.room.config.variables) {
-                repository.room.config.setVariable(variable, result.room.config.variables[variable]);
+                if (result.room.config.variables.hasOwnProperty(variable)) {
+                    repository.room.config.setVariable(variable, result.room.config.variables[variable]);
+                }
             }
 
             for (var bonus in result.room.config.bonuses) {
-                repository.room.config.setBonus(bonus, result.room.config.bonuses[bonus]);
+                if (result.room.config.bonuses.hasOwnProperty(bonus)) {
+                    repository.room.config.setBonus(bonus, result.room.config.bonuses[bonus]);
+                }
             }
 
             callback({success: true, room: repository.room});
@@ -193,7 +197,7 @@ RoomRepository.prototype.setReady = function(player, callback)
  */
 RoomRepository.prototype.setConfigMaxScore = function(maxScore, callback)
 {
-    this.client.addEvent('room:config:max-score', {maxScore: parseInt(maxScore)}, callback);
+    this.client.addEvent('room:config:max-score', {maxScore: parseInt(maxScore, 10)}, callback);
 };
 
 /**

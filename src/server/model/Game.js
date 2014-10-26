@@ -158,7 +158,7 @@ Game.prototype.resolveScores = function()
     var winner;
 
     if (this.avatars.count() === 1) {
-        winner = this.avatars.getFirst()
+        winner = this.avatars.getFirst();
     } else {
         winner = this.avatars.match(function () { return this.alive; });
     }
