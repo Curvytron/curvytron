@@ -206,7 +206,7 @@ BaseGame.prototype.getSize = function(players)
  */
 BaseGame.prototype.getMaxScore = function(players)
 {
-    return (players-1) * 10;
+    return Math.max(1, (players-1) * 10);
 };
 
 /**
