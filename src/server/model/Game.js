@@ -10,7 +10,6 @@ function Game(room)
     this.world      = new World(this.size);
     this.deaths     = new Collection([], 'id');
     this.controller = new GameController(this);
-    this.id         = new Date().getTime();
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -19,7 +18,6 @@ function Game(room)
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        avatar.game = this;
         avatar.clear();
         avatar.on('point', this.addPoint);
         avatar.on('die', this.onDie);
@@ -157,23 +155,21 @@ Game.prototype.isReady = function()
  */
 Game.prototype.resolveScores = function()
 {
-    if (this.end) {
-        var winner;
+    var winner;
 
-        if (this.avatars.count() === 1) {
-            winner = this.avatars.getFirst()
-        } else {
-            winner = this.avatars.match(function () { return this.alive; });
-        }
+    if (this.avatars.count() === 1) {
+        winner = this.avatars.getFirst()
+    } else {
+        winner = this.avatars.match(function () { return this.alive; });
+    }
 
-        if (winner) {
-            winner.addScore(Math.max(this.avatars.count() - 1, 1));
-            this.emit('round:winner', {game: this, winner: winner});
-        }
+    if (winner) {
+        winner.addScore(Math.max(this.avatars.count() - 1, 1));
+        this.emit('round:winner', {game: this, winner: winner});
+    }
 
-        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-            this.avatars.items[i].resolveScore();
-        }
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        this.avatars.items[i].resolveScore();
     }
 };
 

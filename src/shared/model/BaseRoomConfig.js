@@ -3,46 +3,30 @@
  */
 function BaseRoomConfig(room)
 {
-    this.room = room;
+    this.room     = room;
+    this.maxScore = null;
+
+    this.variables = {
+        //speed: 0,
+        //curving: 0,
+        bonusRate: 0
+    };
+
+    this.bonuses  = {
+        BonusSelfSmall: true,
+        BonusSelfSlow: true,
+        BonusSelfFast: true,
+        BonusSelfMaster: true,
+        BonusEnemySlow: true,
+        BonusEnemyFast: true,
+        BonusEnemyBig: true,
+        BonusEnemyInverse: true,
+        BonusAllBorderless: true,
+        BonusAllColor: true,
+        BonusGameClear: true,
+        BonusEnemyStraightAngle: true
+    };
 }
-
-/**
- * Max score
- *
- * @type {Number}
- */
-BaseRoomConfig.prototype.maxScore  = null;
-
-/**
- * Variable
- *
- * @type {Number}
- */
-BaseRoomConfig.prototype.variables = {
-    speed: 1,
-    curving: 1,
-    bonusRate: 1
-};
-
-/**
- * Bonuses
- *
- * @type {Object}
- */
-BaseRoomConfig.prototype.bonuses   = {
-    BonusSelfSmall: true,
-    BonusSelfSlow: true,
-    BonusSelfFast: true,
-    BonusSelfMaster: true,
-    BonusEnemySlow: true,
-    BonusEnemyFast: true,
-    BonusEnemyBig: true,
-    BonusEnemyInverse: true,
-    BonusAllBorderless: true,
-    BonusAllColor: true,
-    BonusGameClear: true,
-    BonusEnemyStraightAngle: true
-};
 
 BaseRoomConfig.prototype.setMaxScore = function(maxScore)
 {
@@ -77,7 +61,7 @@ BaseRoomConfig.prototype.setVariable = function(variable, value)
 
     value = parseFloat(value);
 
-    if (0 > value || value > 2 ) { return false; }
+    if (-1 > value || value > 1 ) { return false; }
 
     this.variables[variable] = value;
 

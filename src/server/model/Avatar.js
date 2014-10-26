@@ -7,7 +7,6 @@ function Avatar(player)
 {
     BaseAvatar.call(this, player);
 
-    this.game         = null;
     this.bodyCount    = 0;
     this.body         = new AvatarBody(this.head, this);
     this.printManager = new PrintManager(this);
@@ -126,10 +125,8 @@ Avatar.prototype.setColor = function(color)
  */
 Avatar.prototype.addPoint = function(point, important)
 {
-    if (this.game.frame) {
-        BaseAvatar.prototype.addPoint.call(this, point);
-        this.emit('point', { avatar: this, point: point, important: important || this.angularVelocity });
-    }
+    BaseAvatar.prototype.addPoint.call(this, point);
+    this.emit('point', { avatar: this, point: point, important: important || this.angularVelocity });
 };
 
 /**

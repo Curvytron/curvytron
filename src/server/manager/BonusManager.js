@@ -3,13 +3,14 @@
  *
  * @param {Game} game
  */
-function BonusManager(game, bonuses)
+function BonusManager(game, bonuses, rate)
 {
     BaseBonusManager.call(this, game);
 
-    this.world         = new World(this.game.size, 1);
-    this.popingTimeout = null;
-    this.bonusTypes    = bonuses;
+    this.world           = new World(this.game.size, 1);
+    this.popingTimeout   = null;
+    this.bonusTypes      = bonuses;
+    this.bonusPopingTime = this.bonusPopingTime - ((this.bonusPopingTime/2) * rate);
 
     this.popBonus = this.popBonus.bind(this);
 }
@@ -132,7 +133,7 @@ BonusManager.prototype.remove = function(bonus)
  */
 BonusManager.prototype.getRandomPopingTime  = function()
 {
-    return this.bonusPopingTime * (1 +  Math.random() * 2);
+    return this.bonusPopingTime * (1 +  Math.random());
 };
 
 /**

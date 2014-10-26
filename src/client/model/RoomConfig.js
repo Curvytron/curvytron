@@ -39,7 +39,7 @@ RoomConfig.prototype.bonusClasses = {
 RoomConfig.prototype.variablesNames = {
     speed: 'Speed',
     curving: 'Curving',
-    bonusRate: 'Bonus rate'
+    bonusRate: 'Quantity'
 };
 
 
