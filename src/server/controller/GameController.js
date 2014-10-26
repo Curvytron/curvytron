@@ -90,12 +90,9 @@ GameController.prototype.detach = function(client)
     this.detachEvents(client);
 
     if (this.clients.remove(client)) {
-        console.log('client', client.id, client.players.items.length);
         for (var i = client.players.items.length - 1; i >= 0; i--) {
             this.game.removeAvatar(client.players.items[i].avatar);
         }
-    } else {
-        console.log('unable to remove client', client.id);
     }
 };
 

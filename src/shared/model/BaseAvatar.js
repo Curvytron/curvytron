@@ -346,7 +346,6 @@ BaseAvatar.prototype.destroy = function()
     this.clear();
     this.present = false;
     this.alive   = false;
-    console.log('destroyed', this.name);
 };
 
 /**

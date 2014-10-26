@@ -75,11 +75,8 @@ BaseGame.prototype.update = function(step) {};
 BaseGame.prototype.removeAvatar = function(avatar)
 {
     if (this.avatars.exists(avatar)) {
-        console.log('not exist');
         avatar.die();
         avatar.destroy();
-    } else {
-        console.log('not exist');
     }
 };
 
