@@ -3,12 +3,12 @@
  *
  * @param {SocketCLient} client
  */
-function RoomRepository(client, name)
+function RoomRepository(client)
 {
     EventEmitter.call(this);
 
     this.client = client;
-    this.name   = name;
+    this.room   = null;
 
     this.start         = this.start.bind(this);
     this.onJoinRoom    = this.onJoinRoom.bind(this);
@@ -18,8 +18,6 @@ function RoomRepository(client, name)
     this.onPlayerReady = this.onPlayerReady.bind(this);
     this.onPlayerColor = this.onPlayerColor.bind(this);
     this.onPlayerName  = this.onPlayerName.bind(this);
-
-    this.start();
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
@@ -60,14 +58,18 @@ RoomRepository.prototype.detachEvents = function()
  */
 RoomRepository.prototype.join = function(name, callback)
 {
-    var repositoty = this;
+    var repository = this;
+
+    if (this.room && this.room.name === name) {
+        return callback({success: true, room: repository.room});
+    }
 
     this.client.addEvent('room:join', {name: name}, function (result) {
         if (result.success) {
-            repositoty.room = new Room(result.room.name);
+            repository.room = new Room(result.room.name);
 
             for (var i = result.room.players.length - 1; i >= 0; i--) {
-                repositoty.room.addPlayer(new Player(
+                var result = repository.room.addPlayer(new Player(
                     result.room.players[i].id,
                     result.room.players[i].client,
                     result.room.players[i].name,
@@ -75,7 +77,7 @@ RoomRepository.prototype.join = function(name, callback)
                 ));
             }
 
-            callback({success: true, room: repositoty.room});
+            callback({success: true, room: repository.room});
         } else {
             callback({success: false});
         }
@@ -112,9 +114,10 @@ RoomRepository.prototype.removePlayer = function(player, callback)
  *
  * @param {Function} callback
  */
-RoomRepository.prototype.leave = function(callback)
+RoomRepository.prototype.leave = function()
 {
-    this.client.addEvent('room:leave', callback);
+    this.client.addEvent('room:leave');
+    this.stop();
 };
 
 /**
@@ -253,8 +256,6 @@ RoomRepository.prototype.onPlayerReady = function(e)
  */
 RoomRepository.prototype.onGameStart = function(e)
 {
-    var data = e.detail;
-
     this.emit('room:game:start');
 };
 

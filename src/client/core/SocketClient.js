@@ -14,12 +14,12 @@ function SocketClient()
 
     this.id         = null;
     this.connected  = false;
-    //this.pingLogger = new PingLogger(this.sendPing, 1000);
+    this.pingLogger = new PingLogger(this.sendPing, 1000);
 
     this.socket.onopen  = this.onSocket;
     this.socket.onerror = this.onError;
 
-    //this.on('pong', this.pingLogger.pong);
+    this.on('pong', this.pingLogger.pong);
     this.on('open', this.onOpen);
 }
 
@@ -38,7 +38,7 @@ SocketClient.prototype.onSocket = function(e)
     this.connected = true;
 
     this.start();
-    //this.pingLogger.start();
+    this.pingLogger.start();
 
     this.emit('connected');
 };
@@ -65,7 +65,7 @@ SocketClient.prototype.onClose = function(e)
     this.connected = false;
     this.id        = null;
 
-    //this.pingLogger.stop();
+    this.pingLogger.stop();
 
     this.emit('disconnected');
 

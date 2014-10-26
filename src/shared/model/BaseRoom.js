@@ -7,7 +7,6 @@ function BaseRoom(name)
 
     this.name    = name;
     this.players = new Collection([], 'id', true);
-    this.warmup  = null;
 
     this.closeGame = this.closeGame.bind(this);
 }
@@ -21,13 +20,6 @@ BaseRoom.prototype.constructor = BaseRoom;
  * @type {Number}
  */
 BaseRoom.prototype.minPlayer = 1;
-
-/**
- * Warmup time
- *
- * @type {Number}
- */
-BaseRoom.prototype.warmupTime = 5000;
 
 /**
  * Max length for name
@@ -115,11 +107,11 @@ BaseRoom.prototype.closeGame = function()
 
         this.emit('game:end', {room: this});
 
-        /*this.players = this.players.filter(function () { return this.client; });
+        this.players = this.players.filter(function () { return this.client; });
 
         for (var i = this.players.items.length - 1; i >= 0; i--) {
             this.players.items[i].reset();
-        }*/
+        }
     }
 };
 
@@ -131,6 +123,7 @@ BaseRoom.prototype.closeGame = function()
 BaseRoom.prototype.serialize = function(full)
 {
     full = typeof(full) === 'undefined' || full;
+
     return {
         name: this.name,
         players: full ? this.players.map(function () { return this.serialize(); }).items : this.players.count(),

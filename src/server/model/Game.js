@@ -7,10 +7,10 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
-    this.world   = new World(this.size);
-    this.deaths  = new Collection([], 'id');
-    this.clients = this.room.clients;
-    this.client  = this.room.client;
+    this.world      = new World(this.size);
+    this.deaths     = new Collection([], 'id');
+    this.controller = new GameController(this);
+    this.id         = new Date().getTime();
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -76,6 +76,7 @@ Game.prototype.update = function(step)
 Game.prototype.removeAvatar = function(avatar)
 {
     BaseGame.prototype.removeAvatar.call(this, avatar);
+    this.emit('player:leave', {player: avatar.player});
     this.checkRoundEnd();
 };
 
@@ -266,4 +267,10 @@ Game.prototype.end = function()
     BaseGame.prototype.end.call(this);
 
     this.world.clear();
+
+    delete this.world;
+    delete this.avatars;
+    delete this.deaths;
+    delete this.bonusManager;
+    delete this.controller;
 };

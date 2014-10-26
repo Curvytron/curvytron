@@ -5,10 +5,11 @@
  * @param {Object} $routeParams
  * @param {Object} $location
  * @param {SocketClient} SocketClient
+ * @param {RoomRepository} repository
  * @param {Profuile} profile
  * @param {Chat} chat
  */
-function RoomController($scope, $routeParams, $location, client, profile, chat)
+function RoomController($scope, $routeParams, $location, client, repository, profile, chat)
 {
     this.$scope         = $scope;
     this.$location      = $location;
@@ -17,7 +18,7 @@ function RoomController($scope, $routeParams, $location, client, profile, chat)
     this.chat           = chat;
     this.hasTouch       = typeof(window.ontouchstart) !== 'undefined';
     this.name           = decodeURIComponent($routeParams.name);
-    this.repository     = new RoomRepository(this.client);
+    this.repository     = repository;
     this.controlSynchro = false;
 
     // Binding:
@@ -47,6 +48,8 @@ function RoomController($scope, $routeParams, $location, client, profile, chat)
     this.$scope.nameMaxLength       = Player.prototype.maxLength;
     this.$scope.colorMaxLength      = Player.prototype.colorMaxLength;
     this.$scope.curvytron.bodyClass = null;
+
+    this.repository.start();
 
     if (!this.profile.isComplete()) {
         this.profile.on('close', this.joinRoom);
@@ -83,7 +86,6 @@ RoomController.prototype.joinRoom = function()
     }
 
     this.profile.off('close', this.joinRoom);
-    this.repository.off('synced', this.joinRoom);
 
     this.repository.join(this.name, this.onJoined);
 };
@@ -122,6 +124,7 @@ RoomController.prototype.leaveRoom = function()
 {
     if (this.room && this.$location.path() !== this.room.gameUrl) {
         this.repository.leave();
+        this.chat.clear();
     }
 
     this.detachEvents();

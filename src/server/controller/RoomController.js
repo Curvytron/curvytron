@@ -17,9 +17,8 @@ function RoomController(room)
     this.onPlayerLeave = this.onPlayerLeave.bind(this);
     this.onGame        = this.onGame.bind(this);
     this.onGameEnd     = this.onGameEnd.bind(this);
-
-    /*this.endGame       = this.endGame.bind(this);
-    this.onPlayerLeave = this.onPlayerLeave.bind(this);*/
+    this.loadRoom      = this.loadRoom.bind(this);
+    this.unloadRoom    = this.unloadRoom.bind(this);
 
     this.callbacks = {
         onTalk: function (data) { controller.onTalk(this, data.data, data.callback); },
@@ -31,14 +30,34 @@ function RoomController(room)
         onLeave: function () { controller.onLeave(this); }
     };
 
-    this.room.on('player:join', this.onPlayerJoin);
-    this.room.on('player:leave', this.onPlayerLeave);
-    this.room.on('game:new', this.onGame);
-    this.room.on('game:end', this.onGameEnd);
+    this.loadRoom();
 }
 
 RoomController.prototype = Object.create(EventEmitter.prototype);
 RoomController.prototype.constructor = RoomController;
+
+/**
+ * Load room
+ */
+RoomController.prototype.loadRoom = function()
+{
+    this.room.on('close', this.unloadRoom);
+    this.room.on('player:join', this.onPlayerJoin);
+    this.room.on('player:leave', this.onPlayerLeave);
+    this.room.on('game:new', this.onGame);
+    this.room.on('game:end', this.onGameEnd);
+};
+
+/**
+ * Load room
+ */
+RoomController.prototype.unloadRoom = function()
+{
+    this.room.removeListener('player:join', this.onPlayerJoin);
+    this.room.removeListener('player:leave', this.onPlayerLeave);
+    this.room.removeListener('game:new', this.onGame);
+    this.room.removeListener('game:end', this.onGameEnd);
+};
 
 /**
  * Attach events
@@ -47,7 +66,7 @@ RoomController.prototype.constructor = RoomController;
  */
 RoomController.prototype.attach = function(client)
 {
-    if (this.socketGroup.clients.add(client)) {
+    if (this.clients.add(client)) {
         this.attachEvents(client);
         this.onClientAdd(client);
     }
@@ -60,7 +79,7 @@ RoomController.prototype.attach = function(client)
  */
 RoomController.prototype.detach = function(client)
 {
-    if (this.socketGroup.clients.remove(client)) {
+    if (this.clients.remove(client)) {
         this.detachEvents(client);
         this.onClientRemove(client);
     }
@@ -111,12 +130,12 @@ RoomController.prototype.onClientAdd = function(client)
 
     client.players.clear();
 
-    /*if (this.room.game) {
-        this.detach(client);
-        this.gameController.attach(client);
-        client.on('room:talk', this.callbacks.onTalk);
-        client.addEvent('room:game:start', {room: room.name});
-    }*/
+    if (this.room.game) {
+        /*this.detach(client);
+        client.on('room:talk', this.callbacks.onTalk);*/
+        this.room.game.controller.attach(client);
+        this.socketGroup.addEvent('room:game:start');
+    }
 };
 
 /**
@@ -130,15 +149,11 @@ RoomController.prototype.onClientRemove = function(client)
         this.room.removePlayer(client.players.items[i]);
     }
 
+    client.players.clear();
+
     if (this.clients.isEmpty()) {
         this.room.close();
     }
-
-    /*if (this.room.game) {
-        this.gameController.detach(client);
-    }*/
-
-    client.players.clear();
 };
 
 // Events:
@@ -274,7 +289,7 @@ RoomController.prototype.onReady = function(client, data, callback)
         this.socketGroup.addEvent('player:ready', { player: player.id, ready: player.ready });
 
         if (this.room.isReady()) {
-            this.room.startGame();
+            this.room.newGame();
         }
     }
 };
@@ -306,11 +321,8 @@ RoomController.prototype.onPlayerLeave = function(data)
  */
 RoomController.prototype.onGame = function()
 {
-    //this.emit('game:new', {game: game});
-
     this.socketGroup.addEvent('room:game:start');
 
-    //this.gameController.addGame(game);
     //this.game.on('end', this.endGame);
 };
 

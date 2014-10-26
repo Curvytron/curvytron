@@ -3,21 +3,21 @@
  *
  * @param {Object} $scope
  * @param {Object} $routeParams
- * @param {RoomRepository} repository
  * @param {SocketClient} client
+ * @param {RoomRepository} repository
  * @param {Profile} profile
  * @param {Chat} chat
  */
-function GameController($scope, $routeParams, $location, repository, client, profile, chat)
+function GameController($scope, $routeParams, $location, client, repository, profile, chat)
 {
     this.$scope     = $scope;
     this.$location  = $location;
-    this.repository = repository;
     this.client     = client;
+    this.repository = repository;
     this.profile    = profile;
     this.chat       = chat;
-    this.game       = null;
     this.room       = null;
+    this.game       = null;
 
     // Binding
     this.onMove        = this.onMove.bind(this);
@@ -53,10 +53,17 @@ function GameController($scope, $routeParams, $location, repository, client, pro
     this.$scope.roundWinner = null;
     this.$scope.gameWinner  = null;
 
+    this.repository.start();
     this.chat.setScope(this.$scope);
     this.initSound();
 
-    this.loadGame(decodeURIComponent($routeParams.name));
+    var name = decodeURIComponent($routeParams.name);
+
+    if (!this.repository.room || this.repository.room.name !== name) {
+        this.$location.path('/room/' + encodeURIComponent(name));
+    } else {
+        this.loadGame(this.repository.room);
+    }
 }
 
 /**
@@ -129,35 +136,28 @@ GameController.prototype.detachSocketEvents = function()
  *
  * @return {Array}
  */
-GameController.prototype.loadGame = function(name)
+GameController.prototype.loadGame = function(room)
 {
-    var room = this.repository.get(name),
-        avatars;
+    this.room = room;
+    this.game = room.newGame();
 
-    if (room) {
-        this.room = room;
-        this.game = room.newGame();
+    avatars = this.game.avatars.filter(function () { return this.local; });
 
-        avatars = this.game.avatars.filter(function () { return this.local; });
-
-        for (var i = avatars.items.length - 1; i >= 0; i--) {
-            avatars.items[i].input.on('move', this.onMove);
-        }
-
-        this.game.setSpectate(avatars.isEmpty());
-        this.game.fps.setElement(document.getElementById('fps'));
-        this.client.pingLogger.setElement(document.getElementById('ping'));
-
-        // Hydrate scope:
-        this.$scope.curvytron.bodyClass = 'game-mode';
-        this.$scope.game = this.game;
-
-        this.client.addEvent('loaded');
-
-        setTimeout(this.chat.scrollDown, 0);
-    } else {
-        this.goHome();
+    for (var i = avatars.items.length - 1; i >= 0; i--) {
+        avatars.items[i].input.on('move', this.onMove);
     }
+
+    this.game.setSpectate(avatars.isEmpty());
+    this.game.fps.setElement(document.getElementById('fps'));
+    this.client.pingLogger.setElement(document.getElementById('ping'));
+
+    // Hydrate scope:
+    this.$scope.curvytron.bodyClass = 'game-mode';
+    this.$scope.game = this.game;
+
+    this.client.addEvent('loaded');
+
+    setTimeout(this.chat.scrollDown, 0);
 };
 
 /**
@@ -412,7 +412,6 @@ GameController.prototype.leaveGame = function()
 {
     if (this.room && this.$location.path() !== this.room.url) {
         this.repository.leave();
-        this.repository.refresh();
     }
 
     this.close();
@@ -434,9 +433,8 @@ GameController.prototype.close = function()
         }
 
         this.room.closeGame();
-        this.game = null;
 
-        this.repository.start();
+        delete this.game;
     }
 };
 
@@ -457,14 +455,6 @@ GameController.prototype.toggleSound = function()
 
     createjs.Sound.setVolume(this.$scope.sound ? this.volume : 0);
     this.profile.setSound(this.$scope.sound);
-};
-
-/**
- * Go back to the homepage
- */
-GameController.prototype.goHome = function()
-{
-    this.$location.path('/');
 };
 
 /**

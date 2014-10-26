@@ -84,9 +84,8 @@ RoomsController.prototype.onCreateRoom = function(result)
 {
     if (result.success) {
         this.$scope.name = null;
-        this.joinRoom(
-            this.repository.createRoom(result.room)
-        );
+        this.joinRoom(this.repository.createRoom(result.room));
+        this.applyScope();
     } else {
         console.error('Could not create room %s', this.$scope.name);
     }
@@ -98,7 +97,6 @@ RoomsController.prototype.onCreateRoom = function(result)
 RoomsController.prototype.joinRoom = function(room)
 {
     this.$location.path(room.url);
-    this.applyScope();
 };
 
 /**

@@ -1,11 +1,13 @@
 /**
  * Game Controller
  */
-function GameController()
+function GameController(game)
 {
     var controller = this;
 
-    this.games = new Collection([], 'name');
+    this.game        = game;
+    this.clients     = new Collection();
+    this.socketGroup = new SocketGroup(this.clients);
 
     this.onDie         = this.onDie.bind(this);
     this.onPoint       = this.onPoint.bind(this);
@@ -16,6 +18,7 @@ function GameController()
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
     this.onRoundWinner = this.onRoundWinner.bind(this);
+    this.onPlayerLeave = this.onPlayerLeave.bind(this);
     this.onClear       = this.onClear.bind(this);
     this.onEnd         = this.onEnd.bind(this);
 
@@ -23,27 +26,26 @@ function GameController()
         onLoaded: function () { controller.onLoaded(this); },
         onMove: function (data) { controller.onMove(this, data); }
     };
+
+    this.loadGame();
 }
 
 /**
- * Add game
- *
- * @param {Game} game
+ * Load game
  */
-GameController.prototype.addGame = function(game)
+GameController.prototype.loadGame = function()
 {
-    if (this.games.add(game)) {
-        game.on('end', this.onEnd);
-        game.on('clear', this.onClear);
-        game.on('round:new', this.onRoundNew);
-        game.on('round:end', this.onRoundEnd);
-        game.on('round:winner', this.onRoundWinner);
-        game.bonusManager.on('bonus:pop', this.onBonusPop);
-        game.bonusManager.on('bonus:clear', this.onBonusClear);
+    this.game.on('end', this.onEnd);
+    this.game.on('clear', this.onClear);
+    this.game.on('player:leave', this.onPlayerLeave);
+    this.game.on('round:new', this.onRoundNew);
+    this.game.on('round:end', this.onRoundEnd);
+    this.game.on('round:winner', this.onRoundWinner);
+    this.game.bonusManager.on('bonus:pop', this.onBonusPop);
+    this.game.bonusManager.on('bonus:clear', this.onBonusClear);
 
-        for (var i = game.clients.items.length - 1; i >= 0; i--) {
-            this.attach(game.clients.items[i]);
-        }
+    for (var i = this.game.room.controller.clients.items.length - 1; i >= 0; i--) {
+        this.attach(this.game.room.controller.clients.items[i]);
     }
 };
 
@@ -52,19 +54,17 @@ GameController.prototype.addGame = function(game)
  *
  * @param {Game} game
  */
-GameController.prototype.removeGame = function(game)
+GameController.prototype.unloadGame = function()
 {
-    if (this.games.remove(game)) {
-        game.removeListener('end', this.onEnd);
-        game.removeListener('round:new', this.onRoundNew);
-        game.removeListener('round:end', this.onRoundEnd);
-        game.removeListener('round:winner', this.onRoundWinner);
-        game.bonusManager.removeListener('bonus:pop', this.onBonusPop);
-        game.bonusManager.removeListener('bonus:clear', this.onBonusClear);
+    this.game.removeListener('end', this.onEnd);
+    this.game.removeListener('round:new', this.onRoundNew);
+    this.game.removeListener('round:end', this.onRoundEnd);
+    this.game.removeListener('round:winner', this.onRoundWinner);
+    this.game.bonusManager.removeListener('bonus:pop', this.onBonusPop);
+    this.game.bonusManager.removeListener('bonus:clear', this.onBonusClear);
 
-        for (var i = game.clients.items.length - 1; i >= 0; i--) {
-            this.detach(game.clients.items[i]);
-        }
+    for (var i = this.clients.items.length - 1; i >= 0; i--) {
+        this.detach(this.clients.items[i]);
     }
 };
 
@@ -75,7 +75,9 @@ GameController.prototype.removeGame = function(game)
  */
 GameController.prototype.attach = function(client)
 {
-    this.attachEvents(client);
+    if (this.clients.add(client)) {
+        this.attachEvents(client);
+    }
 };
 
 /**
@@ -87,15 +89,19 @@ GameController.prototype.detach = function(client)
 {
     this.detachEvents(client);
 
-    var avatar;
-
-    if (client.room.game) {
+    if (this.clients.remove(client)) {
         for (var i = client.players.items.length - 1; i >= 0; i--) {
-            avatar = client.players.items[i].avatar;
-            client.room.game.client.addEvent('game:leave', {avatar: avatar.id});
-            client.room.game.removeAvatar(avatar);
+            this.game.removeAvatar(client.players.items[i].avatar);
         }
     }
+};
+
+/**
+ * On player leave
+ */
+GameController.prototype.onPlayerLeave = function(data)
+{
+    this.socketGroup.addEvent('game:leave', {avatar: data.player.id});
 };
 
 /**
@@ -105,16 +111,16 @@ GameController.prototype.detach = function(client)
  */
 GameController.prototype.attachEvents = function(client)
 {
-    var avatar, i;
+    var avatar;
 
     client.on('loaded', this.callbacks.onLoaded);
 
-    if (client.players.items.length) {
+    if (!client.players.isEmpty()) {
         client.on('player:move', this.callbacks.onMove);
     }
 
-    for (i = client.players.items.length - 1; i >= 0; i--) {
-        avatar = client.players.items[i].avatar;
+    for (var i = client.players.items.length - 1; i >= 0; i--) {
+        avatar = client.players.items[i].getAvatar();
 
         avatar.on('die', this.onDie);
         avatar.on('point', this.onPoint);
@@ -134,12 +140,12 @@ GameController.prototype.detachEvents = function(client)
 
     client.removeListener('loaded', this.callbacks.onLoaded);
 
-    if (client.players.items.length) {
+    if (!client.players.isEmpty()) {
         client.removeListener('player:move', this.callbacks.onMove);
     }
 
     for (var i = client.players.items.length - 1; i >= 0; i--) {
-        avatar = client.players.items[i].avatar;
+        avatar = client.players.items[i].getAvatar();
 
         avatar.removeListener('die', this.onDie);
         avatar.removeListener('point', this.onPoint);
@@ -163,12 +169,11 @@ GameController.prototype.attachSpectator = function(client)
             printing: 'printing',
             score: 'score'
         },
-        game = client.room.game,
         events = [['spectate']],
         avatar, i;
 
-    for (i = game.avatars.items.length - 1; i >= 0; i--) {
-        avatar = game.avatars.items[i];
+    for (i = this.game.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.game.avatars.items[i];
 
         for (var property in properties) {
             if (properties.hasOwnProperty(property)) {
@@ -181,8 +186,8 @@ GameController.prototype.attachSpectator = function(client)
         }
     }
 
-    for (i = game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
-        events.push(['bonus:pop', game.bonusManager.bonuses.items[i].serialize()]);
+    for (i = this.game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
+        events.push(['bonus:pop', this.game.bonusManager.bonuses.items[i].serialize()]);
     }
 
     client.addEvents(events);
@@ -195,19 +200,17 @@ GameController.prototype.attachSpectator = function(client)
  */
 GameController.prototype.onLoaded = function(client)
 {
-    var game = client.room.game,
-        avatar;
+    var avatar;
 
-    if (game.started) {
+    if (this.game.started) {
         this.attachSpectator(client);
     } else {
         for (var i = client.players.items.length - 1; i >= 0; i--) {
-            avatar = client.players.items[i].avatar;
-            avatar.ready = true;
+            client.players.items[i].getAvatar().ready = true;
         }
 
-        if (game.isReady()) {
-            game.newRound();
+        if (this.game.isReady()) {
+            this.game.newRound();
         }
     }
 };
@@ -234,11 +237,7 @@ GameController.prototype.onMove = function(client, data)
  */
 GameController.prototype.onPoint = function(data)
 {
-    var avatar = data.avatar,
-        game = avatar.player.client.room.game,
-        point = data.point;
-
-    game.client.addEvent('point', {avatar: avatar.id, point: point});
+    this.socketGroup.addEvent('point', {avatar: data.avatar.id, point: data.point});
 };
 
 /**
@@ -248,10 +247,7 @@ GameController.prototype.onPoint = function(data)
  */
 GameController.prototype.onDie = function(data)
 {
-    var avatar = data.avatar,
-        game = avatar.player.client.room.game;
-
-    game.client.addEvent('die', {avatar: avatar.id, angle: avatar.angle});
+    this.socketGroup.addEvent('die', {avatar: data.avatar.id, angle: data.avatar.angle});
 };
 
 /**
@@ -261,9 +257,7 @@ GameController.prototype.onDie = function(data)
  */
 GameController.prototype.onBonusPop = function(data)
 {
-    var game = data.game, bonus = data.bonus;
-
-    game.client.addEvent('bonus:pop', bonus.serialize());
+    this.socketGroup.addEvent('bonus:pop', data.bonus.serialize());
 };
 
 /**
@@ -273,9 +267,7 @@ GameController.prototype.onBonusPop = function(data)
  */
 GameController.prototype.onBonusClear = function(data)
 {
-    var game = data.game, bonus = data.bonus;
-
-    game.client.addEvent('bonus:clear', {bonus: bonus.id});
+    this.socketGroup.addEvent('bonus:clear', {bonus: data.bonus.id});
 };
 
 /**
@@ -285,13 +277,9 @@ GameController.prototype.onBonusClear = function(data)
  */
 GameController.prototype.onProperty = function(data)
 {
-    var game = data.avatar.player.client.room.game;
+    if (data.property === 'angle' && this.game.frame && data.avatar.alive) { return; }
 
-    if (data.property === 'angle' && game.frame && data.avatar.alive) {
-        return;
-    }
-
-    game.client.addEvent('property', {avatar: data.avatar.id, property: data.property, value: data.value});
+    this.socketGroup.addEvent('property', {avatar: data.avatar.id, property: data.property, value: data.value});
 };
 
 /**
@@ -301,9 +289,7 @@ GameController.prototype.onProperty = function(data)
  */
 GameController.prototype.onBonusStack = function(data)
 {
-    var game = data.avatar.player.client.room.game;
-
-    game.client.addEvent('bonus:stack', {avatar: data.avatar.id, method: data.method, bonus: data.bonus.serialize()});
+    this.socketGroup.addEvent('bonus:stack', {avatar: data.avatar.id, method: data.method, bonus: data.bonus.serialize()});
 };
 
 // Game events:
@@ -315,7 +301,7 @@ GameController.prototype.onBonusStack = function(data)
  */
 GameController.prototype.onRoundNew = function(data)
 {
-    data.game.client.addEvent('round:new');
+    this.socketGroup.addEvent('round:new');
 };
 
 /**
@@ -325,7 +311,7 @@ GameController.prototype.onRoundNew = function(data)
  */
 GameController.prototype.onRoundEnd = function(data)
 {
-    data.game.client.addEvent('round:end');
+    this.socketGroup.addEvent('round:end');
 };
 
 /**
@@ -335,7 +321,7 @@ GameController.prototype.onRoundEnd = function(data)
  */
 GameController.prototype.onRoundWinner = function(data)
 {
-    data.game.client.addEvent('round:winner', {winner: data.winner.id});
+    this.socketGroup.addEvent('round:winner', {winner: data.winner.id});
 };
 
 /**
@@ -345,7 +331,7 @@ GameController.prototype.onRoundWinner = function(data)
  */
 GameController.prototype.onClear = function(data)
 {
-    data.game.client.addEvent('clear');
+    this.socketGroup.addEvent('clear');
 };
 
 /**
@@ -355,5 +341,6 @@ GameController.prototype.onClear = function(data)
  */
 GameController.prototype.onEnd = function(data)
 {
-    data.game.client.addEvent('end');
+    this.socketGroup.addEvent('end');
+    this.unloadGame();
 };
