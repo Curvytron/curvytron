@@ -156,26 +156,6 @@ BaseRoomConfig.prototype.setBonus = function(bonus, value)
 };
 
 /**
- * Get available bonuses
- *
- * @return {Array}
- */
-BaseRoomConfig.prototype.getAvailableBonuses = function()
-{
-    return this.bonusTypes;
-};
-
-/**
- * Get available bonuses
- *
- * @return {Array}
- */
-BaseRoomConfig.prototype.getSelectedBonuses = function()
-{
-    return this.bonuses;
-};
-
-/**
  * Get max score
  *
  * @return {Number}

@@ -99,9 +99,10 @@ Game.prototype.addPoint = function(data)
  */
 Game.prototype.isWon = function()
 {
-    if (this.getPresentAvatars().count() <= 1) {
-        return true;
-    }
+    var present = this.getPresentAvatars().count();
+
+    if (present <= 0) { return true; }
+    if (this.avatars.count() > 1 && present <= 1) { return true; }
 
     var maxScore = this.maxScore,
         players = this.avatars.filter(function () { return this.present && this.score >= maxScore; });
@@ -157,10 +158,16 @@ Game.prototype.isReady = function()
 Game.prototype.resolveScores = function()
 {
     if (this.end) {
-        var winner = this.avatars.match(function () { return this.alive; });
+        var winner;
+
+        if (this.avatars.count() === 1) {
+            winner = this.avatars.getFirst()
+        } else {
+            winner = this.avatars.match(function () { return this.alive; });
+        }
 
         if (winner) {
-            winner.addScore(this.avatars.count() - 1);
+            winner.addScore(Math.max(this.avatars.count() - 1, 1));
             this.emit('round:winner', {game: this, winner: winner});
         }
 

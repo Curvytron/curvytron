@@ -9,19 +9,42 @@ function RoomConfig(room)
 }
 
 RoomConfig.prototype = Object.create(BaseRoomConfig.prototype);
-RoomConfig.prototype.constructor = Room;
+RoomConfig.prototype.constructor = RoomConfig;
 
-RoomConfig.prototype.bonusTypes = [
-    BonusSelfSmall,
-    BonusSelfSlow,
-    BonusSelfFast,
-    BonusSelfMaster,
-    BonusEnemySlow,
-    BonusEnemyFast,
-    BonusEnemyBig,
-    BonusEnemyInverse,
-    BonusAllBorderless,
-    BonusAllColor,
-    BonusGameClear,
-    BonusEnemyStraightAngle
-];
+/**
+ * Bonus types
+ *
+ * @type {Array}
+ */
+RoomConfig.prototype.bonusTypes = {
+    BonusSelfSmall: BonusSelfSmall,
+    BonusSelfSlow: BonusSelfSlow,
+    BonusSelfFast: BonusSelfFast,
+    BonusSelfMaster: BonusSelfMaster,
+    BonusEnemySlow: BonusEnemySlow,
+    BonusEnemyFast: BonusEnemyFast,
+    BonusEnemyBig: BonusEnemyBig,
+    BonusEnemyInverse: BonusEnemyInverse,
+    BonusAllBorderless: BonusAllBorderless,
+    BonusAllColor: BonusAllColor,
+    BonusGameClear: BonusGameClear,
+    BonusEnemyStraightAngle: BonusEnemyStraightAngle
+};
+
+/**
+ * Get available bonuses
+ *
+ * @return {Array}
+ */
+RoomConfig.prototype.getBonuses = function()
+{
+    var bonuses = [];
+
+    for (var bonus in this.bonuses) {
+        if (this.bonuses[bonus]) {
+            bonuses.push(this.bonusTypes[bonus]);
+        }
+    }
+
+    return bonuses;
+};

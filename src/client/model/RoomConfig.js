@@ -9,7 +9,7 @@ function RoomConfig(room)
 }
 
 RoomConfig.prototype = Object.create(BaseRoomConfig.prototype);
-RoomConfig.prototype.constructor = Room;
+RoomConfig.prototype.constructor = RoomConfig;
 
 /**
  * Bonus classes
@@ -17,18 +17,18 @@ RoomConfig.prototype.constructor = Room;
  * @type {Object}
  */
 RoomConfig.prototype.bonusClasses = {
-    BonusSelfSmall: 'bonus-self-fast',
-    BonusSelfSlow: 'bonus-enemy-fast',
-    BonusSelfFast: 'bonus-self-slow',
-    BonusSelfMaster: 'bonus-enemy-slow',
-    BonusEnemySlow: 'bonus-enemy-big',
-    BonusEnemyFast: 'bonus-self-small',
-    BonusEnemyBig: 'bonus-enemy-inverse',
-    BonusEnemyInverse: 'bonus-self-master',
+    BonusSelfSmall: 'bonus-self-small',
+    BonusSelfSlow: 'bonus-self-slow',
+    BonusSelfFast: 'bonus-self-fast',
+    BonusSelfMaster: 'bonus-self-master',
+    BonusEnemySlow: 'bonus-enemy-slow',
+    BonusEnemyFast: 'bonus-enemy-fast',
+    BonusEnemyBig: 'bonus-enemy-big',
+    BonusEnemyInverse: 'bonus-enemy-inverse',
+    BonusEnemyStraightAngle: 'bonus-enemy-straight-angle',
     BonusAllBorderless: 'bonus-all-borderless',
     BonusAllColor:'bonus-all-color',
-    BonusGameClear: 'bonus-all-clear',
-    BonusEnemyStraightAngle: 'bonus-enemy-straight-angle'
+    BonusGameClear: 'bonus-all-clear'
 };
 
 /**
@@ -40,4 +40,23 @@ RoomConfig.prototype.variablesNames = {
     speed: 'Speed',
     curving: 'Curvig',
     bonusRate: 'Bonus rate'
+};
+
+
+/**
+ * Get available bonuses
+ *
+ * @return {Array}
+ */
+RoomConfig.prototype.getBonuses = function()
+{
+    var bonuses = [];
+
+    for (var bonus in this.bonuses) {
+        if (this.bonuses[bonus]) {
+            bonuses.push(bonus);
+        }
+    }
+
+    return bonuses;
 };
