@@ -9,7 +9,6 @@ function BaseGame(room)
 
     this.room         = room;
     this.name         = this.room.name;
-    this.channel      = 'game:' + this.name;
     this.frame        = null;
     this.avatars      = this.room.players.map(function () { return this.getAvatar(); });
     this.size         = this.getSize(this.avatars.count());
@@ -33,9 +32,32 @@ function BaseGame(room)
 BaseGame.prototype = Object.create(EventEmitter.prototype);
 BaseGame.prototype.constructor = BaseGame;
 
+/**
+ * Loop frame rate
+ *
+ * @type {Number}
+ */
 BaseGame.prototype.framerate     = 1/60 * 1000;
+
+/**
+ * Map size factor per player
+ *
+ * @type {Number}
+ */
 BaseGame.prototype.perPlayerSize = 100;
+
+/**
+ * Time before round start
+ *
+ * @type {Number}
+ */
 BaseGame.prototype.warmupTime    = 3000;
+
+/**
+ * Time after round end
+ *
+ * @type {Number}
+ */
 BaseGame.prototype.warmdownTime  = 5000;
 
 /**
@@ -55,10 +77,6 @@ BaseGame.prototype.removeAvatar = function(avatar)
     if (this.avatars.exists(avatar)) {
         avatar.die();
         avatar.destroy();
-
-        if (this.getPresentAvatars().isEmpty()) {
-            this.end();
-        }
     }
 };
 
@@ -188,7 +206,7 @@ BaseGame.prototype.getSize = function(players)
  */
 BaseGame.prototype.getMaxScore = function(players)
 {
-    return (players-1) * 10;
+    return Math.max(1, (players-1) * 10);
 };
 
 /**

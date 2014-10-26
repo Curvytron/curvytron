@@ -3,19 +3,19 @@
  *
  * @param {Object} $scope
  * @param {Object} $location
- * @param {RoomRepository} repository
  * @param {SocketClient} client
  * @param {Profile} profile
  */
-function RoomsController($scope, $location, repository, client, profile)
+function RoomsController($scope, $location, client, profile)
 {
     this.$scope     = $scope;
     this.$location  = $location;
-    this.repository = repository;
     this.client     = client;
+    this.repository = new RoomsRepository(this.client);
 
     // Binding:
     this.createRoom   = this.createRoom.bind(this);
+    this.onCreateRoom = this.onCreateRoom.bind(this);
     this.joinRoom     = this.joinRoom.bind(this);
     this.quickPlay    = this.quickPlay.bind(this);
     this.detachEvents = this.detachEvents.bind(this);
@@ -41,12 +41,12 @@ function RoomsController($scope, $location, repository, client, profile)
  */
 RoomsController.prototype.attachEvents = function()
 {
-    this.repository.on('room:new', this.applyScope);
+    this.repository.on('room:open', this.applyScope);
     this.repository.on('room:close', this.applyScope);
-    this.repository.on('room:join', this.applyScope);
-    this.repository.on('room:leave', this.applyScope);
-    this.repository.on('room:game:start', this.applyScope);
-    this.repository.on('room:game:end', this.applyScope);
+    this.repository.on('room:players', this.applyScope);
+    this.repository.on('room:game', this.applyScope);
+
+    this.repository.start();
 };
 
 /**
@@ -54,12 +54,12 @@ RoomsController.prototype.attachEvents = function()
  */
 RoomsController.prototype.detachEvents = function()
 {
-    this.repository.off('room:new', this.applyScope);
+    this.repository.stop();
+
+    this.repository.off('room:open', this.applyScope);
     this.repository.off('room:close', this.applyScope);
-    this.repository.off('room:join', this.applyScope);
-    this.repository.off('room:leave', this.applyScope);
-    this.repository.off('room:game:start', this.applyScope);
-    this.repository.off('room:game:end', this.applyScope);
+    this.repository.off('room:players', this.applyScope);
+    this.repository.off('room:game', this.applyScope);
 };
 
 /**
@@ -71,17 +71,23 @@ RoomsController.prototype.createRoom = function(e)
         var $scope = this.$scope,
             controller = this;
 
-        this.repository.create(
-            this.$scope.roomName,
-            function (result) {
-                if (result.success) {
-                    $scope.name = null;
-                    controller.joinRoom(new Room(result.room));
-                } else {
-                    console.error('Could not create room %s', $scope.name);
-                }
-            }
-        );
+        this.repository.create(this.$scope.roomName, this.onCreateRoom);
+    }
+};
+
+/**
+ * On create Room
+ *
+ * @param {Object} result
+ */
+RoomsController.prototype.onCreateRoom = function(result)
+{
+    if (result.success) {
+        this.$scope.name = null;
+        this.joinRoom(this.repository.createRoom(result.room));
+        this.applyScope();
+    } else {
+        console.error('Could not create room %s', this.$scope.name);
     }
 };
 
@@ -98,7 +104,7 @@ RoomsController.prototype.joinRoom = function(room)
  */
 RoomsController.prototype.quickPlay = function()
 {
-    var room = this.repository.rooms.filter(function () { return !this.inGame; }).getRandomItem();
+    var room = this.repository.rooms.filter(function () { return !this.game; }).getRandomItem();
 
     if (room) {
         this.joinRoom(room);

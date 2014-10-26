@@ -7,9 +7,9 @@ function SocketClient(socket, interval)
 {
     BaseSocketClient.call(this, socket, interval);
 
-    this.players = new Collection([], 'id');
     this.id      = null;
     this.room    = null;
+    this.players = new Collection([], 'id');
 }
 
 SocketClient.prototype = Object.create(BaseSocketClient.prototype);

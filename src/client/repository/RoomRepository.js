@@ -7,23 +7,17 @@ function RoomRepository(client)
 {
     EventEmitter.call(this);
 
-    this.synced = false;
     this.client = client;
-    this.rooms  = new Collection([], 'name');
+    this.room   = null;
 
-    this.start           = this.start.bind(this);
-    this.onNewRoom       = this.onNewRoom.bind(this);
-    this.onCloseRoom     = this.onCloseRoom.bind(this);
-    this.onJoinRoom      = this.onJoinRoom.bind(this);
-    this.onLeaveRoom     = this.onLeaveRoom.bind(this);
-    this.onRoomGameStart = this.onRoomGameStart.bind(this);
-    this.onRoomGameEnd   = this.onRoomGameEnd.bind(this);
-    this.onPlayerReady   = this.onPlayerReady.bind(this);
-    this.onPlayerColor   = this.onPlayerColor.bind(this);
-    this.onPlayerName    = this.onPlayerName.bind(this);
-    this.setSynced       = this.setSynced.bind(this);
-
-    this.start();
+    this.start         = this.start.bind(this);
+    this.onJoinRoom    = this.onJoinRoom.bind(this);
+    this.onLeaveRoom   = this.onLeaveRoom.bind(this);
+    this.onGameStart   = this.onGameStart.bind(this);
+    this.onGameEnd     = this.onGameEnd.bind(this);
+    this.onPlayerReady = this.onPlayerReady.bind(this);
+    this.onPlayerColor = this.onPlayerColor.bind(this);
+    this.onPlayerName  = this.onPlayerName.bind(this);
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
@@ -34,16 +28,13 @@ RoomRepository.prototype.constructor = RoomRepository;
  */
 RoomRepository.prototype.attachEvents = function()
 {
-    this.client.on('room:new', this.onNewRoom);
-    this.client.on('room:close', this.onCloseRoom);
     this.client.on('room:join', this.onJoinRoom);
     this.client.on('room:leave', this.onLeaveRoom);
-    this.client.on('room:game:start', this.onRoomGameStart);
-    this.client.on('room:game:end', this.onRoomGameEnd);
-    this.client.on('room:player:ready', this.onPlayerReady);
-    this.client.on('room:player:color', this.onPlayerColor);
-    this.client.on('room:player:name', this.onPlayerName);
-    this.client.on('fetched', this.setSynced);
+    this.client.on('room:game:start', this.onGameStart);
+    this.client.on('room:game:end', this.onGameEnd);
+    this.client.on('player:ready', this.onPlayerReady);
+    this.client.on('player:color', this.onPlayerColor);
+    this.client.on('player:name', this.onPlayerName);
 };
 
 /**
@@ -51,58 +42,47 @@ RoomRepository.prototype.attachEvents = function()
  */
 RoomRepository.prototype.detachEvents = function()
 {
-    this.client.off('room:new', this.onNewRoom);
-    this.client.off('room:close', this.onCloseRoom);
     this.client.off('room:join', this.onJoinRoom);
     this.client.off('room:leave', this.onLeaveRoom);
-    this.client.off('room:game:start', this.onRoomGameStart);
-    this.client.off('room:game:end', this.onRoomGameEnd);
-    this.client.off('room:player:ready', this.onPlayerReady);
-    this.client.off('room:player:color', this.onPlayerColor);
-    this.client.off('room:player:name', this.onPlayerName);
-    this.client.off('fetched', this.setSynced);
+    this.client.off('room:game:start', this.onGameStart);
+    this.client.off('room:game:end', this.onGameEnd);
+    this.client.off('player:ready', this.onPlayerReady);
+    this.client.off('player:color', this.onPlayerColor);
+    this.client.off('player:name', this.onPlayerName);
 };
 
 /**
- * Get all
- *
- * @return {Array}
- */
-RoomRepository.prototype.all = function()
-{
-    return this.rooms;
-};
-
-/**
- * Get all
- *
- * @return {Array}
- */
-RoomRepository.prototype.get = function(name)
-{
-    return this.rooms.getById(name);
-};
-
-/**
- * Create
+ * Join room
  *
  * @param {String} name
- * @param {Function} callback
  */
-RoomRepository.prototype.create = function(name, callback)
+RoomRepository.prototype.join = function(name, callback)
 {
-    this.client.addEvent('room:create', {name: name.substr(0, Room.prototype.maxLength)}, callback);
-};
+    var repository = this;
 
-/**
- * Join
- *
- * @param {String} room
- * @param {Function} callback
- */
-RoomRepository.prototype.join = function(room, callback)
-{
-    this.client.addEvent('room:join', {room: room}, callback);
+    if (this.room && this.room.name === name) {
+        return callback({success: true, room: repository.room});
+    }
+
+    this.client.addEvent('room:join', {name: name}, function (result) {
+        if (result.success) {
+            repository.room = new Room(result.room.name);
+
+            for (var i = result.room.players.length - 1; i >= 0; i--) {
+                repository.room.addPlayer(new Player(
+                    result.room.players[i].id,
+                    result.room.players[i].client,
+                    result.room.players[i].name,
+                    result.room.players[i].color,
+                    result.room.players[i].ready
+                ));
+            }
+
+            callback({success: true, room: repository.room});
+        } else {
+            callback({success: false});
+        }
+    });
 };
 
 /**
@@ -113,7 +93,7 @@ RoomRepository.prototype.join = function(room, callback)
  */
 RoomRepository.prototype.addPlayer = function(name, color, callback)
 {
-    this.client.addEvent('room:player:add', {
+    this.client.addEvent('player:add', {
         name: name.substr(0, Player.prototype.maxLength),
         color: color ? color.substr(0, Player.prototype.colorMaxLength) : null
     }, callback);
@@ -127,7 +107,7 @@ RoomRepository.prototype.addPlayer = function(name, color, callback)
  */
 RoomRepository.prototype.removePlayer = function(player, callback)
 {
-    this.client.addEvent('room:player:remove', {player: player}, callback);
+    this.client.addEvent('player:remove', {player: player}, callback);
 };
 
 /**
@@ -135,9 +115,10 @@ RoomRepository.prototype.removePlayer = function(player, callback)
  *
  * @param {Function} callback
  */
-RoomRepository.prototype.leave = function(callback)
+RoomRepository.prototype.leave = function()
 {
-    this.client.addEvent('room:leave', callback);
+    this.client.addEvent('room:leave');
+    this.stop();
 };
 
 /**
@@ -188,48 +169,6 @@ RoomRepository.prototype.setReady = function(player, callback)
 // EVENTS:
 
 /**
- * On new room
- *
- * @param {Event} e
- *
- * @return {Boolean}
- */
-RoomRepository.prototype.onNewRoom = function(e)
-{
-    var data = e.detail,
-        room = new Room(data.name);
-
-    room.inGame = data.game;
-
-    for (var i = data.players.length - 1; i >= 0; i--) {
-        room.addPlayer(new Player(data.players[i].id, data.players[i].client, data.players[i].name, data.players[i].color));
-    }
-
-    if(this.rooms.add(room)) {
-        this.emit('room:new', {room: room});
-    }
-};
-
-/**
- * On close room
- *
- * @param {Event} e
- *
- * @return {Boolean}
- */
-RoomRepository.prototype.onCloseRoom = function(e)
-{
-    var data = e.detail,
-        room = this.get(data.room);
-
-    if(room && this.rooms.remove(room)) {
-        data = {room: room};
-        this.emit('room:close', data);
-        this.emit('room:close:' + room.name, data);
-    }
-};
-
-/**
  * On join room
  *
  * @param {Event} e
@@ -239,13 +178,10 @@ RoomRepository.prototype.onCloseRoom = function(e)
 RoomRepository.prototype.onJoinRoom = function(e)
 {
     var data = e.detail,
-        room = this.rooms.getById(data.room),
         player = new Player(data.player.id, data.player.client, data.player.name, data.player.color);
 
-    if (room && room.addPlayer(player)) {
-        data = {room: room, player: player};
-        this.emit('room:join', data);
-        this.emit('room:join:' + room.name, data);
+    if (this.room.addPlayer(player)) {
+        this.emit('room:join', {player: player});
     }
 };
 
@@ -259,13 +195,10 @@ RoomRepository.prototype.onJoinRoom = function(e)
 RoomRepository.prototype.onLeaveRoom = function(e)
 {
     var data = e.detail,
-        room = this.rooms.getById(data.room),
-        player = room ? room.players.getById(data.player) : null;
+        player = this.room.players.getById(data.player);
 
-    if (room && player && room.removePlayer(player)) {
-        data = {room: room, player: player};
-        this.emit('room:leave', data);
-        this.emit('room:leave:' + room.name, data);
+    if (player && this.room.removePlayer(player)) {
+        this.emit('room:leave', {player: player});
     }
 };
 
@@ -277,12 +210,11 @@ RoomRepository.prototype.onLeaveRoom = function(e)
 RoomRepository.prototype.onPlayerColor = function(e)
 {
     var data = e.detail,
-        room = this.rooms.getById(data.room),
-        player = room ? room.players.getById(data.player) : null;
+        player = this.room.players.getById(data.player);
 
     if (player) {
         player.setColor(data.color);
-        this.emit('room:player:color:' + room.name, {room: room, player: player});
+        this.emit('player:color', {player: player});
     }
 };
 
@@ -294,12 +226,11 @@ RoomRepository.prototype.onPlayerColor = function(e)
 RoomRepository.prototype.onPlayerName = function(e)
 {
     var data = e.detail,
-        room = this.rooms.getById(data.room),
-        player = room ? room.players.getById(data.player) : null;
+        player = this.room.players.getById(data.player);
 
     if (player) {
         player.setName(data.name);
-        this.emit('room:player:name:' + room.name, {room: room, player: player});
+        this.emit('player:name', {player: player});
     }
 };
 
@@ -311,12 +242,11 @@ RoomRepository.prototype.onPlayerName = function(e)
 RoomRepository.prototype.onPlayerReady = function(e)
 {
     var data = e.detail,
-        room = this.rooms.getById(data.room),
-        player = room ? room.players.getById(data.player) : null;
+        player = this.room.players.getById(data.player);
 
     if (player) {
         player.toggleReady(data.ready);
-        this.emit('room:player:ready:' + room.name, {room: room, player: player});
+        this.emit('player:ready', {player: player});
     }
 };
 
@@ -325,18 +255,9 @@ RoomRepository.prototype.onPlayerReady = function(e)
  *
  * @param {Event} e
  */
-RoomRepository.prototype.onRoomGameStart = function(e)
+RoomRepository.prototype.onGameStart = function(e)
 {
-    var data = e.detail,
-        room = this.rooms.getById(data.room);
-
-    if (room) {
-        room.inGame = true;
-
-        data = {room: room};
-        this.emit('room:game:start', data);
-        this.emit('room:game:start:' + room.name, data);
-    }
+    this.emit('room:game:start');
 };
 
 /**
@@ -344,29 +265,11 @@ RoomRepository.prototype.onRoomGameStart = function(e)
  *
  * @param {Event} e
  */
-RoomRepository.prototype.onRoomGameEnd = function(e)
+RoomRepository.prototype.onGameEnd = function(e)
 {
-    var data = e.detail,
-        room = this.rooms.getById(data.room);
+    var data = e.detail;
 
-    if (room) {
-        room.inGame = false;
-
-        data = {room: room};
-        this.emit('room:game:end', data);
-        this.emit('room:game:end:' + room.name, data);
-    }
-};
-
-/**
- * Set synced
- */
-RoomRepository.prototype.setSynced = function()
-{
-    if (!this.synced) {
-        this.synced = true;
-        this.emit('synced');
-    }
+    this.emit('room:game:end');
 };
 
 /**
@@ -374,25 +277,10 @@ RoomRepository.prototype.setSynced = function()
  */
 RoomRepository.prototype.start = function()
 {
-    if (!this.synced) {
-        if (this.client.connected) {
-            this.attachEvents();
-            this.client.addEvent('room:fetch');
-        } else {
-            this.client.on('connected', this.start);
-        }
-    }
-};
-
-/**
- * Refresh room
- */
-RoomRepository.prototype.refresh = function()
-{
     if (this.client.connected) {
-        this.stop();
-        this.rooms.clear();
-        this.start();
+        this.attachEvents();
+    } else {
+        this.client.on('connected', this.start);
     }
 };
 
@@ -401,6 +289,6 @@ RoomRepository.prototype.refresh = function()
  */
 RoomRepository.prototype.stop = function()
 {
-    this.synced = false;
     this.detachEvents();
+    this.room = null;
 };

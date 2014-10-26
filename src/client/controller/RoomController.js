@@ -2,25 +2,23 @@
  * Room Controller
  *
  * @param {Object} $scope
- * @param {Object} $rootScope
  * @param {Object} $routeParams
  * @param {Object} $location
- * @param {RoomRepository} RoomRepository
  * @param {SocketClient} SocketClient
+ * @param {RoomRepository} repository
  * @param {Profuile} profile
  * @param {Chat} chat
  */
-function RoomController($scope, $rootScope, $routeParams, $location, repository, client, profile, chat)
+function RoomController($scope, $routeParams, $location, client, repository, profile, chat)
 {
     this.$scope         = $scope;
-    this.$rootScope     = $rootScope;
     this.$location      = $location;
-    this.repository     = repository;
     this.client         = client;
     this.profile        = profile;
     this.chat           = chat;
     this.hasTouch       = typeof(window.ontouchstart) !== 'undefined';
     this.name           = decodeURIComponent($routeParams.name);
+    this.repository     = repository;
     this.controlSynchro = false;
 
     // Binding:
@@ -51,13 +49,13 @@ function RoomController($scope, $rootScope, $routeParams, $location, repository,
     this.$scope.colorMaxLength      = Player.prototype.colorMaxLength;
     this.$scope.curvytron.bodyClass = null;
 
+    this.repository.start();
+
     if (!this.profile.isComplete()) {
         this.profile.on('close', this.joinRoom);
         this.$scope.openProfile();
-    } else if (this.repository.synced) {
-        this.joinRoom();
     } else {
-        this.repository.on('synced', this.joinRoom);
+        this.joinRoom();
     }
 }
 
@@ -83,8 +81,11 @@ RoomController.prototype.tips = [
  */
 RoomController.prototype.joinRoom = function()
 {
+    if (!this.client.connected) {
+        return this.client.on('connected', this.joinRoom);
+    }
+
     this.profile.off('close', this.joinRoom);
-    this.repository.off('synced', this.joinRoom);
 
     this.repository.join(this.name, this.onJoined);
 };
@@ -97,14 +98,14 @@ RoomController.prototype.joinRoom = function()
 RoomController.prototype.onJoined = function(result)
 {
     if (result.success) {
-        this.room = this.repository.get(result.room);
+        this.room = this.repository.room;
 
         this.$scope.room = this.room;
 
         this.chat.setScope(this.$scope);
-        this.attachEvents(this.room.name);
-        this.updateCurrentMessage();
+        this.attachEvents();
         this.addProfileUser();
+        this.updateCurrentMessage();
         this.addTip();
 
         setTimeout(this.chat.scrollDown, 0);
@@ -123,6 +124,7 @@ RoomController.prototype.leaveRoom = function()
 {
     if (this.room && this.$location.path() !== this.room.gameUrl) {
         this.repository.leave();
+        this.chat.clear();
     }
 
     this.detachEvents();
@@ -135,13 +137,13 @@ RoomController.prototype.leaveRoom = function()
  */
 RoomController.prototype.attachEvents = function(name)
 {
-    this.repository.on('room:close:' + name, this.goHome);
-    this.repository.on('room:join:' + name, this.onJoin);
-    this.repository.on('room:leave:' + name, this.applyScope);
-    this.repository.on('room:player:ready:' + name, this.applyScope);
-    this.repository.on('room:player:color:' + name, this.applyScope);
-    this.repository.on('room:player:name:' + name, this.applyScope);
-    this.repository.on('room:game:start:' + name, this.start);
+    this.repository.on('room:close', this.goHome);
+    this.repository.on('room:join', this.onJoin);
+    this.repository.on('room:leave', this.applyScope);
+    this.repository.on('player:ready', this.applyScope);
+    this.repository.on('player:color', this.applyScope);
+    this.repository.on('player:name', this.applyScope);
+    this.repository.on('room:game:start', this.start);
 
     for (var i = this.room.players.items.length - 1; i >= 0; i--) {
         this.room.players.items[i].on('control:change', this.onControlChange);
@@ -155,13 +157,13 @@ RoomController.prototype.attachEvents = function(name)
  */
 RoomController.prototype.detachEvents = function(name)
 {
-    this.repository.off('room:close:' + name, this.goHome);
-    this.repository.off('room:join:' + name, this.onJoin);
-    this.repository.off('room:leave:' + name, this.applyScope);
-    this.repository.off('room:player:ready:' + name, this.applyScope);
-    this.repository.off('room:player:color:' + name, this.applyScope);
-    this.repository.off('room:player:name:' + name, this.applyScope);
-    this.repository.off('room:game:start:' + name, this.start);
+    this.repository.off('room:close', this.goHome);
+    this.repository.off('room:join', this.onJoin);
+    this.repository.off('room:leave', this.applyScope);
+    this.repository.off('player:ready', this.applyScope);
+    this.repository.off('player:color', this.applyScope);
+    this.repository.off('player:name', this.applyScope);
+    this.repository.off('room:game:start', this.start);
 
     if (this.room) {
         for (var i = this.room.players.items.length - 1; i >= 0; i--) {
@@ -181,7 +183,7 @@ RoomController.prototype.goHome = function()
 /**
  * Add player
  */
-RoomController.prototype.addPlayer = function(name, color, callback)
+RoomController.prototype.addPlayer = function(name, color)
 {
     var $scope = this.$scope;
 
@@ -197,7 +199,7 @@ RoomController.prototype.addPlayer = function(name, color, callback)
                     $scope.username = null;
                     $scope.$apply();
                 } else {
-                    console.error('Could not add player %s', $scope.username);
+                    console.error('Could not add player %s', name);
                 }
             }
         );
@@ -329,7 +331,6 @@ RoomController.prototype.setReady = function(player)
  */
 RoomController.prototype.start = function(e)
 {
-    this.repository.stop();
     this.$location.path(this.room.gameUrl);
     this.applyScope();
 };
@@ -350,8 +351,6 @@ RoomController.prototype.updateCurrentMessage = function()
 {
     var profile = this.room.players.match(function (player) { return this.profile; }),
         player = this.room.players.match(function (player) { return this.local; });
-
-    console.log(profile, player);
 
     this.chat.setRoom(this.room);
     this.chat.setPlayer(profile ? profile : player);

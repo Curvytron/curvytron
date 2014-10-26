@@ -7,7 +7,8 @@ function BaseRoom(name)
 
     this.name    = name;
     this.players = new Collection([], 'id', true);
-    this.warmup  = null;
+
+    this.closeGame = this.closeGame.bind(this);
 }
 
 BaseRoom.prototype = Object.create(EventEmitter.prototype);
@@ -19,13 +20,6 @@ BaseRoom.prototype.constructor = BaseRoom;
  * @type {Number}
  */
 BaseRoom.prototype.minPlayer = 1;
-
-/**
- * Warmup time
- *
- * @type {Number}
- */
-BaseRoom.prototype.warmupTime = 5000;
 
 /**
  * Max length for name
@@ -93,6 +87,8 @@ BaseRoom.prototype.newGame = function()
 {
     if (!this.game) {
         this.game = new Game(this);
+
+        this.game.on('end', this.closeGame);
         this.emit('game:new', {room: this, game: this.game});
 
         return this.game;
@@ -106,11 +102,16 @@ BaseRoom.prototype.newGame = function()
  */
 BaseRoom.prototype.closeGame = function()
 {
-    this.game    = null;
-    this.players = this.players.filter(function () { return this.client; });
+    if (this.game) {
+        this.game = null;
 
-    for (var i = this.players.items.length - 1; i >= 0; i--) {
-        this.players.items[i].reset();
+        this.emit('game:end', {room: this});
+
+        this.players = this.players.filter(function () { return this.client; });
+
+        for (var i = this.players.items.length - 1; i >= 0; i--) {
+            this.players.items[i].reset();
+        }
     }
 };
 
@@ -119,11 +120,13 @@ BaseRoom.prototype.closeGame = function()
  *
  * @return {Object}
  */
-BaseRoom.prototype.serialize = function()
+BaseRoom.prototype.serialize = function(full)
 {
+    full = typeof(full) === 'undefined' || full;
+
     return {
         name: this.name,
-        players: this.players.map(function () { return this.serialize(); }).items,
+        players: full ? this.players.map(function () { return this.serialize(); }).items : this.players.count(),
         game: this.game ? true : false
     };
 };

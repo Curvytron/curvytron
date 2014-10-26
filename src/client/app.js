@@ -15,15 +15,15 @@ curvytronApp.controller(
 
 curvytronApp.controller(
     'RoomsController',
-    ['$scope', '$location', 'RoomRepository', 'SocketClient', RoomsController]
+    ['$scope', '$location', 'SocketClient', RoomsController]
 );
 curvytronApp.controller(
     'RoomController',
-    ['$scope', '$rootScope', '$routeParams', '$location', 'RoomRepository', 'SocketClient', 'Profile', 'Chat', RoomController]
+    ['$scope', '$routeParams', '$location', 'SocketClient', 'RoomRepository', 'Profile', 'Chat', RoomController]
 );
 curvytronApp.controller(
     'GameController',
-    ['$scope', '$routeParams', '$location', 'RoomRepository', 'SocketClient', 'Profile', 'Chat', GameController]
+    ['$scope', '$routeParams', '$location', 'SocketClient', 'RoomRepository', 'Profile', 'Chat', GameController]
 );
 
 curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
