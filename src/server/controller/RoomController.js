@@ -231,7 +231,7 @@ RoomController.prototype.onPlayerRemove = function(client, data, callback)
 RoomController.prototype.onTalk = function(client, data, callback)
 {
     var message = new Message(client.players.getById(data.player), data.content),
-        success = message.content.length;
+        success = message.content.length > 0;
 
     callback({success: success});
 

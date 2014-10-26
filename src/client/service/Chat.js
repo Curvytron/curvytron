@@ -42,7 +42,7 @@ Chat.prototype.detachEvents = function()
  */
 Chat.prototype.setPlayer = function(player)
 {
-    if (this.room && !this.currentMessage.player && player) {
+    if (this.room) {
         this.currentMessage.player = player;
     }
 };

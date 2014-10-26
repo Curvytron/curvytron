@@ -101,14 +101,13 @@ RoomController.prototype.joinRoom = function()
 RoomController.prototype.onJoined = function(result)
 {
     if (result.success) {
-        this.room = this.repository.room;
-
+        this.room        = this.repository.room;
         this.$scope.room = this.room;
 
         this.chat.setScope(this.$scope);
         this.attachEvents();
+        this.chat.setRoom(this.room);
         this.addProfileUser();
-        this.updateCurrentMessage();
         this.addTip();
 
         setTimeout(this.chat.scrollDown, 0);
@@ -355,7 +354,6 @@ RoomController.prototype.updateCurrentMessage = function()
     var profile = this.room.players.match(function (player) { return this.profile; }),
         player = this.room.players.match(function (player) { return this.local; });
 
-    this.chat.setRoom(this.room);
     this.chat.setPlayer(profile ? profile : player);
 };
 
