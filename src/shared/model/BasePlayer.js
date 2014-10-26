@@ -5,15 +5,15 @@
  * @param {String} name
  * @param {String} color
  */
-function BasePlayer(client, name, color)
+function BasePlayer(client, name, color, ready)
 {
     EventEmitter.call(this);
 
     this.client = client;
     this.name   = name;
     this.color  = typeof(color) !== 'undefined' ? color : this.getRandomColor();
+    this.ready  = typeof(ready) !== 'undefined' && ready;
     this.id     = null;
-    this.ready  = false;
     this.avatar = null;
 }
 
