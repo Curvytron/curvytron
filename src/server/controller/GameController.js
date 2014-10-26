@@ -90,9 +90,12 @@ GameController.prototype.detach = function(client)
     this.detachEvents(client);
 
     if (this.clients.remove(client)) {
+        console.log('client', client.id, client.players.items.length);
         for (var i = client.players.items.length - 1; i >= 0; i--) {
             this.game.removeAvatar(client.players.items[i].avatar);
         }
+    } else {
+        console.log('unable to remove client', client.id);
     }
 };
 
@@ -145,12 +148,14 @@ GameController.prototype.detachEvents = function(client)
     }
 
     for (var i = client.players.items.length - 1; i >= 0; i--) {
-        avatar = client.players.items[i].getAvatar();
+        avatar = client.players.items[i].avatar;
 
-        avatar.removeListener('die', this.onDie);
-        avatar.removeListener('point', this.onPoint);
-        avatar.removeListener('property', this.onProperty);
-        avatar.bonusStack.removeListener('change', this.onBonusStack);
+        if (avatar) {
+            avatar.removeListener('die', this.onDie);
+            avatar.removeListener('point', this.onPoint);
+            avatar.removeListener('property', this.onProperty);
+            avatar.bonusStack.removeListener('change', this.onBonusStack);
+        }
     }
 };
 

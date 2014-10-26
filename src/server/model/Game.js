@@ -99,6 +99,10 @@ Game.prototype.addPoint = function(data)
  */
 Game.prototype.isWon = function()
 {
+    if (this.getPresentAvatars().count() <= 1) {
+        return true;
+    }
+
     var maxScore = this.maxScore,
         players = this.avatars.filter(function () { return this.present && this.score >= maxScore; });
 

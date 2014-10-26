@@ -131,8 +131,6 @@ RoomController.prototype.onClientAdd = function(client)
     client.players.clear();
 
     if (this.room.game) {
-        /*this.detach(client);
-        client.on('room:talk', this.callbacks.onTalk);*/
         this.room.game.controller.attach(client);
         this.socketGroup.addEvent('room:game:start');
     }
@@ -145,6 +143,12 @@ RoomController.prototype.onClientAdd = function(client)
  */
 RoomController.prototype.onClientRemove = function(client)
 {
+    console.log('onClientRemove');
+
+    if (this.room.game) {
+        this.room.game.controller.detach(client);
+    }
+
     for (var i = client.players.items.length - 1; i >= 0; i--) {
         this.room.removePlayer(client.players.items[i]);
     }
