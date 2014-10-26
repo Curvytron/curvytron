@@ -38,7 +38,7 @@ RoomConfig.prototype.bonusClasses = {
  */
 RoomConfig.prototype.variablesNames = {
     speed: 'Speed',
-    curving: 'Curvig',
+    curving: 'Curving',
     bonusRate: 'Bonus rate'
 };
 
