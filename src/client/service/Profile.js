@@ -5,8 +5,9 @@ function Profile()
 {
     EventEmitter.call(this);
 
-    this.name     = 'Random';
-    this.color    = '#FF0000';
+    this.name     = null;
+    this.color    = null;
+    this.sound    = true;
     this.controls = [
         new PlayerControl(37, 'icon-left-dir'),
         new PlayerControl(39, 'icon-right-dir')
@@ -15,7 +16,10 @@ function Profile()
     // Binding
     this.onControlChange = this.onControlChange.bind(this);
 
+    var labels = ['Left', 'Right'];
+
     for (var i = this.controls.length - 1; i >= 0; i--) {
+        this.controls[i].label = labels[i];
         this.controls[i].on('change', this.onControlChange);
     }
 
@@ -43,6 +47,7 @@ Profile.prototype.serialize = function()
     return {
         name: this.name,
         color: this.color,
+        sound: this.sound,
         controls: this.getMapping()
     };
 };
@@ -55,17 +60,19 @@ Profile.prototype.serialize = function()
 Profile.prototype.unserialize = function(data)
 {
     if (typeof(data.name) !== 'undefined') {
-        this.name  = data.name;
+        this.setName(data.name);
     }
 
     if (typeof(data.color) !== 'undefined') {
-        this.color = data.color;
+        this.setColor(data.color);
+    }
+
+    if (typeof(data.sound) !== 'undefined') {
+        this.setSound(data.sound);
     }
 
     if (typeof(data.controls) !== 'undefined') {
-        for (var i = data.controls.length - 1; i >= 0; i--) {
-            this.controls[i].loadMapping(data.controls[i]);
-        }
+        this.setControls(data.controls);
     }
 };
 
@@ -74,7 +81,9 @@ Profile.prototype.unserialize = function(data)
  */
 Profile.prototype.persist = function()
 {
-    window.localStorage.setItem(this.localKey, JSON.stringify(this.serialize()));
+    if (this.name) {
+        window.localStorage.setItem(this.localKey, JSON.stringify(this.serialize()));
+    }
 };
 
 /**
@@ -122,12 +131,38 @@ Profile.prototype.setName = function(name)
 /**
  * Set color
  *
- * @param {Name} color
+ * @param {String} color
  */
 Profile.prototype.setColor = function(color)
 {
     if (this.color !== color) {
         this.color = color;
+        this.persist();
+    }
+};
+
+/**
+ * Set controls
+ *
+ * @param {Object} controls
+ */
+Profile.prototype.setControls = function(controls)
+{
+    for (var i = controls.length - 1; i >= 0; i--) {
+        this.controls[i].loadMapping(controls[i]);
+    }
+    this.persist();
+};
+
+/**
+ * Set sound
+ *
+ * @param {Boolean} sound
+ */
+Profile.prototype.setSound = function(sound)
+{
+    if (this.sound !== sound) {
+        this.sound = sound;
         this.persist();
     }
 };
@@ -142,4 +177,14 @@ Profile.prototype.onControlChange = function(e)
 {
     this.persist();
     this.emit('change');
+};
+
+/**
+ * Is profile complete?
+ *
+ * @return {Boolean}
+ */
+Profile.prototype.isComplete = function()
+{
+    return this.name && this.color ? true : false;
 };

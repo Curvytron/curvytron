@@ -1,7 +1,7 @@
 <section>
     <section id="game-wrapper">
         <aside id="game-infos">
-            <header><a href="/"><img src="images/logo.png" alt="Curvytron" id="logo" /> Curvytron</a></header>
+            <header><a href="/" class="logo"><img src="images/logo.png" alt="Curvytron" id="logo" /> Curvytron</a></header>
             <div class="maxScore"><i class="icon-trophy"></i><span>{{ game.maxScore }}</span></div>
             <h3 title="{{ game.name }}">{{ game.name }}</h3>
             <span id="sound" class="pull-right" ng-class="{ active: sound }" ng-click="toggleSound()">
@@ -10,6 +10,7 @@
             <ul id="game-players">
                 <li ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
+                    <span class="local-avatar" style="border-left-color: {{ avatar.player.color }};" ng-if="avatar.local"></span>
                     <span class="round-points pull-right" ng-if="avatar.roundScore && (!avatar.alive || !game.inRound)">+{{ avatar.roundScore }}</span>
                     {{ avatar.name }}
                     <span class="score">{{ avatar.score }}</span>
@@ -39,25 +40,38 @@
             </div>
         </aside>
         <div id="col-right">
-            <section class="countdown" ng-hide="countFinish">
-                <div class="count">
-                    <span ng-if="game.sortAvatars().getFirst().score >= game.maxScore">Tie break</span>
-                    {{ count }}
-                </div>
-            </section>
-            <div class="countdown-anim" ng-hide="countFinish"></div>
+            <div ng-hide="countFinish">
+                <p class="tie-break" ng-if="game.sortAvatars().getFirst().score >= game.maxScore">
+                    Tie break
+                </p>
+                <section class="countdown">
+                    <div class="count">
+                        {{ count }}
+                    </div>
+                </section>
+                <div class="countdown-anim"></div>
+            </div>
             <section id="end">
                 <section id="round-view">
-                    <i class="icon-trophy"></i>
-                    <p><span class="strong" style="color: {{ roundWinner.player.color }}">{{ roundWinner.name }}</span> won the round ! </p>
+                    <p class="victory">
+                        <i class="icon-trophy"></i>
+                        <span class="strong" style="color: {{ roundWinner.player.color }}">
+                            {{ roundWinner.name }}
+                        </span>
+                        won the round !
+                    </p>
                 </section>
                 <section id="game-view">
-                    <i class="icon-trophy"></i>
-                    <p ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-show="$first">
-                        <span class="strong" style="color: {{ avatar.player.color }}">{{ avatar.name }}</span> won the game !
+                    <p class="victory">
+                        <i class="icon-trophy"></i>
+                        <span class="strong" style="color: {{ gameWinner.color }}">
+                            {{ gameWinner.name }}
+                        </span>
+                        won the game !
                     </p>
+
                     <div>
-                        <button ng-click="backToRoom()" type="button" class="btn btn-link btn-back-to-room">
+                        <button ng-click="backToRoom()" type="button" class="btn btn-hero btn-back-to-room">
                             Back to the room
                         </button>
                     </div>
@@ -71,7 +85,7 @@
                         </tbody>
                     </table>
                     <div>
-                        <button ng-click="backToRoom()" type="button" class="btn btn-link btn-back-to-room">
+                        <button ng-click="backToRoom()" type="button" class="btn btn-hero btn-back-to-room">
                             Back to the room
                         </button>
                     </div>

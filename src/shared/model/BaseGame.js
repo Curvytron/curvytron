@@ -9,15 +9,14 @@ function BaseGame(room)
 
     this.room         = room;
     this.name         = this.room.name;
-    this.channel      = 'game:' + this.name;
     this.frame        = null;
     this.avatars      = this.room.players.map(function () { return this.getAvatar(); });
     this.size         = this.getSize(this.avatars.count());
     this.rendered     = null;
-    this.maxScore     = this.getMaxScore(this.avatars.count());
+    this.maxScore     = room.config.getMaxScore();
     this.fps          = new FPSLogger();
     this.started      = false;
-    this.bonusManager = new BonusManager(this);
+    this.bonusManager = new BonusManager(this, room.config.getBonuses(), room.config.getVariable('bonusRate'));
     this.inRound      = false;
     this.rounds       = 0;
 
@@ -33,10 +32,33 @@ function BaseGame(room)
 BaseGame.prototype = Object.create(EventEmitter.prototype);
 BaseGame.prototype.constructor = BaseGame;
 
-BaseGame.prototype.framerate     = 1/60 * 1000;
+/**
+ * Loop frame rate
+ *
+ * @type {Number}
+ */
+BaseGame.prototype.framerate = 1/60 * 1000;
+
+/**
+ * Map size factor per player
+ *
+ * @type {Number}
+ */
 BaseGame.prototype.perPlayerSize = 100;
-BaseGame.prototype.warmupTime    = 3000;
-BaseGame.prototype.warmdownTime  = 5000;
+
+/**
+ * Time before round start
+ *
+ * @type {Number}
+ */
+BaseGame.prototype.warmupTime = 3000;
+
+/**
+ * Time after round end
+ *
+ * @type {Number}
+ */
+BaseGame.prototype.warmdownTime = 5000;
 
 /**
  * Update
@@ -55,10 +77,6 @@ BaseGame.prototype.removeAvatar = function(avatar)
     if (this.avatars.exists(avatar)) {
         avatar.die();
         avatar.destroy();
-
-        if (this.getPresentAvatars().isEmpty()) {
-            this.end();
-        }
     }
 };
 
@@ -180,18 +198,6 @@ BaseGame.prototype.getSize = function(players)
 };
 
 /**
- * Get max score
- *
- * @param {Number} players
- *
- * @return {Number}
- */
-BaseGame.prototype.getMaxScore = function(players)
-{
-    return (players-1) * 10;
-};
-
-/**
  * Get alive avatars
  *
  * @return {Collection}
@@ -220,9 +226,9 @@ BaseGame.prototype.getPresentAvatars = function()
  */
 BaseGame.prototype.sortAvatars = function(avatars)
 {
-    var avatars = typeof(avatars) !== 'undefined' ? avatars : this.avatars;
+    avatars = typeof(avatars) !== 'undefined' ? avatars : this.avatars;
 
-    avatars.sort(function (a, b) { return a.score > b.score ? -1 : (a.score < b.score ? 1 : 0); })
+    avatars.sort(function (a, b) { return a.score > b.score ? -1 : (a.score < b.score ? 1 : 0); });
 
     return avatars;
 };
@@ -277,6 +283,7 @@ BaseGame.prototype.end = function()
 
         this.stop();
         this.fps.stop();
+        this.bonusManager.stop();
         this.avatars.clear();
 
         this.emit('end', {game: this});

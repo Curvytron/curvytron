@@ -5,15 +5,14 @@
  * @param {String} name
  * @param {String} color
  */
-function BasePlayer(client, name, color, mail)
+function BasePlayer(client, name, color, ready)
 {
     EventEmitter.call(this);
 
     this.client = client;
     this.name   = name;
     this.color  = typeof(color) !== 'undefined' ? color : this.getRandomColor();
-    this.mail   = mail;
-    this.ready  = false;
+    this.ready  = typeof(ready) !== 'undefined' && ready;
     this.id     = null;
     this.avatar = null;
 }
@@ -114,7 +113,6 @@ BasePlayer.prototype.serialize = function()
         id: this.id,
         name: this.name,
         color: this.color,
-        mail: this.mail,
         ready: this.ready
     };
 };

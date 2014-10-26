@@ -23,6 +23,32 @@ li.player-row {
     }
 }
 
+.intro {
+
+    .quote {
+        text-align: center;
+        font-size: $font-size-h2;
+        font-weight: 100;
+        margin: 0 0 40px;
+    }
+
+    .tuto {
+        text-align: center;
+        width: 33%;
+        display: block;
+        float: left;
+
+        img.circle {
+            border-radius: 200px;
+        }
+
+        .content {
+            font-style: italic;
+            padding: 0 40px;
+        }
+    }
+}
+
 .top-right-form {
     float: right;
     max-width: 350px;

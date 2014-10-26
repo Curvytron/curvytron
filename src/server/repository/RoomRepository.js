@@ -3,8 +3,15 @@
  */
 function RoomRepository()
 {
+    EventEmitter.call(this);
+
+    this.onRoomClose = this.onRoomClose.bind(this);
+
     this.rooms = new Collection([], 'name');
 }
+
+RoomRepository.prototype = Object.create(EventEmitter.prototype);
+RoomRepository.prototype.constructor = RoomRepository;
 
 /**
  * Create a room
@@ -17,7 +24,12 @@ RoomRepository.prototype.create = function(name)
 {
     var room = new Room(name.substr(0, Room.prototype.maxLength));
 
-    return this.rooms.add(room) ? room : null;
+    if (!this.rooms.add(room)) { return false; }
+
+    room.on('close', this.onRoomClose);
+    this.emit('room:open', {room: room});
+
+    return room;
 };
 
 /**
@@ -27,7 +39,11 @@ RoomRepository.prototype.create = function(name)
  */
 RoomRepository.prototype.remove = function(room)
 {
-    return room.clients.isEmpty() && this.rooms.remove(room);
+    if (!room.players.isEmpty() || !this.rooms.remove(room)) { return false; }
+
+    this.emit('room:close', {room: room});
+
+    return true;
 };
 
 /**
@@ -50,4 +66,14 @@ RoomRepository.prototype.get = function(name)
 RoomRepository.prototype.all = function()
 {
     return this.rooms.items;
+};
+
+/**
+ * On room close
+ *
+ * @param {Object} data
+ */
+RoomRepository.prototype.onRoomClose = function(data)
+{
+    this.remove(data.room);
 };

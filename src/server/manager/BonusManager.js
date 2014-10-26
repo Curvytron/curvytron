@@ -3,38 +3,20 @@
  *
  * @param {Game} game
  */
-function BonusManager(game)
+function BonusManager(game, bonuses, rate)
 {
     BaseBonusManager.call(this, game);
 
-    this.world         = new World(this.game.size, 1);
-    this.popingTimeout = null;
+    this.world           = new World(this.game.size, 1);
+    this.popingTimeout   = null;
+    this.bonusTypes      = bonuses;
+    this.bonusPopingTime = this.bonusPopingTime - ((this.bonusPopingTime/2) * rate);
 
     this.popBonus = this.popBonus.bind(this);
 }
 
 BonusManager.prototype = Object.create(BaseBonusManager.prototype);
 BonusManager.prototype.constructor = BonusManager;
-
-/**
- * Available bonus types
- *
- * @type {Array}
- */
-BonusManager.prototype.bonusTypes = [
-    BonusSelfSmall,
-    BonusSelfSlow,
-    BonusSelfFast,
-    BonusSelfMaster,
-    BonusEnemySlow,
-    BonusEnemyFast,
-    BonusEnemyBig,
-    BonusEnemyInverse,
-    BonusAllBorderless,
-    BonusAllColor,
-    BonusGameClear,
-    BonusEnemyStraightAngle
-];
 
 /**
  * Start
@@ -45,7 +27,9 @@ BonusManager.prototype.start = function()
 
     this.world.activate();
 
-    this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
+    if (this.bonusTypes.length) {
+        this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
+    }
 };
 
 /**
@@ -55,8 +39,10 @@ BonusManager.prototype.stop = function()
 {
     BaseBonusManager.prototype.stop.call(this);
 
-    clearTimeout(this.popingTimeout);
-    this.popingTimeout = null;
+    if (this.bonusTypes.length) {
+        clearTimeout(this.popingTimeout);
+        this.popingTimeout = null;
+    }
 };
 
 /**
@@ -73,17 +59,19 @@ BonusManager.prototype.clear = function()
  */
 BonusManager.prototype.popBonus = function ()
 {
-    clearTimeout(this.popingTimeout);
-    this.popingTimeout = null;
+    if (this.bonusTypes.length) {
+        clearTimeout(this.popingTimeout);
+        this.popingTimeout = null;
 
-    if (this.bonuses.count() < this.bonusCap) {
-        var position = this.game.world.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
-            bonus = this.getRandomBonus(position);
+        if (this.bonuses.count() < this.bonusCap) {
+            var position = this.game.world.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
+                bonus = this.getRandomBonus(position);
 
-        this.add(bonus);
+            this.add(bonus);
+        }
+
+        this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
     }
-
-    this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
 };
 
 /**
@@ -145,7 +133,7 @@ BonusManager.prototype.remove = function(bonus)
  */
 BonusManager.prototype.getRandomPopingTime  = function()
 {
-    return this.bonusPopingTime * (1 +  Math.random() * 2);
+    return this.bonusPopingTime * (1 +  Math.random());
 };
 
 /**
@@ -157,6 +145,8 @@ BonusManager.prototype.getRandomPopingTime  = function()
  */
 BonusManager.prototype.getRandomBonus = function(position)
 {
+    if (!this.bonusTypes.length) {return; }
+
     var type = this.bonusTypes[Math.floor(Math.random() * this.bonusTypes.length)];
 
     return new type(position);

@@ -1,6 +1,11 @@
-<section>
-    <div id="profile" class="container">
-        <h1>My profile</h1>
+<div class="profile-form">
+    <h3 class="title">
+        <button type="button" class="close" ng-click="toggleProfile()">
+            &times;
+        </button>
+        My profile
+    </h3>
+    <div class="inner">
 
         <fieldset>
             <legend>Player:</legend>
@@ -9,7 +14,7 @@
             <input
                 id="profile-name"
                 type="text"
-                ng-change="save()"
+                ng-change="profile.persist()"
                 ng-model="profile.name"
                 class="form-control"
                 name="name"
@@ -21,7 +26,7 @@
             <input
                 id="profile-color"
                 type="text"
-                ng-change="save()"
+                ng-change="profile.persist()"
                 colorpicker="hex"
                 colorpicker-position="right"
                 ng-model="profile.color"
@@ -46,10 +51,10 @@
                     ng-name="control[{{ $index }}]"
                     ng-focus="control.start()"
                     ng-blur="control.stop()"
-                    ng-keypress="blur()"
+                    ng-keyup="blurProfile()"
                     ng-class="{ 'active': control.mapper.listening }"
                 />
             </div>
         </fieldset>
     </div>
-</section>
+</div>

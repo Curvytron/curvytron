@@ -7,10 +7,9 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
-    this.world   = new World(this.size);
-    this.deaths  = new Collection([], 'id');
-    this.clients = this.room.clients;
-    this.client  = this.room.client;
+    this.world      = new World(this.size);
+    this.deaths     = new Collection([], 'id');
+    this.controller = new GameController(this);
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -19,7 +18,6 @@ function Game(room)
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        avatar.game = this;
         avatar.clear();
         avatar.on('point', this.addPoint);
         avatar.on('die', this.onDie);
@@ -76,6 +74,7 @@ Game.prototype.update = function(step)
 Game.prototype.removeAvatar = function(avatar)
 {
     BaseGame.prototype.removeAvatar.call(this, avatar);
+    this.emit('player:leave', {player: avatar.player});
     this.checkRoundEnd();
 };
 
@@ -98,6 +97,11 @@ Game.prototype.addPoint = function(data)
  */
 Game.prototype.isWon = function()
 {
+    var present = this.getPresentAvatars().count();
+
+    if (present <= 0) { return true; }
+    if (this.avatars.count() > 1 && present <= 1) { return true; }
+
     var maxScore = this.maxScore,
         players = this.avatars.filter(function () { return this.present && this.score >= maxScore; });
 
@@ -151,17 +155,21 @@ Game.prototype.isReady = function()
  */
 Game.prototype.resolveScores = function()
 {
-    if (this.end) {
-        var winner = this.avatars.match(function () { return this.alive; });
+    var winner;
 
-        if (winner) {
-            winner.addScore(this.avatars.count() - 1);
-            this.emit('round:winner', {game: this, winner: winner});
-        }
+    if (this.avatars.count() === 1) {
+        winner = this.avatars.getFirst()
+    } else {
+        winner = this.avatars.match(function () { return this.alive; });
+    }
 
-        for (var i = this.avatars.items.length - 1; i >= 0; i--) {
-            this.avatars.items[i].resolveScore();
-        }
+    if (winner) {
+        winner.addScore(Math.max(this.avatars.count() - 1, 1));
+        this.emit('round:winner', {game: this, winner: winner});
+    }
+
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        this.avatars.items[i].resolveScore();
     }
 };
 
@@ -266,4 +274,10 @@ Game.prototype.end = function()
     BaseGame.prototype.end.call(this);
 
     this.world.clear();
+
+    delete this.world;
+    delete this.avatars;
+    delete this.deaths;
+    delete this.bonusManager;
+    delete this.controller;
 };

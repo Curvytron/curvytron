@@ -94,6 +94,9 @@ Game.prototype.end = function()
     if (this.started) {
         this.started = false;
 
+        window.removeEventListener('error', this.stop);
+        window.removeEventListener('resize', this.onResize);
+
         this.stop();
         this.fps.stop();
         this.canvas.clear();

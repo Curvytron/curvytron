@@ -42,7 +42,7 @@ Chat.prototype.detachEvents = function()
  */
 Chat.prototype.setPlayer = function(player)
 {
-    if (this.room && !this.currentMessage.player && player) {
+    if (this.room) {
         this.currentMessage.player = player;
     }
 };
@@ -73,7 +73,7 @@ Chat.prototype.setScope = function($scope)
     this.$scope.currentMessage   = this.currentMessage;
     this.$scope.messageMaxLength = Message.prototype.maxLength;
 
-    this.scrollDown();
+    setTimeout(this.scrollDown, 0);
 };
 
 /**
