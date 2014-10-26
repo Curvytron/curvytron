@@ -35,6 +35,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.setReady           = this.setReady.bind(this);
     this.setName            = this.setName.bind(this);
     this.setProfileControls = this.setProfileControls.bind(this);
+    this.toggleParameters   = this.toggleParameters.bind(this);
     this.start              = this.start.bind(this);
 
     this.$scope.$on('$destroy', this.leaveRoom);
@@ -45,9 +46,11 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.$scope.setColor            = this.setColor;
     this.$scope.setReady            = this.setReady;
     this.$scope.setName             = this.setName;
+    this.$scope.toggleParameters    = this.toggleParameters;
     this.$scope.nameMaxLength       = Player.prototype.maxLength;
     this.$scope.colorMaxLength      = Player.prototype.colorMaxLength;
     this.$scope.curvytron.bodyClass = null;
+    this.$scope.displayParameters   = false;
 
     this.repository.start();
 
@@ -98,23 +101,21 @@ RoomController.prototype.joinRoom = function()
 RoomController.prototype.onJoined = function(result)
 {
     if (result.success) {
-        this.room = this.repository.room;
-
+        this.room        = this.repository.room;
         this.$scope.room = this.room;
 
         this.chat.setScope(this.$scope);
         this.attachEvents();
+        this.chat.setRoom(this.room);
         this.addProfileUser();
-        this.updateCurrentMessage();
         this.addTip();
 
         setTimeout(this.chat.scrollDown, 0);
     } else {
         console.error('Could not join room %s', name);
         this.goHome();
+        this.applyScope();
     }
-
-    this.applyScope();
 };
 
 /**
@@ -352,7 +353,6 @@ RoomController.prototype.updateCurrentMessage = function()
     var profile = this.room.players.match(function (player) { return this.profile; }),
         player = this.room.players.match(function (player) { return this.local; });
 
-    this.chat.setRoom(this.room);
     this.chat.setPlayer(profile ? profile : player);
 };
 
@@ -410,6 +410,14 @@ RoomController.prototype.setProfileControls = function()
 
         this.applyScope();
     }
+};
+
+/**
+ * Toggle parameters
+ */
+RoomController.prototype.toggleParameters = function()
+{
+    this.$scope.displayParameters = !this.$scope.displayParameters;
 };
 
 /**

@@ -22,6 +22,10 @@ curvytronApp.controller(
     ['$scope', '$routeParams', '$location', 'SocketClient', 'RoomRepository', 'Profile', 'Chat', RoomController]
 );
 curvytronApp.controller(
+    'RoomConfigController',
+    ['$scope', 'RoomRepository', RoomConfigController]
+);
+curvytronApp.controller(
     'GameController',
     ['$scope', '$routeParams', '$location', 'SocketClient', 'RoomRepository', 'Profile', 'Chat', GameController]
 );

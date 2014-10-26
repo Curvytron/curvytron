@@ -13,10 +13,10 @@ function BaseGame(room)
     this.avatars      = this.room.players.map(function () { return this.getAvatar(); });
     this.size         = this.getSize(this.avatars.count());
     this.rendered     = null;
-    this.maxScore     = this.getMaxScore(this.avatars.count());
+    this.maxScore     = room.config.getMaxScore();
     this.fps          = new FPSLogger();
     this.started      = false;
-    this.bonusManager = new BonusManager(this);
+    this.bonusManager = new BonusManager(this, room.config.getBonuses(), room.config.getVariable('bonusRate'));
     this.inRound      = false;
     this.rounds       = 0;
 
@@ -37,7 +37,7 @@ BaseGame.prototype.constructor = BaseGame;
  *
  * @type {Number}
  */
-BaseGame.prototype.framerate     = 1/60 * 1000;
+BaseGame.prototype.framerate = 1/60 * 1000;
 
 /**
  * Map size factor per player
@@ -51,14 +51,14 @@ BaseGame.prototype.perPlayerSize = 100;
  *
  * @type {Number}
  */
-BaseGame.prototype.warmupTime    = 3000;
+BaseGame.prototype.warmupTime = 3000;
 
 /**
  * Time after round end
  *
  * @type {Number}
  */
-BaseGame.prototype.warmdownTime  = 5000;
+BaseGame.prototype.warmdownTime = 5000;
 
 /**
  * Update
@@ -198,18 +198,6 @@ BaseGame.prototype.getSize = function(players)
 };
 
 /**
- * Get max score
- *
- * @param {Number} players
- *
- * @return {Number}
- */
-BaseGame.prototype.getMaxScore = function(players)
-{
-    return Math.max(1, (players-1) * 10);
-};
-
-/**
  * Get alive avatars
  *
  * @return {Collection}
@@ -295,6 +283,7 @@ BaseGame.prototype.end = function()
 
         this.stop();
         this.fps.stop();
+        this.bonusManager.stop();
         this.avatars.clear();
 
         this.emit('end', {game: this});

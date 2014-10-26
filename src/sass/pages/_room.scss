@@ -1,13 +1,26 @@
-
 #room {
 
-    .header .count {
-        font-size: 0.7em;
-        color: $headings-small-color;
+    .header {
+        margin-bottom: 25px;
+
+        .count {
+            font-size: 0.7em;
+            color: $headings-small-color;
+        }
+
+        .icon-params {
+            font-size: 30px;
+            cursor: pointer;
+            @include transition(opacity 0.15s linear);
+
+            &:hover, &.active {
+                @include opacity(50);
+            }
+        }
     }
 
     .room-details {
-        padding-top: 10px;
+        padding-top: 25px;
     }
 
     .room-chat {
@@ -276,7 +289,225 @@
         margin: 0;
         border: none;
     }
+
+
+    #room-parameters {
+        background-color: #FFF;
+        width: 100%;
+        padding: 20px 30px;
+
+        .row > div {
+            padding-bottom: 0;
+        }
+
+        h2 {
+            margin-top: 10px;
+            font-size: 24px;
+            font-weight: 400;
+        }
+
+        .max-score {
+            text-align: center;
+
+            #max-score {
+                font-size: 80px;
+                font-weight: bold;
+                height: 100px;
+                width: 200px;
+                margin: 0 auto;
+                padding: 0;
+                line-height: 100px;
+                vertical-align: middle;
+                text-align: center;
+                border-color: transparent;
+                @include transition(border-color 0.2s linear);
+
+                &:focus {
+                    border-color: $text-color;
+                }
+            }
+        }
+
+        .input-range {
+            display: block;
+            width: auto;
+            max-width: 500px;
+            position: relative;
+            vertical-align: middle;
+            padding: 12px 40px;
+            margin: 10px;
+
+            input {
+                -webkit-appearance: none;
+                -moz-apperance: none;
+                width: 100%;
+                height: 2px;
+                background-color: #CCC;
+                cursor: pointer;
+                //margin: 12px 0;
+
+                &::-webkit-slider-thumb {
+                    -webkit-appearance:none;
+                    -moz-apperance:none;
+                    width: 12px;
+                    height: 12px;
+                    background: #BBB;
+                    cursor: pointer;
+                    @include border-radius(2px);
+                    @include transform(rotate(45deg));
+                    @include transition(background 0.15s linear);
+
+                    &:hover {
+                        background: #AAA;
+                    }
+                }
+            }
+
+            .range-icon {
+                width: 24px;
+                height: 24px;
+                position: absolute;
+                top: 2px;
+                @include transform(rotate(45deg));
+                border: 2px solid #999;
+                color: #999;
+                @include border-radius(4px);
+
+                i {
+                    font-size: 14px;
+                    line-height: 24px;
+                    margin-left: 0px;
+                    margin-top: -2px;
+                    display: block;
+                    @include transform(rotate(-45deg));
+                }
+
+                &.less-icon {
+                    left: 0;
+                }
+                &.more-icon {
+                    right: 0;
+                }
+            }
+        }
+
+        .btn-group {
+            margin-top: 15px;
+            float: right;
+
+            .btn {
+                border: 0;
+                background: #f3f3f3;
+                text-transform: uppercase;
+                font-size: 12px;
+                color: $text-color;
+                padding-left: 5px;
+                padding-right: 5px;
+                margin: 0;
+
+                &.active, &:hover {
+                    background: #dadada;
+                    color: $text-color;
+                    @include box-shadow(none);
+                }
+            }
+        }
+
+
+        .bonus-selection {
+            min-height: 55px;
+
+            .bonus {
+                width: $bonus-size;
+                height: $bonus-size;
+                display: inline-block;
+                background: url(../images/bonus.png) no-repeat transparent;
+                background-size: $bonus-size*3 $bonus-size*4;
+                position: relative;
+                text-align: center;
+                color: #FFF;
+                cursor: pointer;
+                margin: 0 4px;
+
+                &.bonus-self-fast {
+                    @include bonus-sprite(0, 0);
+                }
+                &.bonus-enemy-fast {
+                    @include bonus-sprite(1, 0);
+                }
+                &.bonus-self-slow {
+                    @include bonus-sprite(2, 0);
+                }
+                &.bonus-enemy-slow {
+                    @include bonus-sprite(0, 1);
+                }
+                &.bonus-all-borderless {
+                    @include bonus-sprite(1, 1);
+                }
+                &.bonus-self-master {
+                    @include bonus-sprite(2, 1);
+                }
+                &.bonus-enemy-big {
+                    @include bonus-sprite(0, 2);
+                }
+                &.bonus-all-color {
+                    @include bonus-sprite(1, 2);
+                }
+                &.bonus-enemy-inverse {
+                    @include bonus-sprite(2, 2);
+                }
+                &.bonus-self-small {
+                    @include bonus-sprite(0, 3);
+                }
+                &.bonus-all-clear {
+                    @include bonus-sprite(1, 3);
+                }
+                &.bonus-enemy-straight-angle {
+                    @include bonus-sprite(2, 3);
+                }
+
+                i {
+                    width: 16px;
+                    height: 16px;
+                    line-height: 16px;
+                    font-size: 10px;
+                    display: block;
+                    background: blue;
+                    position: absolute;
+                    top: 3px;
+                    left: 4px;
+                    @include border-radius(16px);
+                    @include opacity(0);
+                    @include transition(all opacity 0.15s);
+                }
+
+                &.active {
+                    i {
+                        @include opacity(100);
+                    }
+                }
+
+                &[class*="bonus-self"] {
+                    i {
+                        background: #1acd2f;
+                    }
+                }
+                &[class*="bonus-enemy"] {
+                    i {
+                        background: #f5423e;
+                    }
+                }
+                &[class*="bonus-all"] {
+                    i {
+                        background: #cccccc;
+                    }
+                }
+            }
+        }
+    }
+
 }
+
 
 
 

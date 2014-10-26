@@ -182,7 +182,7 @@ GameController.prototype.displayWarmup = function(time)
 GameController.prototype.onWarmup = function()
 {
     this.$scope.count--;
-    this.$scope.$apply();
+    this.applyScope();
 };
 
 /**
@@ -221,10 +221,6 @@ GameController.prototype.onProperty = function(e)
 
         if (!this.game.frame) {
             this.game.draw();
-        }
-
-        if (data.property === 'score' || data.property === 'roundScore') {
-            this.applyScope();
         }
     }
 };

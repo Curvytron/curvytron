@@ -7,6 +7,7 @@ function BaseRoom(name)
 
     this.name    = name;
     this.players = new Collection([], 'id', true);
+    this.config  = new RoomConfig(this);
 
     this.closeGame = this.closeGame.bind(this);
 }
@@ -103,7 +104,8 @@ BaseRoom.prototype.newGame = function()
 BaseRoom.prototype.closeGame = function()
 {
     if (this.game) {
-        this.game = null;
+
+        delete this.game;
 
         this.emit('game:end', {room: this});
 
@@ -124,9 +126,15 @@ BaseRoom.prototype.serialize = function(full)
 {
     full = typeof(full) === 'undefined' || full;
 
-    return {
+    var data = {
         name: this.name,
         players: full ? this.players.map(function () { return this.serialize(); }).items : this.players.count(),
         game: this.game ? true : false
     };
+
+    if (full) {
+        data.config = this.config.serialize();
+    }
+
+    return data;
 };
