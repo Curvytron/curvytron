@@ -10,14 +10,17 @@ function RoomRepository(client)
     this.client = client;
     this.room   = null;
 
-    this.start         = this.start.bind(this);
-    this.onJoinRoom    = this.onJoinRoom.bind(this);
-    this.onLeaveRoom   = this.onLeaveRoom.bind(this);
-    this.onGameStart   = this.onGameStart.bind(this);
-    this.onGameEnd     = this.onGameEnd.bind(this);
-    this.onPlayerReady = this.onPlayerReady.bind(this);
-    this.onPlayerColor = this.onPlayerColor.bind(this);
-    this.onPlayerName  = this.onPlayerName.bind(this);
+    this.start            = this.start.bind(this);
+    this.onJoinRoom       = this.onJoinRoom.bind(this);
+    this.onLeaveRoom      = this.onLeaveRoom.bind(this);
+    this.onGameStart      = this.onGameStart.bind(this);
+    this.onGameEnd        = this.onGameEnd.bind(this);
+    this.onPlayerReady    = this.onPlayerReady.bind(this);
+    this.onPlayerColor    = this.onPlayerColor.bind(this);
+    this.onPlayerName     = this.onPlayerName.bind(this);
+    this.onConfigMaxScore = this.onConfigMaxScore.bind(this);
+    this.onConfigVariable = this.onConfigVariable.bind(this);
+    this.onConfigBonus    = this.onConfigBonus.bind(this);
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
@@ -35,6 +38,9 @@ RoomRepository.prototype.attachEvents = function()
     this.client.on('player:ready', this.onPlayerReady);
     this.client.on('player:color', this.onPlayerColor);
     this.client.on('player:name', this.onPlayerName);
+    this.client.on('room:config:max-score', this.onConfigMaxScore);
+    this.client.on('room:config:variable', this.onConfigVariable);
+    this.client.on('room:config:bonus', this.onConfigBonus);
 };
 
 /**
@@ -49,6 +55,9 @@ RoomRepository.prototype.detachEvents = function()
     this.client.off('player:ready', this.onPlayerReady);
     this.client.off('player:color', this.onPlayerColor);
     this.client.off('player:name', this.onPlayerName);
+    this.client.off('room:config:max-score', this.onConfigMaxScore);
+    this.client.off('room:config:variable', this.onConfigVariable);
+    this.client.off('room:config:bonus', this.onConfigBonus);
 };
 
 /**
@@ -76,6 +85,16 @@ RoomRepository.prototype.join = function(name, callback)
                     result.room.players[i].color,
                     result.room.players[i].ready
                 ));
+            }
+
+            repository.room.config.setMaxScore(result.room.config.maxScore);
+
+            for (var variable in result.room.config.variables) {
+                repository.room.config.setVariable(variable, result.room.config.variables[variable]);
+            }
+
+            for (var bonus in result.room.config.bonuses) {
+                repository.room.config.setBonus(bonus, result.room.config.bonuses[bonus]);
             }
 
             callback({success: true, room: repository.room});
@@ -166,6 +185,39 @@ RoomRepository.prototype.setReady = function(player, callback)
     this.client.addEvent('room:ready', {player: player}, callback);
 };
 
+/**
+ * Set config max score
+ *
+ * @param {Number} maxScore
+ * @param {Function} callback
+ */
+RoomRepository.prototype.setConfigMaxScore = function(maxScore, callback)
+{
+    this.client.addEvent('room:config:max-score', {maxScore: parseInt(maxScore)}, callback);
+};
+
+/**
+ * Set config speed
+ *
+ * @param {Number} speed
+ * @param {Function} callback
+ */
+RoomRepository.prototype.setConfigVariable = function(variable, value, callback)
+{
+    this.client.addEvent('room:config:variable', {variable: variable, value: parseFloat(value)}, callback);
+};
+
+/**
+ * Set config bonus
+ *
+ * @param {String} bonus
+ * @param {Function} callback
+ */
+RoomRepository.prototype.setConfigBonus = function(bonus, callback)
+{
+    this.client.addEvent('room:config:bonus', {bonus: bonus}, callback);
+};
+
 // EVENTS:
 
 /**
@@ -248,6 +300,45 @@ RoomRepository.prototype.onPlayerReady = function(e)
         player.toggleReady(data.ready);
         this.emit('player:ready', {player: player});
     }
+};
+
+/**
+ * On config max score
+ *
+ * @param {Event} e
+ */
+RoomRepository.prototype.onConfigMaxScore = function(e)
+{
+    var data = e.detail;
+
+    this.room.config.setMaxScore(data.maxScore);
+    this.emit('config:max-score', {maxScore: data.maxScore});
+};
+
+/**
+ * On config variable
+ *
+ * @param {Event} e
+ */
+RoomRepository.prototype.onConfigVariable = function(e)
+{
+    var data = e.detail;
+
+    this.room.config.setVariable(data.variable, data.value);
+    this.emit('config:variable', {variable: data.variable, value: data.value});
+};
+
+/**
+ * On config bonus
+ *
+ * @param {Event} e
+ */
+RoomRepository.prototype.onConfigBonus = function(e)
+{
+    var data = e.detail;
+
+    this.room.config.setBonus(data.bonus, data.enabled);
+    this.emit('config:bonus', {bonus: data.bonus, enabled: data.enabled});
 };
 
 /**

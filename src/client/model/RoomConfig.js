@@ -29,4 +29,15 @@ RoomConfig.prototype.bonusClasses = {
     BonusAllColor:'bonus-all-color',
     BonusGameClear: 'bonus-all-clear',
     BonusEnemyStraightAngle: 'bonus-enemy-straight-angle'
-}
+};
+
+/**
+ * Variables names
+ *
+ * @type {Object}
+ */
+RoomConfig.prototype.variablesNames = {
+    speed: 'Speed',
+    curving: 'Curvig',
+    bonusRate: 'Bonus rate'
+};

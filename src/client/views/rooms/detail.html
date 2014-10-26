@@ -1,11 +1,11 @@
-<section>
+<section ng-controller="RoomController">
     <div id="room" class="container">
         <h2 class="header">
             {{ room.name }}
-            <i class="icon-params" ng-click="configureGame()"></i>
+            <i class="icon-params" ng-click="toggleParameters()" ng-class="{'active': displayParameters}"></i>
         </h2>
 
-        <div id="room-parameters" ng-controller="RoomConfigController">
+        <div id="room-parameters" ng-controller="RoomConfigController" ng-show="displayParameters">
             <ng-include src="'js/views/rooms/parameters.html'"></ng-include>
         </div>
 

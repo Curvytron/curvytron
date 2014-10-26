@@ -438,6 +438,7 @@
             text-align: center;
             color: #FFF;
             cursor: pointer;
+            margin: 4px;
 
             &.bonus-self-fast {
                 @include bonus-sprite(0, 0);

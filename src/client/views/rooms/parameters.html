@@ -1,45 +1,36 @@
 <div class="row">
     <div class="col-lg-4 bonus-list">
-        <div class="btn-group btn-group-xs">
+        <!--div class="btn-group btn-group-xs">
             <button type="button" class="btn btn-default active">All</button>
             <button type="button" class="btn btn-default">Custom</button>
             <button type="button" class="btn btn-default">None</button>
-        </div>
+        </div-->
         <h2>Bonus</h2>
-        <div class="bonus-selection">
-            <span ng-repeat="(type, bonus) in room.config.bonuses" class="bonus {{ room.config.bonusClasses[type] }}" ng-class="{active: bonus}">
+        <h4>Include:</h4>
+        <div class="bonus-selection selected">
+            <span ng-repeat="(bonus, enabled) in config.bonuses" ng-click="toggleBonus(bonus)" class="bonus {{ config.bonusClasses[bonus] }}" ng-if="enabled">
+                <i class="icon-check"></i>
+            </span>
+        </div>
+        <h4>Exclude:</h4>
+        <div class="bonus-selection available">
+            <span ng-repeat="(bonus, enabled) in config.bonuses" ng-click="toggleBonus(bonus)" class="bonus {{ config.bonusClasses[bonus] }}" ng-if="!enabled">
                 <i class="icon-check"></i>
             </span>
         </div>
     </div>
     <div class="col-lg-5 params">
-        <div>
-            <label for="speed">Speed</label>
+        <div ng-repeat="(variable, value) in config.variables">
+            <label for="speed">{{ config.variablesNames[variable] }}</label>
             <div>
                 <span class="less-icon"><i class="icon-minus"></i></span>
                 <span class="more-icon"><i class="icon-plus"></i></span>
-                <input id="speed" type ="range" min ="10" max="100" step ="1" value ="70"/>
-            </div>
-        </div>
-        <div>
-            <label for="curving">Curving</label>
-            <div>
-                <span class="less-icon"><i class="icon-minus"></i></span>
-                <span class="more-icon"><i class="icon-plus"></i></span>
-                <input id="curving" type ="range" min ="10" max="100" step ="1" value ="70"/>
-            </div>
-        </div>
-        <div>
-            <label for="bonus-rate">Bonus rate</label>
-            <div>
-                <span class="less-icon"><i class="icon-minus"></i></span>
-                <span class="more-icon"><i class="icon-plus"></i></span>
-                <input id="bonus-rate" type ="range" min ="10" max="100" step ="1" value ="70"/>
+                <input id="speed" type="range" min="0" max="2" step="0.1" ng-model="config.variables[variable]" ng-change="setVariable(variable)"/>
             </div>
         </div>
     </div>
     <div class="col-lg-3 max-score">
         <h2>Max score</h2>
-        <input type="text" class="form-control" id="max-score" value="80" placeholder="Max" maxlength="3" />
+        <input type="text" class="form-control" id="max-score" ng-change="setMaxScore(config.maxScore)" ng-model="config.maxScore" placeholder="{{ config.getDefaultMaxScore() }}" maxlength="3" />
     </div>
 </div>

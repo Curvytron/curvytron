@@ -12,9 +12,23 @@ function BaseRoomConfig(room)
  * @type {Number}
  */
 BaseRoomConfig.prototype.maxScore  = null;
-BaseRoomConfig.prototype.speed     = 1;
-BaseRoomConfig.prototype.curving   = 1;
-BaseRoomConfig.prototype.bonusRate = 1;
+
+/**
+ * Variable
+ *
+ * @type {Number}
+ */
+BaseRoomConfig.prototype.variables = {
+    speed: 1,
+    curving: 1,
+    bonusRate: 1
+};
+
+/**
+ * Bonuses
+ *
+ * @type {Object}
+ */
 BaseRoomConfig.prototype.bonuses   = {
     BonusSelfSmall: true,
     BonusSelfSlow: true,
@@ -28,6 +42,117 @@ BaseRoomConfig.prototype.bonuses   = {
     BonusAllColor: true,
     BonusGameClear: true,
     BonusEnemyStraightAngle: true
+};
+
+BaseRoomConfig.prototype.setMaxScore = function(maxScore)
+{
+    maxScore = parseInt(maxScore);
+
+    this.maxScore = maxScore ? maxScore : null;
+
+    return true;
+};
+
+/**
+ * Variable exists
+ *
+ * @param {String} variable
+ *
+ * @return {Boolean}
+ */
+BaseRoomConfig.prototype.variableExists = function(variable)
+{
+    return typeof(this.variables[variable]) !== 'undefined';
+};
+
+/**
+ * Set variable
+ *
+ * @param {String} variable
+ * @param {Float} value
+ */
+BaseRoomConfig.prototype.setVariable = function(variable, value)
+{
+    if (!this.variableExists(variable)) { return false; }
+
+    value = parseFloat(value);
+
+    if (0 > value || value > 2 ) { return false; }
+
+    this.variables[variable] = value;
+
+    return true;
+};
+
+/**
+ * Get variable
+ *
+ * @param {String} variable
+ *
+ * @return {Float}
+ */
+BaseRoomConfig.prototype.getVariable = function(variable)
+{
+    if (!this.variableExists(variable)) { return; }
+
+    return this.variables[variable];
+};
+
+/**
+ * Bonus exists
+ *
+ * @param {String} bonus
+ *
+ * @return {Boolean}
+ */
+BaseRoomConfig.prototype.bonusExists = function(bonus)
+{
+    return typeof(this.bonuses[bonus]) !== 'undefined';
+};
+
+/**
+ * Toggle bonus
+ *
+ * @param {String} bonus
+ *
+ * @return {Boolean}
+ */
+BaseRoomConfig.prototype.toggleBonus = function(bonus)
+{
+    if (!this.bonusExists(bonus)) { return false; }
+
+    this.bonuses[bonus] = !this.bonuses[bonus];
+
+    return true;
+};
+
+/**
+ * Get bonus value
+ *
+ * @param {String} bonus
+ *
+ * @return {Boolean}
+ */
+BaseRoomConfig.prototype.getBonus = function(bonus)
+{
+    if (!this.bonusExists(bonus)) { return; }
+
+    return this.bonuses[bonus];
+};
+
+/**
+ * Set bonus value
+ *
+ * @param {String} bonus
+ * @param {Boolean} value
+ *
+ * @return {Boolean}
+ */
+BaseRoomConfig.prototype.setBonus = function(bonus, value)
+{
+    if (!this.bonusExists(bonus)) { return; }
+
+    this.bonuses[bonus] = value ? true : false;
 };
 
 /**
@@ -70,4 +195,18 @@ BaseRoomConfig.prototype.getMaxScore = function()
 BaseRoomConfig.prototype.getDefaultMaxScore = function()
 {
     return Math.max(1, (this.room.players.count() - 1) * 10);
+};
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+BaseRoomConfig.prototype.serialize = function()
+{
+    return {
+        maxScore: this.maxScore,
+        variables: this.variables,
+        bonuses: this.bonuses,
+    };
 };

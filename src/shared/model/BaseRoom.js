@@ -125,9 +125,15 @@ BaseRoom.prototype.serialize = function(full)
 {
     full = typeof(full) === 'undefined' || full;
 
-    return {
+    var data = {
         name: this.name,
         players: full ? this.players.map(function () { return this.serialize(); }).items : this.players.count(),
         game: this.game ? true : false
     };
+
+    if (full) {
+        data.config = this.config.serialize();
+    }
+
+    return data;
 };
