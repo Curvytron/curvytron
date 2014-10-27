@@ -22,21 +22,21 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.controlSynchro = false;
 
     // Binding:
-    this.addPlayer          = this.addPlayer.bind(this);
-    this.addProfileUser     = this.addProfileUser.bind(this);
-    this.removePlayer       = this.removePlayer.bind(this);
-    this.applyScope         = this.applyScope.bind(this);
-    this.onJoin             = this.onJoin.bind(this);
-    this.onJoined           = this.onJoined.bind(this);
-    this.onControlChange    = this.onControlChange.bind(this);
-    this.joinRoom           = this.joinRoom.bind(this);
-    this.leaveRoom          = this.leaveRoom.bind(this);
-    this.setColor           = this.setColor.bind(this);
-    this.setReady           = this.setReady.bind(this);
-    this.setName            = this.setName.bind(this);
-    this.setProfileControls = this.setProfileControls.bind(this);
-    this.toggleParameters   = this.toggleParameters.bind(this);
-    this.start              = this.start.bind(this);
+    this.addPlayer        = this.addPlayer.bind(this);
+    this.addProfileUser   = this.addProfileUser.bind(this);
+    this.removePlayer     = this.removePlayer.bind(this);
+    this.applyScope       = this.applyScope.bind(this);
+    this.onJoin           = this.onJoin.bind(this);
+    this.onJoined         = this.onJoined.bind(this);
+    this.onControlChange  = this.onControlChange.bind(this);
+    this.joinRoom         = this.joinRoom.bind(this);
+    this.leaveRoom        = this.leaveRoom.bind(this);
+    this.setColor         = this.setColor.bind(this);
+    this.setReady         = this.setReady.bind(this);
+    this.setName          = this.setName.bind(this);
+    this.updateProfile    = this.updateProfile.bind(this);
+    this.toggleParameters = this.toggleParameters.bind(this);
+    this.start            = this.start.bind(this);
 
     this.$scope.$on('$destroy', this.leaveRoom);
 
@@ -244,7 +244,7 @@ RoomController.prototype.onJoin = function(e)
         this.updateCurrentMessage();
 
         if (player.profile) {
-            this.setProfileControls();
+            this.setProfileControls(player);
         } else if (this.hasTouch) {
             player.setTouch();
         }
@@ -341,8 +341,22 @@ RoomController.prototype.start = function(e)
  */
 RoomController.prototype.addProfileUser = function()
 {
-    this.profile.on('change', this.setProfileControls);
+    this.profile.on('change', this.updateProfile);
     this.addPlayer(this.profile.name, this.profile.color);
+};
+
+/**
+ * Update profile
+ */
+RoomController.prototype.updateProfile = function()
+{
+    var player = this.room.players.match(function (player) { return this.profile; });
+
+    if (player) {
+        this.setProfileName(player);
+        this.setProfileColor(player);
+        this.setProfileControls(player);
+    }
 };
 
 /**
@@ -395,9 +409,8 @@ RoomController.prototype.saveProfileControls = function()
 /**
  * Set profile controls
  */
-RoomController.prototype.setProfileControls = function()
+RoomController.prototype.setProfileControls = function(player)
 {
-    var player = this.room.players.match(function (player) { return this.profile; });
 
     if (!this.controlSynchro) {
         this.controlSynchro = true;
@@ -413,6 +426,28 @@ RoomController.prototype.setProfileControls = function()
 };
 
 /**
+ * Set profile name
+ */
+RoomController.prototype.setProfileName = function(player)
+{
+    if (this.profile.name !== player.name) {
+        player.setName(this.profile.name);
+        this.setName(player);
+    }
+}
+
+/**
+ * Set profile color
+ */
+RoomController.prototype.setProfileColor = function(player)
+{
+    if (this.profile.color !== player.color) {
+        player.setColor(this.profile.color);
+        this.setColor(player);
+    }
+}
+
+/**
  * Toggle parameters
  */
 RoomController.prototype.toggleParameters = function()
@@ -423,11 +458,4 @@ RoomController.prototype.toggleParameters = function()
 /**
  * Apply scope
  */
-RoomController.prototype.applyScope = function()
-{
-    try {
-        this.$scope.$apply();
-    } catch (e) {
-
-    }
-};
+RoomController.prototype.applyScope = CurvytronController.prototype.applyScope;

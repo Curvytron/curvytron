@@ -68,3 +68,15 @@ CurvytronController.prototype.blurProfile = function(e)
          angular.element(document.querySelector('#profile-controls-' + i))[0].blur();
     }
 };
+
+/**
+ * Apply scope
+ */
+CurvytronController.prototype.applyScope = function(fn)
+{
+    var phase = this.$scope.$root.$$phase;
+
+    if(phase !== '$apply' && phase !== '$digest') {
+        this.$scope.$apply();
+    }
+};

@@ -86,11 +86,4 @@ RoomConfigController.prototype.setVariable = function(variable)
 /**
  * Apply scope
  */
-RoomConfigController.prototype.applyScope = function()
-{
-    try {
-        this.$scope.$apply();
-    } catch (e) {
-
-    }
-};
+RoomConfigController.prototype.applyScope = CurvytronController.prototype.applyScope;

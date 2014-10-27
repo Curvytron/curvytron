@@ -14,7 +14,7 @@
             <input
                 id="profile-name"
                 type="text"
-                ng-change="profile.persist()"
+                ng-blur="profile.persist()"
                 ng-model="profile.name"
                 class="form-control"
                 name="name"
@@ -26,7 +26,7 @@
             <input
                 id="profile-color"
                 type="text"
-                ng-change="profile.persist()"
+                ng-blur="profile.persist()"
                 colorpicker="hex"
                 colorpicker-position="right"
                 ng-model="profile.color"

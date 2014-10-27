@@ -10,14 +10,15 @@
  */
 function GameController($scope, $routeParams, $location, client, repository, profile, chat)
 {
-    this.$scope     = $scope;
-    this.$location  = $location;
-    this.client     = client;
-    this.repository = repository;
-    this.profile    = profile;
-    this.chat       = chat;
-    this.room       = null;
-    this.game       = null;
+    this.$scope         = $scope;
+    this.$location      = $location;
+    this.client         = client;
+    this.repository     = repository;
+    this.profile        = profile;
+    this.chat           = chat;
+    this.room           = null;
+    this.game           = null;
+    this.warmupInterval = null;
 
     // Binding
     this.onMove        = this.onMove.bind(this);
@@ -171,9 +172,9 @@ GameController.prototype.displayWarmup = function(time)
     this.$scope.countFinish = false;
     this.applyScope();
 
-    var warmupInterval = setInterval(this.onWarmup, 1000);
+    this.warmupInterval = setInterval(this.onWarmup, 1000);
 
-    setTimeout(function () { controller.endWarmup(warmupInterval); }, time);
+    setTimeout(this.endWarmup, time);
 };
 
 /**
@@ -190,10 +191,20 @@ GameController.prototype.onWarmup = function()
  */
 GameController.prototype.endWarmup = function(interval)
 {
-    clearInterval(interval);
-
+    this.clearWarmup();
     this.$scope.countFinish = true;
     this.applyScope();
+};
+
+/**
+ * Clear warmup interval
+ */
+GameController.prototype.clearWarmup = function()
+{
+    if (this.warmupInterval) {
+        clearInterval(this.warmupInterval);
+        this.warmupInterval = null;
+    }
 };
 
 /**
@@ -418,6 +429,8 @@ GameController.prototype.leaveGame = function()
  */
 GameController.prototype.close = function()
 {
+    this.clearWarmup();
+
     if (this.game) {
         this.detachSocketEvents();
         this.game.end();
@@ -456,11 +469,4 @@ GameController.prototype.toggleSound = function()
 /**
  * Apply scope
  */
-GameController.prototype.applyScope = function()
-{
-    try {
-        this.$scope.$apply();
-    } catch (e) {
-
-    }
-};
+GameController.prototype.applyScope = CurvytronController.prototype.applyScope;

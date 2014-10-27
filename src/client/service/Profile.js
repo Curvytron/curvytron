@@ -81,8 +81,11 @@ Profile.prototype.unserialize = function(data)
  */
 Profile.prototype.persist = function()
 {
-    if (this.name) {
+    if (this.isValid()) {
         window.localStorage.setItem(this.localKey, JSON.stringify(this.serialize()));
+        this.emit('change');
+    } else {
+        this.load();
     }
 };
 
@@ -176,7 +179,6 @@ Profile.prototype.setSound = function(sound)
 Profile.prototype.onControlChange = function(e)
 {
     this.persist();
-    this.emit('change');
 };
 
 /**
@@ -187,4 +189,18 @@ Profile.prototype.onControlChange = function(e)
 Profile.prototype.isComplete = function()
 {
     return this.name && this.color ? true : false;
+};
+
+/**
+ * Is profile valid?
+ *
+ * @return {Boolean}
+ */
+Profile.prototype.isValid = function()
+{
+    if (!this.name.trim().length) { return false; }
+
+    if (!this.color || !BasePlayer.prototype.validateColor(this.color)) { return false; }
+
+    return true;
 };

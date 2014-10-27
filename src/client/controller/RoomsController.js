@@ -117,11 +117,4 @@ RoomsController.prototype.quickPlay = function()
 /**
  * Apply scope
  */
-RoomsController.prototype.applyScope = function()
-{
-    try {
-        this.$scope.$apply();
-    } catch (e) {
-
-    }
-};
+RoomsController.prototype.applyScope = CurvytronController.prototype.applyScope;
