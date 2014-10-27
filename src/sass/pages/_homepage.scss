@@ -18,8 +18,11 @@ li.player-row {
 }
 
 .header {
+    min-height: 60px;
+
     .title {
-        float: left
+        float: left;
+        line-height: 60px;
     }
 }
 
@@ -38,8 +41,12 @@ li.player-row {
         display: block;
         float: left;
 
-        img.circle {
+        .circle {
             border-radius: 200px;
+            width: 150px;
+            height: 150px;
+            max-width: 100%;
+            background-color: $game-background;
         }
 
         .content {
@@ -115,7 +122,7 @@ li.player-row {
     }
 }
 
-#rooms, #room {
+.rooms {
     margin-top: 50px;
     border-collapse: separate;
 

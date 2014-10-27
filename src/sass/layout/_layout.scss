@@ -68,15 +68,18 @@ header {
   //   @include animation(headerGradient 10s infinite);
   // }
 
-  a.logo, a.logo:visited {
-    line-height: 50px;
-    font-family: $base-font-family;
-    font-weight: 300;
-    text-transform: uppercase;
-    font-size: 30px;
-    color: $header-color;
+  .logo {
     z-index: 10;
     position: relative;
+
+    &, &:visited {
+      line-height: 50px;
+      font-family: $base-font-family;
+      font-weight: 300;
+      text-transform: uppercase;
+      font-size: 30px;
+      color: $header-color;
+    }
 
     &.animated {
       &:after {
@@ -84,12 +87,16 @@ header {
         background: $header-color;
       }
     }
-  }
 
-  #logo {
-    width: 150px;
-    position: relative;
-    z-index: 100;
+    img {
+      width: 150px;
+      position: relative;
+      z-index: 100;
+    }
+
+    .brand {
+      display: block;
+    }
   }
 
   .game-copy {

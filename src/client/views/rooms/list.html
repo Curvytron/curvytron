@@ -5,29 +5,22 @@
         </blockquote>
 
         <div class="tuto">
-            <img src="images/tuto/turn.gif" width="150" height="150" class="circle" alt="Turning">
+            <img src="images/tuto/turn.gif" class="circle" alt="Turning">
             <p class="content">You're always moving. But you can choose to go left or right.</p>
         </div>
 
         <div class="tuto">
-            <img src="images/tuto/death.gif" width="150" height="150" class="circle" alt="Turning">
+            <img src="images/tuto/death.gif" class="circle" alt="Turning">
             <p class="content">If you hit another player's line or you own: you're dead!</p>
         </div>
         <div class="tuto">
-            <img src="images/tuto/bonus.gif" width="150" height="150" class="circle" alt="Turning">
+            <img src="images/tuto/bonus.gif" class="circle" alt="Turning">
             <p class="content">There's bonuses on the map that can help you.</p>
         </div>
     </div>
 
-    <div id="rooms" class="container">
+    <div class="container room-list">
         <h2 class="header" ng-class="{ 'empty': rooms.isEmpty() }">
-            <form ng-submit="createRoom()" class="top-right-form">
-                <button type="submit" id="submit">
-                    <span><i class="icon-plus"></i></span>
-                </button>
-                <input type="text" ng-model="roomName" class="form-control clearfix" name="name" placeholder="Create a new room..." maxlength="{{ roomMaxLength }}" />
-            </form>
-
             <span class="title">
                 <ng-pluralize count="rooms.items.length" when="{
                     '0': 'Start by creating a room:',
@@ -35,9 +28,15 @@
                     'other': 'You can join {} rooms!'}"
                 />
             </span>
+            <form ng-submit="createRoom()" class="top-right-form">
+                <button type="submit" id="submit">
+                    <span><i class="icon-plus"></i></span>
+                </button>
+                <input type="text" ng-model="roomName" class="form-control clearfix" name="name" placeholder="Create a new room..." maxlength="{{ roomMaxLength }}" />
+            </form>
         </h2>
 
-        <table id="rooms" class="table table-hover v-align-middle" ng-if="!rooms.isEmpty()">
+        <table id="rooms" class="rooms table table-hover v-align-middle" ng-if="!rooms.isEmpty()">
             <tbody>
                 <tr ng-repeat="room in rooms.items" ng-if="!room.game" ng-click="join(room)" class="room">
                     <td class="room-name">{{ room.name }}</td>

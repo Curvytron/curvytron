@@ -1,12 +1,37 @@
 @media (max-width: $screen-sm - 1)
 {
     header {
-        font-size: 20px;
-        line-height: 40px;
         padding: 10px 20px;
         margin: 0;
-        #logo {
-            width: 100px;
+
+        .logo {
+
+            &, &:visited {
+                font-size: 20px;
+            }
+
+            img {
+                width: 50px;
+                float: left;
+            }
+
+            .brand {
+                float: left;
+                line-height: 50px;
+                margin-left: 10px;
+            }
+        }
+
+        .profile-link {
+            top: 24px;
+            right: 10px;
+            font-size: 0;
+            line-height: 0;
+            padding: 3px;
+
+            .circle {
+                margin: 0;
+            }
         }
     }
 
@@ -16,7 +41,41 @@
         margin-bottom: 20px;
     }
 
-    #room {
+    .intro {
+        .quote {
+            text-align: center;
+            font-size: $font-size-h3;
+            margin: 20px 0 20px;
+        }
+        .tuto {
+            padding: 0 10px;
+
+            .circle {
+                height: auto;
+            }
+
+            .content {
+                padding: 0;
+            }
+        }
+    }
+
+    .room-list {
+        margin-top: 0;
+
+        .header {
+            font-size: $font-size-h4;
+
+            .title {
+                float: none;
+                display: block;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+        }
+    }
+
+    .rooms {
         margin-top: 0;
 
         .room-details {
