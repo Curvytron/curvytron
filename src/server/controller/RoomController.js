@@ -183,15 +183,12 @@ RoomController.prototype.onLeave = function(client)
  */
 RoomController.prototype.onPlayerAdd = function(client, data, callback)
 {
-    var name = data.name.substr(0, Player.prototype.maxLength);
+    var name = data.name.substr(0, Player.prototype.maxLength),
+        color = typeof(data.color) !== 'undefined' ? data.color : null;
 
     if (this.room.isNameAvailable(name)) {
 
-        var player = new Player(client, name);
-
-        if (typeof(data.color) !== 'undefined' && data.color && player.validateColor(data.color)) {
-            player.setColor(data.color.toLowerCase());
-        }
+        var player = new Player(client, name, color);
 
         this.room.addPlayer(player);
         client.players.add(player);
@@ -250,10 +247,9 @@ RoomController.prototype.onTalk = function(client, data, callback)
 RoomController.prototype.onColor = function(client, data, callback)
 {
     var player = client.players.getById(data.player),
-        color = data.color.toLowerCase();
+        color = data.color;
 
-    if (player && player.validateColor(color)) {
-        player.setColor(color);
+    if (player && player.setColor(color)) {
         callback({success: true, color: player.color});
         this.socketGroup.addEvent('player:color', { player: player.id, color: player.color });
     } else {

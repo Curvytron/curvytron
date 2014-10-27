@@ -135,7 +135,7 @@ Profile.prototype.setName = function(name)
  */
 Profile.prototype.setColor = function(color)
 {
-    if (this.color !== color) {
+    if (BasePlayer.prototype.validateColor(color)) {
         this.color = color;
         this.persist();
     }
