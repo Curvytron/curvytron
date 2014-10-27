@@ -434,7 +434,7 @@ RoomController.prototype.setProfileName = function(player)
         player.setName(this.profile.name);
         this.setName(player);
     }
-}
+};
 
 /**
  * Set profile color
@@ -445,7 +445,7 @@ RoomController.prototype.setProfileColor = function(player)
         player.setColor(this.profile.color);
         this.setColor(player);
     }
-}
+};
 
 /**
  * Toggle parameters
