@@ -198,7 +198,7 @@ Profile.prototype.isComplete = function()
  */
 Profile.prototype.isValid = function()
 {
-    if (!this.name.trim().length) { return false; }
+    if (!this.name || !this.name.trim().length) { return false; }
 
     if (!this.color || !BasePlayer.prototype.validateColor(this.color)) { return false; }
 

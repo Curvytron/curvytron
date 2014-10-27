@@ -186,7 +186,7 @@ RoomController.prototype.onPlayerAdd = function(client, data, callback)
     var name = data.name.substr(0, Player.prototype.maxLength),
         color = typeof(data.color) !== 'undefined' ? data.color : null;
 
-    if (this.room.isNameAvailable(name)) {
+    if (!this.room.game && this.room.isNameAvailable(name)) {
 
         var player = new Player(client, name, color);
 
