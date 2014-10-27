@@ -51,6 +51,7 @@
             padding: 0 10px;
 
             .circle {
+                width: 100px;
                 height: auto;
             }
 
@@ -75,8 +76,26 @@
         }
     }
 
-    .rooms {
+    .rooms, .room {
         margin-top: 0;
+
+        tr {
+            td {
+                height: 50px;
+
+                &.room-enter-col {
+
+                    width: auto;
+
+                    .room-enter {
+                        line-height: 65px;
+                        span {
+                            font-size: 0;
+                        }
+                    }
+                }
+            }
+        }
 
         .room-details {
             margin-top: 10px;

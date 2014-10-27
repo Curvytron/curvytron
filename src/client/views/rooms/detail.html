@@ -1,5 +1,5 @@
 <section>
-    <div id="room" class="container">
+    <div class="container room">
         <h2 class="header">
             {{ room.name }}
             <i class="icon-params" ng-click="toggleParameters()" ng-class="{'active': displayParameters}"></i>
@@ -10,11 +10,6 @@
         </div>
 
         <h3>
-            <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
-                <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
-                <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ nameMaxLength }}" />
-                <div class="clearfix"></div>
-            </form>
             <p class="count">
                 <ng-pluralize count="room.players.items.length" when="{
                     '0': 'No player',
@@ -22,11 +17,22 @@
                     'other': '{} players'}"
                 />
             </p>
+            <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
+                <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
+                <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ nameMaxLength }}" />
+                <div class="clearfix"></div>
+            </form>
             <div class="clearfix"></div>
         </h3>
 
         <div class="room-details">
 
+            <div ng-if="hasTouch" class="touch">
+                <h5>Are you playing on a smartphone? </h5>
+                <button ng-click="setTouch()" class="btn btn-default">
+                    Activate the touch controls!
+                </button>
+            </div>
             <table class="room-players table v-align-middle">
                 <thead>
                     <tr>
