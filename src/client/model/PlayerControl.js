@@ -12,8 +12,8 @@ function PlayerControl(value, icon)
     this.start = this.start.bind(this);
     this.stop  = this.stop.bind(this);
 
-    this.addMapper('keyboard', new KeyboardMapper);
-    this.addMapper('touch', new TouchMapper);
+    this.addMapper('keyboard', new KeyboardMapper());
+    this.addMapper('touch', new TouchMapper());
     this.addMapper('gamepad', new GamepadMapper(gamepadListener, true));
 
     this.mapper = this.mappers.getById('keyboard');

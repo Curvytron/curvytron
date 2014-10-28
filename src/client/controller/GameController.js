@@ -233,6 +233,10 @@ GameController.prototype.onProperty = function(e)
         if (!this.game.frame) {
             this.game.draw();
         }
+
+        if (data.property === 'score' || data.property === 'roundScore') {
+            this.applyScope();
+        }
     }
 };
 
