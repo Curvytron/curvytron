@@ -126,7 +126,7 @@ li.player-row {
     margin-top: 50px;
     border-collapse: separate;
 
-    tr {
+    tbody >tr {
         &.room {
             td {
                 cursor: pointer;
@@ -151,7 +151,7 @@ li.player-row {
             }
         }
 
-        td {
+        >td {
             height: 100px;
             background: #FFF;
             border-top: 10px solid $background-color;

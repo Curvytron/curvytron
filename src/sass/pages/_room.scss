@@ -126,12 +126,13 @@
             }
         }
 
-        tr {
-            td {
+        >tbody >tr {
+            >td {
                 overflow: hidden;
                 height: 60px;
                 min-height: 60px;
                 max-height: 60px;
+                background-color: #ffffff;
 
                 &.col-player {
                     font-weight: bold;
