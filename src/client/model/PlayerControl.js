@@ -7,26 +7,16 @@ function PlayerControl(value, icon)
 
     this.icon      = icon;
     this.listening = false;
+    this.mappers   = new Collection();
 
-    this.keyboardMapper = new KeyboardMapper();
-    this.touchMapper    = new TouchMapper();
-    this.gamepadMapper  = new GamepadMapper(gamepadListener, true);
+    this.start = this.start.bind(this);
+    this.stop  = this.stop.bind(this);
 
-    this.mapper = this.keyboardMapper;
+    this.addMapper('keyboard', new KeyboardMapper());
+    this.addMapper('touch', new TouchMapper());
+    this.addMapper('gamepad', new GamepadMapper(gamepadListener, true));
 
-    this.start            = this.start.bind(this);
-    this.stop             = this.stop.bind(this);
-    this.onKeyboardChange = this.onKeyboardChange.bind(this);
-    this.onGamepadChange  = this.onGamepadChange.bind(this);
-    this.onTouchChange    = this.onTouchChange.bind(this);
-
-    this.keyboardMapper.on('change', this.onKeyboardChange);
-    this.gamepadMapper.on('change', this.onGamepadChange);
-    this.touchMapper.on('change', this.onTouchChange);
-
-    this.keyboardMapper.on('listening:stop', this.stop);
-    this.gamepadMapper.on('listening:stop', this.stop);
-    this.touchMapper.on('listening:stop', this.stop);
+    this.mapper = this.mappers.getById('keyboard');
 
     this.mapper.setValue(value);
 }
@@ -35,36 +25,60 @@ PlayerControl.prototype = Object.create(EventEmitter.prototype);
 PlayerControl.prototype.constructor = PlayerControl;
 
 /**
- * On change
+ * Create mapper
  *
- * @param {Event} e
+ * @param {String} id
+ * @param {Mapper} mapper
  */
-PlayerControl.prototype.onKeyboardChange = function(e)
+PlayerControl.prototype.addMapper = function(id, mapper)
 {
-    this.mapper = this.keyboardMapper;
+    var control = this;
+
+    mapper.id = id;
+
+    mapper.on('change', function (e) { return control.setMapper(mapper); });
+    mapper.on('listening:stop', this.stop);
+
+    this.mappers.add(mapper);
+};
+
+/**
+ * Set mapper
+ *
+ * @param {Mapper} mapper
+ */
+PlayerControl.prototype.setMapper = function(mapper)
+{
+    this.mapper = mapper;
     this.emit('change');
 };
 
 /**
- * On change
+ * Get mapping
  *
- * @param {Event} e
+ * @return {Object}
  */
-PlayerControl.prototype.onGamepadChange = function(e)
+PlayerControl.prototype.getMapping = function()
 {
-    this.mapper = this.gamepadMapper;
-    this.emit('change');
+    return {
+        'mapper': this.mapper.id,
+        'value': this.mapper.value
+    };
 };
 
 /**
- * On change
+ * Load mapping
  *
- * @param {Event} e
+ * @param {Object} mapping
  */
-PlayerControl.prototype.onTouchChange = function(e)
+PlayerControl.prototype.loadMapping = function(mapping)
 {
-    this.mapper = this.touchMapper;
-    this.emit('change');
+    var mapper = this.mappers.getById(mapping.mapper);
+
+    if (mapper) {
+        this.setMapper(mapper);
+        this.mapper.setValue(mapping.value);
+    }
 };
 
 /**
@@ -84,9 +98,9 @@ PlayerControl.prototype.toggle = function()
  */
 PlayerControl.prototype.start = function()
 {
-    this.gamepadMapper.start();
-    this.keyboardMapper.start();
-    this.touchMapper.start();
+    for (var i = this.mappers.items.length - 1; i >= 0; i--) {
+        this.mappers.items[i].start();
+    }
 };
 
 /**
@@ -94,7 +108,7 @@ PlayerControl.prototype.start = function()
  */
 PlayerControl.prototype.stop = function()
 {
-    this.gamepadMapper.stop();
-    this.keyboardMapper.stop();
-    this.touchMapper.stop();
+    for (var i = this.mappers.items.length - 1; i >= 0; i--) {
+        this.mappers.items[i].stop();
+    }
 };

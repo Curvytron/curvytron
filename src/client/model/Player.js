@@ -6,9 +6,9 @@
  * @param {String} name
  * @param {String} color
  */
-function Player(id, client, name, color, mail)
+function Player(id, client, name, color, ready)
 {
-    BasePlayer.call(this, client, name, color, mail);
+    BasePlayer.call(this, client, name, color, ready);
 
     this.id       = id;
     this.local    = false;
@@ -50,12 +50,30 @@ Player.prototype.initControls = function()
 };
 
 /**
+ * Get controls mapping
+ *
+ * @return {Array}
+ */
+Player.prototype.getMapping = function()
+{
+    var mapping = new Array(this.controls.length);
+
+    for (var i = this.controls.length - 1; i >= 0; i--) {
+        mapping[i] = this.controls[i].getMapping();
+    }
+
+    return mapping;
+};
+
+/**
  * Set touch
  */
 Player.prototype.setTouch = function()
 {
+    var touch = document.createTouch(window, window, new Date().getTime(), 0, 0, 0, 0);
+
     for (var i = this.controls.length - 1; i >= 0; i--) {
-        this.controls[i].touchMapper.setValue(document.createTouch(window, window, new Date().getTime(), 0, 0, 0, 0));
+        this.controls[i].mappers.getById('touch').setValue(touch);
     }
 };
 

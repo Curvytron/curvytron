@@ -1,6 +1,6 @@
 {
   "name": "curvytron",
-  "version": "1.1.3",
+  "version": "1.2.0",
   "description": "A web multiplayer Tron game like with curves",
   "keywords": [
     "tron",
@@ -28,7 +28,7 @@
     "tom32i-event-emitter.js": "~0.0.*",
     "tom32i-option-resolver.js": "~0.0.*",
     "tom32i-gamepad.js": "~0.0.*",
-    "tom32i-key-mapper.js": "~0.0.*",
+    "tom32i-key-mapper.js": "~0.1.*",
     "tom32i-asset-loader.js": "~0.0.*",
     "html5-boilerplate": "~4.3.0",
     "angular": "~1.2.*",

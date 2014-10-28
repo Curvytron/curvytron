@@ -110,3 +110,13 @@
 @keyframes deadAnim {
     @include deadAnim;
 }
+
+
+
+@mixin bonus-sprite($col, $line) {
+  $posX: $bonus-size*$col*-1;
+  $posY: $bonus-size*$line*-1;
+
+  background-position: $posX $posY;
+}
+

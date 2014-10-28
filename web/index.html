@@ -24,10 +24,11 @@
             </div>
         <![endif]-->
         <header>
-            <a href="/" class="animated">
-                <img src="images/logo.png" alt="Curvytron" id="logo" /><br/>
-                Curvytron
+            <a href="/" class="logo animated">
+                <img src="images/logo.png" alt="Curvytron" id="logo" />
+                <span class="brand">Curvytron</span>
             </a>
+            <ng-include ng-if="profile" src="'js/views/profile/link.html'"></ng-include>
         </header>
 
         <div id="main" ng-view></div>
@@ -44,6 +45,11 @@
                 </div>
             </div>
         </footer>
+
+        <div id="profile" ng-class="{ 'active': profileOpen }">
+            <ng-include src="'js/views/profile/tuto.html'"></ng-include>
+            <ng-include src="'js/views/profile/profile.html'"></ng-include>
+        </div>
 
         <script src="js/dependencies.js"></script>
         <script src="js/curvytron.js"></script>

@@ -4,73 +4,72 @@
 .text-justify { text-align: justify; }
 
 .pull-right {
-  float: right !important;
+    float: right !important;
 }
 .pull-left {
-  float: left !important;
+    float: left !important;
 }
 
 .hide-text {
-  font: #{0/0} a;
-  color: transparent;
-  text-shadow: none;
-  background-color: transparent;
-  border: 0;
+    font: #{0/0} a;
+    color: transparent;
+    text-shadow: none;
+    background-color: transparent;
+    border: 0;
 }
 
 .strong, .bold { font-weight: $bold-font-weight; }
 .italic { font-style: italic; }
 
 hr {
-  margin-top: $base-line-height;
-  margin-bottom: $base-line-height;
-  border: 0;
-  border-top: 1px solid $hr-border;
+    margin-top: $base-line-height;
+    margin-bottom: $base-line-height;
+    border: 0;
+    border-top: 1px solid $hr-border;
 }
 
 @mixin generateMarginsPaddings() {
-  @for $i from 0 through 20 {
-    .m#{$i * 5}  { margin: $i * 5px; }
-    .mr#{$i * 5} { margin-right: $i * 5px; }
-    .mb#{$i * 5} { margin-bottom: $i * 5px; }
-    .ml#{$i * 5} { margin-left: $i * 5px; }
-    .mt#{$i * 5} { margin-top: $i * 5px; }
+    @for $i from 0 through 20 {
+        .m#{$i * 5}  { margin: $i * 5px; }
+        .mr#{$i * 5} { margin-right: $i * 5px; }
+        .mb#{$i * 5} { margin-bottom: $i * 5px; }
+        .ml#{$i * 5} { margin-left: $i * 5px; }
+        .mt#{$i * 5} { margin-top: $i * 5px; }
 
-    .p#{$i * 5}  { padding: $i * 5px; }
-    .pr#{$i * 5} { padding-right: $i * 5px; }
-    .pb#{$i * 5} { padding-bottom: $i * 5px; }
-    .pl#{$i * 5} { padding-left: $i * 5px; }
-    .pt#{$i * 5} { padding-top: $i * 5px; }
-  }
+        .p#{$i * 5}  { padding: $i * 5px; }
+        .pr#{$i * 5} { padding-right: $i * 5px; }
+        .pb#{$i * 5} { padding-bottom: $i * 5px; }
+        .pl#{$i * 5} { padding-left: $i * 5px; }
+        .pt#{$i * 5} { padding-top: $i * 5px; }
+    }
 }
 
 @include generateMarginsPaddings;
 
 
 .collapse {
-  display: none;
-  &.in { display: block; }
+    display: none;
+    &.in { display: block; }
 }
 
 .collapsing {
-  position: relative;
-  height: 0;
-  overflow: hidden;
-  @include transition(height .35s ease);
+    position: relative;
+    height: 0;
+    overflow: hidden;
+    @include transition(height .35s ease);
 }
 
 .rounded {
-  @include border-radius(50%);
+    @include border-radius(50%);
 }
 
 @mixin generatePct() {
-  @for $i from 0 through 100 {
-    .pct-#{$i} { width: $i * 1%; }
-  }
+    @for $i from 0 through 100 {
+        .pct-#{$i} { width: $i * 1%; }
+    }
 }
 @include generatePct;
 
 .clearfix {
-  @include clearfix();
+    @include clearfix();
 }
-

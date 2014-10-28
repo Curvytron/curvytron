@@ -1,31 +1,51 @@
 <section>
-    <div id="rooms" class="container">
-        <h1 class="header">
-            <form ng-submit="submit()" class="top-right-form">
-                <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
-                <input type="text" ng-model="name" class="form-control" name="name" placeholder="Create room" maxlength="{{ roomMaxLength }}" />
-                <div class="clearfix"></div>
-            </form>
+    <div id="intro" class="container intro">
+        <blockquote class="quote">
+            <p>A multiplayer tron-like game... with curves!</p>
+        </blockquote>
 
+        <div class="tuto">
+            <img src="images/tuto/turn.gif" class="circle" alt="Turning">
+            <p class="content">You're always moving. But you can choose to go left or right.</p>
+        </div>
+
+        <div class="tuto">
+            <img src="images/tuto/death.gif" class="circle" alt="Turning">
+            <p class="content">If you hit another player's line or you own: you're dead!</p>
+        </div>
+        <div class="tuto">
+            <img src="images/tuto/bonus.gif" class="circle" alt="Turning">
+            <p class="content">There's bonuses on the map that can help you.</p>
+        </div>
+    </div>
+
+    <div class="container room-list">
+        <h2 class="header" ng-class="{ 'empty': rooms.isEmpty() }">
             <span class="title">
-                <ng-pluralize count="rooms.items.length" when="{'0': 'No room yet...', 'one': '1 room', 'other': '{} rooms'}" />
+                <ng-pluralize count="rooms.items.length" when="{
+                    '0': 'Start by creating a room:',
+                    'one': 'You can join 1 room!',
+                    'other': 'You can join {} rooms!'}"
+                />
             </span>
-            <div class="clearfix"></div>
-        </h1>
+            <form ng-submit="createRoom()" class="top-right-form">
+                <button type="submit" id="submit">
+                    <span><i class="icon-plus"></i></span>
+                </button>
+                <input type="text" ng-model="roomName" class="form-control clearfix" name="name" placeholder="Create a new room..." maxlength="{{ roomMaxLength }}" />
+            </form>
+        </h2>
 
-        <button class="btn btn-hero" ng-click="quickPlay()">
-            Play right now!
-        </button>
-
-        <table id="rooms" class="table table-hover v-align-middle">
+        <table id="rooms" class="rooms table table-hover v-align-middle" ng-if="!rooms.isEmpty()">
             <tbody>
-                <tr ng-repeat="room in rooms.items" ng-if="!room.inGame" ng-click="join(room)" class="room">
+                <tr ng-repeat="room in rooms.items" ng-if="!room.game" ng-click="join(room)" class="room">
                     <td class="room-name">{{ room.name }}</td>
                     <td class="room-nb-players">
-                        <ng-pluralize count="room.players.items.length "
-                                         when="{'0': 'No player',
-                                             'one': '1 player',
-                                             'other': '{} players'}">
+                        <ng-pluralize count="room.players" when="{
+                            '0': 'No player',
+                            'one': '1 player',
+                            'other': '{} players'}"
+                        />
                     </td>
                     <td class="room-enter-col">
                         <p class="room-enter">
@@ -33,13 +53,14 @@
                         </p>
                     </td>
                 </tr>
-                <tr ng-repeat="room in rooms.items" ng-if="room.inGame" ng-click="join(room)" class="room in-game">
+                <tr ng-repeat="room in rooms.items" ng-if="room.game" ng-click="join(room)" class="room in-game">
                     <td class="room-name">{{ room.name }}</td>
                     <td class="room-nb-players">
-                        <ng-pluralize count="room.players.items.length "
-                                         when="{'0': 'No player',
-                                             'one': '1 player',
-                                             'other': '{} players'}">
+                        <ng-pluralize count="room.players" when="{
+                            '0': 'No player',
+                            'one': '1 player',
+                            'other': '{} players'}"
+                        />
                     </td>
                     <td class="room-enter-col">
                         <p class="room-enter">

@@ -5,15 +5,14 @@
  * @param {String} name
  * @param {String} color
  */
-function BasePlayer(client, name, color, mail)
+function BasePlayer(client, name, color, ready)
 {
     EventEmitter.call(this);
 
     this.client = client;
     this.name   = name;
-    this.color  = typeof(color) !== 'undefined' ? color : this.getRandomColor();
-    this.mail   = mail;
-    this.ready  = false;
+    this.color  = typeof(color) !== 'undefined' && this.validateColor(color) ? color : this.getRandomColor();
+    this.ready  = typeof(ready) !== 'undefined' && ready;
     this.id     = null;
     this.avatar = null;
 }
@@ -52,7 +51,11 @@ BasePlayer.prototype.setName = function(name)
  */
 BasePlayer.prototype.setColor = function(color)
 {
+    if (!this.validateColor(color)) { return false; }
+
     this.color = color;
+
+    return true;
 };
 
 /**
@@ -114,7 +117,6 @@ BasePlayer.prototype.serialize = function()
         id: this.id,
         name: this.name,
         color: this.color,
-        mail: this.mail,
         ready: this.ready
     };
 };
@@ -145,9 +147,9 @@ BasePlayer.prototype.getRandomColor = function()
  */
 BasePlayer.prototype.validateColor = function(color, yiq)
 {
-    var matches = color.match(new RegExp('^#([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$'));
+    if (typeof(color) !== 'string') { return false; }
 
-
+    var matches = color.match(new RegExp('^#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})$'));
 
     if (matches && yiq) {
         var ratio = ((parseInt(matches[1], 16) * 0.4) + (parseInt(matches[2], 16) * 0.5) + (parseInt(matches[3], 16) * 0.3)) / 255;

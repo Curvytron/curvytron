@@ -44,12 +44,7 @@ body {
 
 header {
   color: $header-color;
-  font-family: $base-font-family;
-  font-weight: 300;
-  text-transform: uppercase;
   text-align: center;
-  font-size: 30px;
-  line-height: 50px;
   padding: 40px 20px;
   margin: 0 0 40px 0;
   position: relative;
@@ -73,10 +68,18 @@ header {
   //   @include animation(headerGradient 10s infinite);
   // }
 
-  a, a:visited {
-    color: $header-color;
-    z-index: 100;
+  .logo {
+    z-index: 10;
     position: relative;
+
+    &, &:visited {
+      line-height: 50px;
+      font-family: $base-font-family;
+      font-weight: 300;
+      text-transform: uppercase;
+      font-size: 30px;
+      color: $header-color;
+    }
 
     &.animated {
       &:after {
@@ -84,16 +87,49 @@ header {
         background: $header-color;
       }
     }
-  }
 
-  #logo {
-    width: 150px;
-    position: relative;
-    z-index: 100;
+    img {
+      width: 150px;
+      position: relative;
+      z-index: 100;
+    }
+
+    .brand {
+      display: block;
+    }
   }
 
   .game-copy {
     display: none;
+  }
+
+  .profile-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: $base-font-size;
+    line-height: $base-font-size;
+    font-family: $base-font-family;
+    vertical-align: top;
+    padding: 8px 16px;
+    background-color: $game-background;
+    border: none;
+    border-radius: 40px;
+
+    &,&:visited {
+      color: #ffffff;
+    }
+
+    .circle {
+      width: $base-font-size;
+      height: $base-font-size;
+      border-radius: $base-font-size;
+      display: inline-block;
+      margin-left: -8px;
+      margin-right: 8px;
+      background-color: #ffffff;
+      vertical-align: top;
+    }
   }
 }
 

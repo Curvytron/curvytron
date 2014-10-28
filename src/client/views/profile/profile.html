@@ -1,0 +1,60 @@
+<div class="profile-form">
+    <h3 class="title">
+        <button type="button" class="close" ng-click="toggleProfile()">
+            &times;
+        </button>
+        My profile
+    </h3>
+    <div class="inner">
+
+        <fieldset>
+            <legend>Player:</legend>
+
+            <label for="profile-name">My name:</label>
+            <input
+                id="profile-name"
+                type="text"
+                ng-blur="profile.persist()"
+                ng-model="profile.name"
+                class="form-control"
+                name="name"
+                placeholder="Choose a name"
+                maxlength="{{ nameMaxLength }}"
+            />
+
+            <label for="profile-color">My color:</label>
+            <input
+                id="profile-color"
+                type="text"
+                ng-blur="profile.persist()"
+                colorpicker="hex"
+                colorpicker-position="right"
+                ng-model="profile.color"
+                class="form-control player-color"
+                name="color"
+                placeholder="#CCCCCC"
+                style="border-color: {{ profile.color }};"
+                maxlength="{{ colorMaxLength }}"
+            />
+        </fieldset>
+
+        <fieldset>
+            <legend>Controls:</legend>
+
+            <div ng-repeat="control in profile.controls">
+                <label for="profile-controls-{{ $index }}">{{ control.label }}</label>
+                <input
+                    id="profile-controls-{{ $index }}"
+                    type="text"
+                    value="{{ control.mapper.view }}"
+                    class="form-control control"
+                    ng-name="control[{{ $index }}]"
+                    ng-focus="control.start()"
+                    ng-blur="control.stop()"
+                    ng-keyup="blurProfile()"
+                    ng-class="{ 'active': control.mapper.listening }"
+                />
+            </div>
+        </fieldset>
+    </div>
+</div>

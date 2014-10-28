@@ -1,0 +1,132 @@
+#profile {
+    visibility:hidden;
+
+    &.active {
+        visibility: visible;
+
+        .profile-form {
+            right: 0;
+        }
+
+        .profile-tuto {
+            @include opacity(100);
+        }
+    }
+
+    .profile-form {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: -$profile-width;
+        width: $profile-width;
+        z-index: 30;
+        @include gradient($header-background-from, $header-background-to);
+        @include transition(right 0.25s ease);
+
+        .title {
+            font-size: 30px;
+            height: 80px;
+            line-height: 80px;
+            margin: 0;
+            color: #FFF;
+            padding: 0 20px;
+
+            .close {
+                float: right;
+                color: #FFF;
+                line-height: 30px;
+                height: 30px;
+                margin-top: 25px;
+                @include transition(all 0.25s ease);
+
+                &:hover {
+                    text-decoration: none;
+                    @include opacity(70);
+                }
+            }
+        }
+
+        .close {
+            font-family: $base-font-family;
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .inner {
+            background: $profile-background;
+            padding: 10px 20px;
+            margin-left: $profile-border-size;
+            overflow-y: auto;
+            position: absolute;
+            top: 80px;
+            right: 0;
+            left: 0;
+            bottom: 0;
+        }
+
+        fieldset {
+            margin: 20px 0 40px 0;
+        }
+    }
+
+    .profile-tuto {
+        display: none;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        z-index: 20;
+        background: rgba(21, 21, 21, 0.97);
+        width: 100%;
+        height: 100%;
+        padding-right: $profile-width;
+        @include opacity(0);
+        @include transition(opacity 0.25s ease);
+
+        &.active {
+            display: block;
+        }
+
+        .content {
+            color: #ffffff;
+            padding: $font-size-h2 * 2;
+            font-size: $font-size-h2;
+            line-height: $font-size-h2 * 1.75;
+
+            .list {
+                .item {
+                    display: none;
+                    margin: 20px;
+
+                    font-size: $font-size-h3;
+                    line-height: $font-size-h3 * 1.75;
+
+                    small {
+                        display: block;
+                        color: #999999;
+                        line-height: 0.8em;
+                    }
+
+                    &.first {
+                        display: block;
+                    }
+
+                    &.done + .item {
+                        display: block;
+                    }
+
+                    &.done {
+                        opacity: 0.3;
+                        text-decoration: line-through;
+                    }
+
+                    .btn-hero {
+                        margin-top: 80px;
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+    }
+}

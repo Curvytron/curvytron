@@ -6,7 +6,7 @@
     left: 0;
     height: 100%;
     width: 100%;
-    background: $game-background;
+    background: #000;
 
     aside, #col-right {
         position: fixed;
@@ -23,9 +23,7 @@
         color: #EEE;
         font-weight: 300;
         left: 0;
-        border-right: $aside-border-size solid $header-background-to;
-        padding-top: $game-header-height + 160px;
-        padding-bottom: 298px;
+        border-right: $aside-border-size solid lighten($aside-background, 8%);
 
         header {
             height: $game-header-height;
@@ -108,7 +106,7 @@
             position: fixed;
             left: 0;
             top: $game-header-height + 80px;
-            width: $aside-width - $aside-border-size;
+            width: $aside-width - $aside-border-size - 80px;
             background: $aside-background;
             z-index: 100;
             overflow: hidden;
@@ -119,10 +117,31 @@
         #game-players {
             @extend .no-bullet;
             margin-bottom: 0;
+            position: fixed;
+            overflow: auto;
+
+            top: $game-header-height + 160px;
+            bottom: 298px;
+            left: 0;
+            width: $aside-width;
+
+            &::-webkit-scrollbar {
+                width: $aside-border-size;
+                height: 1px;
+                border-left: 0;
+                @include gradient($header-background-from, $header-background-to);
+            }
+            &::-webkit-scrollbar-track {
+                background: none;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: #FFF;
+                border-radius: 0;
+            }
 
             li {
                 border-bottom: 2px solid lighten($game-background, 10%);
-                padding: 15px 65px 15px 20px;
+                padding: 10px 65px 10px 23px;
                 position: relative;
                 font-size: 18px;
 
@@ -131,11 +150,11 @@
                     text-align: center;
                     position: absolute;
                     top: 0;
-                    right: 0;
+                    right: 2px;
                     bottom: 0;
-                    width: 60px;
-                    line-height: 60px;
-                    font-size: 26px;
+                    width: 50px;
+                    line-height: 50px;
+                    font-size: 25px;
                     font-weight: bold;
                 }
 
@@ -166,6 +185,21 @@
                     left: 0;
                     top: 0;
                     bottom: 0;
+                }
+
+                .local-avatar {
+                    left: 6px;
+                    top: 50%;
+                    border: solid transparent;
+                    content: " ";
+                    height: 0;
+                    width: 0;
+                    position: absolute;
+                    pointer-events: none;
+                    border-color: rgba(136, 183, 213, 0);
+                    border-left-color: transparent;
+                    border-width: 6px;
+                    margin-top: -6px;
                 }
             }
         }
@@ -244,8 +278,18 @@
 
             .count {
                 @include transform(rotate(-45deg));
+                margin-top: 10px;
                 margin-left: -10px;
             }
+        }
+
+        .tie-break {
+            font-size: $font-size-h1;
+            position:   absolute;
+            top: 25%;
+            color: #FFF;
+            width: 100%;
+            z-index: 110;
         }
 
         .countdown-anim {
@@ -300,12 +344,8 @@
                 color: #FFF;
                 display: none;
 
-                i {
-                    display: block;
-                    font-size: 100px;
-                }
+                .victory {
 
-                p {
                     font-size: 40px;
                     font-weight: 300;
                     line-height: 110px;
@@ -318,7 +358,12 @@
                         width: 40%;
                         margin: 0 auto;
                         background-color: #FFF;
-                        bottom: -30px;
+                        margin-top: 15px;
+                    }
+
+                    .icon-trophy {
+                        display: block;
+                        font-size: 100px;
                     }
                 }
             }
@@ -333,6 +378,11 @@
             #game-view {
                 padding: 60px 0 40px 0;
 
+                .victory .icon-trophy {
+                    float: left;
+                    margin-right: 20px;
+                }
+
                 table.recap {
                     max-width: 700px;
                     margin: 0 auto;
@@ -342,7 +392,7 @@
                         border-top: 2px solid transparentize(#FFF, 0.95);
                         background: transparentize(#FFF, 0.95);
                         @include transition(background 0.2s ease);
-                        padding: 30px 25px;
+                        padding: 20px 10px;
                         font-size: 30px;
                         font-weight: 300;
 
@@ -383,7 +433,7 @@
         position: fixed;
         bottom: 0;
         left: 0;
-        width: $aside-width - $aside-border-size;
+        width: $aside-width;
         height: 245px;
         background: lighten($aside-background, 5);
         font-size: 14px;
@@ -394,6 +444,21 @@
             overflow-y: auto;
             padding: 15px 20px 15px;
             background: #1c1c1c;
+            // border-right: $aside-border-size solid lighten($aside-background, 8%);
+
+            &::-webkit-scrollbar {
+                width: $aside-border-size;
+                height: 1px;
+                border-left: 0;
+                @include gradient($header-background-from, $header-background-to);
+            }
+            &::-webkit-scrollbar-track {
+                background: none;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: #FFF;
+                border-radius: 0;
+            }
 
             .welcome {
                 text-transform: uppercase;
@@ -412,6 +477,7 @@
             height: 50px;
             position: relative;
             overflow: hidden;
+            border-right: $aside-border-size solid $header-background-to;
 
             .form-control {
                 height: 50px;
@@ -436,7 +502,7 @@
                 border: 0;
                 color: #FFF;
                 margin: 0 -10px 0 20px;
-                padding: 0 25px 0 15px;
+                padding: 0 20px 0 15px;
                 @include horizontal-gradient($header-background-from, $header-background-to);
                 @include skew(-10deg, 0);
                 @include transition(all 0.1s linear);
@@ -461,25 +527,56 @@
 }
 
 #sound {
-    @include opacity(50);
-    &.active {
+
+    width: 80px;
+    left: $aside-width - $aside-border-size - 80px;
+    top: $game-header-height + 80px;
+    position: fixed;
+    z-index: 100;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+    font-size: 30px;
+    background: $aside-background;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+
+    .icon-volume {
+        @extend .icon-volume-off;
+        opacity: 0.8;
+    }
+
+    &::after {
+        content: " ";
+        width: 40px;
+        height: 2px;
+        background: #CCC;
+        top: 40px;
+        right: 20px;
+        position: absolute;
         @include opacity(100);
+        @include transform(rotate(-45deg));
+        @include transition(opacity 0.15s linear);
+    }
+
+    &.active {
+        .icon-volume {
+            @extend .icon-volume-up;
+            @include opacity(100);
+        }
+
+        &::after {
+            @include opacity(0);
+        }
     }
 }
 
 .btn-back-to-room {
-    border: 2px solid #888;
-    padding: 10px 25px;
-    color: #888 !important;
-    font-weight: 400;
+    padding: 10px 20px;
     margin: 40px 0;
     display: inline-block;
-    text-transform: uppercase;
-    @include transition(all 0.1s linear);
-
-    &:hover {
-        text-decoration: none;
-        background: #888;
-        color: #222 !important;
-    }
+    font-size: $font-size-h4;
 }

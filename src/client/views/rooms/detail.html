@@ -1,17 +1,38 @@
 <section>
-    <div id="room" class="container">
-        <h1>
+    <div class="container room">
+        <h2 class="header">
+            {{ room.name }}
+            <i class="icon-params" ng-click="toggleParameters()" ng-class="{'active': displayParameters}"></i>
+        </h2>
+
+        <div id="room-parameters" ng-controller="RoomConfigController" ng-show="displayParameters">
+            <ng-include src="'js/views/rooms/parameters.html'"></ng-include>
+        </div>
+
+        <h3>
+            <p class="count">
+                <ng-pluralize count="room.players.items.length" when="{
+                    '0': 'No player',
+                    'one': '1 player',
+                    'other': '{} players'}"
+                />
+            </p>
             <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
                 <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
-                <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a player" maxlength="{{ nameMaxLength }}" />
+                <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ nameMaxLength }}" />
                 <div class="clearfix"></div>
             </form>
-            {{ room.name }}
             <div class="clearfix"></div>
-        </h1>
+        </h3>
 
         <div class="room-details">
 
+            <div ng-if="hasTouch" class="touch">
+                <h5>Are you playing on a smartphone? </h5>
+                <button ng-click="setTouch()" class="btn btn-default">
+                    Activate the touch controls!
+                </button>
+            </div>
             <table class="room-players table v-align-middle">
                 <thead>
                     <tr>
@@ -50,15 +71,18 @@
                             </button>
                         </td>
                         <td class="col-ready">
-                            <span class="player-ready" ng-click="setReady(player)" ng-class="{ ready: player.ready }">
-                                <span>Ready?</span>
-                            </span>
+                            <div class="player-ready" ng-click="setReady(player)" ng-class="{ ready: player.ready }">
+                                <span>
+                                    <span ng-if="!player.ready">Ready?</span>
+                                    <span ng-if="player.ready" class="icon-check success"></span>
+                                </span>
+                            </div>
                         </td>
                     </tr>
                     <tr ng-repeat="player in room.players.items" ng-if="!player.local">
                         <td></td>
                         <td class="col-player">
-                            {{ player.name }}
+                            <p class="player-name">{{ player.name }}</p>
                         </td>
                         <td class="col-color">
                             <span class="line-color-preview" style="background-color: {{ player.color }};"></span>
@@ -66,12 +90,12 @@
                         </td>
                         <td></td>
                         <td class="col-ready">
-                            <span class="player-ready" ng-class="{ ready: player.ready }">
+                            <div class="player-ready" ng-class="{ ready: player.ready }">
                                 <span>
-                                    <i ng-if="player.ready == true" class="icon-check success"></i>
-                                    <i ng-if="player.ready == false" class="icon-close success"></i>
+                                    <i ng-if="player.ready" class="icon-check success"></i>
+                                    <i ng-if="!player.ready" class="icon-close success"></i>
                                 </span>
-                            </span>
+                            </div>
                         </td>
                     </tr>
                 </tbody>

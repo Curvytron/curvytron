@@ -3,18 +3,19 @@
  *
  * @param {Object} $scope
  * @param {Object} $location
- * @param {RoomRepository} repository
  * @param {SocketClient} client
+ * @param {Profile} profile
  */
-function RoomsController($scope, $location, repository, client)
+function RoomsController($scope, $location, client, profile)
 {
     this.$scope     = $scope;
     this.$location  = $location;
-    this.repository = repository;
     this.client     = client;
+    this.repository = new RoomsRepository(this.client);
 
     // Binding:
     this.createRoom   = this.createRoom.bind(this);
+    this.onCreateRoom = this.onCreateRoom.bind(this);
     this.joinRoom     = this.joinRoom.bind(this);
     this.quickPlay    = this.quickPlay.bind(this);
     this.detachEvents = this.detachEvents.bind(this);
@@ -22,16 +23,17 @@ function RoomsController($scope, $location, repository, client)
 
     this.$scope.$on('$destroy', this.detachEvents);
 
-    this.attachEvents();
-
     // Hydrating the scope:
     this.$scope.rooms         = this.repository.rooms;
-    this.$scope.submit        = this.createRoom;
+    this.$scope.createRoom    = this.createRoom;
     this.$scope.join          = this.joinRoom;
     this.$scope.quickPlay     = this.quickPlay;
     this.$scope.roomMaxLength = Room.prototype.maxLength;
+    this.$scope.roomName      = '';
 
     this.$scope.curvytron.bodyClass = null;
+
+    this.attachEvents();
 }
 
 /**
@@ -39,12 +41,12 @@ function RoomsController($scope, $location, repository, client)
  */
 RoomsController.prototype.attachEvents = function()
 {
-    this.repository.on('room:new', this.applyScope);
+    this.repository.on('room:open', this.applyScope);
     this.repository.on('room:close', this.applyScope);
-    this.repository.on('room:join', this.applyScope);
-    this.repository.on('room:leave', this.applyScope);
-    this.repository.on('room:game:start', this.applyScope);
-    this.repository.on('room:game:end', this.applyScope);
+    this.repository.on('room:players', this.applyScope);
+    this.repository.on('room:game', this.applyScope);
+
+    this.repository.start();
 };
 
 /**
@@ -52,12 +54,12 @@ RoomsController.prototype.attachEvents = function()
  */
 RoomsController.prototype.detachEvents = function()
 {
-    this.repository.off('room:new', this.applyScope);
+    this.repository.stop();
+
+    this.repository.off('room:open', this.applyScope);
     this.repository.off('room:close', this.applyScope);
-    this.repository.off('room:join', this.applyScope);
-    this.repository.off('room:leave', this.applyScope);
-    this.repository.off('room:game:start', this.applyScope);
-    this.repository.off('room:game:end', this.applyScope);
+    this.repository.off('room:players', this.applyScope);
+    this.repository.off('room:game', this.applyScope);
 };
 
 /**
@@ -65,21 +67,27 @@ RoomsController.prototype.detachEvents = function()
  */
 RoomsController.prototype.createRoom = function(e)
 {
-    if (this.$scope.name) {
+    if (this.$scope.roomName) {
         var $scope = this.$scope,
             controller = this;
 
-        this.repository.create(
-            this.$scope.name,
-            function (result) {
-                if (result.success) {
-                    $scope.name = null;
-                    controller.joinRoom(new Room(result.room));
-                } else {
-                    console.error('Could not create room %s', $scope.name);
-                }
-            }
-        );
+        this.repository.create(this.$scope.roomName, this.onCreateRoom);
+    }
+};
+
+/**
+ * On create Room
+ *
+ * @param {Object} result
+ */
+RoomsController.prototype.onCreateRoom = function(result)
+{
+    if (result.success) {
+        this.$scope.name = null;
+        this.joinRoom(this.repository.createRoom(result.room));
+        this.applyScope();
+    } else {
+        console.error('Could not create room %s', this.$scope.name);
     }
 };
 
@@ -96,12 +104,12 @@ RoomsController.prototype.joinRoom = function(room)
  */
 RoomsController.prototype.quickPlay = function()
 {
-    var room = this.repository.rooms.filter(function () { return !this.inGame; }).getRandomItem();
+    var room = this.repository.rooms.filter(function () { return !this.game; }).getRandomItem();
 
     if (room) {
         this.joinRoom(room);
     } else {
-        this.$scope.name = 'Hello Curvytron!';
+        this.$scope.roomName = 'Hello Curvytron!';
         this.createRoom();
     }
 };
@@ -109,11 +117,4 @@ RoomsController.prototype.quickPlay = function()
 /**
  * Apply scope
  */
-RoomsController.prototype.applyScope = function()
-{
-    try {
-        this.$scope.$apply();
-    } catch (e) {
-
-    }
-};
+RoomsController.prototype.applyScope = CurvytronController.prototype.applyScope;

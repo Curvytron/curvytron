@@ -189,7 +189,7 @@ PlayerInput.prototype.onTouch = function(e)
         tests = [],
         t, i, x;
 
-    for (var i = this.binding.length - 1; i >= 0; i--) {
+    for (i = this.binding.length - 1; i >= 0; i--) {
         if (this.binding[i] instanceof Touch) {
             tests.push({index: i, result: false});
         }
