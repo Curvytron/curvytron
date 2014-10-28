@@ -70,8 +70,10 @@ Player.prototype.getMapping = function()
  */
 Player.prototype.setTouch = function()
 {
+    var touch = document.createTouch(window, window, new Date().getTime(), 0, 0, 0, 0);
+
     for (var i = this.controls.length - 1; i >= 0; i--) {
-        this.controls[i].touchMapper.setValue(document.createTouch(window, window, new Date().getTime(), 0, 0, 0, 0));
+        this.controls[i].mappers.getById('touch').setValue(touch);
     }
 };
 

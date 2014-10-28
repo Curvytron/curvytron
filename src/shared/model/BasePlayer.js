@@ -147,6 +147,8 @@ BasePlayer.prototype.getRandomColor = function()
  */
 BasePlayer.prototype.validateColor = function(color, yiq)
 {
+    if (typeof(color) !== 'string') { return false; }
+
     var matches = color.match(new RegExp('^#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})$'));
 
     if (matches && yiq) {

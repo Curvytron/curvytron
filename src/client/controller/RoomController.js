@@ -20,6 +20,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.name           = decodeURIComponent($routeParams.name);
     this.repository     = repository;
     this.controlSynchro = false;
+    this.useTouch       = false;
 
     // Binding:
     this.addPlayer        = this.addPlayer.bind(this);
@@ -34,6 +35,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.setColor         = this.setColor.bind(this);
     this.setReady         = this.setReady.bind(this);
     this.setName          = this.setName.bind(this);
+    this.setTouch         = this.setTouch.bind(this);
     this.updateProfile    = this.updateProfile.bind(this);
     this.toggleParameters = this.toggleParameters.bind(this);
     this.start            = this.start.bind(this);
@@ -46,9 +48,11 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.$scope.setColor            = this.setColor;
     this.$scope.setReady            = this.setReady;
     this.$scope.setName             = this.setName;
+    this.$scope.setTouch            = this.setTouch;
     this.$scope.toggleParameters    = this.toggleParameters;
     this.$scope.nameMaxLength       = Player.prototype.maxLength;
     this.$scope.colorMaxLength      = Player.prototype.colorMaxLength;
+    this.$scope.hasTouch            = this.hasTouch;
     this.$scope.curvytron.bodyClass = null;
     this.$scope.displayParameters   = false;
 
@@ -245,7 +249,9 @@ RoomController.prototype.onJoin = function(e)
 
         if (player.profile) {
             this.setProfileControls(player);
-        } else if (this.hasTouch) {
+        }
+
+        if (this.useTouch) {
             player.setTouch();
         }
     }
@@ -323,6 +329,24 @@ RoomController.prototype.setReady = function(player)
             }
         }
     );
+};
+
+/**
+ * Set touch
+ *
+ * @param {Player} player
+ */
+RoomController.prototype.setTouch = function(player)
+{
+    if (!this.hasTouch) { return; }
+
+    this.useTouch = true;
+
+    var players = this.room.getLocalPlayers();
+
+    for (var i = players.items.length - 1; i >= 0; i--) {
+        players.items[i].setTouch();
+    }
 };
 
 /**

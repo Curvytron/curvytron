@@ -7,31 +7,40 @@ function PlayerControl(value, icon)
 
     this.icon      = icon;
     this.listening = false;
-    this.mappers   = [
-        new KeyboardMapper(),
-        new TouchMapper(),
-        new GamepadMapper(gamepadListener, true)
-    ];
+    this.mappers   = new Collection();
 
     this.start = this.start.bind(this);
     this.stop  = this.stop.bind(this);
 
-    var control = this,
-        mapper, i;
+    this.addMapper('keyboard', new KeyboardMapper);
+    this.addMapper('touch', new TouchMapper);
+    this.addMapper('gamepad', new GamepadMapper(gamepadListener, true));
 
-    for (i = this.mappers.length - 1; i >= 0; i--) {
-        mapper = this.mappers[i];
-        this.mappers[i].on('change', function (e) { return control.setMapper(mapper); });
-        this.mappers[i].on('listening:stop', this.stop);
-    }
-
-    this.mapper = this.mappers[0];
+    this.mapper = this.mappers.getById('keyboard');
 
     this.mapper.setValue(value);
 }
 
 PlayerControl.prototype = Object.create(EventEmitter.prototype);
 PlayerControl.prototype.constructor = PlayerControl;
+
+/**
+ * Create mapper
+ *
+ * @param {String} id
+ * @param {Mapper} mapper
+ */
+PlayerControl.prototype.addMapper = function(id, mapper)
+{
+    var control = this;
+
+    mapper.id = id;
+
+    mapper.on('change', function (e) { return control.setMapper(mapper); });
+    mapper.on('listening:stop', this.stop);
+
+    this.mappers.add(mapper);
+};
 
 /**
  * Set mapper
@@ -52,7 +61,7 @@ PlayerControl.prototype.setMapper = function(mapper)
 PlayerControl.prototype.getMapping = function()
 {
     return {
-        'mapper': this.mapper.constructor.name,
+        'mapper': this.mapper.id,
         'value': this.mapper.value
     };
 };
@@ -64,11 +73,11 @@ PlayerControl.prototype.getMapping = function()
  */
 PlayerControl.prototype.loadMapping = function(mapping)
 {
-    for (var i = this.mappers.length - 1; i >= 0; i--) {
-        if (this.mappers[i].constructor.name === mapping.mapper) {
-            this.setMapper(this.mappers[i]);
-            this.mapper.setValue(mapping.value);
-        }
+    var mapper = this.mappers.getById(mapping.mapper);
+
+    if (mapper) {
+        this.setMapper(mapper);
+        this.mapper.setValue(mapping.value);
     }
 };
 
@@ -89,8 +98,8 @@ PlayerControl.prototype.toggle = function()
  */
 PlayerControl.prototype.start = function()
 {
-    for (var i = this.mappers.length - 1; i >= 0; i--) {
-        this.mappers[i].start();
+    for (var i = this.mappers.items.length - 1; i >= 0; i--) {
+        this.mappers.items[i].start();
     }
 };
 
@@ -99,7 +108,7 @@ PlayerControl.prototype.start = function()
  */
 PlayerControl.prototype.stop = function()
 {
-    for (var i = this.mappers.length - 1; i >= 0; i--) {
-        this.mappers[i].stop();
+    for (var i = this.mappers.items.length - 1; i >= 0; i--) {
+        this.mappers.items[i].stop();
     }
 };
