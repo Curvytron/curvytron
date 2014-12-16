@@ -8,7 +8,7 @@
                 <i class="icon-volume"></i>
             </span>
             <ul id="game-players">
-                <li ng-repeat="avatar in game.avatars.items | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
+                <li ng-repeat="avatar in avatars | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
                     <span class="local-avatar" style="border-left-color: {{ avatar.player.color }};" ng-if="avatar.local"></span>
                     <span class="round-points pull-right" ng-if="avatar.roundScore && (!avatar.alive || !game.inRound)">+{{ avatar.roundScore }}</span>
@@ -40,8 +40,8 @@
             </div>
         </aside>
         <div id="col-right">
-            <div ng-hide="countFinish">
-                <p class="tie-break" ng-if="game.sortAvatars().getFirst().score >= game.maxScore">
+            <div ng-if="warmup">
+                <p class="tie-break" ng-if="tieBreak">
                     Tie break
                 </p>
                 <section class="countdown">
@@ -51,8 +51,8 @@
                 </section>
                 <div class="countdown-anim"></div>
             </div>
-            <section id="end">
-                <section id="round-view">
+            <section id="end" ng-if="end">
+                <section ng-if="phase == 'round'" id="round-view">
                     <p class="victory">
                         <i class="icon-trophy"></i>
                         <span class="strong" style="color: {{ roundWinner.player.color }}">
@@ -61,7 +61,7 @@
                         won the round !
                     </p>
                 </section>
-                <section id="game-view">
+                <section ng-if="phase == 'game'" id="game-view">
                     <p class="victory">
                         <i class="icon-trophy"></i>
                         <span class="strong" style="color: {{ gameWinner.color }}">

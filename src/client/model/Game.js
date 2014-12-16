@@ -79,6 +79,22 @@ Game.prototype.onStop = function()
 };
 
 /**
+ * Is tie break
+ *
+ * @return {Boolean}
+ */
+Game.prototype.isTieBreak = function()
+{
+    for (var i = this.avatars.length - 1; i >= 0; i--) {
+        if (this.avatars[i].score >= maxScore) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+/**
  * Clear trails
  */
 Game.prototype.clearTrails = function()

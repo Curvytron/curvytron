@@ -47,7 +47,10 @@ function GameController($scope, $routeParams, $location, client, repository, pro
 
     // Hydrate scope:
     this.$scope.sortorder   = '-score';
-    this.$scope.countFinish = true;
+    this.$scope.warmup      = false;
+    this.$scope.phase       = 'round';
+    this.$scope.end         = false;
+    this.$scope.tieBreak    = false;
     this.$scope.sound       = this.profile.sound;
     this.$scope.backToRoom  = this.backToRoom;
     this.$scope.toggleSound = this.toggleSound;
@@ -81,7 +84,7 @@ GameController.prototype.initSound = function()
 {
     createjs.Sound.alternateExtensions = ['mp3'];
 
-    createjs.Sound.registerManifest(
+    createjs.Sound.registerSounds(
         [
             {id:'loose', src:'loose.ogg'},
             {id:'win', src:'win.ogg'}
@@ -154,7 +157,8 @@ GameController.prototype.loadGame = function(room)
 
     // Hydrate scope:
     this.$scope.curvytron.bodyClass = 'game-mode';
-    this.$scope.game = this.game;
+    this.$scope.game                = this.game;
+    this.$scope.avatars             = this.game.avatars.items;
 
     this.client.addEvent('loaded');
 
@@ -168,8 +172,8 @@ GameController.prototype.displayWarmup = function(time)
 {
     var controller = this;
 
-    this.$scope.count       = time/1000;
-    this.$scope.countFinish = false;
+    this.$scope.count  = time/1000;
+    this.$scope.warmup = true;
     this.applyScope();
 
     this.warmupInterval = setInterval(this.onWarmup, 1000);
@@ -192,7 +196,7 @@ GameController.prototype.onWarmup = function()
 GameController.prototype.endWarmup = function(interval)
 {
     this.clearWarmup();
-    this.$scope.countFinish = true;
+    this.$scope.warmup = false;
     this.applyScope();
 };
 
@@ -260,7 +264,6 @@ GameController.prototype.onBonusStack = function(e)
 /**
  * On bonus pop
  *
- *
  * @param {Event} e
  */
 GameController.prototype.onBonusPop = function(e)
@@ -272,7 +275,7 @@ GameController.prototype.onBonusPop = function(e)
 };
 
 /**
- * On bonus pop
+ * On bonus clear
  *
  * @param {Event} e
  */
@@ -333,9 +336,8 @@ GameController.prototype.onSpectate = function()
  */
 GameController.prototype.onRoundNew = function(e)
 {
-    document.getElementById('end').style.display        = 'none';
-    document.getElementById('game-view').style.display  = 'none';
-    document.getElementById('round-view').style.display = 'none';
+    this.$scope.end      = false;
+    this.$scope.tieBreak = this.game.isTieBreak();
 
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
@@ -374,9 +376,8 @@ GameController.prototype.onEnd = function(e)
 
     this.close();
 
-    document.getElementById('end').style.display        = 'block';
-    document.getElementById('game-view').style.display  = 'block';
-    document.getElementById('round-view').style.display = 'none';
+    this.$scope.end   = true;
+    this.$scope.phase = 'game';
 
     createjs.Sound.play('win');
 };
@@ -395,8 +396,7 @@ GameController.prototype.onRoundWinner = function(e)
         this.$scope.roundWinner = avatar;
         this.applyScope();
 
-        document.getElementById('end').style.display = 'block';
-        document.getElementById('round-view').style.display = 'block';
+        this.$scope.end = true;
     }
 };
 
