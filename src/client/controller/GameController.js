@@ -372,12 +372,12 @@ GameController.prototype.onClear = function(e)
 GameController.prototype.onEnd = function(e)
 {
     this.$scope.gameWinner = this.game.sortAvatars().getFirst();
+    this.$scope.end        = true;
+    this.$scope.phase      = 'game';
+
     this.applyScope();
 
     this.close();
-
-    this.$scope.end   = true;
-    this.$scope.phase = 'game';
 
     createjs.Sound.play('win');
 };
