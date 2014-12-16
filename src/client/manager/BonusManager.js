@@ -45,7 +45,7 @@ BonusManager.prototype.spritePosition = [
  */
 BonusManager.prototype.setScale = function(scale)
 {
-    for (i = this.bonuses.items.length - 1; i >= 0; i--) {
+    for (var i = this.bonuses.items.length - 1; i >= 0; i--) {
         this.bonuses.items[i].setScale(scale);
     }
 };
