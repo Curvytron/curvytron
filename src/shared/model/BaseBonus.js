@@ -40,7 +40,7 @@ BaseBonus.prototype.duration = 5000;
  *
  * @param {Array} point
  */
-BaseBonus.prototype.clear = function() {};
+BaseBonus.prototype.clear = function () {};
 
 /**
  * Apply to target(s)
@@ -50,7 +50,7 @@ BaseBonus.prototype.clear = function() {};
  *
  * @return {Number}
  */
-BaseBonus.prototype.applyTo = function(avatar, game) {};
+BaseBonus.prototype.applyTo = function (avatar, game) {};
 
 /**
  * Serialize

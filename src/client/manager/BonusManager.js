@@ -39,18 +39,6 @@ BonusManager.prototype.spritePosition = [
 ];
 
 /**
- * Set scale
- *
- * @param {Number} scale
- */
-BonusManager.prototype.setScale = function(scale)
-{
-    for (i = this.bonuses.items.length - 1; i >= 0; i--) {
-        this.bonuses.items[i].setScale(scale);
-    }
-};
-
-/**
  * On bonus sprite loaded
  */
 BonusManager.prototype.onLoad = function()

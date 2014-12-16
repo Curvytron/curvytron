@@ -38,8 +38,6 @@ Bonus.prototype.opacity = 1;
 /**
  * Get drawing width
  *
- * @param {Float} scale
- *
  * @return {Float}
  */
 Bonus.prototype.getDrawWidth = function()
