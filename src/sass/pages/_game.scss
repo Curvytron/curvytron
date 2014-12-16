@@ -337,12 +337,10 @@
             height: 100%;
             background: transparentize(darken($game-background, 5%), 0.2);
             overflow-y: auto;
-            display: none;
 
             #round-view, #game-view {
                 position: relative;
                 color: #FFF;
-                display: none;
 
                 .victory {
 

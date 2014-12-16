@@ -74,7 +74,7 @@ CurvytronController.prototype.blurProfile = function(e)
  */
 CurvytronController.prototype.applyScope = function(fn)
 {
-    var phase = this.$scope.$root.$$phase;
+    var phase = this.$scope.$root ? this.$scope.$root.$$phase : null;
 
     if(phase !== '$apply' && phase !== '$digest') {
         this.$scope.$apply();
