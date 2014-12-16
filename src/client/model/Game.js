@@ -205,7 +205,6 @@ Game.prototype.onResize = function()
         }
     }
 
-    this.bonusManager.setScale(scale);
     this.canvas.setDimension(width, width, scale);
     this.background.setDimension(width, width, scale, true);
     this.draw();
