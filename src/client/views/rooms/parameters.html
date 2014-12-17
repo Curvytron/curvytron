@@ -4,13 +4,7 @@
         <input type="text" class="form-control" id="max-score" ng-change="setMaxScore(config.maxScore)" ng-model="config.maxScore" placeholder="{{ config.getDefaultMaxScore() }}" maxlength="3" />
     </div>
     <div class="col-lg-8 bonus-list">
-        <!--div class="btn-group btn-group-xs">
-            <button type="button" class="btn btn-default active">All</button>
-            <button type="button" class="btn btn-default">Custom</button>
-            <button type="button" class="btn btn-default">None</button>
-        </div-->
         <h2>Bonus</h2>
-
 
         <div class="config-variables" ng-repeat="(variable, value) in config.variables">
             <label for="config-{{ variable }}">{{ config.variablesNames[variable] }}:</label>
@@ -31,14 +25,4 @@
             <span ng-repeat="(bonus, enabled) in config.bonuses" ng-click="toggleBonus(bonus)" class="bonus {{ config.bonusClasses[bonus] }}" ng-if="!enabled"></span>
         </div>
     </div>
-    <!--div class="col-lg-5 params">
-        <div class="config-variables" ng-repeat="(variable, value) in config.variables">
-            <label for="config-{{ variable }}">{{ config.variablesNames[variable] }}</label>
-            <div class="input-range">
-                <span class="range-icon less-icon"><i class="icon-minus"></i></span>
-                <span class="range-icon more-icon"><i class="icon-plus"></i></span>
-                <input id="config-{{ variable }}" type="range" min="-1" max="1" step="0.1" ng-model="config.variables[variable]" ng-change="setVariable(variable)"/>
-            </div>
-        </div>
-    </div-->
 </div>

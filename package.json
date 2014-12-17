@@ -34,11 +34,12 @@
     "gulp-rename": "^1.2.*",
     "gulp-sass": "^0.7.*",
     "gulp-uglify": "^0.3.*",
-    "gulp-util": "^2.2.*"
+    "gulp-util": "^2.2.*",
+    "gulp-html-minifier": "^0.1.6"
   },
   "dependencies": {
-    "faye-websocket": "^0.7.*",
-    "express": "~4.4.*"
+    "express": "~4.4.*",
+    "faye-websocket": "^0.7.*"
   },
   "scripts": {
     "install": "bower install"
