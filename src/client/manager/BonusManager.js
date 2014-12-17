@@ -50,6 +50,8 @@ BonusManager.prototype.onLoad = function()
     }
 
     Bonus.prototype.assets = this.assets;
+
+    this.emit('load');
 };
 
 /**

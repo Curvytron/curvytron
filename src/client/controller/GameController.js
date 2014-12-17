@@ -21,6 +21,7 @@ function GameController($scope, $routeParams, $location, client, repository, pro
     this.warmupInterval = null;
 
     // Binding
+    this.onLoaded      = this.onLoaded.bind(this);
     this.onMove        = this.onMove.bind(this);
     this.onBonusPop    = this.onBonusPop.bind(this);
     this.onBonusClear  = this.onBonusClear.bind(this);
@@ -145,6 +146,8 @@ GameController.prototype.loadGame = function(room)
     this.room = room;
     this.game = room.newGame();
 
+    this.game.bonusManager.on('load', this.onLoaded);
+
     avatars = this.game.avatars.filter(function () { return this.local; });
 
     for (var i = avatars.items.length - 1; i >= 0; i--) {
@@ -160,9 +163,15 @@ GameController.prototype.loadGame = function(room)
     this.$scope.game                = this.game;
     this.$scope.avatars             = this.game.avatars.items;
 
-    this.client.addEvent('loaded');
-
     setTimeout(this.chat.scrollDown, 0);
+};
+
+/**
+ * On assets loaded
+ */
+GameController.prototype.onLoaded = function()
+{
+    this.client.addEvent('loaded');
 };
 
 /**

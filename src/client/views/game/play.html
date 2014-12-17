@@ -1,12 +1,14 @@
 <section>
     <section id="game-wrapper">
         <aside id="game-infos">
-            <header><a href="/" class="logo"><img src="images/logo.svg" alt="Curvytron" id="logo" /> Curvytron</a></header>
+            <header><a href="/#/" class="logo"><img src="images/logo.svg" alt="Curvytron" id="logo" /> Curvytron</a></header>
             <div class="maxScore"><i class="icon-trophy"></i><span>{{ game.maxScore }}</span></div>
             <h3 title="{{ game.name }}">{{ game.name }}</h3>
+
             <span id="sound" class="pull-right" ng-class="{ active: sound }" ng-click="toggleSound()">
                 <i class="icon-volume"></i>
             </span>
+
             <ul id="game-players">
                 <li ng-repeat="avatar in avatars | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
