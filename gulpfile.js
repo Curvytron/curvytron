@@ -8,6 +8,7 @@ var gulp      = require('gulp'),
     plumber   = require('gulp-plumber'),
     gutil     = require('gulp-util'),
     minifyCSS = require('gulp-minify-css'),
+    htmlmin   = require('gulp-html-minifier'),
     nodemon   = require('gulp-nodemon'),
     meta      = require('./package.json');
 
@@ -79,7 +80,8 @@ gulp.task('front-min', function(){
 });
 
 gulp.task('views', function(){
-    gulp.src('src/client/views/**/*')
+    gulp.src('src/client/views/**/*.html')
+        .pipe(htmlmin({collapseWhitespace: true}))
         .pipe(gulp.dest(jsDir + 'views'));
 });
 
