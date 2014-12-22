@@ -274,7 +274,7 @@ RoomController.prototype.onName = function(client, data, callback)
         callback({success: true, name: player.name});
         this.socketGroup.addEvent('player:name', { player: player.id, name: player.name });
     } else {
-        callback({success: false, name: player.name});
+        callback({success: false});
     }
 };
 
