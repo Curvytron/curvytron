@@ -9,6 +9,12 @@ A web multiplayer Tron game like with curves
     bower install
     gulp
 
+## Configuration
+
+Duplicate `config.json.sample` to `config.json`:
+
+    cp config.json.sample config.json
+
 ## Launch server:
 
     node bin/curvytron.js
