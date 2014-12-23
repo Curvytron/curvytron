@@ -111,6 +111,10 @@ RoomsController.prototype.onCreateRoom = function(client, data, callback)
     var room = this.repository.create(data.name);
 
     callback(room ? {success: true, room: room.serialize(false)} : {success: false});
+
+    if (room) {
+        this.emit('room:new', {room: room});
+    }
 };
 
 /**
