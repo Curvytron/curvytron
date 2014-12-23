@@ -5,7 +5,9 @@
  */
 function Analyser($rootScope)
 {
-    EventEmitter.call(this);
+    if (typeof(ga) === 'undefined') {
+        return false;
+    }
 
     this.$rootScope = $rootScope;
 
