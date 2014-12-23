@@ -1,4 +1,5 @@
-var gulp      = require('gulp'),
+var fs        = require('fs'),
+    gulp      = require('gulp'),
     concat    = require('gulp-concat'),
     uglify    = require('gulp-uglify'),
     header    = require('gulp-header'),
@@ -9,7 +10,8 @@ var gulp      = require('gulp'),
     gutil     = require('gulp-util'),
     minifyCSS = require('gulp-minify-css'),
     htmlmin   = require('gulp-html-minifier'),
-    nodemon   = require('gulp-nodemon'),
+    replace   = require('gulp-replace'),
+    config    = require('./config.json'),
     meta      = require('./package.json');
 
     var srcDir  = './src/',
@@ -42,81 +44,85 @@ var gulp      = require('gulp'),
         ].join('\n');
 
 var onError = function (err) {
-  gutil.beep();
-  console.log(err.toString());
-  this.emit('end');
+    gutil.beep();
+    console.log(err.toString());
+    this.emit('end');
 };
 
 gulp.task('jshint', function() {
-    gulp.src('src/**/*.js')
+    return gulp.src('src/**/*.js')
         .pipe(jshint())
         .pipe(jshint.reporter());
 });
 
 gulp.task('front-expose', function() {
-    gulp.src(dependencies)
-        .pipe(concat('dependencies.js'))
-        .pipe(uglify())
-        .pipe(gulp.dest(recipes.client.path));
-
     for (var i = expose.length - 1; i >= 0; i--) {
         gulp.src(expose[i]).pipe(gulp.dest(recipes.client.path));
     }
+
+    return gulp.src(dependencies)
+        .pipe(concat('dependencies.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest(recipes.client.path));
 });
 
 gulp.task('front-full', function() {
-    gulp.src(recipes.client.files)
+    return gulp.src(recipes.client.files)
         .pipe(concat(recipes.client.name))
         .pipe(header(banner, meta))
         .pipe(gulp.dest(recipes.client.path));
 });
 
 gulp.task('front-min', function(){
-    gulp.src(recipes.client.files)
+    return gulp.src(recipes.client.files)
         .pipe(concat(recipes.client.name))
         .pipe(uglify())
         .pipe(header(banner, meta))
         .pipe(gulp.dest(recipes.client.path));
 });
 
-gulp.task('views', function(){
-    gulp.src('src/client/views/**/*.html')
+gulp.task('ga', function() {
+    var source = gulp.src('./src/client/views/index.html');
+
+    if (typeof(config.googleAnalyticsId) !== 'undefined' && config.googleAnalyticsId) {
+        var tag = fs.readFileSync('./src/client/views/google.analytics.html').toString()
+            .replace('GoogleAnalyticsToken', config.googleAnalyticsId);
+
+        source.pipe(replace('<!-- Google Analytics -->', tag));
+    }
+
+    return source
+        .pipe(htmlmin({collapseWhitespace: true}))
+        .pipe(gulp.dest('./web'));
+});
+
+gulp.task('views', function() {
+    return gulp.src('src/client/views/*/**/*.html')
         .pipe(htmlmin({collapseWhitespace: true}))
         .pipe(gulp.dest(jsDir + 'views'));
 });
 
 gulp.task('server', function() {
-    gulp.src(recipes.server.files)
+    return gulp.src(recipes.server.files)
         .pipe(concat(recipes.server.name))
         .pipe(gulp.dest(recipes.server.path));
 });
 
-gulp.task('nodemon', function () {
-    nodemon({
-        watch: recipes.server.files,
-        ext: 'js',
-        script: 'bin/curvytron.js',
-        restartable: "rs"
-    })
-    .on('change', ['server', 'front-expose', 'front-full'])
-    .on('restart', ['default'])
-});
-
 gulp.task('sass-full', function() {
-  gulp.src(sassDir + 'style.scss')
-    .pipe(plumber({ errorHandler: onError }))
-    .pipe(sass())
-    .pipe(rename('style.css'))
-    .pipe(gulp.dest(cssDir));
+    return gulp.src(sassDir + 'style.scss')
+        .pipe(plumber({ errorHandler: onError }))
+        .pipe(sass())
+        .pipe(rename('style.css'))
+        .pipe(gulp.dest(cssDir));
 });
 
 gulp.task('sass-min', function() {
-  gulp.src(sassDir + 'style.scss')
-    .pipe(plumber({ errorHandler: onError }))
-    .pipe(sass())
-    .pipe(minifyCSS())
-    .pipe(rename('style.css'))
-    .pipe(gulp.dest(cssDir));
+    return gulp.src(sassDir + 'style.scss')
+        .pipe(plumber({ errorHandler: onError }))
+        .pipe(sass())
+        .pipe(minifyCSS())
+        .pipe(rename('style.css'))
+        .pipe(gulp.dest(cssDir));
 });
 
 gulp.task('watch', ['dev'], function () {
@@ -125,5 +131,5 @@ gulp.task('watch', ['dev'], function () {
     gulp.watch('src/**/*.scss', ['sass-full']);
 });
 
-gulp.task('default', ['jshint', 'server', 'front-expose', 'views', 'front-min', 'sass-min']);
-gulp.task('dev', ['jshint', 'server', 'front-expose', 'views', 'front-full', 'sass-full']);
+gulp.task('default', ['jshint', 'server', 'front-expose', 'ga', 'views', 'front-min', 'sass-min']);
+gulp.task('dev', ['jshint', 'server', 'front-expose', 'ga', 'views', 'front-full', 'sass-full']);
