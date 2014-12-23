@@ -18,7 +18,6 @@ function BaseGame(room)
     this.started      = false;
     this.bonusManager = new BonusManager(this, room.config.getBonuses(), room.config.getVariable('bonusRate'));
     this.inRound      = false;
-    this.rounds       = 0;
 
     this.start    = this.start.bind(this);
     this.stop     = this.stop.bind(this);
@@ -152,7 +151,7 @@ BaseGame.prototype.onRoundNew = function()
  */
 BaseGame.prototype.onRoundEnd = function()
 {
-    this.rounds++;
+
 };
 
 /**
