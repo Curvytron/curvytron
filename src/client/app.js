@@ -7,10 +7,11 @@ curvytronApp.service('SocketClient', SocketClient);
 curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);
 curvytronApp.service('Chat', ['SocketClient', Chat]);
 curvytronApp.service('Profile', ['$rootScope', Profile]);
+curvytronApp.service('Analyser', ['$rootScope', Analyser]);
 
 curvytronApp.controller(
     'CurvytronController',
-    ['$scope', 'Profile', CurvytronController]
+    ['$scope', 'Profile', 'Analyser', CurvytronController]
 );
 
 curvytronApp.controller(

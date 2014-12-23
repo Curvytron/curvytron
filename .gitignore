@@ -3,5 +3,7 @@ bower_components/*
 .idea/*
 web/css/*
 web/js/*
+web/index.html
 bin/*
 stats/*
+config.json

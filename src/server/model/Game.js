@@ -85,7 +85,7 @@ Game.prototype.removeAvatar = function(avatar)
  */
 Game.prototype.addPoint = function(data)
 {
-    if (this.world.active) {
+    if (this.started && this.world.active) {
         this.world.addBody(new AvatarBody(data.point, data.avatar));
     }
 };
