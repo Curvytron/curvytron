@@ -10,6 +10,10 @@ var gulp      = require('gulp'),
     minifyCSS = require('gulp-minify-css'),
     htmlmin   = require('gulp-html-minifier'),
     nodemon   = require('gulp-nodemon'),
+    data      = require('gulp-data'),
+    through   = require('through'),
+    replace   = require('gulp-replace'),
+    config    = require('./config.json'),
     meta      = require('./package.json');
 
     var srcDir  = './src/',
@@ -79,8 +83,24 @@ gulp.task('front-min', function(){
         .pipe(gulp.dest(recipes.client.path));
 });
 
-gulp.task('views', function(){
-    gulp.src('src/client/views/**/*.html')
+gulp.task('ga', function() {
+    if (typeof(config.googleAnalyticsId) !== 'undefined' && config.googleAnalyticsId) {
+        console.log(config.googleAnalyticsId);
+        var inject = {contents: ''};
+
+        gulp
+            .src('./src/client/views/google.analytics.html')
+            .pipe(replace('GoogleAnalyticsToken', config.googleAnalyticsId));
+
+        gulp.src('./src/client/views/index.html')
+            .pipe(replace('<!-- Google Analytics -->', inject))
+            .pipe(htmlmin({collapseWhitespace: true}))
+            .pipe(gulp.dest('./web'));
+    }
+});
+
+gulp.task('views', function() {
+    gulp.src('src/client/views/*/**/*.html')
         .pipe(htmlmin({collapseWhitespace: true}))
         .pipe(gulp.dest(jsDir + 'views'));
 });
@@ -125,5 +145,5 @@ gulp.task('watch', ['dev'], function () {
     gulp.watch('src/**/*.scss', ['sass-full']);
 });
 
-gulp.task('default', ['jshint', 'server', 'front-expose', 'views', 'front-min', 'sass-min']);
-gulp.task('dev', ['jshint', 'server', 'front-expose', 'views', 'front-full', 'sass-full']);
+gulp.task('default', ['jshint', 'server', 'front-expose', 'ga', 'views', 'front-min', 'sass-min']);
+gulp.task('dev', ['jshint', 'server', 'front-expose', 'ga', 'views', 'front-full', 'sass-full']);
