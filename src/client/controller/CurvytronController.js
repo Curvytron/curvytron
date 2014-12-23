@@ -3,11 +3,13 @@
  *
  * @param {Object} $scope
  * @param {Profile} profile
+ * @param {Analyser} analyser
  */
-function CurvytronController($scope, profile)
+function CurvytronController($scope, profile, analyser)
 {
-    this.$scope  = $scope;
-    this.profile = profile;
+    this.$scope   = $scope;
+    this.profile  = profile;
+    this.analyser = analyser;
 
     // Bind
     this.toggleProfile = this.toggleProfile.bind(this);
