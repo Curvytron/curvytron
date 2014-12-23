@@ -11,8 +11,14 @@ var fs        = require('fs'),
     minifyCSS = require('gulp-minify-css'),
     htmlmin   = require('gulp-html-minifier'),
     replace   = require('gulp-replace'),
-    config    = require('./config.json'),
-    meta      = require('./package.json');
+    meta      = require('./package.json'),
+    config;
+
+    try {
+        config = require('./config.json');
+    } catch (error) {
+        config = { googleAnalyticsId: false };
+    }
 
     var srcDir  = './src/',
         jsDir   = './web/js/',
