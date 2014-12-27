@@ -81,6 +81,7 @@ Inspector.prototype.onRoomOpen = function(data)
 
     this.trackers.room.add(new RoomTracker(room));
 
+    this.client.increment(this.ROOM_COUNT);
     this.client.gauge(this.ROOM_COUNT, '+1');
 
     room.on('game:new', this.onGameNew);
@@ -94,7 +95,7 @@ Inspector.prototype.onRoomOpen = function(data)
 Inspector.prototype.onRoomClose = function(data)
 {
     var room = data.room,
-        game = room.game
+        game = room.game,
         tracker = this.trackers.room.getById(room.name);
 
     room.removeListener('game:new', this.onGameNew);
@@ -123,6 +124,7 @@ Inspector.prototype.onGameNew = function(data)
 
     this.trackers.game.add(new GameTracker(game));
 
+    this.client.increment(this.GAME_COUNT);
     this.client.gauge(this.GAME_COUNT, '+1');
     this.client.timing(this.GAME_SIZE, game.avatars.count());
 
