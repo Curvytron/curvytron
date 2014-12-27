@@ -5,28 +5,70 @@
  */
 function Inspector (server)
 {
-    this.server       = server;
-    this.client       = new StatsD();
-    this.gameTrackers = new Collection([], 'name');
+    this.server = server;
+    this.client = new StatsD();
 
-    this.onRoomOpen  = this.onRoomOpen.bind(this);
-    this.onRoomClose = this.onRoomClose.bind(this);
-    this.onGameNew   = this.onGameNew.bind(this);
-    this.onGameRound = this.onGameRound.bind(this);
-    this.onGameEnd   = this.onGameEnd.bind(this);
+    this.trackers = {
+        client: new Collection(),
+        room:   new Collection(),
+        game:   new Collection()
+    };
+
+    this.onClientOpen  = this.onClientOpen.bind(this);
+    this.onClientClose = this.onClientClose.bind(this);
+    this.onRoomOpen    = this.onRoomOpen.bind(this);
+    this.onRoomClose   = this.onRoomClose.bind(this);
+    this.onGameNew     = this.onGameNew.bind(this);
+    this.onGameEnd     = this.onGameEnd.bind(this);
 
     this.client.socket.on('error', this.onError);
 
+    this.server.on('client', this.onClientOpen);
     this.server.roomRepository.on('room:open', this.onRoomOpen);
     this.server.roomRepository.on('room:close', this.onRoomClose);
 }
 
-Inspector.prototype.ROOM_COUNT    = 'room.count';
-Inspector.prototype.GAME_COUNT    = 'game.count';
-Inspector.prototype.GAME_FINISHED = 'game.finished';
-Inspector.prototype.GAME_SIZE     = 'game.size';
-Inspector.prototype.GAME_DURATION = 'game.duration';
-Inspector.prototype.GAME_ROUNDS   = 'game.rounds';
+Inspector.prototype.CLIENT_CONNECTED = 'client.connected';
+Inspector.prototype.CLIENT_DURATION  = 'client.duration';
+Inspector.prototype.ROOM_COUNT       = 'room.count';
+Inspector.prototype.ROOM_DURATION    = 'room.duration';
+Inspector.prototype.ROOM_GAME_COUNT  = 'room.game.count';
+Inspector.prototype.GAME_COUNT       = 'game.count';
+Inspector.prototype.GAME_END_FINISH  = 'game.end.finish';
+Inspector.prototype.GAME_END_ABORT   = 'game.end.abort';
+Inspector.prototype.GAME_SIZE        = 'game.size';
+Inspector.prototype.GAME_DURATION    = 'game.duration';
+Inspector.prototype.GAME_ROUNDS      = 'game.rounds';
+
+/**
+ * On client open
+ *
+ * @param {SocketClient} client
+ */
+Inspector.prototype.onClientOpen = function(client)
+{
+    this.client.gauge(this.CLIENT_CONNECTED, '+1');
+
+    client.on('close', this.onClientClose);
+
+    this.trackers.client.add(new ClientTracker(client));
+};
+
+/**
+ * On client close
+ *
+ * @param {SocketClient} client
+ */
+Inspector.prototype.onClientClose = function(client)
+{
+    var tracker = this.trackers.client.getById(client.id);
+
+    this.client.gauge(this.CLIENT_CONNECTED, '-1');
+
+    if (tracker) {
+        this.client.timing(this.CLIENT_DURATION, tracker.getDuration());
+    }
+};
 
 /**
  * On room open
@@ -35,10 +77,13 @@ Inspector.prototype.GAME_ROUNDS   = 'game.rounds';
  */
 Inspector.prototype.onRoomOpen = function(data)
 {
-    console.log('increment ROOM_COUNT');
-    this.client.increment(this.ROOM_COUNT);
+    var room = data.room;
 
-    data.room.on('game:new', this.onGameNew);
+    this.trackers.room.add(new RoomTracker(room));
+
+    this.client.gauge(this.ROOM_COUNT, '+1');
+
+    room.on('game:new', this.onGameNew);
 };
 
 /**
@@ -49,15 +94,21 @@ Inspector.prototype.onRoomOpen = function(data)
 Inspector.prototype.onRoomClose = function(data)
 {
     var room = data.room,
-        game = room.game;
-
-    console.log('decrement ROOM_COUNT');
-    this.client.decrement(this.ROOM_COUNT);
+        game = room.game
+        tracker = this.trackers.room.getById(room.name);
 
     room.removeListener('game:new', this.onGameNew);
 
+    this.client.gauge(this.ROOM_COUNT, '-1');
+
     if (game) {
         this.onGameAbort(game);
+    }
+
+    if (tracker) {
+        this.client.timing(this.ROOM_GAME_COUNT, tracker.games);
+        this.client.timing(this.ROOM_DURATION, tracker.getDuration());
+        tracker.detach();
     }
 };
 
@@ -70,34 +121,12 @@ Inspector.prototype.onGameNew = function(data)
 {
     var game = data.game;
 
-    console.log('increment GAME_COUNT');
-    this.client.increment(this.GAME_COUNT);
+    this.trackers.game.add(new GameTracker(game));
 
-    this.gameTrackers.add({
-        name: game.name,
-        creation: new Date(),
-        rounds: 0
-    });
+    this.client.gauge(this.GAME_COUNT, '+1');
+    this.client.timing(this.GAME_SIZE, game.avatars.count());
 
-    console.log('gauge GAME_SIZE', game.avatars.count());
-    this.client.gauge(this.GAME_SIZE, game.avatars.count());
-
-    game.on('round:new', this.onGameRound);
     game.on('end', this.onGameEnd);
-};
-
-/**
- * On game round
- *
- * @param {Game} game
- */
-Inspector.prototype.onGameRound = function(data)
-{
-    var tracker = this.getGameTracker(data.game.name);
-
-    if (tracker) {
-        tracker.rounds++;
-    }
 };
 
 /**
@@ -108,21 +137,15 @@ Inspector.prototype.onGameRound = function(data)
 Inspector.prototype.onGameEnd = function(data)
 {
     var game = data.game,
-        tracker = this.getGameTracker(game.name);
+        tracker = this.trackers.game.getById(game.name);
 
-    game.removeListener('round:new', this.onGameRound);
     game.removeListener('end', this.onGameEnd);
 
-    console.log('decrement GAME_COUNT');
-    this.client.decrement(this.GAME_COUNT);
-    console.log('increment GAME_FINISHED');
-    this.client.increment(this.GAME_FINISHED);
+    this.client.gauge(this.GAME_COUNT, '-1');
+    this.client.increment(this.GAME_END_FINISH);
 
     if (tracker) {
-        console.log('gauge GAME_ROUNDS', tracker.rounds);
-        client.gauge(this.GAME_ROUNDS, tracker.rounds);
-        console.log('timing GAME_DURATION', new Date() - tracker.duration);
-        client.timing(this.GAME_DURATION, new Date() - tracker.duration);
+        this.collectGameTrackerData(tracker);
     }
 };
 
@@ -133,29 +156,28 @@ Inspector.prototype.onGameEnd = function(data)
  */
 Inspector.prototype.onGameAbort = function(game)
 {
-    var tracker = this.getGameTracker(game.name);
+    var tracker = this.trackers.game.getById(game.name);
 
-    game.removeListener('round:new', this.onGameRound);
     game.removeListener('end', this.onGameEnd);
 
-    console.log('decrement GAME_COUNT');
-    this.client.decrement(this.GAME_COUNT);
+    this.client.gauge(this.GAME_COUNT, '-1');
+    this.client.increment(this.GAME_END_ABORT);
+
+    if (tracker) {
+        this.collectGameTrackerData(tracker);
+    }
 };
 
 /**
- * Get game tracker
+ * Collect data from the given tracker
  *
- * @param {String} name
- *
- * @return {Object}
+ * @param {GameTracker} tracker
  */
-Inspector.prototype.getGameTracker = function(name)
+Inspector.prototype.collectGameTrackerData = function(tracker)
 {
-    if (typeof(this.gameTrackers[name]) === 'undefined') {
-        return null;
-    }
-
-    return this.gameTrackers[name];
+    this.client.timing(this.GAME_ROUNDS, tracker.rounds);
+    this.client.timing(this.GAME_DURATION, tracker.getDuration());
+    tracker.detach();
 };
 
 /**
