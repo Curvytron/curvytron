@@ -1,4 +1,5 @@
 var EventEmitter = require('events').EventEmitter,
+    usage = require('usage'),
     http = require('http'),
     fs = require('fs'),
     path = require('path'),

@@ -22,6 +22,8 @@ function Inspector (server, config)
     this.onGameNew     = this.onGameNew.bind(this);
     this.onGameEnd     = this.onGameEnd.bind(this);
     this.onGameFPS     = this.onGameFPS.bind(this);
+    this.onLog         = this.onLog.bind(this);
+    this.logUsage      = this.logUsage.bind(this);
 
     this.server.on('client', this.onClientOpen);
     this.server.roomRepository.on('room:open', this.onRoomOpen);
@@ -29,6 +31,8 @@ function Inspector (server, config)
 
     this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() });
     this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() });
+
+    this.logInterval = setInterval(this.onLog, this.logFrequency);
 }
 
 Inspector.prototype.CLIENT             = 'client';
@@ -39,6 +43,15 @@ Inspector.prototype.ROOM               = 'room';
 Inspector.prototype.ROOMS              = 'room.total';
 Inspector.prototype.GAME               = 'game';
 Inspector.prototype.GAME_FPS           = 'game.fps';
+Inspector.prototype.USAGE_MEMORY       = 'usage.memory';
+Inspector.prototype.USAGE_CPU          = 'usage.cpu';
+
+/**
+ * Usage log frequency
+ *
+ * @type {Number}
+ */
+Inspector.prototype.logFrequency = 1000;
 
 /**
  * On client open
@@ -204,11 +217,20 @@ Inspector.prototype.collectGameTrackerData = function(tracker)
 };
 
 /**
- * On StatsD error
- *
- * @param {Error} error
+ * On every frame
  */
-Inspector.prototype.onError = function (error)
+Inspector.prototype.onLog = function()
 {
-    return console.error('Inspector | Error in socket:', error);
+    usage.lookup(process.pid, this.logUsage);
+};
+
+/**
+ * Log usage
+ */
+Inspector.prototype.logUsage = function (err, result)
+{
+    if (result) {
+        this.client.writePoint(this.USAGE_CPU, { value: result.cpu });
+        this.client.writePoint(this.USAGE_MEMORY, { value: result.memory });
+    }
 };
