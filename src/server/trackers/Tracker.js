@@ -6,11 +6,16 @@
  */
 function Tracker (inspector, id)
 {
+    EventEmitter.call(this);
+
     this.inspector = inspector;
     this.id        = id;
     this.creation  = new Date();
     this.uniqId    = this.creation.getTime() + '-' + this.id;
 }
+
+Tracker.prototype = Object.create(EventEmitter.prototype);
+Tracker.prototype.constructor = Tracker;
 
 /**
  * Destroy tracker

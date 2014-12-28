@@ -21,6 +21,7 @@ function Inspector (server, config)
     this.onRoomClose   = this.onRoomClose.bind(this);
     this.onGameNew     = this.onGameNew.bind(this);
     this.onGameEnd     = this.onGameEnd.bind(this);
+    this.onGameFPS     = this.onGameFPS.bind(this);
 
     this.server.on('client', this.onClientOpen);
     this.server.roomRepository.on('room:open', this.onRoomOpen);
@@ -37,6 +38,7 @@ Inspector.prototype.CLIENT_GAME_PLAYER = 'client.game.player';
 Inspector.prototype.ROOM               = 'room';
 Inspector.prototype.ROOMS              = 'room.total';
 Inspector.prototype.GAME               = 'game';
+Inspector.prototype.GAME_FPS           = 'game.fps';
 
 /**
  * On client open
@@ -139,6 +141,7 @@ Inspector.prototype.onGameNew = function(data)
         );
     }
 
+    tracker.on('fps', this.onGameFPS);
     game.on('end', this.onGameEnd);
 };
 
@@ -155,8 +158,22 @@ Inspector.prototype.onGameEnd = function(data)
     game.removeListener('end', this.onGameEnd);
 
     if (tracker) {
+        tracker.removeListener('fps', this.onGameFPS);
         this.collectGameTrackerData(tracker);
     }
+};
+
+/**
+ * On game FPS
+ *
+ * @param {Object} data
+ */
+Inspector.prototype.onGameFPS = function(data)
+{
+    this.client.writePoint(this.GAME_FPS, {
+        value: data.fps,
+        game: data.tracker.uniqId
+    });
 };
 
 /**
