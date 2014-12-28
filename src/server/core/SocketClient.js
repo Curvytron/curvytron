@@ -8,7 +8,6 @@ function SocketClient(socket, interval)
     BaseSocketClient.call(this, socket, interval);
 
     this.id      = null;
-    this.room    = null;
     this.players = new Collection([], 'id');
 }
 

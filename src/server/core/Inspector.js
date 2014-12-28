@@ -2,11 +2,12 @@
  * Inspector
  *
  * @param {Server} server
+ * @param {Object} config
  */
-function Inspector (server)
+function Inspector (server, config)
 {
     this.server = server;
-    this.client = new StatsD();
+    this.client = influx(config);
 
     this.trackers = {
         client: new Collection(),
@@ -21,24 +22,21 @@ function Inspector (server)
     this.onGameNew     = this.onGameNew.bind(this);
     this.onGameEnd     = this.onGameEnd.bind(this);
 
-    this.client.socket.on('error', this.onError);
-
     this.server.on('client', this.onClientOpen);
     this.server.roomRepository.on('room:open', this.onRoomOpen);
     this.server.roomRepository.on('room:close', this.onRoomClose);
+
+    this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() });
+    this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() });
 }
 
-Inspector.prototype.CLIENT_CONNECTED = 'client.connected';
-Inspector.prototype.CLIENT_DURATION  = 'client.duration';
-Inspector.prototype.ROOM_COUNT       = 'room.count';
-Inspector.prototype.ROOM_DURATION    = 'room.duration';
-Inspector.prototype.ROOM_GAME_COUNT  = 'room.game.count';
-Inspector.prototype.GAME_COUNT       = 'game.count';
-Inspector.prototype.GAME_END_FINISH  = 'game.end.finish';
-Inspector.prototype.GAME_END_ABORT   = 'game.end.abort';
-Inspector.prototype.GAME_SIZE        = 'game.size';
-Inspector.prototype.GAME_DURATION    = 'game.duration';
-Inspector.prototype.GAME_ROUNDS      = 'game.rounds';
+Inspector.prototype.CLIENT             = 'client';
+Inspector.prototype.CLIENTS            = 'client.total';
+Inspector.prototype.CLIENT_PLAYER      = 'client.player';
+Inspector.prototype.CLIENT_GAME_PLAYER = 'client.game.player';
+Inspector.prototype.ROOM               = 'room';
+Inspector.prototype.ROOMS              = 'room.total';
+Inspector.prototype.GAME               = 'game';
 
 /**
  * On client open
@@ -47,11 +45,11 @@ Inspector.prototype.GAME_ROUNDS      = 'game.rounds';
  */
 Inspector.prototype.onClientOpen = function(client)
 {
-    this.client.gauge(this.CLIENT_CONNECTED, '+1');
+    this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() });
 
     client.on('close', this.onClientClose);
 
-    this.trackers.client.add(new ClientTracker(client));
+    this.trackers.client.add(new ClientTracker(this, client));
 };
 
 /**
@@ -63,10 +61,11 @@ Inspector.prototype.onClientClose = function(client)
 {
     var tracker = this.trackers.client.getById(client.id);
 
-    this.client.gauge(this.CLIENT_CONNECTED, '-1');
+    this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() });
 
     if (tracker) {
-        this.client.timing(this.CLIENT_DURATION, tracker.getDuration());
+        this.client.writePoint(this.CLIENT, tracker.serialize());
+        this.trackers.client.remove(tracker.destroy());
     }
 };
 
@@ -79,10 +78,9 @@ Inspector.prototype.onRoomOpen = function(data)
 {
     var room = data.room;
 
-    this.trackers.room.add(new RoomTracker(room));
+    this.trackers.room.add(new RoomTracker(this, room));
 
-    this.client.increment(this.ROOM_COUNT);
-    this.client.gauge(this.ROOM_COUNT, '+1');
+    this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() });
 
     room.on('game:new', this.onGameNew);
 };
@@ -100,16 +98,15 @@ Inspector.prototype.onRoomClose = function(data)
 
     room.removeListener('game:new', this.onGameNew);
 
-    this.client.gauge(this.ROOM_COUNT, '-1');
+    this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() });
 
     if (game) {
         this.onGameAbort(game);
     }
 
     if (tracker) {
-        this.client.timing(this.ROOM_GAME_COUNT, tracker.games);
-        this.client.timing(this.ROOM_DURATION, tracker.getDuration());
-        tracker.detach();
+        this.client.writePoint(this.ROOM, tracker.serialize());
+        this.trackers.room.remove(tracker.destroy());
     }
 };
 
@@ -120,13 +117,27 @@ Inspector.prototype.onRoomClose = function(data)
  */
 Inspector.prototype.onGameNew = function(data)
 {
-    var game = data.game;
+    var game = data.game,
+        tracker = new GameTracker(this, game),
+        avatar, client;
 
-    this.trackers.game.add(new GameTracker(game));
+    this.trackers.game.add(tracker);
 
-    this.client.increment(this.GAME_COUNT);
-    this.client.gauge(this.GAME_COUNT, '+1');
-    this.client.timing(this.GAME_SIZE, game.avatars.count());
+    for (var i = game.avatars.items.length - 1; i >= 0; i--) {
+        avatar = game.avatars.items[i];
+        client = avatar.player.client;
+        clientTracker = this.trackers.client.getById(client.id);
+
+        this.client.writePoint(
+            this.CLIENT_GAME_PLAYER,
+            {
+                game: tracker.uniqId,
+                client: clientTracker.uniqId,
+                player: avatar.name,
+                color: avatar.color
+            }
+        );
+    }
 
     game.on('end', this.onGameEnd);
 };
@@ -142,9 +153,6 @@ Inspector.prototype.onGameEnd = function(data)
         tracker = this.trackers.game.getById(game.name);
 
     game.removeListener('end', this.onGameEnd);
-
-    this.client.gauge(this.GAME_COUNT, '-1');
-    this.client.increment(this.GAME_END_FINISH);
 
     if (tracker) {
         this.collectGameTrackerData(tracker);
@@ -162,9 +170,6 @@ Inspector.prototype.onGameAbort = function(game)
 
     game.removeListener('end', this.onGameEnd);
 
-    this.client.gauge(this.GAME_COUNT, '-1');
-    this.client.increment(this.GAME_END_ABORT);
-
     if (tracker) {
         this.collectGameTrackerData(tracker);
     }
@@ -177,9 +182,8 @@ Inspector.prototype.onGameAbort = function(game)
  */
 Inspector.prototype.collectGameTrackerData = function(tracker)
 {
-    this.client.timing(this.GAME_ROUNDS, tracker.rounds);
-    this.client.timing(this.GAME_DURATION, tracker.getDuration());
-    tracker.detach();
+    this.client.writePoint(this.GAME, tracker.serialize());
+    this.trackers.game.remove(tracker.destroy());
 };
 
 /**

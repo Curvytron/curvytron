@@ -7,3 +7,4 @@ web/index.html
 bin/*
 stats/*
 config.json
+*.sublime-*

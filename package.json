@@ -39,7 +39,8 @@
   },
   "dependencies": {
     "express": "~4.4.*",
-    "faye-websocket": "^0.7.*"
+    "faye-websocket": "^0.7.*",
+    "influx": "^3.2.0"
   },
   "scripts": {
     "install": "bower install"

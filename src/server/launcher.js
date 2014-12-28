@@ -1,9 +1,22 @@
-var server = new Server({ port: 8080 });
+var config;
 
 try {
-    new Inspector(server);
+    config = require('../config.json');
 } catch (error) {
-    console.error('Inspector error:', error);
+    config = {
+        port: 8080,
+        inspector: { enabled: false }
+    };
+}
+
+var server = new Server({ port: config.port });
+
+if (config.inspector.enabled) {
+    //try {
+        new Inspector(server, config.inspector);
+    /*} catch (error) {
+        console.error('Inspector error:', error);
+    }*/
 }
 
 module.exports = server;
