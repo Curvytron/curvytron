@@ -1,11 +1,12 @@
 /**
  * Client tracker
  *
+ * @param {Inspector} inspector
  * @param {Client} client
  */
-function ClientTracker (client)
+function ClientTracker (inspector, client)
 {
-    Tracker.call(this, client.id);
+    Tracker.call(this, inspector, client.id);
 }
 
 ClientTracker.prototype = Object.create(Tracker.prototype);

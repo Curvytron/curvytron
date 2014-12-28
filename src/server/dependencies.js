@@ -3,5 +3,5 @@ var EventEmitter = require('events').EventEmitter,
     fs = require('fs'),
     path = require('path'),
     express = require('express'),
-    WebSocket = require('faye-websocket')
-    StatsD = require('node-statsd');
+    WebSocket = require('faye-websocket'),
+    influx = require('influx');

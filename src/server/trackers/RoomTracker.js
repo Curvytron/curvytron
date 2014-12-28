@@ -1,11 +1,12 @@
 /**
  * Room tracker
  *
+ * @param {Inspector} inspector
  * @param {Room} room
  */
-function RoomTracker (room)
+function RoomTracker (inspector, room)
 {
-    Tracker.call(this, room.name);
+    Tracker.call(this, inspector, room.name);
 
     this.room  = room;
     this.games = 0;
@@ -25,11 +26,24 @@ RoomTracker.prototype.onGame = function()
 {
     this.games++;
 };
-
 /**
- * Detach tracker
+ * @inheritDoc
  */
-RoomTracker.prototype.detach = function()
+RoomTracker.prototype.destroy = function()
 {
     this.room.removeListener('game:new', this.onGame);
+
+    return Tracker.prototype.destroy.call(this);
+};
+
+/**
+ * @inheritDoc
+ */
+RoomTracker.prototype.serialize = function()
+{
+    var data = Tracker.prototype.serialize.call(this);
+
+    data.games = this.games;
+
+    return data;
 };
