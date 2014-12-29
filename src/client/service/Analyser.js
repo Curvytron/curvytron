@@ -42,7 +42,7 @@ Analyser.prototype.onRouteChange = function(event, currentScope, previousScope)
  */
 Analyser.prototype.getPath = function(path, params)
 {
-    for (key in params) {
+    for (var key in params) {
         if (Object.hasOwnProperty(key)) {
             path = path.replace(':' + key, params[key]);
         }
