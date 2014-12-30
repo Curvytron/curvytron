@@ -13,3 +13,13 @@ function SocketClient(socket, interval)
 
 SocketClient.prototype = Object.create(BaseSocketClient.prototype);
 SocketClient.prototype.constructor = SocketClient;
+
+/**
+ * Is this client playing?
+ *
+ * @return {Boolean}
+ */
+SocketClient.prototype.isPlaying = function()
+{
+    return !this.players.isEmpty();
+};

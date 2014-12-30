@@ -10,9 +10,10 @@ function Player(id, client, name, color, ready)
 {
     BasePlayer.call(this, client, name, color, ready);
 
-    this.id       = id;
-    this.local    = false;
-    this.controls = null;
+    this.id        = id;
+    this.local     = false;
+    this.controls  = null;
+    this.kickVotes = [];
 
     this.onControlChange = this.onControlChange.bind(this);
 }

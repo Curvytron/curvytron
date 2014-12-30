@@ -26,6 +26,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.addPlayer        = this.addPlayer.bind(this);
     this.addProfileUser   = this.addProfileUser.bind(this);
     this.removePlayer     = this.removePlayer.bind(this);
+    this.kickPlayer       = this.kickPlayer.bind(this);
     this.applyScope       = this.applyScope.bind(this);
     this.onJoin           = this.onJoin.bind(this);
     this.onJoined         = this.onJoined.bind(this);
@@ -45,6 +46,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     // Hydrating scope:
     this.$scope.submitAddPlayer     = this.addPlayer;
     this.$scope.removePlayer        = this.removePlayer;
+    this.$scope.kickPlayer          = this.kickPlayer;
     this.$scope.setColor            = this.setColor;
     this.$scope.setReady            = this.setReady;
     this.$scope.setName             = this.setName;
@@ -148,6 +150,7 @@ RoomController.prototype.attachEvents = function(name)
     this.repository.on('player:ready', this.applyScope);
     this.repository.on('player:color', this.applyScope);
     this.repository.on('player:name', this.applyScope);
+    this.repository.on('room:vote:kick', this.applyScope);
     this.repository.on('room:game:start', this.start);
 
     for (var i = this.room.players.items.length - 1; i >= 0; i--) {
@@ -225,6 +228,21 @@ RoomController.prototype.removePlayer = function(player)
         function (result) {
             if (!result.success) {
                 console.error('Could not remove player %s', player.name);
+            }
+        }
+    );
+};
+
+/**
+ * Kick player
+ */
+RoomController.prototype.kickPlayer = function(player)
+{
+    this.repository.kickPlayer(
+        player.id,
+        function (result) {
+            if (!result.success) {
+                console.error('Could not kick player %s', player.name);
             }
         }
     );

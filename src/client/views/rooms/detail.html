@@ -37,6 +37,7 @@
                 <thead>
                     <tr>
                         <th class="col-remove"></th>
+                        <th class="col-kick"></th>
                         <th class="col-player">Name</th>
                         <th class="col-color">Color</th>
                         <th class="col-keys">Controls</th>
@@ -54,6 +55,11 @@
                             <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="removePlayer(player)">
                                 <span class="icon-close"></span>
                             </button>
+                        </td>
+                        <td class="col-kick">
+                            <span class="kick" ng-if="player.kickVotes.length">
+                                {{ player.kickVotes.length }}
+                            </span>
                         </td>
                         <td class="col-player">
                             <input type="text" ng-model="player.name" ng-blur="setName(player)" class="form-control player-name" name="name" maxlength="{{ nameMaxLength }}" />
@@ -80,7 +86,16 @@
                         </td>
                     </tr>
                     <tr ng-repeat="player in room.players.items" ng-if="!player.local">
-                        <td></td>
+                        <td class="col-remove">
+                            <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="kickPlayer(player)">
+                                <span class="icon-close"></span>
+                            </button>
+                        </td>
+                        <td class="col-kick">
+                            <span class="kick" ng-if="player.kickVotes.length">
+                                {{ player.kickVotes.length }}
+                            </span>
+                        </td>
                         <td class="col-player">
                             <p class="player-name">{{ player.name }}</p>
                         </td>
