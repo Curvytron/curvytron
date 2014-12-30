@@ -333,18 +333,17 @@ RoomController.prototype.onReady = function(client, data, callback)
  */
 RoomController.prototype.onKickVote = function(client, data, callback)
 {
-    if (!client.isPlaying()) {
-        return;
+    if (client.isPlaying()) {
+        var player = this.room.players.getById(data.player);
+
+        if (player) {
+            var kickVote = this.kickManager.vote(client, player);
+
+            return callback({success: true, kicked: kickVote.hasVote(client)});
+        }
     }
 
-    var player = this.room.players.getById(data.player);
-
-    if (player) {
-        this.kickManager.vote(client, player);
-        callback({success: true});
-    } else {
-        callback({success: false});
-    }
+    return callback({success: false, kicked: false});
 };
 
 /**

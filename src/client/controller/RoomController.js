@@ -150,7 +150,6 @@ RoomController.prototype.attachEvents = function(name)
     this.repository.on('player:ready', this.applyScope);
     this.repository.on('player:color', this.applyScope);
     this.repository.on('player:name', this.applyScope);
-    this.repository.on('room:vote:kick', this.applyScope);
     this.repository.on('room:game:start', this.start);
 
     for (var i = this.room.players.items.length - 1; i >= 0; i--) {
@@ -224,7 +223,7 @@ RoomController.prototype.removePlayer = function(player)
     var controller = this;
 
     this.repository.removePlayer(
-        player.id,
+        player,
         function (result) {
             if (!result.success) {
                 console.error('Could not remove player %s', player.name);
@@ -238,14 +237,14 @@ RoomController.prototype.removePlayer = function(player)
  */
 RoomController.prototype.kickPlayer = function(player)
 {
-    this.repository.kickPlayer(
-        player.id,
-        function (result) {
-            if (!result.success) {
-                console.error('Could not kick player %s', player.name);
-            }
+    var repository  = this;
+
+    this.repository.kickPlayer(player, function (result) {
+        if (!result.success) {
+            console.error('Could not kick player %s', player.name);
         }
-    );
+        repository.applyScope();
+    });
 };
 
 /**

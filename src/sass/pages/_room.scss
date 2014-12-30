@@ -511,9 +511,12 @@
             }
         }
     }
-
 }
 
-
-
-
+.icon-kick {
+    &.kicked {
+        color: $color-danger;
+        opacity: 1;
+        font-weight: bold;
+    }
+}

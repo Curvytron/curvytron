@@ -24,11 +24,13 @@ KickVote.prototype.constructor = KickVote;
  */
 KickVote.prototype.setTotal = function(total)
 {
-    if (this.closed) { return; }
+    if (this.closed) { return this; }
 
     this.total = total;
 
     this.check();
+
+    return this;
 };
 
 /**
@@ -38,15 +40,17 @@ KickVote.prototype.setTotal = function(total)
  */
 KickVote.prototype.toggleVote = function(client)
 {
-    if (this.closed) { return; }
+    if (this.closed) { return this; }
 
-    if (this.votes.exists(client)) {
+    if (this.hasVote(client)) {
         this.votes.remove(client);
     } else {
         this.votes.add(client);
     }
 
     this.check();
+
+    return this;
 };
 
 /**
@@ -78,24 +82,18 @@ KickVote.prototype.check = function()
 KickVote.prototype.close = function (success)
 {
     this.closed = true;
-
+    this.votes.clear();
     this.emit('close', this);
-
-    delete this.target;
-    delete this.votes;
 };
 
 /**
- * Serialize
+ * Hase vote
  *
- * @return {Object}
+ * @param {SocketClient} client
+ *
+ * @return {Boolean}
  */
-KickVote.prototype.serialize = function()
+KickVote.prototype.hasVote = function(client)
 {
-    if (this.closed) { return; }
-
-    return {
-        target: this.target.id,
-        votes: this.votes.ids
-    };
+    return this.votes.exists(client);
 };

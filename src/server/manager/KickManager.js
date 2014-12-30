@@ -32,11 +32,7 @@ KickManager.prototype.constructor = KickManager;
  */
 KickManager.prototype.vote = function(client, player)
 {
-    var kickVote = this.getVote(player);
-
-    kickVote.toggleVote(client);
-
-    this.broadcastVote(kickVote);
+    return this.getVote(player).toggleVote(client);
 };
 
 /**
@@ -94,14 +90,8 @@ KickManager.prototype.onPlayerLeave = function(data)
  */
 KickManager.prototype.onClientLeave = function(data)
 {
-    var kickVote;
-
     for (var i = this.votes.items.length - 1; i >= 0; i--) {
-        kickVote = this.votes.items[i];
-
-        if (kickVote.removeClient(data.client)) {
-            this.broadcastVote(kickVote);
-        }
+        this.votes.items[i].removeClient(data.client);
     }
 };
 
@@ -124,18 +114,6 @@ KickManager.prototype.updateVotes = function()
 
     for (var i = this.votes.items.length - 1; i >= 0; i--) {
         this.votes.items[i].setTotal(total);
-    }
-};
-
-/**
- * Broadcast vote
- *
- * @param {KickVote} kickVote
- */
-KickManager.prototype.broadcastVote = function(kickVote)
-{
-    if (!kickVote.closed) {
-        this.controller.socketGroup.addEvent('vote:kick', kickVote.serialize());
     }
 };
 

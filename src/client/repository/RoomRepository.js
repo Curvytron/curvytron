@@ -21,7 +21,6 @@ function RoomRepository(client)
     this.onConfigMaxScore = this.onConfigMaxScore.bind(this);
     this.onConfigVariable = this.onConfigVariable.bind(this);
     this.onConfigBonus    = this.onConfigBonus.bind(this);
-    this.onVoteKick       = this.onVoteKick.bind(this);
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
@@ -42,7 +41,6 @@ RoomRepository.prototype.attachEvents = function()
     this.client.on('room:config:max-score', this.onConfigMaxScore);
     this.client.on('room:config:variable', this.onConfigVariable);
     this.client.on('room:config:bonus', this.onConfigBonus);
-    this.client.on('vote:kick', this.onVoteKick);
 };
 
 /**
@@ -60,7 +58,6 @@ RoomRepository.prototype.detachEvents = function()
     this.client.off('room:config:max-score', this.onConfigMaxScore);
     this.client.off('room:config:variable', this.onConfigVariable);
     this.client.off('room:config:bonus', this.onConfigBonus);
-    this.client.off('vote:kick', this.onVoteKick);
 };
 
 /**
@@ -128,23 +125,31 @@ RoomRepository.prototype.addPlayer = function(name, color, callback)
 /**
  * Remove player
  *
- * @param {Number} player
+ * @param {Player} player
  * @param {Function} callback
  */
 RoomRepository.prototype.removePlayer = function(player, callback)
 {
-    this.client.addEvent('player:remove', {player: player}, callback);
+    this.client.addEvent('player:remove', {player: player.id}, callback);
 };
 
 /**
  * Kick player
  *
- * @param {Number} player
+ * @param {Player} player
  * @param {Function} callback
  */
 RoomRepository.prototype.kickPlayer = function(player, callback)
 {
-    this.client.addEvent('player:kick', {player: player}, callback);
+    var client = this.client;
+
+    this.client.addEvent('player:kick', { player: player.id },
+        function (result) {
+            console.log('kickPlayer', result);
+            player.kicked = result.kicked;
+            callback(result);
+        }
+    );
 };
 
 /**
@@ -379,22 +384,6 @@ RoomRepository.prototype.onGameEnd = function(e)
     var data = e.detail;
 
     this.emit('room:game:end');
-};
-
-/**
- * On vote kick
- *
- * @param {Event} e
- */
-RoomRepository.prototype.onVoteKick = function(e)
-{
-    var target = this.room.players.getById(e.detail.target);
-
-    if (target) {
-        target.kickVotes = e.detail.votes;
-    }
-
-    this.emit('room:vote:kick');
 };
 
 /**

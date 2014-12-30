@@ -13,7 +13,7 @@ function Player(id, client, name, color, ready)
     this.id        = id;
     this.local     = false;
     this.controls  = null;
-    this.kickVotes = [];
+    this.kicked    = false;
 
     this.onControlChange = this.onControlChange.bind(this);
 }
