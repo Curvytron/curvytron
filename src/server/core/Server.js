@@ -3,6 +3,8 @@
  */
 function Server(config)
 {
+    EventEmitter.call(this);
+
     this.config  = config;
     this.app     = express();
     this.server  = new http.Server(this.app);
@@ -24,6 +26,9 @@ function Server(config)
 
     console.info('Listening on: %s', config.port);
 }
+
+Server.prototype = Object.create(EventEmitter.prototype);
+Server.prototype.constructor = Server;
 
 /**
  * Authorization Handler
@@ -55,6 +60,7 @@ Server.prototype.onSocketConnection = function(socket)
 
     client.addEvent('open', client.id);
 
+    this.emit('client', client);
     console.info('Client connected', client.id);
 };
 

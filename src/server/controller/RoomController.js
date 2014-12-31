@@ -269,7 +269,7 @@ RoomController.prototype.onName = function(client, data, callback)
     var player = client.players.getById(data.player),
         name = data.name.substr(0, Player.prototype.maxLength);
 
-    if (this.room.isNameAvailable(name)) {
+    if (player && this.room.isNameAvailable(name)) {
         player.setName(name);
         callback({success: true, name: player.name});
         this.socketGroup.addEvent('player:name', { player: player.id, name: player.name });

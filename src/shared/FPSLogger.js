@@ -3,7 +3,7 @@
  */
 function FPSLogger(element)
 {
-    this.fps     = 0;
+    this.value   = 0;
     this.element = typeof(element) !== 'undefined' ? element : null;
 
     this.update = this.update.bind(this);
@@ -21,7 +21,7 @@ FPSLogger.prototype.update = function(step)
 {
     var fps = step > 0 ? 1000/step : 60;
 
-    this.fps = ~~ (0.5 + (this.fps ? (this.fps + fps)/2 : fps));
+    this.value = ~~ (0.5 + (this.value ? (this.value + fps)/2 : fps));
 };
 
 /**
@@ -31,7 +31,7 @@ FPSLogger.prototype.log = function()
 {
     this.draw();
 
-    this.fps = 0;
+    this.value = 0;
 };
 
 /**
@@ -50,7 +50,7 @@ FPSLogger.prototype.setElement = function(element)
 FPSLogger.prototype.draw = function()
 {
     if (this.element) {
-        this.element.innerHTML = this.fps + 'fps';
+        this.element.innerHTML = this.value + 'fps';
     }
 };
 

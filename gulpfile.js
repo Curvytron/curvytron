@@ -17,7 +17,7 @@ var fs        = require('fs'),
     try {
         config = require('./config.json');
     } catch (error) {
-        config = { googleAnalyticsId: false };
+        config = { googleAnalyticsId: null };
     }
 
     var srcDir  = './src/',
