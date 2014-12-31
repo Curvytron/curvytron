@@ -285,17 +285,31 @@
     .col-ready { width: 150px; }
     .col-remove {
         width: 32px;
-        padding-right: 0;
-        padding-top: 0;
-        padding-bottom: 0;
+        min-width: 32px;
+        padding: 0;
+
+        &.active .icon-kick {
+            color: $color-danger;
+            opacity: 1;
+        }
+    }
+
+    .col-show-hover > * {
+        display: none;
+    }
+
+    tr:hover > .col-show-hover > *,
+    .col-show-hover.active > * {
+        display: inherit;
     }
 
     .btn-remove {
         padding: 0;
         margin: 0;
         border: none;
+        width: 100%;
+        height: 100%;
     }
-
 
     #room-parameters {
         background-color: #FFF;
@@ -510,13 +524,5 @@
                 }
             }
         }
-    }
-}
-
-.icon-kick {
-    &.kicked {
-        color: $color-danger;
-        opacity: 1;
-        font-weight: bold;
     }
 }

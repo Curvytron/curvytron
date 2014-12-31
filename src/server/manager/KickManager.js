@@ -17,6 +17,7 @@ function KickManager (controller)
 
     this.controller.on('client:add', this.updateVotes);
     this.controller.on('client:remove', this.onClientLeave);
+    this.room.on('player:join', this.updateVotes);
     this.room.on('player:leave', this.onPlayerLeave);
     this.room.on('game:new', this.clear);
 }
@@ -76,7 +77,8 @@ KickManager.prototype.onVoteClose = function(kickVote)
  */
 KickManager.prototype.onPlayerLeave = function(data)
 {
-    var kickVote = this.votes.getById(data.player.id);
+    var player = data.player,
+        kickVote = this.votes.getById(player.id);
 
     if (kickVote) {
         kickVote.close();
@@ -90,8 +92,21 @@ KickManager.prototype.onPlayerLeave = function(data)
  */
 KickManager.prototype.onClientLeave = function(data)
 {
+    this.removeClient(data.client);
+};
+
+/**
+ * Remove client
+ *
+ * @param {SocketClient} client
+ */
+KickManager.prototype.removeClient = function(client)
+{
+    var total = this.getTotalClients();
+
     for (var i = this.votes.items.length - 1; i >= 0; i--) {
-        this.votes.items[i].removeClient(data.client);
+        this.votes.items[i].removeClient(client);
+        this.votes.items[i].setTotal(total);
     }
 };
 

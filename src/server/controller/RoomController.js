@@ -145,8 +145,14 @@ RoomController.prototype.detachEvents = function(client)
  */
 RoomController.prototype.removePlayer = function(player)
 {
-    if (this.room.removePlayer(player) && player.client) {
-        player.client.players.remove(player);
+    var client = player.client;
+
+    if (this.room.removePlayer(player) && client) {
+        client.players.remove(player);
+
+        if (!client.isPlaying()) {
+            this.kickManager.removeClient(client);
+        }
     }
 };
 

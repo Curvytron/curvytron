@@ -50,7 +50,7 @@
                         </th>
                     </tr>
                     <tr ng-repeat="player in room.players.items" ng-if="player.local" class="local">
-                        <td class="col-remove">
+                        <td class="col-remove col-show-hover">
                             <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="removePlayer(player)">
                                 <span class="icon-close"></span>
                             </button>
@@ -80,9 +80,9 @@
                         </td>
                     </tr>
                     <tr ng-repeat="player in room.players.items" ng-if="!player.local">
-                        <td class="col-remove">
+                        <td class="col-remove col-show-hover  {{ player.kicked ? 'active' : '' }}">
                             <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="kickPlayer(player)">
-                                <span class="icon-kick {{ player.kicked ? 'kicked' : '' }}"></span>
+                                <span class="icon-kick"></span>
                             </button>
                         </td>
                         <td class="col-player">

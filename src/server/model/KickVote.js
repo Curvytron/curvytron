@@ -60,7 +60,9 @@ KickVote.prototype.toggleVote = function(client)
  */
 KickVote.prototype.removeClient = function(client)
 {
-    return this.votes.remove(client);
+    var result = this.votes.remove(client);
+
+    return result;
 };
 
 /**
@@ -69,6 +71,8 @@ KickVote.prototype.removeClient = function(client)
 KickVote.prototype.check = function()
 {
     if (this.closed) { return; }
+
+    console.log('check', this.votes.ids, this.total);
 
     if (this.votes.count() > this.total/2) {
         this.result = true;

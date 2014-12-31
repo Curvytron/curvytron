@@ -145,7 +145,6 @@ RoomRepository.prototype.kickPlayer = function(player, callback)
 
     this.client.addEvent('player:kick', { player: player.id },
         function (result) {
-            console.log('kickPlayer', result);
             player.kicked = result.kicked;
             callback(result);
         }
