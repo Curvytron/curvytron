@@ -10,6 +10,8 @@ function RoomRepository(client)
     this.client = client;
     this.room   = null;
 
+    this.playerCache = new Collection();
+
     this.start            = this.start.bind(this);
     this.onJoinRoom       = this.onJoinRoom.bind(this);
     this.onLeaveRoom      = this.onLeaveRoom.bind(this);
@@ -277,6 +279,7 @@ RoomRepository.prototype.onLeaveRoom = function(e)
         player = this.room.players.getById(data.player);
 
     if (player && this.room.removePlayer(player)) {
+        this.playerCache.add(player);
         this.emit('room:leave', {player: player});
     }
 };
@@ -399,6 +402,10 @@ RoomRepository.prototype.onVote = function(e)
         type = e.type,
         player = this.room.players.getById(data.target);
 
+    if (!player) {
+        player = this.playerCache.getById(data.target);
+    }
+
     if (player) {
         player.vote = type === 'vote:new';
         this.emit(type, { target: player, result: data.result });
@@ -423,5 +430,6 @@ RoomRepository.prototype.start = function()
 RoomRepository.prototype.stop = function()
 {
     this.detachEvents();
+    this.playerCache.clear();
     this.room = null;
 };

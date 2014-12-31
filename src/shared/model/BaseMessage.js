@@ -36,6 +36,16 @@ BaseMessage.prototype.getPlayerName = function()
 };
 
 /**
+ * Get player icon
+ *
+ * @return {String}
+ */
+BaseMessage.prototype.getPlayerIcon = function()
+{
+    return typeof(this.player.icon) !== 'undefined' ? this.player.icon : null;
+};
+
+/**
  * Serialize
  *
  * @return {Object}

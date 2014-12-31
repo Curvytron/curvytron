@@ -288,6 +288,14 @@ RoomController.prototype.onJoin = function(e)
  */
 RoomController.prototype.onVote = function(e)
 {
+    var player = e.detail.target;
+
+    if (e.type === 'vote:new') {
+        this.chat.messages.push(new VoteKickMessage(this.chat.curvybot, player));
+    } else if (e.type === 'vote:close' && e.detail.result) {
+        this.chat.messages.push(new KickMessage(this.chat.curvybot, player));
+    }
+
     this.applyScope();
 };
 
@@ -427,12 +435,12 @@ RoomController.prototype.updateCurrentMessage = function()
 };
 
 /**
- * Add tutorial messages
+ * Add tutorial message
  */
 RoomController.prototype.addTip = function()
 {
     this.chat.messages.push(new Message(
-        {name: 'Tips', color: '#ff8069'},
+        this.chat.curvybot,
         this.tips[Math.floor(Math.random() * this.tips.length)]
     ));
 };

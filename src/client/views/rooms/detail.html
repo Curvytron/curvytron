@@ -113,9 +113,23 @@
                         </div>
                         <div ng-repeat="message in messages" class="one-message">
                             <strong style="color: {{ message.player.color ? message.player.color : '#75858c' }};">
+                                <span ng-if="message.getPlayerIcon()" class="{{ message.getPlayerIcon() }}"></span>
                                 {{ message.getPlayerName() }}:
                             </strong>
-                            {{ message.content }}
+                            <span class="message-content">
+                                {{ message.content }}
+                            </span>
+                            <span class="message-content" ng-switch="message.type">
+                                <span ng-switch-when="vote-kick">
+                                    A new vote has been started to ban <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>.
+                                </span>
+                                <span ng-switch-when="kick">
+                                    Farewell <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>, you have been kicked.
+                                </span>
+                                <span ng-switch-default>
+                                    {{ message.content }}
+                                </span>
+                            </span>
                         </div>
                     </div>
                     <form ng-submit="submitTalk()" name="talk" class="action-line">
