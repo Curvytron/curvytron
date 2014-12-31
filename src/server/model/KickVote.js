@@ -62,6 +62,8 @@ KickVote.prototype.removeClient = function(client)
 {
     var result = this.votes.remove(client);
 
+    this.check();
+
     return result;
 };
 
@@ -72,10 +74,10 @@ KickVote.prototype.check = function()
 {
     if (this.closed) { return; }
 
-    console.log('check', this.votes.ids, this.total);
-
     if (this.votes.count() > this.total/2) {
         this.result = true;
+        this.close();
+    } else if (this.votes.isEmpty()) {
         this.close();
     }
 };
@@ -100,4 +102,17 @@ KickVote.prototype.close = function (success)
 KickVote.prototype.hasVote = function(client)
 {
     return this.votes.exists(client);
+};
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+KickVote.prototype.serialize = function()
+{
+    return {
+        target: this.target.id,
+        result: this.result
+    };
 };

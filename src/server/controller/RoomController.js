@@ -19,6 +19,8 @@ function RoomController(room)
     this.onGame        = this.onGame.bind(this);
     this.loadRoom      = this.loadRoom.bind(this);
     this.unloadRoom    = this.unloadRoom.bind(this);
+    this.onVoteNew     = this.onVoteNew.bind(this);
+    this.onVoteClose   = this.onVoteClose.bind(this);
     this.onKick        = this.onKick.bind(this);
 
     this.callbacks = {
@@ -52,6 +54,8 @@ RoomController.prototype.loadRoom = function()
     this.room.on('player:leave', this.onPlayerLeave);
     this.room.on('game:new', this.onGame);
     this.kickManager.on('kick', this.onKick);
+    this.kickManager.on('vote:new', this.onVoteNew);
+    this.kickManager.on('vote:close', this.onVoteClose);
 };
 
 /**
@@ -450,4 +454,24 @@ RoomController.prototype.onGame = function()
 RoomController.prototype.onKick = function(player)
 {
     this.removePlayer(player);
+};
+
+/**
+ * On new vote
+ *
+ * @param {kickVote} kickVote
+ */
+RoomController.prototype.onVoteNew = function(kickVote)
+{
+    this.socketGroup.addEvent('vote:new', kickVote.serialize());
+};
+
+/**
+ * On vote close
+ *
+ * @param {kickVote} kickVote
+ */
+RoomController.prototype.onVoteClose = function(kickVote)
+{
+    this.socketGroup.addEvent('vote:close', kickVote.serialize());
 };

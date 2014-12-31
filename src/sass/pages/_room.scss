@@ -288,7 +288,7 @@
         min-width: 32px;
         padding: 0;
 
-        &.active .icon-kick {
+        .icon-kick.kicked {
             color: $color-danger;
             opacity: 1;
         }

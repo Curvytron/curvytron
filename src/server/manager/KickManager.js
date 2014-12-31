@@ -47,12 +47,14 @@ KickManager.prototype.getVote = function(player)
         return this.votes.getById(player.id);
     }
 
-    var vote = new KickVote(player, this.getTotalClients());
+    var kickVote = new KickVote(player, this.getTotalClients());
 
-    this.votes.add(vote);
-    vote.on('close', this.onVoteClose);
+    this.votes.add(kickVote);
+    kickVote.on('close', this.onVoteClose);
 
-    return vote;
+    this.emit('vote:new', kickVote);
+
+    return kickVote;
 };
 
 /**
@@ -68,6 +70,8 @@ KickManager.prototype.onVoteClose = function(kickVote)
     if (kickVote.result) {
         this.emit('kick', kickVote.target);
     }
+
+    this.emit('vote:close', kickVote);
 };
 
 /**
@@ -102,11 +106,16 @@ KickManager.prototype.onClientLeave = function(data)
  */
 KickManager.prototype.removeClient = function(client)
 {
-    var total = this.getTotalClients();
+    var total = this.getTotalClients(),
+        kickVote;
 
     for (var i = this.votes.items.length - 1; i >= 0; i--) {
-        this.votes.items[i].removeClient(client);
-        this.votes.items[i].setTotal(total);
+        kickVote = this.votes.items[i];
+
+        if (kickVote) {
+            kickVote.removeClient(client);
+            kickVote.setTotal(total);
+        }
     }
 };
 

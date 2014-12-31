@@ -31,6 +31,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.onJoin           = this.onJoin.bind(this);
     this.onJoined         = this.onJoined.bind(this);
     this.onControlChange  = this.onControlChange.bind(this);
+    this.onVote           = this.onVote.bind(this);
     this.joinRoom         = this.joinRoom.bind(this);
     this.leaveRoom        = this.leaveRoom.bind(this);
     this.setColor         = this.setColor.bind(this);
@@ -150,6 +151,8 @@ RoomController.prototype.attachEvents = function(name)
     this.repository.on('player:ready', this.applyScope);
     this.repository.on('player:color', this.applyScope);
     this.repository.on('player:name', this.applyScope);
+    this.repository.on('vote:new', this.onVote);
+    this.repository.on('vote:close', this.onVote);
     this.repository.on('room:game:start', this.start);
 
     for (var i = this.room.players.items.length - 1; i >= 0; i--) {
@@ -170,6 +173,8 @@ RoomController.prototype.detachEvents = function(name)
     this.repository.off('player:ready', this.applyScope);
     this.repository.off('player:color', this.applyScope);
     this.repository.off('player:name', this.applyScope);
+    this.repository.off('vote:new', this.onVote);
+    this.repository.off('vote:close', this.onVote);
     this.repository.off('room:game:start', this.start);
 
     if (this.room) {
@@ -273,6 +278,16 @@ RoomController.prototype.onJoin = function(e)
         }
     }
 
+    this.applyScope();
+};
+
+/**
+ * On vote
+ *
+ * @param {Event} e
+ */
+RoomController.prototype.onVote = function(e)
+{
     this.applyScope();
 };
 
@@ -452,7 +467,6 @@ RoomController.prototype.saveProfileControls = function()
  */
 RoomController.prototype.setProfileControls = function(player)
 {
-
     if (!this.controlSynchro) {
         this.controlSynchro = true;
 
