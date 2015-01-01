@@ -12,18 +12,23 @@ function RoomController(room)
     this.room        = room;
     this.clients     = new Collection();
     this.socketGroup = new SocketGroup(this.clients);
+    this.kickManager = new KickManager(this);
 
     this.onPlayerJoin  = this.onPlayerJoin.bind(this);
     this.onPlayerLeave = this.onPlayerLeave.bind(this);
     this.onGame        = this.onGame.bind(this);
     this.loadRoom      = this.loadRoom.bind(this);
     this.unloadRoom    = this.unloadRoom.bind(this);
+    this.onVoteNew     = this.onVoteNew.bind(this);
+    this.onVoteClose   = this.onVoteClose.bind(this);
+    this.onKick        = this.onKick.bind(this);
 
     this.callbacks = {
         onTalk: function (data) { controller.onTalk(this, data.data, data.callback); },
         onPlayerAdd: function (data) { controller.onPlayerAdd(this, data.data, data.callback); },
         onPlayerRemove: function (data) { controller.onPlayerRemove(this, data.data, data.callback); },
         onReady: function (data) { controller.onReady(this, data.data, data.callback); },
+        onKickVote: function (data) { controller.onKickVote(this, data.data, data.callback); },
         onName: function (data) { controller.onName(this, data.data, data.callback); },
         onColor: function (data) { controller.onColor(this, data.data, data.callback); },
         onLeave: function () { controller.onLeave(this); },
@@ -48,6 +53,9 @@ RoomController.prototype.loadRoom = function()
     this.room.on('player:join', this.onPlayerJoin);
     this.room.on('player:leave', this.onPlayerLeave);
     this.room.on('game:new', this.onGame);
+    this.kickManager.on('kick', this.onKick);
+    this.kickManager.on('vote:new', this.onVoteNew);
+    this.kickManager.on('vote:close', this.onVoteClose);
 };
 
 /**
@@ -58,6 +66,8 @@ RoomController.prototype.unloadRoom = function()
     this.room.removeListener('player:join', this.onPlayerJoin);
     this.room.removeListener('player:leave', this.onPlayerLeave);
     this.room.removeListener('game:new', this.onGame);
+    this.kickManager.removeListener('kick', this.onKick);
+    this.kickManager.clear();
 };
 
 /**
@@ -70,6 +80,7 @@ RoomController.prototype.attach = function(client)
     if (this.clients.add(client)) {
         this.attachEvents(client);
         this.onClientAdd(client);
+        this.emit('client:add', { room: this.room, client: client});
     }
 };
 
@@ -83,6 +94,7 @@ RoomController.prototype.detach = function(client)
     if (this.clients.remove(client)) {
         this.detachEvents(client);
         this.onClientRemove(client);
+        this.emit('client:remove', { room: this.room, client: client});
     }
 };
 
@@ -98,6 +110,7 @@ RoomController.prototype.attachEvents = function(client)
     client.on('room:talk', this.callbacks.onTalk);
     client.on('player:add', this.callbacks.onPlayerAdd);
     client.on('player:remove', this.callbacks.onPlayerRemove);
+    client.on('player:kick', this.callbacks.onKickVote);
     client.on('room:ready', this.callbacks.onReady);
     client.on('room:color', this.callbacks.onColor);
     client.on('room:name', this.callbacks.onName);
@@ -119,6 +132,7 @@ RoomController.prototype.detachEvents = function(client)
     client.removeListener('room:talk', this.callbacks.onTalk);
     client.removeListener('player:add', this.callbacks.onPlayerAdd);
     client.removeListener('player:remove', this.callbacks.onPlayerRemove);
+    client.removeListener('player:kick', this.callbacks.onKickVote);
     client.removeListener('room:ready', this.callbacks.onReady);
     client.removeListener('room:color', this.callbacks.onColor);
     client.removeListener('room:name', this.callbacks.onName);
@@ -126,6 +140,24 @@ RoomController.prototype.detachEvents = function(client)
     client.removeListener('room:config:max-score', this.callbacks.onConfigMaxScore);
     client.removeListener('room:config:variable', this.callbacks.onConfigVariable);
     client.removeListener('room:config:bonus', this.callbacks.onConfigBonus);
+};
+
+/**
+ * Remove player
+ *
+ * @param {Player} player
+ */
+RoomController.prototype.removePlayer = function(player)
+{
+    var client = player.client;
+
+    if (this.room.removePlayer(player) && client) {
+        client.players.remove(player);
+
+        if (!client.isPlaying()) {
+            this.kickManager.removeClient(client);
+        }
+    }
 };
 
 /**
@@ -141,7 +173,7 @@ RoomController.prototype.onClientAdd = function(client)
 
     if (this.room.game) {
         this.room.game.controller.attach(client);
-        this.socketGroup.addEvent('room:game:start');
+        client.addEvent('room:game:start');
     }
 };
 
@@ -210,8 +242,7 @@ RoomController.prototype.onPlayerRemove = function(client, data, callback)
     var player = client.players.getById(data.player);
 
     if (player) {
-        this.room.removePlayer(player);
-        client.players.remove(player);
+        this.removePlayer(player);
         callback({success: true});
     } else {
         callback({success: false});
@@ -298,7 +329,31 @@ RoomController.prototype.onReady = function(client, data, callback)
         if (this.room.isReady()) {
             this.room.newGame();
         }
+    } else {
+        callback({success: false});
     }
+};
+
+/**
+ * On kick vote
+ *
+ * @param {SocketClient} client
+ * @param {Object} data
+ * @param {Function} callback
+ */
+RoomController.prototype.onKickVote = function(client, data, callback)
+{
+    if (client.isPlaying()) {
+        var player = this.room.players.getById(data.player);
+
+        if (player) {
+            var kickVote = this.kickManager.vote(client, player);
+
+            return callback({success: true, kicked: kickVote.hasVote(client)});
+        }
+    }
+
+    return callback({success: false, kicked: false});
 };
 
 /**
@@ -310,7 +365,7 @@ RoomController.prototype.onReady = function(client, data, callback)
  */
 RoomController.prototype.onConfigMaxScore = function(client, data, callback)
 {
-    var success = !client.players.isEmpty() && this.room.config.setMaxScore(data.maxScore);
+    var success = !client.isPlaying() && this.room.config.setMaxScore(data.maxScore);
 
     callback({success: success, maxScore: this.room.config.maxScore });
 
@@ -328,7 +383,7 @@ RoomController.prototype.onConfigMaxScore = function(client, data, callback)
  */
 RoomController.prototype.onConfigVariable = function(client, data, callback)
 {
-    var success = !client.players.isEmpty() && this.room.config.setVariable(data.variable, data.value);
+    var success = !client.isPlaying() && this.room.config.setVariable(data.variable, data.value);
 
     callback({success: success, value: this.room.config.getVariable(data.variable) });
 
@@ -349,7 +404,7 @@ RoomController.prototype.onConfigVariable = function(client, data, callback)
  */
 RoomController.prototype.onConfigBonus = function(client, data, callback)
 {
-    var success = !client.players.isEmpty() && this.room.config.toggleBonus(data.bonus);
+    var success = !client.isPlaying() && this.room.config.toggleBonus(data.bonus);
 
     callback({success: success, enabled: this.room.config.getBonus(data.bonus) });
 
@@ -389,4 +444,34 @@ RoomController.prototype.onPlayerLeave = function(data)
 RoomController.prototype.onGame = function()
 {
     this.socketGroup.addEvent('room:game:start');
+};
+
+/**
+ * On kick
+ *
+ * @param {Player} player
+ */
+RoomController.prototype.onKick = function(player)
+{
+    this.removePlayer(player);
+};
+
+/**
+ * On new vote
+ *
+ * @param {kickVote} kickVote
+ */
+RoomController.prototype.onVoteNew = function(kickVote)
+{
+    this.socketGroup.addEvent('vote:new', kickVote.serialize());
+};
+
+/**
+ * On vote close
+ *
+ * @param {kickVote} kickVote
+ */
+RoomController.prototype.onVoteClose = function(kickVote)
+{
+    this.socketGroup.addEvent('vote:close', kickVote.serialize());
 };

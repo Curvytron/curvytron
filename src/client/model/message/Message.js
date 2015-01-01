@@ -11,3 +11,10 @@ function Message (player, content)
 
 Message.prototype = Object.create(BaseMessage.prototype);
 Message.prototype.constructor = Message;
+
+/**
+ * Message type
+ *
+ * @type {String}
+ */
+Message.prototype.type = 'default';
