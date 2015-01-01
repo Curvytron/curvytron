@@ -113,7 +113,7 @@
                         </div>
                         <div ng-repeat="message in messages" class="one-message">
                             <strong style="color: {{ message.player.color ? message.player.color : '#75858c' }};">
-                                <span ng-if="message.getPlayerIcon()" class="{{ message.getPlayerIcon() }}"></span>
+                                <span ng-if="message.getPlayerIcon()" class="message-icon {{ message.getPlayerIcon() }}"></span>
                                 {{ message.getPlayerName() }}:
                             </strong>
                             <span class="message-content">
