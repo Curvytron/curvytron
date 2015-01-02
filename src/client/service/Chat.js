@@ -27,7 +27,7 @@ function Chat(client)
 Chat.prototype.curvybot = {
     name: 'Curvybot',
     color: '#ff8069',
-    //icon: 'icon-lightbulb'
+    icon: 'icon-megaphone'
 };
 
 /**
