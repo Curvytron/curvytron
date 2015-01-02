@@ -54,6 +54,8 @@ RoomConfigController.prototype.toggleBonus = function(bonus)
         this.repository.setConfigBonus(bonus, function (result) {
             config.setBonus(bonus, result.enabled);
         });
+    } else {
+        console.error('Unknown bonus: %s', bonus.type);
     }
 };
 

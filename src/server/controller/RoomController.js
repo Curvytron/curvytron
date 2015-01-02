@@ -365,7 +365,7 @@ RoomController.prototype.onKickVote = function(client, data, callback)
  */
 RoomController.prototype.onConfigMaxScore = function(client, data, callback)
 {
-    var success = !client.isPlaying() && this.room.config.setMaxScore(data.maxScore);
+    var success = client.isPlaying() && this.room.config.setMaxScore(data.maxScore);
 
     callback({success: success, maxScore: this.room.config.maxScore });
 
@@ -383,7 +383,7 @@ RoomController.prototype.onConfigMaxScore = function(client, data, callback)
  */
 RoomController.prototype.onConfigVariable = function(client, data, callback)
 {
-    var success = !client.isPlaying() && this.room.config.setVariable(data.variable, data.value);
+    var success = client.isPlaying() && this.room.config.setVariable(data.variable, data.value);
 
     callback({success: success, value: this.room.config.getVariable(data.variable) });
 
@@ -404,7 +404,7 @@ RoomController.prototype.onConfigVariable = function(client, data, callback)
  */
 RoomController.prototype.onConfigBonus = function(client, data, callback)
 {
-    var success = !client.isPlaying() && this.room.config.toggleBonus(data.bonus);
+    var success = client.isPlaying() && this.room.config.toggleBonus(data.bonus);
 
     callback({success: success, enabled: this.room.config.getBonus(data.bonus) });
 
