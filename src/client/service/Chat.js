@@ -106,7 +106,9 @@ Chat.prototype.refresh = function()
  */
 Chat.prototype.scrollDown = function()
 {
-    this.feed.scrollTop = this.feed.scrollHeight;
+    if (this.feed) {
+        this.feed.scrollTop = this.feed.scrollHeight;
+    }
 };
 
 /**

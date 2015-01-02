@@ -42,7 +42,7 @@ BaseMessage.prototype.getPlayerName = function()
  */
 BaseMessage.prototype.getPlayerIcon = function()
 {
-    return typeof(this.player.icon) !== 'undefined' ? this.player.icon : null;
+    return this.player && typeof(this.player.icon) !== 'undefined' ? this.player.icon : null;
 };
 
 /**

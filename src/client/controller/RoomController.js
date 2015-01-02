@@ -30,6 +30,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.applyScope       = this.applyScope.bind(this);
     this.onJoin           = this.onJoin.bind(this);
     this.onJoined         = this.onJoined.bind(this);
+    this.onChatLoaded     = this.onChatLoaded.bind(this);
     this.onControlChange  = this.onControlChange.bind(this);
     this.onVote           = this.onVote.bind(this);
     this.joinRoom         = this.joinRoom.bind(this);
@@ -53,6 +54,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.$scope.setName             = this.setName;
     this.$scope.setTouch            = this.setTouch;
     this.$scope.toggleParameters    = this.toggleParameters;
+    this.$scope.chatLoaded          = this.onChatLoaded;
     this.$scope.nameMaxLength       = Player.prototype.maxLength;
     this.$scope.colorMaxLength      = Player.prototype.colorMaxLength;
     this.$scope.hasTouch            = this.hasTouch;
@@ -111,19 +113,24 @@ RoomController.prototype.onJoined = function(result)
         this.room        = this.repository.room;
         this.$scope.room = this.room;
 
-        this.chat.setScope(this.$scope);
         this.attachEvents();
         this.chat.setRoom(this.room);
         this.addProfileUser();
         this.addTip();
-
-        setTimeout(this.chat.scrollDown, 0);
     } else {
         console.error('Could not join room %s', name);
         this.goHome();
         this.applyScope();
     }
 };
+
+/**
+ * On chat loaded
+ */
+RoomController.prototype.onChatLoaded = function ()
+{
+    this.chat.setScope(this.$scope);
+}
 
 /**
  * Leave room

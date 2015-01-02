@@ -22,6 +22,7 @@ function GameController($scope, $routeParams, $location, client, repository, pro
 
     // Binding
     this.onLoaded      = this.onLoaded.bind(this);
+    this.onChatLoaded  = this.onChatLoaded.bind(this);
     this.onMove        = this.onMove.bind(this);
     this.onBonusPop    = this.onBonusPop.bind(this);
     this.onBonusClear  = this.onBonusClear.bind(this);
@@ -55,11 +56,11 @@ function GameController($scope, $routeParams, $location, client, repository, pro
     this.$scope.sound       = this.profile.sound;
     this.$scope.backToRoom  = this.backToRoom;
     this.$scope.toggleSound = this.toggleSound;
+    this.$scope.chatLoaded  = this.onChatLoaded;
     this.$scope.roundWinner = null;
     this.$scope.gameWinner  = null;
 
     this.repository.start();
-    this.chat.setScope(this.$scope);
     this.initSound();
 
     var name = decodeURIComponent($routeParams.name);
@@ -173,6 +174,14 @@ GameController.prototype.onLoaded = function()
 {
     this.client.addEvent('loaded');
 };
+
+/**
+ * On chat loaded
+ */
+GameController.prototype.onChatLoaded = function ()
+{
+    this.chat.setScope(this.$scope);
+}
 
 /**
  * Start warmup
