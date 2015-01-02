@@ -116,9 +116,6 @@
                                 <span ng-if="message.getPlayerIcon()" class="message-icon {{ message.getPlayerIcon() }}"></span>
                                 {{ message.getPlayerName() }}:
                             </strong>
-                            <span class="message-content">
-                                {{ message.content }}
-                            </span>
                             <span class="message-content" ng-switch="message.type">
                                 <span ng-switch-when="vote-kick">
                                     A new vote has been started to ban <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>.
