@@ -53,6 +53,7 @@ function GameController($scope, $routeParams, $location, client, repository, pro
     this.$scope.phase       = 'round';
     this.$scope.end         = false;
     this.$scope.tieBreak    = false;
+    this.$scope.borderless  = false;
     this.$scope.sound       = this.profile.sound;
     this.$scope.backToRoom  = this.backToRoom;
     this.$scope.toggleSound = this.toggleSound;
@@ -276,6 +277,11 @@ GameController.prototype.onBonusStack = function(e)
 
     if (avatar && avatar.local) {
         avatar.bonusStack[data.method](bonus);
+
+        if (bonus.type === 'BonusAllBorderless') {
+            this.updateBorders();
+            this.applyScope();
+        }
     }
 };
 
@@ -359,6 +365,7 @@ GameController.prototype.onRoundNew = function(e)
 
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
+    this.updateBorders();
     this.applyScope();
 };
 
@@ -432,6 +439,14 @@ GameController.prototype.onLeave = function(e)
         this.game.removeAvatar(avatar);
         this.applyScope();
     }
+};
+
+/**
+ * Update map border
+ */
+GameController.prototype.updateBorders = function()
+{
+    this.$scope.borderless = this.game.avatars.match(function () { return this.borderless; }) !== null;
 };
 
 /**
