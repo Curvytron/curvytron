@@ -120,6 +120,16 @@ Game.prototype.end = function()
 };
 
 /**
+ * Update size
+ */
+Game.prototype.setSize = function(size)
+{
+    BaseGame.prototype.setSize.call(this, size);
+
+    this.onResize();
+};
+
+/**
  * Draw
  *
  * @param {Number} step
