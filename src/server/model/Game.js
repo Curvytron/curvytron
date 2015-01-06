@@ -200,6 +200,18 @@ Game.prototype.clearTrails = function()
 };
 
 /**
+ * Update size
+ */
+Game.prototype.setSize = function(size)
+{
+    BaseGame.prototype.setSize.call(this, size);
+
+    this.world.clear();
+
+    this.world = new World(this.size);
+};
+
+/**
  * Check end of round
  */
 Game.prototype.onRoundEnd = function()

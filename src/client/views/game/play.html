@@ -23,23 +23,7 @@
                 <span id="ping" class="pull-right">0</span>
                 <a href="http://www.elao.com" class="game-copy pull-left" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>
             </footer>
-            <div class="chat-wrapper">
-                <div id="feed">
-                    <div class="welcome">
-                        <strong>Welcome !</strong>
-                    </div>
-                    <div ng-repeat="message in messages" class="one-message">
-                        <strong style="color: {{ message.player.color ? message.player.color : '#75858c' }};">
-                            {{ message.getPlayerName() }}:
-                        </strong>
-                        {{ message.content }}
-                    </div>
-                </div>
-                <form ng-submit="submitTalk()" name="talk" class="action-line">
-                    <button type="submit"><span><i class="icon-angle-right"></i></span></button>
-                    <input type="text" name="message" ng-model="currentMessage.content" class="sent-message form-control" placeholder="Enter message..." maxlength="{{ messageMaxLength }}" />
-                </form>
-            </div>
+            <div class="chat-wrapper" ng-include="'js/views/chat/chat.html'" onload="chatLoaded()"></div>
         </aside>
         <div id="col-right">
             <div ng-if="warmup">
@@ -93,7 +77,7 @@
                     </div>
                 </section>
             </section>
-            <canvas id="game" class="game"></canvas>
+            <canvas id="game" class="game {{ borderless ? 'borderless' : '' }}"></canvas>
         </div>
     </section>
 </section>

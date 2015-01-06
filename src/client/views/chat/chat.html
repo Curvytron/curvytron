@@ -1,0 +1,32 @@
+<div id="feed">
+    <div ng-repeat="message in messages" class="one-message">
+        <strong style="color: {{ message.player.color ? message.player.color : '#75858c' }};">
+            <span ng-if="message.getPlayerIcon()" class="message-icon {{ message.getPlayerIcon() }}"></span>
+            {{ message.getPlayerName() }}:
+        </strong>
+        <span class="message-content" ng-switch="message.type">
+            <!-- Vote Kick -->
+            <span ng-switch-when="vote-kick">
+                A new vote has been started to ban <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>.
+            </span>
+
+            <!-- Kick -->
+            <span ng-switch-when="kick">
+                Farewell <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>, you have been kicked.
+            </span>
+
+            <!-- Default -->
+            <span ng-switch-default>
+                {{ message.content }}
+            </span>
+        </span>
+    </div>
+</div>
+
+<form ng-submit="submitTalk()" name="talk" class="action-line">
+    <button type="submit" class="btn btn-default">
+        <span><i class="icon-angle-right"></i></span>
+    </button>
+    <input type="text" name="message" ng-model="currentMessage.content" class="sent-message form-control" placeholder="Enter message..." maxlength="{{ messageMaxLength }}" />
+    <div class="clearfix"></div>
+</form>

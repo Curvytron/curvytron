@@ -108,7 +108,6 @@ BaseBonusStack.prototype.apply = function(property, value)
             this.avatar[property] = value;
             break;
     }
-
 };
 
 /**

@@ -10,6 +10,8 @@ function RoomRepository(client)
     this.client = client;
     this.room   = null;
 
+    this.playerCache = new Collection();
+
     this.start            = this.start.bind(this);
     this.onJoinRoom       = this.onJoinRoom.bind(this);
     this.onLeaveRoom      = this.onLeaveRoom.bind(this);
@@ -21,6 +23,7 @@ function RoomRepository(client)
     this.onConfigMaxScore = this.onConfigMaxScore.bind(this);
     this.onConfigVariable = this.onConfigVariable.bind(this);
     this.onConfigBonus    = this.onConfigBonus.bind(this);
+    this.onVote           = this.onVote.bind(this);
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
@@ -41,6 +44,8 @@ RoomRepository.prototype.attachEvents = function()
     this.client.on('room:config:max-score', this.onConfigMaxScore);
     this.client.on('room:config:variable', this.onConfigVariable);
     this.client.on('room:config:bonus', this.onConfigBonus);
+    this.client.on('vote:new', this.onVote);
+    this.client.on('vote:close', this.onVote);
 };
 
 /**
@@ -58,6 +63,8 @@ RoomRepository.prototype.detachEvents = function()
     this.client.off('room:config:max-score', this.onConfigMaxScore);
     this.client.off('room:config:variable', this.onConfigVariable);
     this.client.off('room:config:bonus', this.onConfigBonus);
+    this.client.off('vote:new', this.onVote);
+    this.client.off('vote:close', this.onVote);
 };
 
 /**
@@ -125,12 +132,30 @@ RoomRepository.prototype.addPlayer = function(name, color, callback)
 /**
  * Remove player
  *
- * @param {Number} player
+ * @param {Player} player
  * @param {Function} callback
  */
 RoomRepository.prototype.removePlayer = function(player, callback)
 {
-    this.client.addEvent('player:remove', {player: player}, callback);
+    this.client.addEvent('player:remove', {player: player.id}, callback);
+};
+
+/**
+ * Kick player
+ *
+ * @param {Player} player
+ * @param {Function} callback
+ */
+RoomRepository.prototype.kickPlayer = function(player, callback)
+{
+    var client = this.client;
+
+    this.client.addEvent('player:kick', { player: player.id },
+        function (result) {
+            player.kicked = result.kicked;
+            callback(result);
+        }
+    );
 };
 
 /**
@@ -254,6 +279,7 @@ RoomRepository.prototype.onLeaveRoom = function(e)
         player = this.room.players.getById(data.player);
 
     if (player && this.room.removePlayer(player)) {
+        this.playerCache.add(player);
         this.emit('room:leave', {player: player});
     }
 };
@@ -362,9 +388,28 @@ RoomRepository.prototype.onGameStart = function(e)
  */
 RoomRepository.prototype.onGameEnd = function(e)
 {
-    var data = e.detail;
-
     this.emit('room:game:end');
+};
+
+/**
+ * On vote
+ *
+ * @param {Event} e
+ */
+RoomRepository.prototype.onVote = function(e)
+{
+    var data = e.detail,
+        type = e.type,
+        player = this.room.players.getById(data.target);
+
+    if (!player) {
+        player = this.playerCache.getById(data.target);
+    }
+
+    if (player) {
+        player.vote = type === 'vote:new';
+        this.emit(type, { target: player, result: data.result });
+    }
 };
 
 /**
@@ -385,5 +430,6 @@ RoomRepository.prototype.start = function()
 RoomRepository.prototype.stop = function()
 {
     this.detachEvents();
+    this.playerCache.clear();
     this.room = null;
 };

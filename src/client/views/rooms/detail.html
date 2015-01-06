@@ -50,7 +50,7 @@
                         </th>
                     </tr>
                     <tr ng-repeat="player in room.players.items" ng-if="player.local" class="local">
-                        <td class="col-remove">
+                        <td class="col-remove col-show-hover">
                             <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="removePlayer(player)">
                                 <span class="icon-close"></span>
                             </button>
@@ -80,7 +80,11 @@
                         </td>
                     </tr>
                     <tr ng-repeat="player in room.players.items" ng-if="!player.local">
-                        <td></td>
+                        <td class="col-remove col-show-hover {{ player.vote ? 'active' : '' }}">
+                            <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="kickPlayer(player)">
+                                <span class="icon-kick {{ player.kicked ? 'kicked' : '' }}"></span>
+                            </button>
+                        </td>
                         <td class="col-player">
                             <p class="player-name">{{ player.name }}</p>
                         </td>
@@ -102,24 +106,7 @@
             </table>
 
             <div class="room-chat">
-                <div class="chat-wrapper">
-                    <div id="feed">
-                        <div class="one-message">
-                            <strong>Welcome!</strong>
-                        </div>
-                        <div ng-repeat="message in messages" class="one-message">
-                            <strong style="color: {{ message.player.color ? message.player.color : '#75858c' }};">
-                                {{ message.getPlayerName() }}:
-                            </strong>
-                            {{ message.content }}
-                        </div>
-                    </div>
-                    <form ng-submit="submitTalk()" name="talk" class="action-line">
-                            <button type="submit" class="btn btn-default"><span><i class="icon-angle-right"></i></span></button>
-                            <input type="text" name="message" ng-model="currentMessage.content" class="sent-message form-control" placeholder="Enter message..." maxlength="{{ messageMaxLength }}" />
-                            <div class="clearfix"></div>
-                    </form>
-                </div>
+                <div class="chat-wrapper" ng-include="'js/views/chat/chat.html'" onload="chatLoaded()"></div>
             </div>
 
             <div class="clearfix"></div>

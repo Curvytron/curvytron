@@ -132,6 +132,12 @@ BaseGame.prototype.onStop = function()
 {
     this.rendered = null;
     this.bonusManager.stop();
+
+    var size = this.getSize(this.getPresentAvatars().count());
+
+    if (this.size !== size) {
+        this.setSize(size);
+    }
 };
 
 /**
@@ -180,6 +186,14 @@ BaseGame.prototype.onFrame = function(step)
 {
     this.update(step);
     this.fps.update(step);
+};
+
+/**
+ * Update game size
+ */
+BaseGame.prototype.setSize = function(size)
+{
+    this.size = this.getSize(this.getPresentAvatars().count());
 };
 
 /**

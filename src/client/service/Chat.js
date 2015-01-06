@@ -20,6 +20,17 @@ function Chat(client)
 }
 
 /**
+ * Curvybot profile
+ *
+ * @type {Object}
+ */
+Chat.prototype.curvybot = {
+    name: 'Curvybot',
+    color: '#ff8069',
+    icon: 'icon-megaphone'
+};
+
+/**
  * Attach events
  */
 Chat.prototype.attachEvents = function()
@@ -95,7 +106,9 @@ Chat.prototype.refresh = function()
  */
 Chat.prototype.scrollDown = function()
 {
-    this.feed.scrollTop = this.feed.scrollHeight;
+    if (this.feed) {
+        this.feed.scrollTop = this.feed.scrollHeight;
+    }
 };
 
 /**

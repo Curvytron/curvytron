@@ -22,6 +22,7 @@ function GameController($scope, $routeParams, $location, client, repository, pro
 
     // Binding
     this.onLoaded      = this.onLoaded.bind(this);
+    this.onChatLoaded  = this.onChatLoaded.bind(this);
     this.onMove        = this.onMove.bind(this);
     this.onBonusPop    = this.onBonusPop.bind(this);
     this.onBonusClear  = this.onBonusClear.bind(this);
@@ -52,14 +53,15 @@ function GameController($scope, $routeParams, $location, client, repository, pro
     this.$scope.phase       = 'round';
     this.$scope.end         = false;
     this.$scope.tieBreak    = false;
+    this.$scope.borderless  = false;
     this.$scope.sound       = this.profile.sound;
     this.$scope.backToRoom  = this.backToRoom;
     this.$scope.toggleSound = this.toggleSound;
+    this.$scope.chatLoaded  = this.onChatLoaded;
     this.$scope.roundWinner = null;
     this.$scope.gameWinner  = null;
 
     this.repository.start();
-    this.chat.setScope(this.$scope);
     this.initSound();
 
     var name = decodeURIComponent($routeParams.name);
@@ -175,6 +177,14 @@ GameController.prototype.onLoaded = function()
 };
 
 /**
+ * On chat loaded
+ */
+GameController.prototype.onChatLoaded = function ()
+{
+    this.chat.setScope(this.$scope);
+}
+
+/**
  * Start warmup
  */
 GameController.prototype.displayWarmup = function(time)
@@ -267,6 +277,11 @@ GameController.prototype.onBonusStack = function(e)
 
     if (avatar && avatar.local) {
         avatar.bonusStack[data.method](bonus);
+
+        if (bonus.type === 'BonusAllBorderless') {
+            this.updateBorders();
+            this.applyScope();
+        }
     }
 };
 
@@ -350,6 +365,7 @@ GameController.prototype.onRoundNew = function(e)
 
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
+    this.updateBorders();
     this.applyScope();
 };
 
@@ -423,6 +439,14 @@ GameController.prototype.onLeave = function(e)
         this.game.removeAvatar(avatar);
         this.applyScope();
     }
+};
+
+/**
+ * Update map border
+ */
+GameController.prototype.updateBorders = function()
+{
+    this.$scope.borderless = this.game.avatars.match(function () { return this.borderless; }) !== null;
 };
 
 /**
