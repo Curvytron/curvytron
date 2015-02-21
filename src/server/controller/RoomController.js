@@ -215,19 +215,26 @@ RoomController.prototype.onLeave = function(client)
  */
 RoomController.prototype.onPlayerAdd = function(client, data, callback)
 {
-    var name = data.name.substr(0, Player.prototype.maxLength),
+    var name = data.name.substr(0, Player.prototype.maxLength).trim(),
         color = typeof(data.color) !== 'undefined' ? data.color : null;
 
-    if (!this.room.game && this.room.isNameAvailable(name)) {
-
-        var player = new Player(client, name, color);
-
-        this.room.addPlayer(player);
-        client.players.add(player);
-        callback({success: true});
-    } else {
-        callback({success: false});
+    if (!name.length) {
+        return callback({success: false, error: 'Invalid name.'});
     }
+
+    if (this.room.game) {
+        return callback({success: false, error: 'Game already started.'});
+    }
+
+    if (!this.room.isNameAvailable(name)) {
+        return callback({success: false, error: 'This username is already used.'});
+    }
+
+    var player = new Player(client, name, color);
+
+    this.room.addPlayer(player);
+    client.players.add(player);
+    callback({success: true});
 };
 
 /**
@@ -298,15 +305,23 @@ RoomController.prototype.onColor = function(client, data, callback)
 RoomController.prototype.onName = function(client, data, callback)
 {
     var player = client.players.getById(data.player),
-        name = data.name.substr(0, Player.prototype.maxLength);
+        name = data.name.substr(0, Player.prototype.maxLength).trim();
 
-    if (player && this.room.isNameAvailable(name)) {
-        player.setName(name);
-        callback({success: true, name: player.name});
-        this.socketGroup.addEvent('player:name', { player: player.id, name: player.name });
-    } else {
-        callback({success: false});
+    if (!player) {
+        return callback({success: false, error: 'Unknown player: "' + name + '"'});
     }
+
+    if (!name.length) {
+        return callback({success: false, error: 'Invalid name.', name: player.name});
+    }
+
+    if (!this.room.isNameAvailable(name)) {
+        return callback({success: false, error: 'This username is already used.', name: player.name});
+    }
+
+    player.setName(name);
+    callback({success: true, name: player.name});
+    this.socketGroup.addEvent('player:name', { player: player.id, name: player.name });
 };
 
 /**

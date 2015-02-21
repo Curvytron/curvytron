@@ -125,7 +125,9 @@ Profile.prototype.getMapping = function()
  */
 Profile.prototype.setName = function(name)
 {
-    if (this.name !== name) {
+    name = name.trim();
+
+    if (name.length && this.name !== name) {
         this.name = name;
         this.persist();
     }
