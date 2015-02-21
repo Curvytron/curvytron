@@ -29,8 +29,8 @@ Radio.prototype.getVideo = function(src)
 
     video.name     = 'media';
     video.autoplay = true;
-    video.volume   = 0
-    source.type    = "audio/mpeg";
+    video.volume   = 0;
+    source.type    = 'audio/mpeg';
     source.src     = this.source;
 
     return video;
