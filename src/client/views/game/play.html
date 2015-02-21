@@ -8,7 +8,7 @@
             <span id="sound" class="btn-toogle sound pull-right" ng-class="{ active: sound }" ng-click="toggleSound()">
                 <i class="icon-volume"></i>
             </span>
-            <span id="radio-sound" class="btn-toogle radio-sound pull-right" ng-class="{ active: radio }" ng-click="toggleRadio()">
+            <span id="radio-sound" class="btn-toogle radio-sound pull-right" ng-class="{ active: radio.playing }" ng-click="toggleRadio()">
                 <i class="icon-radio"></i>
             </span>
 
@@ -22,7 +22,6 @@
                 </li>
             </ul>
             <footer>
-                <div ng-if="radio" ng-include="'js/views/game/radio.html'" class="radio-player"></div>
                 <span id="fps" class="pull-right">0</span>
                 <span id="ping" class="pull-right">0</span>
                 <a href="http://www.elao.com" class="game-copy pull-left" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>
