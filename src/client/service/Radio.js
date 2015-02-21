@@ -4,7 +4,6 @@
 function Radio ()
 {
     this.element = this.getVideo(this.source);
-    this.playing = true;
 }
 
 /**
@@ -30,6 +29,7 @@ Radio.prototype.getVideo = function(src)
 
     video.name     = 'media';
     video.autoplay = true;
+    video.volume   = 0
     source.type    = "audio/mpeg";
     source.src     = this.source;
 
@@ -41,7 +41,7 @@ Radio.prototype.getVideo = function(src)
  */
 Radio.prototype.toggle = function()
 {
-    if (this.playing) {
+    if (this.element.volume) {
         this.stop();
     } else {
         this.play();
@@ -53,7 +53,6 @@ Radio.prototype.toggle = function()
  */
 Radio.prototype.play = function()
 {
-    this.playing = true;
     this.element.volume = 1;
 };
 
@@ -62,6 +61,5 @@ Radio.prototype.play = function()
  */
 Radio.prototype.stop = function()
 {
-    this.playing = false;
     this.element.volume = 0;
 };

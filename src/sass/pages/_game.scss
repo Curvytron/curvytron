@@ -560,12 +560,12 @@
 
     .icon-volume {
         @extend .icon-volume-off;
-        @include opacity(80);
+        @include opacity(66);
     }
 
     .icon-radio {
         @extend .icon-music;
-        @include opacity(80);
+        @include opacity(66);
     }
 
     &::after {
