@@ -9,7 +9,7 @@ function KickVote(player, total)
     this.id     = player.id;
     this.target = player;
     this.votes  = new Collection();
-    this.total  = parseInt(total);
+    this.total  = parseInt(total, 10);
     this.closed = false;
     this.result = false;
 }
