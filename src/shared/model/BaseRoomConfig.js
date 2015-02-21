@@ -26,14 +26,61 @@ function BaseRoomConfig(room)
         BonusGameClear: true,
         BonusEnemyStraightAngle: true
     };
-
-    this.presets = {
-        SpeedOfLight : {
-            name: 'SpeedOfLight',
-            bonuses: ['BonusSelfFast', 'BonusEnemyFast']
-        }
-    };
 }
+
+/**
+ * Presets
+ *
+ * @type {Object}
+ */
+BaseRoomConfig.prototype.presets = {
+    default : {
+        name: 'Default',
+        bonuses: [
+            'BonusSelfSmall',
+            'BonusSelfSlow',
+            'BonusSelfFast',
+            'BonusSelfMaster',
+            'BonusEnemySlow',
+            'BonusEnemyFast',
+            'BonusEnemyBig',
+            'BonusEnemyInverse',
+            'BonusAllBorderless',
+            'BonusAllColor',
+            'BonusGameClear',
+            'BonusEnemyStraightAngle'
+        ]
+    },
+    none : {
+        name: 'No items',
+        bonuses: []
+    },
+    speedOfLight : {
+        name: 'Speed of light',
+        bonuses: [
+            'BonusSelfFast',
+            'BonusEnemyFast'
+        ]
+    },
+    supersizeMe : {
+        name: 'Super size me',
+        bonuses: [
+            'BonusEnemyBig'
+        ]
+    },
+    tron : {
+        name: 'Tron',
+        bonuses: [
+            'BonusEnemyStraightAngle',
+            'BonusSelfSlow',
+            'BonusSelfFast',
+            'BonusEnemySlow',
+            'BonusEnemyFast',
+            'BonusEnemyBig',
+            'BonusEnemyInverse'
+        ]
+    },
+};
 
 BaseRoomConfig.prototype.setMaxScore = function(maxScore)
 {
