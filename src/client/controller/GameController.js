@@ -182,7 +182,7 @@ GameController.prototype.onLoaded = function()
 GameController.prototype.onChatLoaded = function ()
 {
     this.chat.setScope(this.$scope);
-}
+};
 
 /**
  * Start warmup
@@ -350,6 +350,10 @@ GameController.prototype.onDie = function(e)
  */
 GameController.prototype.onSpectate = function()
 {
+    for (var i = this.game.avatars.items.length - 1; i >= 0; i--) {
+        this.game.avatars.items[i].local = true;
+    }
+
     this.game.newRound(0);
 };
 

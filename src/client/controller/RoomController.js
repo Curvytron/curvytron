@@ -130,7 +130,7 @@ RoomController.prototype.onJoined = function(result)
 RoomController.prototype.onChatLoaded = function ()
 {
     this.chat.setScope(this.$scope);
-}
+};
 
 /**
  * Leave room
@@ -218,7 +218,8 @@ RoomController.prototype.addPlayer = function(name, color)
                     $scope.username = null;
                     $scope.$apply();
                 } else {
-                    console.error('Could not add player %s', name);
+                    var error = typeof(result.error) !== 'undefined' ? result.error : 'Unknown error';
+                    console.error('Could not add player %s: %s', name, error);
                 }
             }
         );
@@ -349,11 +350,20 @@ RoomController.prototype.setName = function(player)
         player.name,
         function (result) {
             if (!result.success) {
-                console.error('Could not rename player %s to %s', result.name, player.name);
-                player.name = result.name;
-            } else if (player.profile) {
+                var error = typeof(result.error) !== 'undefined' ? result.error : 'Unknown error',
+                    name = typeof(result.name) !== 'undefined' ? result.name : null;
+
+                console.error('Could not rename player: %s', error);
+
+                if (name) {
+                    player.name = name;
+                }
+            }
+
+            if (player.profile) {
                 controller.profile.setName(player.name);
             }
+
             controller.applyScope();
         }
     );

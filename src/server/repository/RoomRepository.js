@@ -5,9 +5,11 @@ function RoomRepository()
 {
     EventEmitter.call(this);
 
+    this.generator = new RoomNameGenerator();
+    this.rooms     = new Collection([], 'name');
+
     this.onRoomClose = this.onRoomClose.bind(this);
 
-    this.rooms = new Collection([], 'name');
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
@@ -22,7 +24,11 @@ RoomRepository.prototype.constructor = RoomRepository;
  */
 RoomRepository.prototype.create = function(name)
 {
-    var room = new Room(name.substr(0, Room.prototype.maxLength));
+    if (typeof(name) === 'undefined' || !name) {
+        name = this.getRandomRoomName();
+    }
+
+    var room = new Room(name);
 
     if (!this.rooms.add(room)) { return false; }
 
@@ -76,4 +82,20 @@ RoomRepository.prototype.all = function()
 RoomRepository.prototype.onRoomClose = function(data)
 {
     this.remove(data.room);
+};
+
+/**
+ * Get random room name
+ *
+ * @return {String}
+ */
+RoomRepository.prototype.getRandomRoomName = function()
+{
+    var name = this.generator.getName();
+
+    while (this.rooms.ids.indexOf(name) >= 0) {
+        name = this.generator.getName();
+    }
+
+    return name;
 };

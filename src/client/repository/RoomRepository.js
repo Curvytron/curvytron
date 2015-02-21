@@ -195,7 +195,7 @@ RoomRepository.prototype.setColor = function(player, color, callback)
  */
 RoomRepository.prototype.setName = function(player, name, callback)
 {
-    name = name.substr(0, Player.prototype.nameMaxLength);
+    name = name.substr(0, Player.prototype.nameMaxLength).trim();
 
     if (name !== player.name) {
         this.client.addEvent('room:name', {player: player, name: name}, callback);

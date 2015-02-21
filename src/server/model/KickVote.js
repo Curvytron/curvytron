@@ -6,16 +6,26 @@
  */
 function KickVote(player, total)
 {
-    this.id     = player.id;
-    this.target = player;
-    this.votes  = new Collection();
-    this.total  = parseInt(total);
-    this.closed = false;
-    this.result = false;
+    this.id      = player.id;
+    this.target  = player;
+    this.votes   = new Collection();
+    this.total   = parseInt(total, 10);
+    this.closed  = false;
+    this.result  = false;
+    this.timeout = null;
+
+    this.close = this.close.bind(this);
 }
 
 KickVote.prototype = Object.create(EventEmitter.prototype);
 KickVote.prototype.constructor = KickVote;
+
+/**
+ * Time before an empty vote is closed
+ *
+ * @type {Number}
+ */
+KickVote.prototype.timeToClose = 10000;
 
 /**
  * Set total
@@ -74,11 +84,15 @@ KickVote.prototype.check = function()
 {
     if (this.closed) { return; }
 
+    if (this.timeout) {
+        clearTimeout(this.timeout);
+    }
+
     if (this.votes.count() > this.total/2) {
         this.result = true;
         this.close();
     } else if (this.votes.isEmpty()) {
-        this.close();
+        this.timeout = setTimeout(this.close, this.timeToClose);
     }
 };
 

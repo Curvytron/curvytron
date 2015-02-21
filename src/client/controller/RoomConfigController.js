@@ -11,16 +11,19 @@ function RoomConfigController($scope, repository)
     this.config     = null;
 
     // Binding:
-    this.onJoined    = this.onJoined.bind(this);
-    this.toggleBonus = this.toggleBonus.bind(this);
-    this.setMaxScore = this.setMaxScore.bind(this);
-    this.setVariable = this.setVariable.bind(this);
-    this.applyScope  = this.applyScope.bind(this);
+    this.onJoined     = this.onJoined.bind(this);
+    this.toggleBonus  = this.toggleBonus.bind(this);
+    this.togglePreset = this.togglePreset.bind(this);
+    this.setMaxScore  = this.setMaxScore.bind(this);
+    this.setVariable  = this.setVariable.bind(this);
+    this.applyScope   = this.applyScope.bind(this);
 
     // Hydratign scope
-    this.$scope.toggleBonus = this.toggleBonus;
-    this.$scope.setMaxScore = this.setMaxScore;
-    this.$scope.setVariable = this.setVariable;
+    this.$scope.toggleBonus  = this.toggleBonus;
+    this.$scope.togglePreset = this.togglePreset;
+    this.$scope.setMaxScore  = this.setMaxScore;
+    this.$scope.setVariable  = this.setVariable;
+    this.$scope.activePreset = null;
 
     this.repository.on('config:max-score', this.applyScope);
     this.repository.on('config:variable', this.applyScope);
@@ -37,7 +40,8 @@ RoomConfigController.prototype.onJoined = function()
     if (this.$scope.$parent.room) {
         this.config = this.$scope.$parent.room.config;
 
-        this.$scope.config = this.config;
+        this.$scope.config       = this.config;
+        this.$scope.activePreset = this.config.presets.default;
     }
 };
 
@@ -57,6 +61,35 @@ RoomConfigController.prototype.toggleBonus = function(bonus)
     } else {
         console.error('Unknown bonus: %s', bonus.type);
     }
+};
+
+/**
+ * Toggle preset
+ *
+ * @param {String} bonus
+ */
+RoomConfigController.prototype.togglePreset = function(preset)
+{
+    if (this.$scope.activePreset === preset) {
+        if (preset === this.config.presets.default) {
+            return;
+        }
+
+        return this.togglePreset(this.config.presets.default);
+    }
+
+    var isActive, shouldBeActive;
+
+    for (var bonus in this.config.bonuses) {
+        isActive       = this.config.bonuses[bonus];
+        shouldBeActive = preset.bonuses.indexOf(bonus) >= 0;
+
+        if (isActive !== shouldBeActive) {
+            this.toggleBonus(bonus);
+        }
+    }
+
+    this.$scope.activePreset = preset;
 };
 
 /**

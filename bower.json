@@ -9,7 +9,7 @@
     "html5",
     "devops"
   ],
-  "homepage": "https://github.com/Gameo/curvytron",
+  "homepage": "https://github.com/Elao/curvytron",
   "license": "MIT",
   "authors": [
     {
@@ -20,7 +20,7 @@
     {
       "name": "Thomas JARRAND",
       "email": "thomas.jarrand@gmail.com",
-      "homepage": "http://thomas-jarrand.com"
+      "homepage": "http://thomas.jarrand.fr"
     }
   ],
   "main": "dist/curvytron.min.js",
