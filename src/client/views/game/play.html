@@ -5,8 +5,11 @@
             <div class="maxScore"><i class="icon-trophy"></i><span>{{ game.maxScore }}</span></div>
             <h3 title="{{ game.name }}">{{ game.name }}</h3>
 
-            <span id="sound" class="pull-right" ng-class="{ active: sound }" ng-click="toggleSound()">
+            <span id="sound" class="btn-toogle sound pull-right" ng-class="{ active: sound }" ng-click="toggleSound()">
                 <i class="icon-volume"></i>
+            </span>
+            <span id="radio-sound" class="btn-toogle radio-sound pull-right" ng-class="{ active: radio }" ng-click="toggleRadio()">
+                <i class="icon-radio"></i>
             </span>
 
             <ul id="game-players">
@@ -19,12 +22,7 @@
                 </li>
             </ul>
             <footer>
-                <object class="radio-player">
-                    <param name="allowscriptaccess" value="always" />
-                    <param name="movie" value="http://static.radionomy.com/cdn/flash/BannerEmbed.swf?RadUID=5a3efa61-1086-4bbb-a1e8-99aff58d9d2c&amp;titlesColor=ffffff&amp;color=7d7d7d&amp;autoPlay=yes&amp;lang=en" />
-                    <param name="wmode" value="transparent" />
-                    <embed src="http://static.radionomy.com/cdn/flash/BannerEmbed.swf?RadUID=5a3efa61-1086-4bbb-a1e8-99aff58d9d2c&amp;titlesColor=ffffff&amp;color=7d7d7d&amp;autoPlay=yes&amp;lang=en" wmode="transparent" type="application/x-shockwave-flash" allowscriptaccess="always"></embed>
-                </object>
+                <div ng-if="radio" ng-include="'js/views/game/radio.html'" class="radio-player"></div>
                 <span id="fps" class="pull-right">0</span>
                 <span id="ping" class="pull-right">0</span>
                 <a href="http://www.elao.com" class="game-copy pull-left" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>

@@ -42,6 +42,7 @@ function GameController($scope, $routeParams, $location, client, repository, pro
     this.leaveGame     = this.leaveGame.bind(this);
     this.backToRoom    = this.backToRoom.bind(this);
     this.toggleSound   = this.toggleSound.bind(this);
+    this.toggleRadio   = this.toggleRadio.bind(this);
 
     this.attachSocketEvents();
 
@@ -54,9 +55,11 @@ function GameController($scope, $routeParams, $location, client, repository, pro
     this.$scope.end         = false;
     this.$scope.tieBreak    = false;
     this.$scope.borderless  = false;
+    this.$scope.radio       = false;
     this.$scope.sound       = this.profile.sound;
     this.$scope.backToRoom  = this.backToRoom;
     this.$scope.toggleSound = this.toggleSound;
+    this.$scope.toggleRadio = this.toggleRadio;
     this.$scope.chatLoaded  = this.onChatLoaded;
     this.$scope.roundWinner = null;
     this.$scope.gameWinner  = null;
@@ -462,6 +465,9 @@ GameController.prototype.leaveGame = function()
         this.repository.leave();
     }
 
+    this.$scope.radio = false;
+    createjs.Sound.stop('win');
+
     this.close();
 };
 
@@ -505,6 +511,14 @@ GameController.prototype.toggleSound = function()
 
     createjs.Sound.setVolume(this.$scope.sound ? this.volume : 0);
     this.profile.setSound(this.$scope.sound);
+};
+
+/**
+ * Toggle radio
+ */
+GameController.prototype.toggleRadio = function()
+{
+    this.$scope.radio = !this.$scope.radio;
 };
 
 /**
