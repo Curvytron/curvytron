@@ -586,3 +586,9 @@
     display: inline-block;
     font-size: $font-size-h4;
 }
+
+.radio-player {
+    width: 0;
+    height: 0;
+    visibility: hidden;
+}
