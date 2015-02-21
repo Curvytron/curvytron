@@ -1,8 +1,20 @@
 var EventEmitter = require('events').EventEmitter,
-    usage = require('usage'),
+    WebSocket = require('faye-websocket'),
     http = require('http'),
+    express = require('express'),
     fs = require('fs'),
     path = require('path'),
-    express = require('express'),
-    WebSocket = require('faye-websocket'),
+    usage,
+    influx;
+
+try {
+    usage = require('usage');
+} catch (error) {
+    usage = false;
+}
+
+try {
     influx = require('influx');
+} catch (error) {
+    influx = false;
+}
