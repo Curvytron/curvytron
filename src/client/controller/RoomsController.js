@@ -67,12 +67,7 @@ RoomsController.prototype.detachEvents = function()
  */
 RoomsController.prototype.createRoom = function(e)
 {
-    if (this.$scope.roomName) {
-        var $scope = this.$scope,
-            controller = this;
-
-        this.repository.create(this.$scope.roomName, this.onCreateRoom);
-    }
+    this.repository.create(this.$scope.roomName, this.onCreateRoom);
 };
 
 /**
