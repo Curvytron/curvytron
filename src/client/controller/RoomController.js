@@ -130,7 +130,7 @@ RoomController.prototype.onJoined = function(result)
 RoomController.prototype.onChatLoaded = function ()
 {
     this.chat.setScope(this.$scope);
-}
+};
 
 /**
  * Leave room
