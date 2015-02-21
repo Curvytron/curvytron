@@ -441,6 +441,14 @@
         .bonus-selection {
             min-height: 55px;
 
+            .preset {
+                cursor: pointer;
+                display: inline-block;
+                position: relative;
+                text-align: center;
+                margin: 0 4px;
+            }
+
             .bonus {
                 width: $bonus-size;
                 height: $bonus-size;

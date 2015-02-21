@@ -26,6 +26,13 @@ function BaseRoomConfig(room)
         BonusGameClear: true,
         BonusEnemyStraightAngle: true
     };
+
+    this.presets = {
+        SpeedOfLight : {
+            name: 'SpeedOfLight',
+            bonuses: ['BonusSelfFast', 'BonusEnemyFast']
+        }
+    };
 }
 
 BaseRoomConfig.prototype.setMaxScore = function(maxScore)
