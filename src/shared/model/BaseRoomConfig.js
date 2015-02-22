@@ -7,8 +7,6 @@ function BaseRoomConfig(room)
     this.maxScore = null;
 
     this.variables = {
-        //speed: 0,
-        //curving: 0,
         bonusRate: 0
     };
 
@@ -21,66 +19,12 @@ function BaseRoomConfig(room)
         BonusEnemyFast: true,
         BonusEnemyBig: true,
         BonusEnemyInverse: true,
+        BonusEnemyStraightAngle: true,
         BonusAllBorderless: true,
         BonusAllColor: true,
-        BonusGameClear: true,
-        BonusEnemyStraightAngle: true
+        BonusGameClear: true
     };
 }
-
-/**
- * Presets
- *
- * @type {Object}
- */
-BaseRoomConfig.prototype.presets = {
-    default : {
-        name: 'Default',
-        bonuses: [
-            'BonusSelfSmall',
-            'BonusSelfSlow',
-            'BonusSelfFast',
-            'BonusSelfMaster',
-            'BonusEnemySlow',
-            'BonusEnemyFast',
-            'BonusEnemyBig',
-            'BonusEnemyInverse',
-            'BonusAllBorderless',
-            'BonusAllColor',
-            'BonusGameClear',
-            'BonusEnemyStraightAngle'
-        ]
-    },
-    none : {
-        name: 'No items',
-        bonuses: []
-    },
-    speedOfLight : {
-        name: 'Speed of light',
-        bonuses: [
-            'BonusSelfFast',
-            'BonusEnemyFast'
-        ]
-    },
-    supersizeMe : {
-        name: 'Super size me',
-        bonuses: [
-            'BonusEnemyBig'
-        ]
-    },
-    tron : {
-        name: 'Tron',
-        bonuses: [
-            'BonusEnemyStraightAngle',
-            'BonusSelfSlow',
-            'BonusSelfFast',
-            'BonusEnemySlow',
-            'BonusEnemyFast',
-            'BonusEnemyBig',
-            'BonusEnemyInverse'
-        ]
-    },
-};
 
 BaseRoomConfig.prototype.setMaxScore = function(maxScore)
 {

@@ -17,8 +17,11 @@
 
         <label>Preset:</label>
         <div class="bonus-selection">
-            <span ng-repeat="preset in config.presets" ng-click="togglePreset(preset)" class="preset" ng-class="{ 'active': preset == activePreset }">
+            <span ng-repeat="preset in config.presets" ng-click="togglePreset(preset)" class="preset" ng-class="{ 'active': preset == config.preset }">
                 {{ preset.name }}
+            </span>
+            <span ng-if="config.preset == config.customPreset" ng-click="togglePreset(preset)" class="preset active">
+                {{ config.customPreset.name }}
             </span>
         </div>
 

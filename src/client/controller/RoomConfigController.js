@@ -23,7 +23,6 @@ function RoomConfigController($scope, repository)
     this.$scope.togglePreset = this.togglePreset;
     this.$scope.setMaxScore  = this.setMaxScore;
     this.$scope.setVariable  = this.setVariable;
-    this.$scope.activePreset = null;
 
     this.repository.on('config:max-score', this.applyScope);
     this.repository.on('config:variable', this.applyScope);
@@ -40,8 +39,7 @@ RoomConfigController.prototype.onJoined = function()
     if (this.$scope.$parent.room) {
         this.config = this.$scope.$parent.room.config;
 
-        this.$scope.config       = this.config;
-        this.$scope.activePreset = this.config.presets.default;
+        this.$scope.config = this.config;
     }
 };
 
@@ -70,26 +68,31 @@ RoomConfigController.prototype.toggleBonus = function(bonus)
  */
 RoomConfigController.prototype.togglePreset = function(preset)
 {
-    if (this.$scope.activePreset === preset) {
-        if (preset === this.config.presets.default) {
+    if (this.config.preset === preset) {
+        if (preset === this.config.getDefaultPreset()) {
             return;
         }
 
-        return this.togglePreset(this.config.presets.default);
+        return this.applyPreset(this.config.getDefaultPreset());
     }
 
-    var isActive, shouldBeActive;
+    this.applyPreset(preset);
+};
 
+/**
+ * Apply the given preset
+ *
+ * @param {Preset} preset
+ */
+RoomConfigController.prototype.applyPreset = function(preset)
+{
     for (var bonus in this.config.bonuses) {
-        isActive       = this.config.bonuses[bonus];
-        shouldBeActive = preset.bonuses.indexOf(bonus) >= 0;
-
-        if (isActive !== shouldBeActive) {
+        if (this.config.bonuses[bonus] !== preset.hasBonus(bonus)) {
             this.toggleBonus(bonus);
         }
     }
 
-    this.$scope.activePreset = preset;
+    this.config.preset = preset;
 };
 
 /**
