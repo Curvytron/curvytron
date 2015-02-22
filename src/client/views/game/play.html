@@ -5,7 +5,7 @@
             <div class="maxScore"><i class="icon-trophy"></i><span>{{ game.maxScore }}</span></div>
             <h3 title="{{ game.name }}">{{ game.name }}</h3>
 
-            <span id="sound" class="btn-toogle sound pull-right" ng-class="{ active: sound }" ng-click="toggleSound()">
+            <span id="sound" class="btn-toogle sound pull-right" ng-class="{ active: sound.active }" ng-click="toggleSound()">
                 <i class="icon-volume"></i>
             </span>
             <span id="radio-sound" class="btn-toogle radio-sound pull-right" ng-class="{ active: radio.element.volume }" ng-click="toggleRadio()">
