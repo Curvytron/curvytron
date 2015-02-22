@@ -6,6 +6,9 @@
 function RoomConfig(room)
 {
     BaseRoomConfig.call(this, room);
+
+    this.preset       = this.getDefaultPreset();
+    this.customPreset = new CustomPreset();
 }
 
 RoomConfig.prototype = Object.create(BaseRoomConfig.prototype);
@@ -37,11 +40,21 @@ RoomConfig.prototype.bonusClasses = {
  * @type {Object}
  */
 RoomConfig.prototype.variablesNames = {
-    speed: 'Speed',
-    curving: 'Curving',
     bonusRate: 'Quantity'
 };
 
+/**
+ * Presets
+ *
+ * @type {Object}
+ */
+RoomConfig.prototype.presets = [
+    new DefaultPreset(),
+    new SpeedPreset(),
+    new SizePreset(),
+    new SoloPreset(),
+    new EmptyPreset()
+];
 
 /**
  * Get available bonuses
@@ -58,5 +71,70 @@ RoomConfig.prototype.getBonuses = function()
         }
     }
 
-    return bonuses;
+    return bonuses.sort();
+};
+
+/**
+ * Set bonus value
+ *
+ * @param {String} bonus
+ * @param {Boolean} value
+ *
+ * @return {Boolean}
+ */
+RoomConfig.prototype.setBonus = function(bonus, value)
+{
+    BaseRoomConfig.prototype.setBonus.call(this, bonus, value);
+    this.checkPresets();
+};
+
+/**
+ * Check preset
+ */
+RoomConfig.prototype.checkPresets = function()
+{
+    var bonuses = this.getBonuses(),
+        preset;
+
+    for (var i = this.presets.length - 1; i >= 0; i--) {
+        preset = this.presets[i];
+        if (this.bonusesMatch(preset.bonuses, bonuses)) {
+            return this.preset = preset;
+        }
+    }
+
+    this.preset = this.customPreset;
+};
+
+/**
+ * Bonuses match
+ *
+ * @param {Array} listA
+ * @param {Array} listB
+ *
+ * @return {Boolean}
+ */
+RoomConfig.prototype.bonusesMatch = function(listA, listB)
+{
+    return listA.length === listB.length && listA.sort().toString() === listB.sort().toString();
+};
+
+/**
+ * Get default preset
+ *
+ * @return {Preset}
+ */
+RoomConfig.prototype.getDefaultPreset = function()
+{
+    return this.presets[0];
+};
+
+/**
+ * Get custom preset
+ *
+ * @return {CustomPreset}
+ */
+RoomConfig.prototype.getCustomPreset = function()
+{
+    return this.customPreset;
 };
