@@ -175,7 +175,7 @@ GameController.prototype.displayWarmup = function(time)
     this.$scope.warmup = true;
     this.applyScope();
 
-    this.notifier.addMessage(this.$scope.count + '...', true);
+    this.notifier.addMessage(this.$scope.count + '...');
 
     this.warmupInterval = setInterval(this.onWarmup, 1000);
 
@@ -199,7 +199,7 @@ GameController.prototype.endWarmup = function(interval)
 {
     this.clearWarmup();
     this.$scope.warmup = false;
-    this.notifier.addMessage('Go!', 1000, true);
+    this.notifier.addMessage('Go!', 1000);
     this.applyScope();
 };
 
@@ -281,6 +281,7 @@ GameController.prototype.onBonusPop = function(e)
         bonus = new Bonus(data.id, data.position, data.type, data.affect, data.radius, data.duration);
 
     this.game.bonusManager.add(bonus);
+    this.sound.play('bonus-pop');
 };
 
 /**
@@ -294,6 +295,7 @@ GameController.prototype.onBonusClear = function(e)
         bonus = this.game.bonusManager.bonuses.getById(data.bonus);
 
     this.game.bonusManager.remove(bonus);
+    this.sound.play('bonus-clear');
 };
 
 /**
@@ -326,7 +328,7 @@ GameController.prototype.onDie = function(e)
         avatar.die();
         this.applyScope();
 
-        this.sound.play('loose');
+        this.sound.play('death');
     }
 };
 

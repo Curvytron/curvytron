@@ -20,9 +20,11 @@ function SoundManager (profile)
  * @type {Array}
  */
 SoundManager.prototype.sounds = [
-    {id:'notice', src:'loose.ogg'},
-    {id:'loose', src:'loose.ogg'},
-    {id:'win', src:'win.ogg'}
+    {id:'death', src:'death.ogg'},
+    {id:'win', src:'win.ogg'},
+    {id:'notice', src:'notice.ogg'},
+    {id:'bonus-clear', src:'bonus-clear.ogg'},
+    {id:'bonus-pop', src:'bonus-pop.ogg'}
 ];
 
 /**
@@ -68,6 +70,16 @@ SoundManager.prototype.toggle = function ()
 SoundManager.prototype.setActive = function(active)
 {
     this.active = active ? true : false;
-    createjs.Sound.setVolume(this.active ? this.volume : 0);
+    this.setVolume(this.active ? this.volume : 0);
     this.profile.setSound(this.active);
+};
+
+/**
+ * Set volume
+ *
+ * @param {Number} volume
+ */
+SoundManager.prototype.setVolume = function(volume)
+{
+    createjs.Sound.setVolume(typeof(volume) !== 'undefined' ? volume : this.volume);
 };
