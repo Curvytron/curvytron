@@ -99,7 +99,9 @@ RoomConfig.prototype.checkPresets = function()
     for (var i = this.presets.length - 1; i >= 0; i--) {
         preset = this.presets[i];
         if (this.bonusesMatch(preset.bonuses, bonuses)) {
-            return this.preset = preset;
+            this.preset = preset;
+
+            return;
         }
     }
 
