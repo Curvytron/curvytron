@@ -277,12 +277,13 @@ GameController.prototype.onBonusStack = function(e)
 {
     var data = e.detail,
         avatar = this.game.avatars.getById(data.avatar),
-        bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration);
+        bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration),
+        borderless = bonus.type === 'BonusAllBorderless';
 
-    if (avatar && avatar.local) {
+    if (avatar && (avatar.local || borderless)) {
         avatar.bonusStack[data.method](bonus);
 
-        if (bonus.type === 'BonusAllBorderless') {
+        if (borderless) {
             this.updateBorders();
             this.applyScope();
         }
