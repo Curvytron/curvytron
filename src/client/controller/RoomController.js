@@ -8,14 +8,16 @@
  * @param {RoomRepository} repository
  * @param {Profuile} profile
  * @param {Chat} chat
+ * @param {Notifier} notifier
  */
-function RoomController($scope, $routeParams, $location, client, repository, profile, chat)
+function RoomController($scope, $routeParams, $location, client, repository, profile, chat, notifier)
 {
     this.$scope         = $scope;
     this.$location      = $location;
     this.client         = client;
     this.profile        = profile;
     this.chat           = chat;
+    this.notifier       = notifier;
     this.hasTouch       = typeof(window.ontouchstart) !== 'undefined';
     this.name           = decodeURIComponent($routeParams.name);
     this.repository     = repository;
@@ -284,6 +286,8 @@ RoomController.prototype.onJoin = function(e)
         if (this.useTouch) {
             player.setTouch();
         }
+    } else {
+        this.notifier.addMessage('New player joined!', null, true);
     }
 
     this.applyScope();
@@ -413,6 +417,7 @@ RoomController.prototype.setTouch = function(player)
  */
 RoomController.prototype.start = function(e)
 {
+    this.notifier.addMessage('Party starting!', null, true);
     this.$location.path(this.room.gameUrl);
     this.applyScope();
 };

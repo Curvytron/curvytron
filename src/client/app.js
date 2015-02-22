@@ -8,6 +8,8 @@ curvytronApp.service('SocketClient', SocketClient);
 curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);
 curvytronApp.service('Chat', ['SocketClient', Chat]);
 curvytronApp.service('Profile', ['$rootScope', Profile]);
+curvytronApp.service('SoundManager', ['Profile', SoundManager]);
+curvytronApp.service('Notifier', ['SoundManager', Notifier]);
 curvytronApp.service('Analyser', ['$rootScope', Analyser]);
 
 curvytronApp.controller(
@@ -21,7 +23,7 @@ curvytronApp.controller(
 );
 curvytronApp.controller(
     'RoomController',
-    ['$scope', '$routeParams', '$location', 'SocketClient', 'RoomRepository', 'Profile', 'Chat', RoomController]
+    ['$scope', '$routeParams', '$location', 'SocketClient', 'RoomRepository', 'Profile', 'Chat', 'Notifier', RoomController]
 );
 curvytronApp.controller(
     'RoomConfigController',
@@ -29,7 +31,7 @@ curvytronApp.controller(
 );
 curvytronApp.controller(
     'GameController',
-    ['$scope', '$routeParams', '$location', 'SocketClient', 'RoomRepository', 'Profile', 'Chat', 'Radio', GameController]
+    ['$scope', '$routeParams', '$location', 'SocketClient', 'RoomRepository', 'Chat', 'Radio', 'Notifier', 'SoundManager', GameController]
 );
 
 curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
