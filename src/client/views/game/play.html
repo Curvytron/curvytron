@@ -24,6 +24,9 @@
             <footer>
                 <span id="fps" class="pull-right">0</span>
                 <span id="ping" class="pull-right">0</span>
+                <span id="spectators" ng-if="spectators" class="pull-right">
+                    {{ spectators }} <span class="icon-spectate"></span>
+                </span>
                 <a href="http://www.elao.com" class="game-copy pull-left" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>
             </footer>
             <div class="chat-wrapper" ng-include="'js/views/chat/chat.html'" onload="chatLoaded()"></div>

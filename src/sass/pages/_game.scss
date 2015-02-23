@@ -210,6 +210,11 @@
             bottom: 0;
         }
 
+        #spectators {
+            width: 75px;
+            text-align: right;
+        }
+
         #fps {
             width: 30px;
             text-align: right;
@@ -219,6 +224,7 @@
         #ping {
             width: 52px;
             text-align: right;
+            margin-left: 5px;
         }
 
         footer {

@@ -43,6 +43,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onEnd         = this.onEnd.bind(this);
     this.onLeave       = this.onLeave.bind(this);
     this.onSpectate    = this.onSpectate.bind(this);
+    this.onSpectators  = this.onSpectators.bind(this);
     this.leaveGame     = this.leaveGame.bind(this);
     this.backToRoom    = this.backToRoom.bind(this);
     this.toggleSound   = this.toggleSound.bind(this);
@@ -67,6 +68,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.$scope.chatLoaded  = this.onChatLoaded;
     this.$scope.roundWinner = null;
     this.$scope.gameWinner  = null;
+    this.$scope.spectators  = 0;
 
     this.repository.start();
 
@@ -97,6 +99,7 @@ GameController.prototype.attachSocketEvents = function()
     this.client.on('end', this.onEnd);
     this.client.on('game:leave', this.onLeave);
     this.client.on('spectate', this.onSpectate);
+    this.client.on('game:spectators', this.onSpectators);
 };
 
 /**
@@ -117,6 +120,7 @@ GameController.prototype.detachSocketEvents = function()
     this.client.off('end', this.onEnd);
     this.client.off('game:leave', this.onLeave);
     this.client.off('spectate', this.onSpectate);
+    this.client.off('game:spectators', this.onSpectators);
 };
 
 /**
@@ -343,6 +347,17 @@ GameController.prototype.onSpectate = function()
     }
 
     this.game.newRound(0);
+};
+
+/**
+ * On spectators
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onSpectators = function(e)
+{
+    this.$scope.spectators = e.detail;
+    this.applyScope();
 };
 
 /**
