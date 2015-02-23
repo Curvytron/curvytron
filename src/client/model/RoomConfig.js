@@ -118,6 +118,10 @@ RoomConfig.prototype.checkPresets = function()
  */
 RoomConfig.prototype.bonusesMatch = function(listA, listB)
 {
+    if (typeof(listA) !== 'object' || typeof(listA) !== 'object') {
+        return false;
+    }
+
     return listA.length === listB.length && listA.sort().toString() === listB.sort().toString();
 };
 
