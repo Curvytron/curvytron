@@ -287,7 +287,7 @@ RoomController.prototype.onJoin = function(e)
             player.setTouch();
         }
     } else {
-        this.notifier.addMessage('New player joined!', null, true);
+        this.notifier.notify('New player joined!');
     }
 
     this.applyScope();
@@ -417,7 +417,6 @@ RoomController.prototype.setTouch = function(player)
  */
 RoomController.prototype.start = function(e)
 {
-    this.notifier.addMessage('Party starting!', null, true);
     this.$location.path(this.room.gameUrl);
     this.applyScope();
 };

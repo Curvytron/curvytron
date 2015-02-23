@@ -122,6 +122,16 @@ RoomConfig.prototype.bonusesMatch = function(listA, listB)
 };
 
 /**
+ * IS default preset
+ *
+ * @return {Boolean}
+ */
+RoomConfig.prototype.isDefaultPreset = function()
+{
+    return this.preset === this.getDefaultPreset();
+};
+
+/**
  * Get default preset
  *
  * @return {Preset}

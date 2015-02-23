@@ -2,15 +2,17 @@
  * Notifier
  *
  * @param {SoundManager} SoundManager
+ * @param {ActivityWatcher} watcher
  */
-function Notifier (sound)
+function Notifier (sound, watcher)
 {
     this.sound   = sound;
+    this.watcher = watcher;
     this.element = document.getElementsByTagName('title')[0];
     this.title   = this.element.text;
     this.timeout = null;
 
-    this.clear = this.clear.bind(this);
+    this.clear   = this.clear.bind(this);
 }
 
 /**
@@ -21,20 +23,46 @@ function Notifier (sound)
 Notifier.prototype.duration = 5000;
 
 /**
+ * Notify
+ *
+ * @param {String} message
+ * @param {Number} duration
+ * @param {String} sound
+ */
+Notifier.prototype.notify = function(message, duration, sound)
+{
+    if (!this.watcher.isActive()) {
+        this.display(message, duration);
+    }
+
+    this.sound.play(typeof(sound) === 'string' ? sound : 'notice');
+};
+/**
+ * Notify inactive
+ *
+ * @param {String} message
+ * @param {Number} duration
+ * @param {String} sound
+ */
+Notifier.prototype.notifyInactive = function(message, duration, sound)
+{
+    if (!this.watcher.isActive()) {
+        this.display(message, duration);
+        this.sound.play(typeof(sound) === 'string' ? sound : 'notice');
+    }
+};
+
+/**
  * Set message
  *
  * @param {String} message
  * @param {Number} duration
  */
-Notifier.prototype.addMessage = function(message, duration, sound)
+Notifier.prototype.display = function(message, duration)
 {
     this.clearTimeout();
     this.write(message);
     setTimeout(this.clear, typeof(duration) === 'number' ? duration : this.duration);
-
-    if (typeof(sound) !== 'undefined' && sound) {
-        this.sound.play(typeof(sound) === 'string' ? sound : 'notice');
-    }
 };
 
 /**

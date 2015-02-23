@@ -5,16 +5,17 @@ gamepadListener.start();
 
 curvytronApp.service('Radio', Radio);
 curvytronApp.service('SocketClient', SocketClient);
+curvytronApp.service('ActivityWatcher', ['SocketClient', ActivityWatcher]);
 curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);
 curvytronApp.service('Chat', ['SocketClient', Chat]);
 curvytronApp.service('Profile', ['$rootScope', Profile]);
 curvytronApp.service('SoundManager', ['Profile', SoundManager]);
-curvytronApp.service('Notifier', ['SoundManager', Notifier]);
+curvytronApp.service('Notifier', ['SoundManager', 'ActivityWatcher', Notifier]);
 curvytronApp.service('Analyser', ['$rootScope', Analyser]);
 
 curvytronApp.controller(
     'CurvytronController',
-    ['$scope', 'Profile', 'Analyser', CurvytronController]
+    ['$scope', 'Profile', 'Analyser', 'ActivityWatcher', CurvytronController]
 );
 
 curvytronApp.controller(

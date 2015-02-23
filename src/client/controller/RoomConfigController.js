@@ -38,7 +38,6 @@ RoomConfigController.prototype.onJoined = function()
 {
     if (this.$scope.$parent.room) {
         this.config = this.$scope.$parent.room.config;
-
         this.$scope.config = this.config;
     }
 };
