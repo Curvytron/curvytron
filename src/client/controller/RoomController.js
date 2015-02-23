@@ -100,7 +100,6 @@ RoomController.prototype.joinRoom = function()
     }
 
     this.profile.off('close', this.joinRoom);
-
     this.repository.join(this.name, this.onJoined);
 };
 
@@ -160,6 +159,7 @@ RoomController.prototype.attachEvents = function(name)
     this.repository.on('player:ready', this.applyScope);
     this.repository.on('player:color', this.applyScope);
     this.repository.on('player:name', this.applyScope);
+    this.repository.on('client:activity', this.applyScope);
     this.repository.on('vote:new', this.onVote);
     this.repository.on('vote:close', this.onVote);
     this.repository.on('room:game:start', this.start);
@@ -182,6 +182,7 @@ RoomController.prototype.detachEvents = function(name)
     this.repository.off('player:ready', this.applyScope);
     this.repository.off('player:color', this.applyScope);
     this.repository.off('player:name', this.applyScope);
+    this.repository.off('client:activity', this.applyScope);
     this.repository.off('vote:new', this.onVote);
     this.repository.off('vote:close', this.onVote);
     this.repository.off('room:game:start', this.start);

@@ -24,6 +24,7 @@ function RoomRepository(client)
     this.onConfigVariable = this.onConfigVariable.bind(this);
     this.onConfigBonus    = this.onConfigBonus.bind(this);
     this.onVote           = this.onVote.bind(this);
+    this.onClientActivity = this.onClientActivity.bind(this);
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
@@ -46,6 +47,7 @@ RoomRepository.prototype.attachEvents = function()
     this.client.on('room:config:bonus', this.onConfigBonus);
     this.client.on('vote:new', this.onVote);
     this.client.on('vote:close', this.onVote);
+    this.client.on('client:activity', this.onClientActivity);
 };
 
 /**
@@ -90,7 +92,8 @@ RoomRepository.prototype.join = function(name, callback)
                     result.room.players[i].client,
                     result.room.players[i].name,
                     result.room.players[i].color,
-                    result.room.players[i].ready
+                    result.room.players[i].ready,
+                    result.room.players[i].active
                 ));
             }
 
@@ -259,7 +262,14 @@ RoomRepository.prototype.setConfigBonus = function(bonus, callback)
 RoomRepository.prototype.onJoinRoom = function(e)
 {
     var data = e.detail,
-        player = new Player(data.player.id, data.player.client, data.player.name, data.player.color);
+        player = new Player(
+            data.player.id,
+            data.player.client,
+            data.player.name,
+            data.player.color,
+            data.player.ready,
+            data.player.active
+        );
 
     if (this.room.addPlayer(player)) {
         this.emit('room:join', {player: player});
@@ -282,6 +292,26 @@ RoomRepository.prototype.onLeaveRoom = function(e)
         this.playerCache.add(player);
         this.emit('room:leave', {player: player});
     }
+};
+
+/**
+ * On client changes activity
+ *
+ * @param {Event} e
+ *
+ * @return {Boolean}
+ */
+RoomRepository.prototype.onClientActivity = function(e)
+{
+    var data = e.detail;
+
+    this.room.players.walk(function () {
+        if (this.client === data.client) {
+            this.active = data.active;
+        }
+    });
+
+    this.emit('client:activity', data);
 };
 
 /**

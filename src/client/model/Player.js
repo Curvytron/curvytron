@@ -5,17 +5,19 @@
  * @param {String} client
  * @param {String} name
  * @param {String} color
+ * @param {Boolean} ready
+ * @param {Boolean} active
  */
-function Player(id, client, name, color, ready)
+function Player(id, client, name, color, ready, active)
 {
     BasePlayer.call(this, client, name, color, ready);
 
     this.id        = id;
+    this.active    = active;
     this.local     = false;
     this.controls  = null;
     this.vote      = false;
     this.kicked    = false;
-    this.active    = true;
 
     this.onControlChange = this.onControlChange.bind(this);
 }

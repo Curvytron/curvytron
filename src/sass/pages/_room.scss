@@ -140,6 +140,11 @@
 
                 &.col-player {
                     font-weight: bold;
+
+                    .inactive {
+                        padding-top: 7px;
+                        color: lighten($text-color, 25%);
+                    }
                 }
 
                 &.col-ready {

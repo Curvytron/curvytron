@@ -13,7 +13,7 @@ function SocketClient(socket, interval)
 
     this.onActivity = this.onActivity.bind(this);
 
-    this.on('client:activity', this.onActivity);
+    this.on('activity', this.onActivity);
 }
 
 SocketClient.prototype = Object.create(BaseSocketClient.prototype);

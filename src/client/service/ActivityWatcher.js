@@ -52,7 +52,7 @@ ActivityWatcher.prototype.setActive = function(active)
 
     if (this.active !== active) {
         this.active       = active ? true : false;
-        this.client.addEvent('client:activity', this.active);
+        this.client.addEvent('activity', this.active);
 
         if (this.active) {
             this.interval = setInterval(this.checkInactivity, this.checkInterval);
