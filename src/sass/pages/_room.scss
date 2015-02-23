@@ -140,6 +140,11 @@
 
                 &.col-player {
                     font-weight: bold;
+
+                    .inactive {
+                        padding-top: 7px;
+                        color: lighten($text-color, 25%);
+                    }
                 }
 
                 &.col-ready {
@@ -302,9 +307,17 @@
         display: none;
     }
 
+    .col-show-hover > .show-default {
+        display: inherit;
+    }
+
     tr:hover > .col-show-hover > *,
     .col-show-hover.active > * {
         display: inherit;
+    }
+    tr:hover > .col-show-hover > .show-default,
+    .col-show-hover.active > .show-default {
+        display: none;
     }
 
     .btn-remove {

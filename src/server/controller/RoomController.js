@@ -32,6 +32,7 @@ function RoomController(room)
         onName: function (data) { controller.onName(this, data.data, data.callback); },
         onColor: function (data) { controller.onColor(this, data.data, data.callback); },
         onLeave: function () { controller.onLeave(this); },
+        onActivity: function () { controller.onActivity(this); },
 
         onConfigMaxScore: function (data) { controller.onConfigMaxScore(this, data.data, data.callback); },
         onConfigVariable:  function (data) { controller.onConfigVariable(this, data.data, data.callback); },
@@ -106,6 +107,7 @@ RoomController.prototype.detach = function(client)
 RoomController.prototype.attachEvents = function(client)
 {
     client.on('close', this.callbacks.onLeave);
+    client.on('activity', this.callbacks.onActivity);
     client.on('room:leave', this.callbacks.onLeave);
     client.on('room:talk', this.callbacks.onTalk);
     client.on('player:add', this.callbacks.onPlayerAdd);
@@ -128,6 +130,7 @@ RoomController.prototype.attachEvents = function(client)
 RoomController.prototype.detachEvents = function(client)
 {
     client.removeListener('close', this.callbacks.onLeave);
+    client.removeListener('activity', this.callbacks.onActivity);
     client.removeListener('room:leave', this.callbacks.onLeave);
     client.removeListener('room:talk', this.callbacks.onTalk);
     client.removeListener('player:add', this.callbacks.onPlayerAdd);
@@ -201,9 +204,27 @@ RoomController.prototype.onClientRemove = function(client)
 
 // Events:
 
+/**
+ * On client leave
+ *
+ * @param {SocketClient} client
+ */
 RoomController.prototype.onLeave = function(client)
 {
     this.detach(client);
+};
+
+/**
+ * On client activity change
+ *
+ * @param {SocketClient} client
+ */
+RoomController.prototype.onActivity = function(client)
+{
+    this.socketGroup.addEvent('client:activity', {
+        client: client.id,
+        active: client.active
+    });
 };
 
 /**

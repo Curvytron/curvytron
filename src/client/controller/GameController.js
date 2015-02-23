@@ -8,8 +8,9 @@
  * @param {Chat} chat
  * @param {Radio} radio
  * @param {Notifier} notifier
+ * @param {SoundManager} sound
  */
-function GameController($scope, $routeParams, $location, client, repository, chat, radio, notifier, soundManager)
+function GameController($scope, $routeParams, $location, client, repository, chat, radio, notifier, sound)
 {
     this.$scope         = $scope;
     this.$location      = $location;
@@ -18,7 +19,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.radio          = radio;
     this.chat           = chat;
     this.notifier       = notifier;
-    this.sound          = soundManager;
+    this.sound          = sound;
     this.room           = null;
     this.game           = null;
     this.warmupInterval = null;
@@ -175,7 +176,7 @@ GameController.prototype.displayWarmup = function(time)
     this.$scope.warmup = true;
     this.applyScope();
 
-    this.notifier.addMessage(this.$scope.count + '...');
+    this.notifier.notify('Round start in ' + this.$scope.count + '...');
 
     this.warmupInterval = setInterval(this.onWarmup, 1000);
 
@@ -188,7 +189,7 @@ GameController.prototype.displayWarmup = function(time)
 GameController.prototype.onWarmup = function()
 {
     this.$scope.count--;
-    this.notifier.addMessage(this.$scope.count + '...');
+    this.notifier.notify('Round start in ' + this.$scope.count + '...');
     this.applyScope();
 };
 
@@ -199,7 +200,7 @@ GameController.prototype.endWarmup = function(interval)
 {
     this.clearWarmup();
     this.$scope.warmup = false;
-    this.notifier.addMessage('Go!', 1000);
+    this.notifier.notify('Go!', 1000);
     this.applyScope();
 };
 
@@ -387,7 +388,7 @@ GameController.prototype.onClear = function(e)
  */
 GameController.prototype.onEnd = function(e)
 {
-    this.notifier.addMessage('Game over!');
+    this.notifier.notify('Game over!', null, 'win');
 
     this.$scope.gameWinner = this.game.sortAvatars().getFirst();
     this.$scope.end        = true;
@@ -396,8 +397,6 @@ GameController.prototype.onEnd = function(e)
     this.applyScope();
 
     this.close();
-
-    this.sound.play('win');
 };
 
 /**
@@ -411,7 +410,7 @@ GameController.prototype.onRoundWinner = function(e)
         avatar = this.game.avatars.getById(data.winner);
 
     if (avatar) {
-        this.notifier.addMessage(avatar.name + ' won round!');
+        this.notifier.notifyInactive(avatar.name + ' won round!');
         this.$scope.roundWinner = avatar;
         this.applyScope();
 

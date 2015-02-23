@@ -12,3 +12,17 @@ function Player(client, name, color)
 
 Player.prototype = Object.create(BasePlayer.prototype);
 Player.prototype.constructor = Player;
+
+/**
+ * Serialize
+ *
+ * @return {Object}
+ */
+Player.prototype.serialize = function()
+{
+    var data = BasePlayer.prototype.serialize.call(this);
+
+    data.active = this.client.active;
+
+    return data;
+};

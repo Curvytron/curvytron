@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'curvytron';
-  src: url('../font/curvytron.eot?66163094');
-  src: url('../font/curvytron.eot?66163094#iefix') format('embedded-opentype'),
-       url('../font/curvytron.woff?66163094') format('woff'),
-       url('../font/curvytron.ttf?66163094') format('truetype'),
-       url('../font/curvytron.svg?66163094#curvytron') format('svg');
+  src: url('../font/curvytron.eot?89819649');
+  src: url('../font/curvytron.eot?89819649#iefix') format('embedded-opentype'),
+       url('../font/curvytron.woff?89819649') format('woff'),
+       url('../font/curvytron.ttf?89819649') format('truetype'),
+       url('../font/curvytron.svg?89819649#curvytron') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -14,7 +14,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'curvytron';
-    src: url('../font/curvytron.svg?66163094#curvytron') format('svg');
+    src: url('../font/curvytron.svg?89819649#curvytron') format('svg');
   }
 }
 */
@@ -68,4 +68,5 @@
 .icon-trophy:before { content: '\e80f'; } /* '' */
 .icon-minus:before { content: '\e810'; } /* '' */
 .icon-megaphone:before { content: '\e811'; } /* '' */
-.icon-music:before { content: '\e813'; } /* '' */
+.icon-music:before { content: '\e812'; } /* '' */
+.icon-clock:before { content: '\e813'; } /* '' */
