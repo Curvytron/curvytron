@@ -470,6 +470,10 @@ RoomController.prototype.onPlayerJoin = function(data)
 RoomController.prototype.onPlayerLeave = function(data)
 {
     this.socketGroup.addEvent('room:leave', {player: data.player.id});
+
+    if (this.room.isReady()) {
+        this.room.newGame();
+    }
 };
 
 /**
