@@ -302,9 +302,17 @@
         display: none;
     }
 
+    .col-show-hover > .show-default {
+        display: inherit;
+    }
+
     tr:hover > .col-show-hover > *,
     .col-show-hover.active > * {
         display: inherit;
+    }
+    tr:hover > .col-show-hover > .show-default,
+    .col-show-hover.active > .show-default {
+        display: none;
     }
 
     .btn-remove {

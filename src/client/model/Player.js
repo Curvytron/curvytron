@@ -15,6 +15,7 @@ function Player(id, client, name, color, ready)
     this.controls  = null;
     this.vote      = false;
     this.kicked    = false;
+    this.active    = true;
 
     this.onControlChange = this.onControlChange.bind(this);
 }
