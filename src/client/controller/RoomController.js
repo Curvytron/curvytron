@@ -8,14 +8,16 @@
  * @param {RoomRepository} repository
  * @param {Profuile} profile
  * @param {Chat} chat
+ * @param {Notifier} notifier
  */
-function RoomController($scope, $routeParams, $location, client, repository, profile, chat)
+function RoomController($scope, $routeParams, $location, client, repository, profile, chat, notifier)
 {
     this.$scope         = $scope;
     this.$location      = $location;
     this.client         = client;
     this.profile        = profile;
     this.chat           = chat;
+    this.notifier       = notifier;
     this.hasTouch       = typeof(window.ontouchstart) !== 'undefined';
     this.name           = decodeURIComponent($routeParams.name);
     this.repository     = repository;
@@ -98,7 +100,6 @@ RoomController.prototype.joinRoom = function()
     }
 
     this.profile.off('close', this.joinRoom);
-
     this.repository.join(this.name, this.onJoined);
 };
 
@@ -130,7 +131,7 @@ RoomController.prototype.onJoined = function(result)
 RoomController.prototype.onChatLoaded = function ()
 {
     this.chat.setScope(this.$scope);
-}
+};
 
 /**
  * Leave room
@@ -158,6 +159,7 @@ RoomController.prototype.attachEvents = function(name)
     this.repository.on('player:ready', this.applyScope);
     this.repository.on('player:color', this.applyScope);
     this.repository.on('player:name', this.applyScope);
+    this.repository.on('client:activity', this.applyScope);
     this.repository.on('vote:new', this.onVote);
     this.repository.on('vote:close', this.onVote);
     this.repository.on('room:game:start', this.start);
@@ -180,6 +182,7 @@ RoomController.prototype.detachEvents = function(name)
     this.repository.off('player:ready', this.applyScope);
     this.repository.off('player:color', this.applyScope);
     this.repository.off('player:name', this.applyScope);
+    this.repository.off('client:activity', this.applyScope);
     this.repository.off('vote:new', this.onVote);
     this.repository.off('vote:close', this.onVote);
     this.repository.off('room:game:start', this.start);
@@ -218,7 +221,8 @@ RoomController.prototype.addPlayer = function(name, color)
                     $scope.username = null;
                     $scope.$apply();
                 } else {
-                    console.error('Could not add player %s', name);
+                    var error = typeof(result.error) !== 'undefined' ? result.error : 'Unknown error';
+                    console.error('Could not add player %s: %s', name, error);
                 }
             }
         );
@@ -283,6 +287,8 @@ RoomController.prototype.onJoin = function(e)
         if (this.useTouch) {
             player.setTouch();
         }
+    } else {
+        this.notifier.notify('New player joined!');
     }
 
     this.applyScope();
@@ -349,11 +355,20 @@ RoomController.prototype.setName = function(player)
         player.name,
         function (result) {
             if (!result.success) {
-                console.error('Could not rename player %s to %s', result.name, player.name);
-                player.name = result.name;
-            } else if (player.profile) {
+                var error = typeof(result.error) !== 'undefined' ? result.error : 'Unknown error',
+                    name = typeof(result.name) !== 'undefined' ? result.name : null;
+
+                console.error('Could not rename player: %s', error);
+
+                if (name) {
+                    player.name = name;
+                }
+            }
+
+            if (player.profile) {
                 controller.profile.setName(player.name);
             }
+
             controller.applyScope();
         }
     );

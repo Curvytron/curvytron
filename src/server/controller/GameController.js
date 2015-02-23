@@ -77,6 +77,7 @@ GameController.prototype.attach = function(client)
 {
     if (this.clients.add(client)) {
         this.attachEvents(client);
+        this.socketGroup.addEvent('game:spectators', this.countSpectators());
     }
 };
 
@@ -93,6 +94,7 @@ GameController.prototype.detach = function(client)
         for (var i = client.players.items.length - 1; i >= 0; i--) {
             this.game.removeAvatar(client.players.items[i].avatar);
         }
+        this.socketGroup.addEvent('game:spectators', this.countSpectators());
     }
 };
 
@@ -193,6 +195,16 @@ GameController.prototype.attachSpectator = function(client)
     }
 
     client.addEvents(events);
+};
+
+/**
+ * Count spectators
+ *
+ * @return {Number}
+ */
+GameController.prototype.countSpectators = function()
+{
+    return this.clients.filter(function () { return !this.isPlaying(); }).count();
 };
 
 /**

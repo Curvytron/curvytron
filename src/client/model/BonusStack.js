@@ -39,7 +39,10 @@ BonusStack.prototype.add = function(bonus)
     bonus.on('change', this.draw);
     setTimeout(bonus.setEnding, bonus.duration - this.warning);
     this.bonuses.add(bonus);
-    this.updateDimensions();
+
+    if (this.avatar.local) {
+        this.updateDimensions();
+    }
 };
 
 /**
@@ -52,7 +55,22 @@ BonusStack.prototype.remove = function(bonus)
     bonus.clear();
     bonus.off('change', this.draw);
     this.bonuses.remove(bonus);
-    this.updateDimensions();
+
+    if (this.avatar.local) {
+        this.updateDimensions();
+    }
+};
+
+/**
+ * Clear
+ */
+BonusStack.prototype.clear = function()
+{
+    BaseBonusStack.prototype.clear.call(this);
+
+    if (this.avatar.local) {
+        this.updateDimensions();
+    }
 };
 
 /**

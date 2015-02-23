@@ -32,6 +32,7 @@ function RoomController(room)
         onName: function (data) { controller.onName(this, data.data, data.callback); },
         onColor: function (data) { controller.onColor(this, data.data, data.callback); },
         onLeave: function () { controller.onLeave(this); },
+        onActivity: function () { controller.onActivity(this); },
 
         onConfigMaxScore: function (data) { controller.onConfigMaxScore(this, data.data, data.callback); },
         onConfigVariable:  function (data) { controller.onConfigVariable(this, data.data, data.callback); },
@@ -106,6 +107,7 @@ RoomController.prototype.detach = function(client)
 RoomController.prototype.attachEvents = function(client)
 {
     client.on('close', this.callbacks.onLeave);
+    client.on('activity', this.callbacks.onActivity);
     client.on('room:leave', this.callbacks.onLeave);
     client.on('room:talk', this.callbacks.onTalk);
     client.on('player:add', this.callbacks.onPlayerAdd);
@@ -128,6 +130,7 @@ RoomController.prototype.attachEvents = function(client)
 RoomController.prototype.detachEvents = function(client)
 {
     client.removeListener('close', this.callbacks.onLeave);
+    client.removeListener('activity', this.callbacks.onActivity);
     client.removeListener('room:leave', this.callbacks.onLeave);
     client.removeListener('room:talk', this.callbacks.onTalk);
     client.removeListener('player:add', this.callbacks.onPlayerAdd);
@@ -201,9 +204,27 @@ RoomController.prototype.onClientRemove = function(client)
 
 // Events:
 
+/**
+ * On client leave
+ *
+ * @param {SocketClient} client
+ */
 RoomController.prototype.onLeave = function(client)
 {
     this.detach(client);
+};
+
+/**
+ * On client activity change
+ *
+ * @param {SocketClient} client
+ */
+RoomController.prototype.onActivity = function(client)
+{
+    this.socketGroup.addEvent('client:activity', {
+        client: client.id,
+        active: client.active
+    });
 };
 
 /**
@@ -215,19 +236,26 @@ RoomController.prototype.onLeave = function(client)
  */
 RoomController.prototype.onPlayerAdd = function(client, data, callback)
 {
-    var name = data.name.substr(0, Player.prototype.maxLength),
+    var name = data.name.substr(0, Player.prototype.maxLength).trim(),
         color = typeof(data.color) !== 'undefined' ? data.color : null;
 
-    if (!this.room.game && this.room.isNameAvailable(name)) {
-
-        var player = new Player(client, name, color);
-
-        this.room.addPlayer(player);
-        client.players.add(player);
-        callback({success: true});
-    } else {
-        callback({success: false});
+    if (!name.length) {
+        return callback({success: false, error: 'Invalid name.'});
     }
+
+    if (this.room.game) {
+        return callback({success: false, error: 'Game already started.'});
+    }
+
+    if (!this.room.isNameAvailable(name)) {
+        return callback({success: false, error: 'This username is already used.'});
+    }
+
+    var player = new Player(client, name, color);
+
+    this.room.addPlayer(player);
+    client.players.add(player);
+    callback({success: true});
 };
 
 /**
@@ -298,15 +326,23 @@ RoomController.prototype.onColor = function(client, data, callback)
 RoomController.prototype.onName = function(client, data, callback)
 {
     var player = client.players.getById(data.player),
-        name = data.name.substr(0, Player.prototype.maxLength);
+        name = data.name.substr(0, Player.prototype.maxLength).trim();
 
-    if (player && this.room.isNameAvailable(name)) {
-        player.setName(name);
-        callback({success: true, name: player.name});
-        this.socketGroup.addEvent('player:name', { player: player.id, name: player.name });
-    } else {
-        callback({success: false});
+    if (!player) {
+        return callback({success: false, error: 'Unknown player: "' + name + '"'});
     }
+
+    if (!name.length) {
+        return callback({success: false, error: 'Invalid name.', name: player.name});
+    }
+
+    if (!this.room.isNameAvailable(name)) {
+        return callback({success: false, error: 'This username is already used.', name: player.name});
+    }
+
+    player.setName(name);
+    callback({success: true, name: player.name});
+    this.socketGroup.addEvent('player:name', { player: player.id, name: player.name });
 };
 
 /**
@@ -434,6 +470,10 @@ RoomController.prototype.onPlayerJoin = function(data)
 RoomController.prototype.onPlayerLeave = function(data)
 {
     this.socketGroup.addEvent('room:leave', {player: data.player.id});
+
+    if (this.room.isReady()) {
+        this.room.newGame();
+    }
 };
 
 /**

@@ -5,8 +5,11 @@
             <div class="maxScore"><i class="icon-trophy"></i><span>{{ game.maxScore }}</span></div>
             <h3 title="{{ game.name }}">{{ game.name }}</h3>
 
-            <span id="sound" class="pull-right" ng-class="{ active: sound }" ng-click="toggleSound()">
+            <span id="sound" class="btn-toogle sound pull-right" ng-class="{ active: sound.active }" ng-click="toggleSound()">
                 <i class="icon-volume"></i>
+            </span>
+            <span id="radio-sound" class="btn-toogle radio-sound pull-right" ng-class="{ active: radio.element.volume }" ng-click="toggleRadio()">
+                <i class="icon-radio"></i>
             </span>
 
             <ul id="game-players">
@@ -21,6 +24,9 @@
             <footer>
                 <span id="fps" class="pull-right">0</span>
                 <span id="ping" class="pull-right">0</span>
+                <span id="spectators" ng-if="spectators" class="pull-right">
+                    {{ spectators }} <span class="icon-spectate"></span>
+                </span>
                 <a href="http://www.elao.com" class="game-copy pull-left" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>
             </footer>
             <div class="chat-wrapper" ng-include="'js/views/chat/chat.html'" onload="chatLoaded()"></div>

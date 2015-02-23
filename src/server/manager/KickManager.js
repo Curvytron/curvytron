@@ -51,7 +51,6 @@ KickManager.prototype.getVote = function(player)
 
     this.votes.add(kickVote);
     kickVote.on('close', this.onVoteClose);
-
     this.emit('vote:new', kickVote);
 
     return kickVote;

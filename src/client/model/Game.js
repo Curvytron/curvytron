@@ -210,7 +210,7 @@ Game.prototype.onResize = function()
 
         avatar.setScale(scale);
 
-        if (avatar.local) {
+        if (typeof(avatar.input) !== 'undefined') {
             avatar.input.setWidth(x);
         }
     }

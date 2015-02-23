@@ -11,16 +11,18 @@ function RoomConfigController($scope, repository)
     this.config     = null;
 
     // Binding:
-    this.onJoined    = this.onJoined.bind(this);
-    this.toggleBonus = this.toggleBonus.bind(this);
-    this.setMaxScore = this.setMaxScore.bind(this);
-    this.setVariable = this.setVariable.bind(this);
-    this.applyScope  = this.applyScope.bind(this);
+    this.onJoined     = this.onJoined.bind(this);
+    this.toggleBonus  = this.toggleBonus.bind(this);
+    this.togglePreset = this.togglePreset.bind(this);
+    this.setMaxScore  = this.setMaxScore.bind(this);
+    this.setVariable  = this.setVariable.bind(this);
+    this.applyScope   = this.applyScope.bind(this);
 
     // Hydratign scope
-    this.$scope.toggleBonus = this.toggleBonus;
-    this.$scope.setMaxScore = this.setMaxScore;
-    this.$scope.setVariable = this.setVariable;
+    this.$scope.toggleBonus  = this.toggleBonus;
+    this.$scope.togglePreset = this.togglePreset;
+    this.$scope.setMaxScore  = this.setMaxScore;
+    this.$scope.setVariable  = this.setVariable;
 
     this.repository.on('config:max-score', this.applyScope);
     this.repository.on('config:variable', this.applyScope);
@@ -36,7 +38,6 @@ RoomConfigController.prototype.onJoined = function()
 {
     if (this.$scope.$parent.room) {
         this.config = this.$scope.$parent.room.config;
-
         this.$scope.config = this.config;
     }
 };
@@ -57,6 +58,40 @@ RoomConfigController.prototype.toggleBonus = function(bonus)
     } else {
         console.error('Unknown bonus: %s', bonus.type);
     }
+};
+
+/**
+ * Toggle preset
+ *
+ * @param {String} bonus
+ */
+RoomConfigController.prototype.togglePreset = function(preset)
+{
+    if (this.config.preset === preset) {
+        if (preset === this.config.getDefaultPreset()) {
+            return;
+        }
+
+        return this.applyPreset(this.config.getDefaultPreset());
+    }
+
+    this.applyPreset(preset);
+};
+
+/**
+ * Apply the given preset
+ *
+ * @param {Preset} preset
+ */
+RoomConfigController.prototype.applyPreset = function(preset)
+{
+    for (var bonus in this.config.bonuses) {
+        if (this.config.bonuses[bonus] !== preset.hasBonus(bonus)) {
+            this.toggleBonus(bonus);
+        }
+    }
+
+    this.config.preset = preset;
 };
 
 /**
