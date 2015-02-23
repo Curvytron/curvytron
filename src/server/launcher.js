@@ -12,11 +12,11 @@ try {
 var server = new Server({ port: config.port });
 
 if (config.inspector.enabled) {
-    //try {
+    try {
         new Inspector(server, config.inspector);
-    /*} catch (error) {
+    } catch (error) {
         console.error('Inspector error:', error);
-    }*/
+    }
 }
 
 module.exports = server;

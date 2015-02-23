@@ -7,8 +7,6 @@ function BaseRoomConfig(room)
     this.maxScore = null;
 
     this.variables = {
-        //speed: 0,
-        //curving: 0,
         bonusRate: 0
     };
 
@@ -21,10 +19,10 @@ function BaseRoomConfig(room)
         BonusEnemyFast: true,
         BonusEnemyBig: true,
         BonusEnemyInverse: true,
+        BonusEnemyStraightAngle: true,
         BonusAllBorderless: true,
         BonusAllColor: true,
-        BonusGameClear: true,
-        BonusEnemyStraightAngle: true
+        BonusGameClear: true
     };
 }
 

@@ -4,12 +4,14 @@
  * @param {Object} $scope
  * @param {Profile} profile
  * @param {Analyser} analyser
+ * @param {ActivityWatcher} watcher
  */
-function CurvytronController($scope, profile, analyser)
+function CurvytronController($scope, profile, analyser, watcher)
 {
     this.$scope   = $scope;
     this.profile  = profile;
     this.analyser = analyser;
+    this.watcher  = watcher;
 
     // Bind
     this.toggleProfile = this.toggleProfile.bind(this);

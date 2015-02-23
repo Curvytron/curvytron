@@ -210,6 +210,11 @@
             bottom: 0;
         }
 
+        #spectators {
+            width: 75px;
+            text-align: right;
+        }
+
         #fps {
             width: 30px;
             text-align: right;
@@ -219,6 +224,7 @@
         #ping {
             width: 52px;
             text-align: right;
+            margin-left: 5px;
         }
 
         footer {
@@ -532,11 +538,9 @@
     }
 }
 
-#sound {
+.btn-toogle {
 
     width: 80px;
-    left: $aside-width - $aside-border-size - 80px;
-    top: $game-header-height + 80px;
     position: fixed;
     z-index: 100;
     height: 80px;
@@ -550,9 +554,24 @@
     user-select: none;
     cursor: pointer;
 
+    &.sound {
+        left: $aside-width - $aside-border-size - 80px;
+        top: $game-header-height + 80px;
+    }
+
+    &.radio-sound {
+        left: $aside-width - $aside-border-size - 160px;
+        top: $game-header-height + 80px;
+    }
+
     .icon-volume {
         @extend .icon-volume-off;
-        opacity: 0.8;
+        @include opacity(66);
+    }
+
+    .icon-radio {
+        @extend .icon-music;
+        @include opacity(66);
     }
 
     &::after {
@@ -574,6 +593,10 @@
             @include opacity(100);
         }
 
+        .icon-radio {
+            @include opacity(100);
+        }
+
         &::after {
             @include opacity(0);
         }
@@ -585,4 +608,12 @@
     margin: 40px 0;
     display: inline-block;
     font-size: $font-size-h4;
+}
+
+/* Radio */
+
+.radio-player {
+    width: 0;
+    height: 0;
+    visibility: hidden;
 }

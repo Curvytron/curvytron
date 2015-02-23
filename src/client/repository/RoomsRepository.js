@@ -70,7 +70,11 @@ RoomsRepository.prototype.get = function(name)
  */
 RoomsRepository.prototype.create = function(name, callback)
 {
-    this.client.addEvent('room:create', {name: name.substr(0, Room.prototype.maxLength)}, callback);
+    if (typeof(name) === 'string') {
+        name = name.substr(0, Room.prototype.maxLength).trim();
+    }
+
+    this.client.addEvent('room:create', {name: name}, callback);
 };
 
 /**
