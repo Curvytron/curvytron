@@ -427,8 +427,10 @@ RoomController.prototype.start = function(e)
  */
 RoomController.prototype.addProfileUser = function()
 {
-    this.profile.on('change', this.updateProfile);
-    this.addPlayer(this.profile.name, this.profile.color);
+    if (this.room.isNameAvailable(this.profile.name)) {
+        this.profile.on('change', this.updateProfile);
+        this.addPlayer(this.profile.name, this.profile.color);
+    }
 };
 
 /**
