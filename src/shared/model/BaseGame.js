@@ -43,7 +43,7 @@ BaseGame.prototype.framerate = 1/60 * 1000;
  *
  * @type {Number}
  */
-BaseGame.prototype.perPlayerSize = 100;
+BaseGame.prototype.perPlayerSize = 80;
 
 /**
  * Time before round start
