@@ -9,7 +9,7 @@ function Avatar(player)
 
     this.local     = player.local;
     this.canvas    = new Canvas(100, 100);
-    this.arrow     = new Canvas(100, 100);
+    this.arrow     = new Canvas(this.arrowSize, this.arrowSize);
     this.start     = new Array(2);
     this.width     = this.radius * 2;
     this.animation = null;
@@ -32,6 +32,13 @@ Avatar.prototype.constructor = Avatar;
  * @type {Number}
  */
 Avatar.prototype.arrowWidth = 3;
+
+/**
+ * Arrow canvas size
+ *
+ * @type {Number}
+ */
+Avatar.prototype.arrowSize = 400;
 
 /**
  * Set position
@@ -127,9 +134,16 @@ Avatar.prototype.drawHead = function()
  */
 Avatar.prototype.drawArrow = function()
 {
+    var arrowLines = [
+        [[this.arrowSize * 0.65, this.arrowSize * 0.5], [this.arrowSize * 0.95, this.arrowSize * 0.5]],
+        [[this.arrowSize * 0.85, this.arrowSize * 0.4], [this.arrowSize * 0.95, this.arrowSize * 0.5], [this.arrowSize * 0.85, this.arrowSize * 0.6]]
+    ];
+
     this.arrow.clear();
-    this.arrow.drawLine([[65, 50], [95, 50]], this.arrowWidth, this.color);
-    this.arrow.drawLine([[85, 40], [95, 50], [85, 60]], this.arrowWidth, this.color);
+
+    for (var i = arrowLines.length - 1; i >= 0; i--) {
+        this.arrow.drawLine(arrowLines[i], this.arrowSize * this.arrowWidth/100, this.color);
+    }
 };
 
 /**
