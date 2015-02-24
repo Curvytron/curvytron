@@ -9,10 +9,13 @@ function SocketClient()
     this.onError      = this.onError.bind(this);
     this.onOpen       = this.onOpen.bind(this);
     this.onConnection = this.onConnection.bind(this);
+    this.retry        = this.retry.bind(this);
 
     this.id         = null;
     this.connected  = false;
+    this.tries      = 0;
     this.pingLogger = new PingLogger(this.sendPing, this.pingFrequency);
+    this.currentTry = setTimeout(this.retry, this.tryFrequency);
 
     BaseSocketClient.call(this, new Socket('ws://' + document.location.host + document.location.pathname, ['websocket']));
 
@@ -21,7 +24,7 @@ function SocketClient()
     this.socket.addEventListener('close', this.onClose);
 
     this.on('pong', this.pingLogger.pong);
-    this.on('open', this.onConnection);
+    this.on('client:id', this.onConnection);
 }
 
 SocketClient.prototype = Object.create(BaseSocketClient.prototype);
@@ -33,6 +36,20 @@ SocketClient.prototype.constructor = SocketClient;
  * @type {Number}
  */
 SocketClient.prototype.pingFrequency = 5000;
+
+/**
+ * Retry connection frequency
+ *
+ * @type {Number}
+ */
+SocketClient.prototype.tryFrequency = 100;
+
+/**
+ * Max tries
+ *
+ * @type {Number}
+ */
+SocketClient.prototype.maxTries = 3;
 
 /**
  * On socket connection
@@ -51,8 +68,11 @@ SocketClient.prototype.onOpen = function(e)
  */
 SocketClient.prototype.onConnection = function(e)
 {
-    this.id        = e.detail;
-    this.connected = true;
+    clearTimeout(this.currentTry);
+
+    this.id         = e.detail;
+    this.connected  = true;
+    this.currentTry = false;
 
     console.info('Connected with id "%s".', this.id);
 
@@ -80,6 +100,19 @@ SocketClient.prototype.onClose = function(e)
     this.emit('disconnected');
 
     throw 'Connexion lost';
+};
+
+/**
+ * Retry connection
+ */
+SocketClient.prototype.retry = function()
+{
+    if (this.tries < this.maxTries) {
+        this.currentTry = setTimeout(this.retry, +this.tries * this.tryFrequency);
+        this.addEvent('whoami');
+    } else {
+        throw 'Unable to connect';
+    }
 };
 
 /**

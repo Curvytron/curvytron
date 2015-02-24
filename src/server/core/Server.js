@@ -52,10 +52,12 @@ Server.prototype.onSocketConnection = function(socket)
     var client = new SocketClient(socket, 3);
 
     this.clients.add(client);
+
     client.on('close', this.onSocketDisconnection);
+    client.sendId();
 
     console.info('Client connected:', client.id);
-    client.addEvent('open', client.id);
+
     this.emit('client', client);
     this.roomsController.attach(client);
 };

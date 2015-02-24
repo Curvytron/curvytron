@@ -12,7 +12,9 @@ function SocketClient(socket, interval)
     this.players = new Collection([], 'id');
 
     this.onActivity = this.onActivity.bind(this);
+    this.sendId     = this.sendId.bind(this);
 
+    this.on('whoami', this.sendId);
     this.on('activity', this.onActivity);
 }
 
@@ -27,6 +29,14 @@ SocketClient.prototype.constructor = SocketClient;
 SocketClient.prototype.isPlaying = function()
 {
     return !this.players.isEmpty();
+};
+
+/**
+ * Who am I?
+ */
+SocketClient.prototype.sendId = function()
+{
+    this.addEvent('client:id', this.id);
 };
 
 /**
