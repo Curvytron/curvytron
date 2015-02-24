@@ -121,8 +121,9 @@ RoomController.prototype.onJoined = function(result)
     } else {
         console.error('Could not join room %s', name);
         this.goHome();
-        this.applyScope();
     }
+
+    this.applyScope();
 };
 
 /**

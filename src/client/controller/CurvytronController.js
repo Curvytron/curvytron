@@ -47,10 +47,12 @@ CurvytronController.prototype.openProfile = function()
  */
 CurvytronController.prototype.closeProfile = function()
 {
-    this.$scope.profileOpen = false;
-    this.$scope.profileTuto = !this.profile.isComplete();
+    if (this.profile.isComplete()) {
+        this.$scope.profileOpen = false;
+        this.$scope.profileTuto = !this.profile.isComplete();
 
-    this.profile.emit('close');
+        this.profile.emit('close');
+    }
 };
 
 /**
