@@ -33,7 +33,7 @@ SocketClient.prototype.constructor = SocketClient;
  */
 SocketClient.prototype.onSocket = function(e)
 {
-    console.info('Connected');
+    console.info('Connected', e);
 
     this.connected = true;
 
@@ -50,6 +50,7 @@ SocketClient.prototype.onSocket = function(e)
  */
 SocketClient.prototype.onOpen = function(e)
 {
+    console.log('onOpen', e);
     this.id = e.detail;
 };
 

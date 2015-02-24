@@ -272,6 +272,8 @@ RoomController.prototype.onJoin = function(e)
 {
     var player = e.detail.player;
 
+    console.info('Player joined: %s|%s (client: %s)', player.name, player.client, this.client.id);
+
     if (player.client === this.client.id) {
         player.on('control:change', this.onControlChange);
         player.setLocal(true);

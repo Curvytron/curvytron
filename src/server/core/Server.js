@@ -53,15 +53,13 @@ Server.prototype.onSocketConnection = function(socket)
         client = new SocketClient(socket, 3);
 
     this.clients.add(client);
-
     client.on('close', this.onSocketDisconnection);
+    client.addEvent('open', client.id);
+    this.emit('client', client);
+
+    console.info('Client connected', client.id);
 
     this.roomsController.attach(client);
-
-    client.addEvent('open', client.id);
-
-    this.emit('client', client);
-    console.info('Client connected', client.id);
 };
 
 /**

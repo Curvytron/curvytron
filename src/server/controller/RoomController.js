@@ -366,7 +366,7 @@ RoomController.prototype.onReady = function(client, data, callback)
             this.room.newGame();
         }
     } else {
-        callback({success: false});
+        callback({success: false, error: 'Player with id "' + data.player + '" not found'});
     }
 };
 
