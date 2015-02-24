@@ -194,6 +194,8 @@ GameController.prototype.attachSpectator = function(client)
         events.push(['bonus:pop', this.game.bonusManager.bonuses.items[i].serialize()]);
     }
 
+    events.push(['game:spectators', this.countSpectators()]);
+
     client.addEvents(events);
 };
 
