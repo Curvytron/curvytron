@@ -49,19 +49,17 @@ Server.prototype.authorizationHandler = function(request, socket, head)
  */
 Server.prototype.onSocketConnection = function(socket)
 {
-    var server = this,
-        client = new SocketClient(socket, 3);
+    var client = new SocketClient(socket, 3);
 
     this.clients.add(client);
 
     client.on('close', this.onSocketDisconnection);
+    client.sendId();
 
-    this.roomsController.attach(client);
-
-    client.addEvent('open', client.id);
+    console.info('Client connected:', client.id);
 
     this.emit('client', client);
-    console.info('Client connected', client.id);
+    this.roomsController.attach(client);
 };
 
 /**
@@ -71,7 +69,7 @@ Server.prototype.onSocketConnection = function(socket)
  */
 Server.prototype.onSocketDisconnection = function(client)
 {
-    console.info('Client disconnected', client.id);
+    console.info('Client disconnected:', client.id);
 
     this.clients.remove(client);
 };
