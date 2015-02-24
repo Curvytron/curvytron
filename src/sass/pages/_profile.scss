@@ -96,7 +96,7 @@
 
             .list {
                 .item {
-                    display: none;
+                    display: block;
                     margin: 20px;
 
                     font-size: $font-size-h3;
@@ -106,14 +106,6 @@
                         display: block;
                         color: #999999;
                         line-height: 0.8em;
-                    }
-
-                    &.first {
-                        display: block;
-                    }
-
-                    &.done + .item {
-                        display: block;
                     }
 
                     &.done {

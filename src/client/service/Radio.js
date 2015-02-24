@@ -1,8 +1,11 @@
 /**
  * Radio
+ *
+ * @param {Profile} profile
  */
-function Radio ()
+function Radio (profile)
 {
+    this.profile = profile;
     this.element = this.getVideo(this.source);
 
     this.toggle = this.toggle.bind(this);
@@ -14,6 +17,13 @@ function Radio ()
  * @type {String}
  */
 Radio.prototype.source = 'http://streaming.radionomy.com/Curvytron';
+
+/**
+ * Volume
+ *
+ * @type {Number}
+ */
+Radio.prototype.volume = 0.8;
 
 /**
  * Get video
@@ -31,7 +41,7 @@ Radio.prototype.getVideo = function(src)
 
     video.name     = 'media';
     video.autoplay = true;
-    video.volume   = 0;
+    video.volume   = this.profile.radio ? this.volume : 0;
     source.type    = 'audio/mpeg';
     source.src     = this.source;
 
@@ -55,7 +65,8 @@ Radio.prototype.toggle = function()
  */
 Radio.prototype.play = function()
 {
-    this.element.volume = 1;
+    this.element.volume = this.volume;
+    this.profile.setRadio(true);
 };
 
 /**
@@ -64,4 +75,5 @@ Radio.prototype.play = function()
 Radio.prototype.stop = function()
 {
     this.element.volume = 0;
+    this.profile.setRadio(false);
 };
