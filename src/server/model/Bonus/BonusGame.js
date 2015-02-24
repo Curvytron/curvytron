@@ -39,6 +39,6 @@ BonusGame.prototype.getTarget = function(avatar, game)
 BonusGame.prototype.on = function() {};
 
 /**
- * Apply on
+ * Apply off
  */
 BonusGame.prototype.off = function() {};

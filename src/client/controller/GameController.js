@@ -46,8 +46,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onSpectators  = this.onSpectators.bind(this);
     this.leaveGame     = this.leaveGame.bind(this);
     this.backToRoom    = this.backToRoom.bind(this);
-    this.toggleSound   = this.toggleSound.bind(this);
-    this.toggleRadio   = this.toggleRadio.bind(this);
+    this.updateBorders = this.updateBorders.bind(this);
 
     this.attachSocketEvents();
 
@@ -63,8 +62,8 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.$scope.radio       = this.radio;
     this.$scope.sound       = this.sound;
     this.$scope.backToRoom  = this.backToRoom;
-    this.$scope.toggleSound = this.toggleSound;
-    this.$scope.toggleRadio = this.toggleRadio;
+    this.$scope.toggleSound = this.sound.toggle;
+    this.$scope.toggleRadio = this.radio.toggle;
     this.$scope.chatLoaded  = this.onChatLoaded;
     this.$scope.roundWinner = null;
     this.$scope.gameWinner  = null;
@@ -135,13 +134,21 @@ GameController.prototype.loadGame = function(room)
 
     this.game.bonusManager.on('load', this.onLoaded);
 
-    avatars = this.game.avatars.filter(function () { return this.local; });
+    var spectate = true,
+        avatar;
 
-    for (var i = avatars.items.length - 1; i >= 0; i--) {
-        avatars.items[i].input.on('move', this.onMove);
+    for (var i = this.game.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.game.avatars.items[i];
+
+        avatar.bonusStack.on('change', this.updateBorders);
+
+        if (avatar.local) {
+            avatar.input.on('move', this.onMove);
+            spectate = false;
+        }
     }
 
-    this.game.setSpectate(avatars.isEmpty());
+    this.game.setSpectate(spectate);
     this.game.fps.setElement(document.getElementById('fps'));
     this.client.pingLogger.setElement(document.getElementById('ping'));
 
@@ -262,16 +269,10 @@ GameController.prototype.onBonusStack = function(e)
 {
     var data = e.detail,
         avatar = this.game.avatars.getById(data.avatar),
-        bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration),
-        borderless = bonus.type === 'BonusAllBorderless';
+        bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration);
 
-    if (avatar && (avatar.local || borderless)) {
+    if (avatar && avatar.local) {
         avatar.bonusStack[data.method](bonus);
-
-        if (borderless) {
-            this.updateBorders();
-            this.applyScope();
-        }
     }
 };
 
@@ -373,7 +374,6 @@ GameController.prototype.onRoundNew = function(e)
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
     this.updateBorders();
-    this.applyScope();
 };
 
 /**
@@ -444,6 +444,7 @@ GameController.prototype.onLeave = function(e)
         avatar = this.game.avatars.getById(data.avatar);
 
     if (avatar) {
+        avatar.bonusStack.off('change', this.updateBorders);
         this.game.removeAvatar(avatar);
         this.applyScope();
     }
@@ -454,7 +455,8 @@ GameController.prototype.onLeave = function(e)
  */
 GameController.prototype.updateBorders = function()
 {
-    this.$scope.borderless = this.game.avatars.match(function () { return this.borderless; }) !== null;
+    this.$scope.borderless = this.game.isBorderless();
+    this.applyScope();
 };
 
 /**
@@ -500,22 +502,6 @@ GameController.prototype.close = function()
 GameController.prototype.backToRoom = function()
 {
     this.$location.path(this.room.url);
-};
-
-/**
- * Toggle sound
- */
-GameController.prototype.toggleSound = function()
-{
-    this.sound.toggle();
-};
-
-/**
- * Toggle radio
- */
-GameController.prototype.toggleRadio = function()
-{
-    this.radio.toggle();
 };
 
 /**

@@ -233,7 +233,6 @@ BaseAvatar.prototype.getDistance = function(from, to)
 BaseAvatar.prototype.die = function()
 {
     this.alive = false;
-
     this.bonusStack.clear();
 };
 

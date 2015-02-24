@@ -43,6 +43,8 @@ BonusStack.prototype.add = function(bonus)
     if (this.avatar.local) {
         this.updateDimensions();
     }
+
+    this.emit('change');
 };
 
 /**
@@ -59,6 +61,8 @@ BonusStack.prototype.remove = function(bonus)
     if (this.avatar.local) {
         this.updateDimensions();
     }
+
+    this.emit('change');
 };
 
 /**
@@ -71,6 +75,8 @@ BonusStack.prototype.clear = function()
     if (this.avatar.local) {
         this.updateDimensions();
     }
+
+    this.emit('change');
 };
 
 /**

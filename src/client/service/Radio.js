@@ -4,6 +4,8 @@
 function Radio ()
 {
     this.element = this.getVideo(this.source);
+
+    this.toggle = this.toggle.bind(this);
 }
 
 /**

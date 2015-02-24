@@ -95,6 +95,18 @@ Game.prototype.isTieBreak = function()
 };
 
 /**
+ * Is borderless?
+ *
+ * @return {Boolean}
+ */
+Game.prototype.isBorderless = function()
+{
+    return this.avatars.match(function () {
+        return this.alive && this.borderless;
+    }) !== null;
+};
+
+/**
  * Clear trails
  */
 Game.prototype.clearTrails = function()
