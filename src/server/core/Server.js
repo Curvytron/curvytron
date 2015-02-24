@@ -54,12 +54,13 @@ Server.prototype.onSocketConnection = function(socket)
 
     this.clients.add(client);
     client.on('close', this.onSocketDisconnection);
-    client.addEvent('open', client.id);
-    this.emit('client', client);
 
-    console.info('Client connected', client.id);
-
-    this.roomsController.attach(client);
+    setTimeout(function () {
+        console.info('Client connected', client.id);
+        client.addEvent('open', client.id);
+        server.emit('client', client);
+        server.roomsController.attach(client);
+    }, 500);
 };
 
 /**
