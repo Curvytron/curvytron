@@ -151,6 +151,7 @@ GameController.prototype.loadGame = function(room)
     this.game.setSpectate(spectate);
     this.game.fps.setElement(document.getElementById('fps'));
     this.client.pingLogger.setElement(document.getElementById('ping'));
+    this.radio.play();
 
     // Hydrate scope:
     this.$scope.curvytron.bodyClass = 'game-mode';
