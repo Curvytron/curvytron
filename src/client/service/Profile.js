@@ -91,7 +91,6 @@ Profile.prototype.persist = function()
     if (this.loading) { return; }
 
     if (this.isValid()) {
-        console.log('persist', this.serialize());
         window.localStorage.setItem(this.localKey, JSON.stringify(this.serialize()));
         this.emit('change');
     } else {
@@ -109,7 +108,6 @@ Profile.prototype.load = function()
     var data = window.localStorage.getItem(this.localKey);
 
     if (data) {
-        console.log('load', JSON.parse(data));
         this.unserialize(JSON.parse(data));
         this.emit('change');
     }

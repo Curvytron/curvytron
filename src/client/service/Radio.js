@@ -7,6 +7,7 @@ function Radio (profile)
 {
     this.profile = profile;
     this.element = this.getVideo(this.source);
+    this.active  = this.profile.radio;
 
     this.toggle = this.toggle.bind(this);
 }
@@ -41,7 +42,7 @@ Radio.prototype.getVideo = function(src)
 
     video.name     = 'media';
     video.autoplay = true;
-    video.volume   = this.profile.radio ? this.volume : 0;
+    video.volume   = this.active ? this.volume : 0;
     source.type    = 'audio/mpeg';
     source.src     = this.source;
 
@@ -49,15 +50,33 @@ Radio.prototype.getVideo = function(src)
 };
 
 /**
- * Toggle
+ * Toggle active
  */
-Radio.prototype.toggle = function()
+Radio.prototype.toggle = function ()
 {
-    if (this.element.volume) {
-        this.stop();
-    } else {
-        this.play();
-    }
+    this.setActive(!this.active);
+};
+
+/**
+ * Set active/inactive
+ *
+ * @param {Boolean} active
+ */
+Radio.prototype.setActive = function(active)
+{
+    this.active = active ? true : false;
+    this.setVolume(this.active ? this.volume : 0);
+    this.profile.setRadio(this.active);
+};
+
+/**
+ * Set volume
+ *
+ * @param {Number} volume
+ */
+Radio.prototype.setVolume = function(volume)
+{
+    this.element.volume = typeof(volume) !== 'undefined' ? volume : this.volume;
 };
 
 /**
@@ -65,15 +84,15 @@ Radio.prototype.toggle = function()
  */
 Radio.prototype.play = function()
 {
-    this.element.volume = this.volume;
-    this.profile.setRadio(true);
+    if (this.active) {
+        this.setVolume();
+    }
 };
 
 /**
  * Stop
  */
-Radio.prototype.stop = function()
+Radio.prototype.stop = function(save)
 {
-    this.element.volume = 0;
-    this.profile.setRadio(false);
+    this.setVolume(0);
 };
