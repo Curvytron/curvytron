@@ -12,9 +12,9 @@ function SocketClient(socket, interval)
     this.players = new Collection([], 'id');
 
     this.onActivity = this.onActivity.bind(this);
-    this.sendId     = this.sendId.bind(this);
+    this.identify   = this.identify.bind(this);
 
-    this.on('whoami', this.sendId);
+    this.on('whoami', this.identify);
     this.on('activity', this.onActivity);
 }
 
@@ -34,9 +34,9 @@ SocketClient.prototype.isPlaying = function()
 /**
  * Who am I?
  */
-SocketClient.prototype.sendId = function()
+SocketClient.prototype.identify = function(event)
 {
-    this.addEvent('client:id', this.id);
+    event.callback(this.id);
 };
 
 /**

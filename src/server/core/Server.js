@@ -50,16 +50,13 @@ Server.prototype.authorizationHandler = function(request, socket, head)
 Server.prototype.onSocketConnection = function(socket)
 {
     var client = new SocketClient(socket, 3);
-
     this.clients.add(client);
 
     client.on('close', this.onSocketDisconnection);
-    client.sendId();
+    this.roomsController.attach(client);
+    this.emit('client', client);
 
     console.info('Client connected:', client.id);
-
-    this.emit('client', client);
-    this.roomsController.attach(client);
 };
 
 /**
