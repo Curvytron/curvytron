@@ -48,8 +48,6 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.backToRoom    = this.backToRoom.bind(this);
     this.updateBorders = this.updateBorders.bind(this);
 
-    this.attachSocketEvents();
-
     this.$scope.$on('$destroy', this.leaveGame);
 
     // Hydrate scope:
@@ -158,6 +156,7 @@ GameController.prototype.loadGame = function(room)
     this.$scope.game                = this.game;
     this.$scope.avatars             = this.game.avatars.items;
 
+    this.attachSocketEvents();
     setTimeout(this.chat.scrollDown, 0);
 };
 
