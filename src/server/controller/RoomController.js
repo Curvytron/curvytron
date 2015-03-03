@@ -197,7 +197,7 @@ RoomController.prototype.onClientRemove = function(client)
 
     client.players.clear();
 
-    if (this.clients.isEmpty()) {
+    if (this.room.players.isEmpty()) {
         this.room.close();
     }
 };
