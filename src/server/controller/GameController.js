@@ -171,7 +171,7 @@ GameController.prototype.attachSpectator = function(client)
             color: 'color',
             printing: 'printing',
             score: 'score',
-            position: 'head',
+            position: 'head'
         },
         events = [['spectate', {
             inRound: this.game.inRound,
