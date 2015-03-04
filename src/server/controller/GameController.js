@@ -166,14 +166,17 @@ GameController.prototype.detachEvents = function(client)
 GameController.prototype.attachSpectator = function(client)
 {
     var properties = {
-            position: 'head',
             angle: 'angle',
             radius: 'radius',
             color: 'color',
             printing: 'printing',
-            score: 'score'
+            score: 'score',
+            position: 'head',
         },
-        events = [['spectate']],
+        events = [['spectate', {
+            inRound: this.game.inRound,
+            rendered: this.game.rendered ? true : false
+        }]],
         avatar, i;
 
     for (i = this.game.avatars.items.length - 1; i >= 0; i--) {
@@ -190,8 +193,12 @@ GameController.prototype.attachSpectator = function(client)
         }
     }
 
-    for (i = this.game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
-        events.push(['bonus:pop', this.game.bonusManager.bonuses.items[i].serialize()]);
+    if (this.game.inRound) {
+        for (i = this.game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
+            events.push(['bonus:pop', this.game.bonusManager.bonuses.items[i].serialize()]);
+        }
+    } else if(this.game.winner) {
+        this.socketGroup.addEvent('round:winner', {winner: this.game.winner.id});
     }
 
     events.push(['game:spectators', this.countSpectators()]);

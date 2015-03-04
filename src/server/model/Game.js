@@ -10,6 +10,7 @@ function Game(room)
     this.world      = new World(this.size);
     this.deaths     = new Collection([], 'id');
     this.controller = new GameController(this);
+    this.winner     = null;
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -154,6 +155,7 @@ Game.prototype.resolveScores = function()
     }
 
     if (winner) {
+        this.winner = winner;
         winner.addScore(Math.max(this.avatars.count() - 1, 1));
         this.emit('round:winner', {game: this, winner: winner});
     }
@@ -221,6 +223,7 @@ Game.prototype.onRoundNew = function()
 
     var avatar, i;
 
+    this.winner = null;
     this.world.clear();
     this.deaths.clear();
 

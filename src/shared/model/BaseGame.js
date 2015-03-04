@@ -145,6 +145,8 @@ BaseGame.prototype.onStop = function()
  */
 BaseGame.prototype.onRoundNew = function()
 {
+    this.bonusManager.clear();
+
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         if (this.avatars.items[i].present) {
             this.avatars.items[i].clear();
@@ -279,8 +281,8 @@ BaseGame.prototype.newRound = function(time)
 
     if (!this.inRound) {
         this.inRound = true;
-        setTimeout(this.start, typeof(time) !== 'undefined' ? time : this.warmupTime);
         this.onRoundNew();
+        setTimeout(this.start, typeof(time) !== 'undefined' ? time : this.warmupTime);
     }
 };
 

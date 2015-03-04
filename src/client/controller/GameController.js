@@ -137,8 +137,7 @@ GameController.prototype.loadGame = function(room)
 
     this.game.bonusManager.on('load', this.onAssetsLoaded);
 
-    var spectate = true,
-        avatar;
+    var avatar;
 
     for (var i = this.game.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.game.avatars.items[i];
@@ -147,11 +146,9 @@ GameController.prototype.loadGame = function(room)
 
         if (avatar.local) {
             avatar.input.on('move', this.onMove);
-            spectate = false;
         }
     }
 
-    this.game.setSpectate(spectate);
     this.game.fps.setElement(document.getElementById('fps'));
     this.client.pingLogger.setElement(document.getElementById('ping'));
     this.radio.play();
@@ -377,16 +374,20 @@ GameController.prototype.onDie = function(e)
 /**
  * On spectate
  */
-GameController.prototype.onSpectate = function()
+GameController.prototype.onSpectate = function(e)
 {
-    console.log('onSpectate', this.game.avatars.items.length);
+    var data = e.detail;
 
     for (var i = this.game.avatars.items.length - 1; i >= 0; i--) {
         this.game.avatars.items[i].local = true;
         this.game.avatars.items[i].ready = true;
     }
 
-    this.game.newRound(0);
+    if (data.inRound) {
+        this.game.newRound(0);
+    } else if(data.rendered) {
+        this.game.start();
+    }
 };
 
 /**
@@ -523,7 +524,7 @@ GameController.prototype.close = function()
         this.detachSocketEvents();
         this.game.end();
 
-        avatars = this.game.avatars.filter(function () { return this.local; }).items;
+        avatars = this.game.avatars.filter(function () { return this.input; }).items;
 
         for (var i = avatars.length - 1; i >= 0; i--) {
             avatars[i].input.off('move', this.onMove);
