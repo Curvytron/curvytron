@@ -38,7 +38,7 @@ Avatar.prototype.arrowWidth = 3;
  *
  * @type {Number}
  */
-Avatar.prototype.arrowSize = 400;
+Avatar.prototype.arrowSize = 200;
 
 /**
  * Set position

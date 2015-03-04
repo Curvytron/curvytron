@@ -9,7 +9,6 @@ function Game(room)
 
     this.canvas     = new Canvas(0, 0, document.getElementById('game'));
     this.background = new Canvas(0, 0);
-    this.spectate   = false;
 
     this.onResize = this.onResize.bind(this);
 
@@ -63,7 +62,6 @@ Game.prototype.onFrame = function(step)
 Game.prototype.onRoundNew = function()
 {
     BaseGame.prototype.onRoundNew.call(this);
-
     this.clearBackground();
     this.draw();
 };
@@ -173,7 +171,7 @@ Game.prototype.draw = function()
                 this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
             }
 
-            if (!this.frame && (this.spectate || avatar.local)) {
+            if (!this.frame && avatar.local) {
                 width = 10;
                 position = [avatar.head[0] - width/2, avatar.head[1] - width/2];
                 this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
@@ -194,16 +192,6 @@ Game.prototype.draw = function()
 Game.prototype.clearBackground = function()
 {
     this.background.color(this.backgroundColor);
-};
-
-/**
- * Set spectate
- *
- * @param {Boolean} spectate
- */
-Game.prototype.setSpectate = function(spectate)
-{
-    this.spectate = spectate;
 };
 
 /**
