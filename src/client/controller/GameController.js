@@ -379,8 +379,11 @@ GameController.prototype.onDie = function(e)
  */
 GameController.prototype.onSpectate = function()
 {
+    console.log('onSpectate', this.game.avatars.items.length);
+
     for (var i = this.game.avatars.items.length - 1; i >= 0; i--) {
         this.game.avatars.items[i].local = true;
+        this.game.avatars.items[i].ready = true;
     }
 
     this.game.newRound(0);

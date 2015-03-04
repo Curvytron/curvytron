@@ -63,10 +63,18 @@ Game.prototype.onFrame = function(step)
 Game.prototype.onRoundNew = function()
 {
     BaseGame.prototype.onRoundNew.call(this);
-
     this.clearBackground();
     this.draw();
 };
+
+/**
+ * On start
+ */
+Game.prototype.onStart = function()
+{
+    BaseGame.prototype.onStart.call(this);
+    this.clearBackground();
+}
 
 /**
  * On stop

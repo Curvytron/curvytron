@@ -40,7 +40,10 @@ BaseBonusManager.prototype.bonusPopingMargin = 0.02;
 /**
  * Start
  */
-BaseBonusManager.prototype.start = function() {};
+BaseBonusManager.prototype.start = function()
+{
+    this.clear();
+};
 
 /**
  * Stop
