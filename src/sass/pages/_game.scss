@@ -289,6 +289,23 @@
             }
         }
 
+        .waiting {
+            position:   absolute;
+            top: 25%;
+            width: 100%;
+            z-index: 110;
+
+            p {
+                font-size: $font-size-h1;
+                color: #FFF;
+            }
+
+            ul {
+                list-style: none;
+                font-size: $font-size-h4;
+            }
+        }
+
         .tie-break {
             font-size: $font-size-h1;
             position:   absolute;

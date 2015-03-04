@@ -141,16 +141,6 @@ Game.prototype.checkRoundEnd = function()
 };
 
 /**
- * Is ready
- *
- * @return {Boolean}
- */
-Game.prototype.isReady = function()
-{
-    return this.avatars.filter(function () { return !this.ready; }).isEmpty();
-};
-
-/**
  * Resolve scores
  */
 Game.prototype.resolveScores = function()

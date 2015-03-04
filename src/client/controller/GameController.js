@@ -23,30 +23,33 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.room           = null;
     this.game           = null;
     this.warmupInterval = null;
+    this.assetsLoaded   = false;
+    this.setup          = false;
 
     // Binding
-    this.onLoaded      = this.onLoaded.bind(this);
-    this.onChatLoaded  = this.onChatLoaded.bind(this);
-    this.onMove        = this.onMove.bind(this);
-    this.onBonusPop    = this.onBonusPop.bind(this);
-    this.onBonusClear  = this.onBonusClear.bind(this);
-    this.onBonusStack  = this.onBonusStack.bind(this);
-    this.onPoint       = this.onPoint.bind(this);
-    this.onDie         = this.onDie.bind(this);
-    this.onProperty    = this.onProperty.bind(this);
-    this.onWarmup      = this.onWarmup.bind(this);
-    this.endWarmup     = this.endWarmup.bind(this);
-    this.onRoundNew    = this.onRoundNew.bind(this);
-    this.onRoundEnd    = this.onRoundEnd.bind(this);
-    this.onRoundWinner = this.onRoundWinner.bind(this);
-    this.onClear       = this.onClear.bind(this);
-    this.onEnd         = this.onEnd.bind(this);
-    this.onLeave       = this.onLeave.bind(this);
-    this.onSpectate    = this.onSpectate.bind(this);
-    this.onSpectators  = this.onSpectators.bind(this);
-    this.leaveGame     = this.leaveGame.bind(this);
-    this.backToRoom    = this.backToRoom.bind(this);
-    this.updateBorders = this.updateBorders.bind(this);
+    this.onReady        = this.onReady.bind(this);
+    this.onAssetsLoaded = this.onAssetsLoaded.bind(this);
+    this.onChatLoaded   = this.onChatLoaded.bind(this);
+    this.onMove         = this.onMove.bind(this);
+    this.onBonusPop     = this.onBonusPop.bind(this);
+    this.onBonusClear   = this.onBonusClear.bind(this);
+    this.onBonusStack   = this.onBonusStack.bind(this);
+    this.onPoint        = this.onPoint.bind(this);
+    this.onDie          = this.onDie.bind(this);
+    this.onProperty     = this.onProperty.bind(this);
+    this.onWarmup       = this.onWarmup.bind(this);
+    this.endWarmup      = this.endWarmup.bind(this);
+    this.onRoundNew     = this.onRoundNew.bind(this);
+    this.onRoundEnd     = this.onRoundEnd.bind(this);
+    this.onRoundWinner  = this.onRoundWinner.bind(this);
+    this.onClear        = this.onClear.bind(this);
+    this.onEnd          = this.onEnd.bind(this);
+    this.onLeave        = this.onLeave.bind(this);
+    this.onSpectate     = this.onSpectate.bind(this);
+    this.onSpectators   = this.onSpectators.bind(this);
+    this.leaveGame      = this.leaveGame.bind(this);
+    this.backToRoom     = this.backToRoom.bind(this);
+    this.updateBorders  = this.updateBorders.bind(this);
 
     this.$scope.$on('$destroy', this.leaveGame);
 
@@ -83,6 +86,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
  */
 GameController.prototype.attachSocketEvents = function()
 {
+    this.client.on('ready', this.onReady);
     this.client.on('property', this.onProperty);
     this.client.on('point', this.onPoint);
     this.client.on('die', this.onDie);
@@ -104,6 +108,7 @@ GameController.prototype.attachSocketEvents = function()
  */
 GameController.prototype.detachSocketEvents = function()
 {
+    this.client.off('ready', this.onReady);
     this.client.off('property', this.onProperty);
     this.client.off('point', this.onPoint);
     this.client.off('die', this.onDie);
@@ -130,7 +135,7 @@ GameController.prototype.loadGame = function(room)
     this.room = room;
     this.game = room.newGame();
 
-    this.game.bonusManager.on('load', this.onLoaded);
+    this.game.bonusManager.on('load', this.onAssetsLoaded);
 
     var spectate = true,
         avatar;
@@ -158,14 +163,45 @@ GameController.prototype.loadGame = function(room)
 
     this.attachSocketEvents();
     setTimeout(this.chat.scrollDown, 0);
+
+    this.setup = true;
+    this.checkReady();
 };
 
 /**
  * On assets loaded
  */
-GameController.prototype.onLoaded = function()
+GameController.prototype.onAssetsLoaded = function()
 {
-    this.client.addEvent('loaded');
+    this.assetsLoaded = true;
+    this.game.bonusManager.off('load', this.onAssetsLoaded);
+    this.checkReady();
+};
+
+/**
+ * Check loading is done
+ */
+GameController.prototype.checkReady = function()
+{
+    if (this.assetsLoaded && this.setup) {
+        this.client.addEvent('ready');
+    }
+};
+
+/**
+ * On avatar ready (client loaded)
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onReady = function(e)
+{
+    var data = e.detail,
+        avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.ready = true;
+        this.applyScope();
+    }
 };
 
 /**

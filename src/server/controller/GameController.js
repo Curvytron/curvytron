@@ -23,7 +23,7 @@ function GameController(game)
     this.onEnd         = this.onEnd.bind(this);
 
     this.callbacks = {
-        onLoaded: function () { controller.onLoaded(this); },
+        onReady: function () { controller.onReady(this); },
         onMove: function (data) { controller.onMove(this, data); }
     };
 
@@ -115,7 +115,7 @@ GameController.prototype.attachEvents = function(client)
 {
     var avatar;
 
-    client.on('loaded', this.callbacks.onLoaded);
+    client.on('ready', this.callbacks.onReady);
 
     if (!client.players.isEmpty()) {
         client.on('player:move', this.callbacks.onMove);
@@ -140,7 +140,7 @@ GameController.prototype.detachEvents = function(client)
 {
     var avatar;
 
-    client.removeListener('loaded', this.callbacks.onLoaded);
+    client.removeListener('ready', this.callbacks.onReady);
 
     if (!client.players.isEmpty()) {
         client.removeListener('player:move', this.callbacks.onMove);
@@ -214,7 +214,7 @@ GameController.prototype.countSpectators = function()
  *
  * @param {SocketClient} client
  */
-GameController.prototype.onLoaded = function(client)
+GameController.prototype.onReady = function(client)
 {
     var avatar;
 
@@ -222,7 +222,9 @@ GameController.prototype.onLoaded = function(client)
         this.attachSpectator(client);
     } else {
         for (var i = client.players.items.length - 1; i >= 0; i--) {
-            client.players.items[i].getAvatar().ready = true;
+            avatar = client.players.items[i].getAvatar();
+            avatar.ready = true;
+            this.socketGroup.addEvent('ready', {avatar: avatar.id});
         }
 
         if (this.game.isReady()) {

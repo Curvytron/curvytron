@@ -32,6 +32,14 @@
             <div class="chat-wrapper" ng-include="'js/views/chat/chat.html'" onload="chatLoaded()"></div>
         </aside>
         <div id="col-right">
+            <div class="waiting" ng-if="!game.isReady()">
+                <p>Waiting for players...</p>
+                <ul>
+                    <li ng-repeat="avatar in game.avatars.items" ng-if="!avatar.ready">
+                        <span style="color: {{ avatar.player.color }}">{{ avatar.name }}</span>
+                    </li>
+                </ul>
+            </div>
             <div ng-if="warmup">
                 <p class="tie-break" ng-if="tieBreak">
                     Tie break

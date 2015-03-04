@@ -211,6 +211,16 @@ BaseGame.prototype.getSize = function(players)
 };
 
 /**
+ * Are all avatars ready?
+ *
+ * @return {Boolean}
+ */
+BaseGame.prototype.isReady = function()
+{
+    return this.avatars.filter(function () { return !this.ready; }).isEmpty();
+};
+
+/**
  * Get alive avatars
  *
  * @return {Collection}
