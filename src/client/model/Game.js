@@ -83,13 +83,9 @@ Game.prototype.onStop = function()
  */
 Game.prototype.isTieBreak = function()
 {
-    for (var i = this.avatars.length - 1; i >= 0; i--) {
-        if (this.avatars[i].score >= maxScore) {
-            return true;
-        }
-    }
+    var maxScore = this.maxScore;
 
-    return false;
+    return this.avatars.match(function () { return this.score >= maxScore; }) !== null;
 };
 
 /**
@@ -102,6 +98,16 @@ Game.prototype.isBorderless = function()
     return this.avatars.match(function () {
         return this.alive && this.borderless;
     }) !== null;
+};
+
+/**
+ * Are all avatars ready?
+ *
+ * @return {Boolean}
+ */
+Game.prototype.isReady = function()
+{
+    return this.started ? true : BaseGame.prototype.isReady.call(this);
 };
 
 /**
