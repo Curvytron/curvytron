@@ -145,9 +145,30 @@ BonusManager.prototype.getRandomPopingTime  = function()
  */
 BonusManager.prototype.getRandomBonus = function(position)
 {
-    if (!this.bonusTypes.length) {return; }
+    if (!this.bonusTypes.length) { return; }
 
-    var type = this.bonusTypes[Math.floor(Math.random() * this.bonusTypes.length)];
+    var total = this.bonusTypes.length,
+        pot = [],
+        bonuses = [],
+        bonus,
+        probability;
 
-    return new type(position);
+    for (var i = 0; i < total; i++) {
+        bonus = new (this.bonusTypes[i])(position);
+        probability = bonus.getProbability(this.game);
+
+        if (probability > 0) {
+            bonuses.push(bonus);
+            pot.push(probability + (i > 0 ? pot[pot.length-1] : 0));
+        }
+    }
+    var value = Math.random() * pot[pot.length - 1];
+
+    for (i = 0; i < total; i++) {
+        if (value < pot[i]) {
+            return bonuses[i];
+        }
+    }
+
+    return bonuses[bonuses.length-1];
 };
