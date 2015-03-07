@@ -8,6 +8,7 @@ function GameController(game)
     this.game        = game;
     this.clients     = new Collection();
     this.socketGroup = new SocketGroup(this.clients);
+    this.waiting     = null;
 
     this.onDie         = this.onDie.bind(this);
     this.onPoint       = this.onPoint.bind(this);
@@ -21,6 +22,7 @@ function GameController(game)
     this.onPlayerLeave = this.onPlayerLeave.bind(this);
     this.onClear       = this.onClear.bind(this);
     this.onEnd         = this.onEnd.bind(this);
+    this.stopWaiting   = this.stopWaiting.bind(this);
 
     this.callbacks = {
         onReady: function () { controller.onReady(this); },
@@ -29,6 +31,13 @@ function GameController(game)
 
     this.loadGame();
 }
+
+/**
+ * Waiting time
+ *
+ * @type {Number}
+ */
+GameController.prototype.waitingTime = 5000;
 
 /**
  * Load game
@@ -47,6 +56,8 @@ GameController.prototype.loadGame = function()
     for (var i = this.game.room.controller.clients.items.length - 1; i >= 0; i--) {
         this.attach(this.game.room.controller.clients.items[i]);
     }
+
+    this.waiting = setTimeout(this.stopWaiting, this.waitingTime);
 };
 
 /**
@@ -234,10 +245,35 @@ GameController.prototype.onReady = function(client)
             this.socketGroup.addEvent('ready', {avatar: avatar.id});
         }
 
-        if (this.game.isReady()) {
-            this.game.newRound();
-        }
+        this.checkReady();
     }
+};
+
+/**
+ * Check if all players are ready
+ */
+GameController.prototype.checkReady = function()
+{
+    if (this.game.isReady()) {
+        this.waiting = clearTimeout(this.waiting);
+        this.game.newRound();
+    }
+};
+
+/**
+ * Stop waiting for loading players
+ */
+GameController.prototype.stopWaiting = function()
+{
+    this.waiting = clearTimeout(this.waiting);
+
+    var avatars = this.game.getLoadingAvatars();
+
+    for (var i = avatars.items.length - 1; i >= 0; i--) {
+        this.detach(avatars.items[i].player.client);
+    }
+
+    this.checkReady();
 };
 
 /**

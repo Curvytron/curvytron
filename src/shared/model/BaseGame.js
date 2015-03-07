@@ -219,7 +219,17 @@ BaseGame.prototype.getSize = function(players)
  */
 BaseGame.prototype.isReady = function()
 {
-    return this.avatars.filter(function () { return !this.ready; }).isEmpty();
+    return this.getLoadingAvatars().isEmpty();
+};
+
+/**
+ * Get still loading avatars
+ *
+ * @return {Collection}
+ */
+BaseGame.prototype.getLoadingAvatars = function()
+{
+    return this.avatars.filter(function () { return this.present && !this.ready; });
 };
 
 /**
