@@ -13,6 +13,7 @@ function RoomController(room)
     this.clients     = new Collection();
     this.socketGroup = new SocketGroup(this.clients);
     this.kickManager = new KickManager(this);
+    this.chat        = new Chat();
 
     this.onPlayerJoin  = this.onPlayerJoin.bind(this);
     this.onPlayerLeave = this.onPlayerLeave.bind(this);
@@ -292,6 +293,7 @@ RoomController.prototype.onTalk = function(client, data, callback)
     callback({success: success});
 
     if (success) {
+        this.chat.addMessage(message);
         this.socketGroup.addEvent('room:talk', message.serialize());
     }
 };

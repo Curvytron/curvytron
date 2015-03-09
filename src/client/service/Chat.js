@@ -5,12 +5,13 @@
  */
 function Chat(client)
 {
-    this.client         = client;
-    this.currentMessage = new Message();
-    this.messages       = [];
-    this.room           = null;
-    this.$scope         = null;
-    this.feed           = null;
+    BaseChat.call(this);
+
+    this.client  = client;
+    this.message = new Message();
+    this.room    = null;
+    this.$scope  = null;
+    this.feed    = null;
 
     this.talk       = this.talk.bind(this);
     this.onTalk     = this.onTalk.bind(this);
@@ -18,6 +19,9 @@ function Chat(client)
 
     this.attachEvents();
 }
+
+Chat.prototype = Object.create(BaseChat.prototype);
+Chat.prototype.constructor = Chat;
 
 /**
  * Curvybot profile
@@ -54,7 +58,7 @@ Chat.prototype.detachEvents = function()
 Chat.prototype.setPlayer = function(player)
 {
     if (this.room) {
-        this.currentMessage.player = player;
+        this.message.player = player;
     }
 };
 
@@ -67,7 +71,7 @@ Chat.prototype.setRoom = function(room)
 {
     if (!this.room || !this.room.equal(room)) {
         this.room = room;
-        this.messages.length = 0;
+        this.clear();
     }
 };
 
@@ -81,7 +85,7 @@ Chat.prototype.setScope = function($scope)
 
     this.$scope.messages         = this.messages;
     this.$scope.submitTalk       = this.talk;
-    this.$scope.currentMessage   = this.currentMessage;
+    this.$scope.currentMessage   = this.message;
     this.$scope.messageMaxLength = Message.prototype.maxLength;
 
     setTimeout(this.scrollDown, 0);
@@ -118,16 +122,16 @@ Chat.prototype.talk = function()
 {
     var chat = this;
 
-    if (this.currentMessage.content.length) {
+    if (this.message.content.length) {
         this.client.addEvent(
             'room:talk',
-            this.currentMessage.serialize(),
+            this.message.serialize(),
             function (result) {
                 if (result.success) {
-                    chat.currentMessage.clear();
+                    chat.message.clear();
                     chat.refresh();
                 } else {
-                    console.error('Could not send %s', chat.currentMessage);
+                    console.error('Could not send %s', chat.message);
                 }
             }
         );
@@ -142,7 +146,7 @@ Chat.prototype.onTalk = function(e)
     var data = e.detail,
         player = this.room.players.getById(data.player);
 
-    this.messages.push(new Message(player, data.content));
+    this.addMessage(new Message(player, data.content));
     this.refresh();
 };
 
@@ -151,8 +155,9 @@ Chat.prototype.onTalk = function(e)
  */
 Chat.prototype.clear = function()
 {
-    this.currentMessage  = new Message();
-    this.room            = null;
-    this.$scope          = null;
-    this.messages.length = 0;
+    BaseChat.prototype.clear.call(this);
+
+    this.message = new Message();
+    this.room    = null;
+    this.$scope  = null;
 };

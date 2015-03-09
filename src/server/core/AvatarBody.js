@@ -29,3 +29,9 @@ AvatarBody.prototype.match = function(body)
 
     return Body.prototype.match.call(this, body);
 };
+
+AvatarBody.prototype.isOld = function()
+{
+    return this.num - this.avatar.bodyCount > this.avatar.trailLatency
+};
+
