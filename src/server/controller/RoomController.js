@@ -171,9 +171,16 @@ RoomController.prototype.removePlayer = function(player)
  */
 RoomController.prototype.onClientAdd = function(client)
 {
-    var events = [];
+    var messages = this.chat.serialize(100),
+        events = new Array(messages.length);
 
     client.players.clear();
+
+    for (var i = messages.length - 1; i >= 0; i--) {
+        events[i] = ['room:talk', messages[i]];
+    }
+
+    client.addEvents(events);
 
     if (this.room.game) {
         this.room.game.controller.attach(client);
@@ -288,12 +295,11 @@ RoomController.prototype.onPlayerRemove = function(client, data, callback)
 RoomController.prototype.onTalk = function(client, data, callback)
 {
     var message = new Message(client.players.getById(data.player), data.content),
-        success = message.content.length > 0;
+        success = this.chat.addMessage(message);
 
     callback({success: success});
 
     if (success) {
-        this.chat.addMessage(message);
         this.socketGroup.addEvent('room:talk', message.serialize());
     }
 };

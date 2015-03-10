@@ -70,8 +70,8 @@ Chat.prototype.setPlayer = function(player)
 Chat.prototype.setRoom = function(room)
 {
     if (!this.room || !this.room.equal(room)) {
-        this.room = room;
         this.clear();
+        this.room = room;
     }
 };
 

@@ -18,9 +18,14 @@ BaseChat.prototype.constructor = BaseChat;
  */
 BaseChat.prototype.addMessage = function(message)
 {
-    this.messages[] = message;
+    if (message.content.length === 0) {
+        return false;
+    }
 
+    this.messages.push(message);
     this.emit('message', message);
+
+    return true;
 };
 
 /**
@@ -36,13 +41,13 @@ BaseChat.prototype.clear = function()
  *
  * @return {Array}
  */
-BaseChat.prototype.serialize = function()
+BaseChat.prototype.serialize = function(max)
 {
-    var messages = [],
-        length = this.messages.length;
+    var length = typeof(max) === 'number' ? Math.min(max, this.messages.length) : this.messages.length,
+        messages = new Array(length);
 
-    for (var i = 0; i < length; i++) {
-        messages.push(this.messages[i].serialize());
+    for (var i = length - 1; i >= 0; i--) {
+        messages[i] = this.messages[i].serialize();
     }
 
     return messages;
