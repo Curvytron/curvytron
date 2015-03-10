@@ -465,8 +465,9 @@ RoomController.prototype.updateCurrentMessage = function()
 RoomController.prototype.addTip = function()
 {
     this.chat.messages.push(new Message(
-        this.chat.curvybot,
-        this.tips[Math.floor(Math.random() * this.tips.length)]
+        this.tips[Math.floor(Math.random() * this.tips.length)],
+        null,
+        this.chat.curvybot
     ));
 };
 

@@ -12,7 +12,8 @@ function Inspector (server, config)
     this.trackers = {
         client: new Collection(),
         room:   new Collection(),
-        game:   new Collection()
+        game:   new Collection(),
+        chat:   new Collection()
     };
 
     this.onClientOpen  = this.onClientOpen.bind(this);
@@ -45,6 +46,7 @@ Inspector.prototype.GAME               = 'game';
 Inspector.prototype.GAME_FPS           = 'game.fps';
 Inspector.prototype.USAGE_MEMORY       = 'usage.memory';
 Inspector.prototype.USAGE_CPU          = 'usage.cpu';
+Inspector.prototype.CHAT_MESSAGE       = 'chat.message';
 
 /**
  * Usage log frequency
@@ -94,6 +96,7 @@ Inspector.prototype.onRoomOpen = function(data)
     var room = data.room;
 
     this.trackers.room.add(new RoomTracker(this, room));
+    this.trackers.chat.add(new ChatTracker(this, room.name, room.controller.chat));
 
     this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() });
 

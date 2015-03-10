@@ -1,12 +1,14 @@
 /**
  * Base Message
  *
- * @param {Player} player
  * @param {String} content
+ * @param {SocketClient} client
+ * @param {Player} player
  */
-function BaseMessage (player, content)
+function BaseMessage (content, client, player)
 {
     this.content = typeof(content) !== 'undefined' ? content : '';
+    this.client  = typeof(client) !== 'undefined' ? client : null;
     this.player  = typeof(player) !== 'undefined' ? player : null;
 }
 
@@ -54,6 +56,7 @@ BaseMessage.prototype.serialize = function()
 {
     return {
         content: this.content.substr(0, this.maxLength),
+        client: this.client ? this.client.id : null,
         player: this.player ? this.player.id : null
     };
 };

@@ -146,7 +146,7 @@ Chat.prototype.onTalk = function(e)
     var data = e.detail,
         player = this.room.players.getById(data.player);
 
-    this.addMessage(new Message(player, data.content));
+    this.addMessage(new Message(data.content, data.client, player));
     this.refresh();
 };
 

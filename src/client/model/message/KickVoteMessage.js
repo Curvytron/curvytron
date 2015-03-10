@@ -6,7 +6,7 @@
  */
 function VoteKickMessage (player, target)
 {
-    BaseMessage.call(this, player);
+    BaseMessage.call(this, null, null, player);
 
     this.target = target;
 }
