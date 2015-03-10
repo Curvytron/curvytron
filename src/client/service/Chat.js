@@ -70,8 +70,8 @@ Chat.prototype.setPlayer = function(player)
 Chat.prototype.setRoom = function(room)
 {
     if (!this.room || !this.room.equal(room)) {
-        this.clear();
         this.room = room;
+        this.clearMessages();
     }
 };
 
@@ -155,8 +155,7 @@ Chat.prototype.onTalk = function(e)
  */
 Chat.prototype.clear = function()
 {
-    BaseChat.prototype.clear.call(this);
-
+    this.clearMessages();
     this.message = new Message();
     this.room    = null;
     this.$scope  = null;

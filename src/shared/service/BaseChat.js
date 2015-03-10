@@ -29,9 +29,9 @@ BaseChat.prototype.addMessage = function(message)
 };
 
 /**
- * Clear
+ * Clear messages
  */
-BaseChat.prototype.clear = function()
+BaseChat.prototype.clearMessages = function()
 {
     this.messages.length = 0;
 };
