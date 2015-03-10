@@ -2,11 +2,14 @@
  * Socket Client
  *
  * @param {Socket} socket
+ * @param {Number} interval
+ * @param {String} ip
  */
-function SocketClient(socket, interval)
+function SocketClient(socket, interval, ip)
 {
     BaseSocketClient.call(this, socket, interval);
 
+    this.ip      = ip;
     this.id      = null;
     this.active  = true;
     this.players = new Collection([], 'id');

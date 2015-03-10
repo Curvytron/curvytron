@@ -39,24 +39,31 @@ Server.prototype.constructor = Server;
  */
 Server.prototype.authorizationHandler = function(request, socket, head)
 {
-    return WebSocket.isWebSocket(request) ? this.onSocketConnection(new WebSocket(request, socket, head, ['websocket'], {ping: 5})) : socket.end();
+    if (!WebSocket.isWebSocket(request)) {
+        return socket.end();
+    }
+
+    var sockect = new WebSocket(request, socket, head, ['websocket'], {ping: 5});
+
+    return this.onSocketConnection(sockect, request.connection.remoteAddress);
 };
 
 /**
  * On socket connection
  *
  * @param {Socket} socket
+ * @param {String} ip
  */
-Server.prototype.onSocketConnection = function(socket)
+Server.prototype.onSocketConnection = function(socket, ip)
 {
-    var client = new SocketClient(socket, 3);
+    var client = new SocketClient(socket, 3, ip);
     this.clients.add(client);
 
     client.on('close', this.onSocketDisconnection);
     this.roomsController.attach(client);
     this.emit('client', client);
 
-    console.info('Client connected:', client.id);
+    console.info('Client %s connected from %s.', client.id, client.ip);
 };
 
 /**
