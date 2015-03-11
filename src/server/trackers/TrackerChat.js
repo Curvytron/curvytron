@@ -26,17 +26,17 @@ ChatTracker.prototype.constructor = ChatTracker;
  */
 ChatTracker.prototype.onMessage = function(message)
 {
-    var player = message.player ? message.player : null,
-        client = message.client ? message.client : null;
+    this.emit('message', {message: message, tracker: this});
+};
 
-    this.inspector.client.writePoint(
-        Inspector.prototype.CHAT_MESSAGE,
-        {
-            id: this.uniqId,
-            ip: client ? client.ip : null,
-            client: client ? client.id : null,
-            player: player ? player.name : null,
-            message: message.content
-        }
-    );
+/**
+ * @inheritDoc
+ */
+ClientTracker.prototype.serialize = function()
+{
+    var data = Tracker.prototype.serialize.call(this);
+
+    data.value = thhis.chat.messages.length;
+
+    return data;
 };

@@ -25,6 +25,7 @@ function Inspector (server, config)
     this.onGameFPS     = this.onGameFPS.bind(this);
     this.onLog         = this.onLog.bind(this);
     this.logUsage      = this.logUsage.bind(this);
+    this.onMessage     = this.onMessage.bind(this);
 
     this.server.on('client', this.onClientOpen);
     this.server.roomRepository.on('room:open', this.onRoomOpen);
@@ -47,6 +48,7 @@ Inspector.prototype.GAME_FPS           = 'game.fps';
 Inspector.prototype.USAGE_MEMORY       = 'usage.memory';
 Inspector.prototype.USAGE_CPU          = 'usage.cpu';
 Inspector.prototype.CHAT_MESSAGE       = 'chat.message';
+Inspector.prototype.CHAT_TOTAL         = 'chat.total';
 
 /**
  * Usage log frequency
@@ -93,14 +95,16 @@ Inspector.prototype.onClientClose = function(client)
  */
 Inspector.prototype.onRoomOpen = function(data)
 {
-    var room = data.room;
+    var room = data.room,
+        chatTracker = new ChatTracker(this, room.name, room.controller.chat);
 
     this.trackers.room.add(new RoomTracker(this, room));
-    this.trackers.chat.add(new ChatTracker(this, room.name, room.controller.chat));
+    this.trackers.chat.add(chatTracker);
 
     this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() });
 
     room.on('game:new', this.onGameNew);
+    chatTracker.on('message', this.onMessage);
 };
 
 /**
@@ -112,7 +116,8 @@ Inspector.prototype.onRoomClose = function(data)
 {
     var room = data.room,
         game = room.game,
-        tracker = this.trackers.room.getById(room.name);
+        tracker = this.trackers.room.getById(room.name),
+        chatTracker = this.trackers.chat.getById(room.name);
 
     room.removeListener('game:new', this.onGameNew);
 
@@ -125,6 +130,12 @@ Inspector.prototype.onRoomClose = function(data)
     if (tracker) {
         this.client.writePoint(this.ROOM, tracker.serialize());
         this.trackers.room.remove(tracker.destroy());
+    }
+
+    if (chatTracker) {
+        chatTracker.removeListener('message', this.onMessage);
+        this.client.writePoint(this.CHAT_TOTAL, tracker.serialize());
+        this.trackers.chat.remove(chatTracker.destroy());
     }
 };
 
@@ -151,7 +162,7 @@ Inspector.prototype.onGameNew = function(data)
             {
                 game: tracker.uniqId,
                 client: clientTracker.uniqId,
-                player: avatar.name,
+                player: md5(avatar.name),
                 color: avatar.color
             }
         );
@@ -206,6 +217,28 @@ Inspector.prototype.onGameAbort = function(game)
     if (tracker) {
         this.collectGameTrackerData(tracker);
     }
+};
+
+/**
+ * On message
+ *
+ * @param {Object} data
+ */
+Inspector.prototype.onMessage = function(data)
+{
+    var tracker = data.tracker,
+        message = data.message,
+        clientTracker = message.client ? this.trackers.client.getById(message.client) : null;
+
+    this.inspector.client.writePoint(
+        this.CHAT_MESSAGE,
+        {
+            id: tracker.uniqId,
+            ip: clientTracker ? md5(clientTracker.ip) : null,
+            client: client ? clientTracker.uniqId : null,
+            message: message.content
+        }
+    );
 };
 
 /**

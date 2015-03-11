@@ -21,7 +21,7 @@ ClientTracker.prototype.serialize = function()
 {
     var data = Tracker.prototype.serialize.call(this);
 
-    data.ip = this.ip;
+    data.ip = md5(this.ip);
 
     return data;
 };
