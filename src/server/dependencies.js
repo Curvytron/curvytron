@@ -7,7 +7,7 @@ var EventEmitter = require('events').EventEmitter,
     influx;
 
 try {
-    md5 = require('md5');
+    md5 = require('MD5');
 } catch (error) {
     md5 = false;
 }
