@@ -506,6 +506,7 @@ GameController.prototype.leaveGame = function()
 {
     if (this.room && this.$location.path() !== this.room.url) {
         this.repository.leave();
+        this.chat.clear();
     }
 
     this.radio.stop();
