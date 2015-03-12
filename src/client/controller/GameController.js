@@ -378,6 +378,8 @@ GameController.prototype.onSpectate = function(e)
 {
     var data = e.detail;
 
+    this.game.maxScore = data.maxScore;
+
     for (var i = this.game.avatars.items.length - 1; i >= 0; i--) {
         this.game.avatars.items[i].local = true;
         this.game.avatars.items[i].ready = true;

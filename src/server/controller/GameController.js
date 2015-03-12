@@ -186,7 +186,8 @@ GameController.prototype.attachSpectator = function(client)
         },
         events = [['spectate', {
             inRound: this.game.inRound,
-            rendered: this.game.rendered ? true : false
+            rendered: this.game.rendered ? true : false,
+            maxScore: this.game.maxScore
         }]],
         avatar, i;
 

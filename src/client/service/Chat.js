@@ -159,5 +159,4 @@ Chat.prototype.clear = function()
     this.message = new Message();
     this.room    = null;
     this.$scope  = null;
-    console.log('cleared');
 };

@@ -278,7 +278,8 @@ BaseGame.prototype.serialize = function()
 {
     return {
         name: this.name,
-        players: this.avatars.map(function () { return this.serialize(); }).items
+        players: this.avatars.map(function () { return this.serialize(); }).items,
+        maxScore: this.maxScore
     };
 };
 
