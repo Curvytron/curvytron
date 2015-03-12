@@ -136,7 +136,7 @@ Inspector.prototype.onRoomClose = function(data)
 
     if (chatTracker) {
         chatTracker.removeListener('message', this.onMessage);
-        this.client.writePoint(this.CHAT_TOTAL, tracker.serialize());
+        this.client.writePoint(this.CHAT_TOTAL, chatTracker.serialize());
         this.trackers.chat.remove(chatTracker.destroy());
     }
 };
