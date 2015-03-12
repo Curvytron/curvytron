@@ -36,7 +36,7 @@ ClientTracker.prototype.serialize = function()
 {
     var data = Tracker.prototype.serialize.call(this);
 
-    data.value = thhis.chat.messages.length;
+    data.value = this.chat.messages.length;
 
     return data;
 };

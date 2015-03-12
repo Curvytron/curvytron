@@ -230,14 +230,14 @@ Inspector.prototype.onMessage = function(data)
 {
     var tracker = data.tracker,
         message = data.message,
-        clientTracker = message.client ? this.trackers.client.getById(message.client) : null;
+        clientTracker = message.client ? this.trackers.client.getById(message.client.id) : null;
 
     this.client.writePoint(
         this.CHAT_MESSAGE,
         {
             id: tracker.uniqId,
-            ip: clientTracker ? md5(clientTracker.ip) : null,
             client: clientTracker ? clientTracker.uniqId : null,
+            player: message.player ? md5(message.player.name) : null,
             message: message.content
         }
     );
