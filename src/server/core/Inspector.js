@@ -232,7 +232,7 @@ Inspector.prototype.onMessage = function(data)
         message = data.message,
         clientTracker = message.client ? this.trackers.client.getById(message.client) : null;
 
-    this.inspector.client.writePoint(
+    this.client.writePoint(
         this.CHAT_MESSAGE,
         {
             id: tracker.uniqId,
