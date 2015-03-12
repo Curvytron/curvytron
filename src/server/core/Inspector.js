@@ -9,6 +9,8 @@ function Inspector (server, config)
     this.server = server;
     this.client = influx(config);
 
+    console.info('Inspector activated on %s:%s', config.host, config.port);
+
     this.trackers = {
         client: new Collection(),
         room:   new Collection(),
@@ -235,7 +237,7 @@ Inspector.prototype.onMessage = function(data)
         {
             id: tracker.uniqId,
             ip: clientTracker ? md5(clientTracker.ip) : null,
-            client: client ? clientTracker.uniqId : null,
+            client: clientTracker ? clientTracker.uniqId : null,
             message: message.content
         }
     );

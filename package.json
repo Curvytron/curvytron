@@ -48,7 +48,7 @@
   "optionalDependencies": {
     "influx": "^3.2.*",
     "usage": "^0.5.*",
-    "MD5": "^1.2.*",
+    "MD5": "^1.2.*"
   },
   "scripts": {
     "install": "bower install"

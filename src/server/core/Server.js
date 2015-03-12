@@ -24,7 +24,7 @@ function Server(config)
     this.server.on('upgrade', this.authorizationHandler);
     this.server.listen(config.port);
 
-    console.info('Listening on: %s', config.port);
+    console.info('Listening on port %s', config.port);
 }
 
 Server.prototype = Object.create(EventEmitter.prototype);
