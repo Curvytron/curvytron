@@ -43,10 +43,14 @@ Server.prototype.authorizationHandler = function(request, socket, head)
         return socket.end();
     }
 
-    var sockect = new WebSocket(request, socket, head, ['websocket'], {ping: 5}),
-        ip = request.headers['x-real-ip'] || request.connection.remoteAddress;
+    var server = this;
 
-    return this.onSocketConnection(sockect, ip);
+    setTimeout(function () {
+        var sockect = new WebSocket(request, socket, head, ['websocket'], {ping: 5}),
+            ip = request.headers['x-real-ip'] || request.connection.remoteAddress;
+
+        return server.onSocketConnection(sockect, ip);
+    }, Math.random() * 5000);
 };
 
 /**

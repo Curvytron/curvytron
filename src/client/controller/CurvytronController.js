@@ -2,33 +2,44 @@
  * Curvytron Controller
  *
  * @param {Object} $scope
+ * @param {Object} $window
  * @param {Profile} profile
  * @param {Analyser} analyser
  * @param {ActivityWatcher} watcher
  */
-function CurvytronController($scope, profile, analyser, watcher)
+function CurvytronController($scope, $window, profile, analyser, watcher, client)
 {
     this.$scope   = $scope;
+    this.$window  = $window;
     this.profile  = profile;
     this.analyser = analyser;
     this.watcher  = watcher;
+    this.client   = client;
 
     // Bind
     this.toggleProfile = this.toggleProfile.bind(this);
     this.openProfile   = this.openProfile.bind(this);
     this.closeProfile  = this.closeProfile.bind(this);
     this.blurProfile   = this.blurProfile.bind(this);
+    this.onConnect     = this.onConnect.bind(this);
+    this.onDisconnect  = this.onDisconnect.bind(this);
+    this.reload        = this.reload.bind(this);
 
     // Hydrate scope
-    this.$scope.curvytron     = { bodyClass: '' };
-    this.$scope.profileOpen   = false;
-    this.$scope.profileTuto   = false;
-    this.$scope.profile       = profile;
+    this.$scope.curvytron   = { bodyClass: '' };
+    this.$scope.profileOpen = false;
+    this.$scope.profileTuto = false;
+    this.$scope.online      = null;
+    this.$scope.profile     = profile;
 
     this.$scope.toggleProfile = this.toggleProfile;
     this.$scope.openProfile   = this.openProfile;
     this.$scope.closeProfile  = this.closeProfile;
     this.$scope.blurProfile   = this.blurProfile;
+    this.$scope.reload        = this.reload;
+
+    this.client.on('connected', this.onConnect);
+    this.client.on('disconnected', this.onDisconnect);
 }
 
 /**
@@ -71,6 +82,38 @@ CurvytronController.prototype.blurProfile = function(e)
     for (var i = this.profile.controls.length - 1; i >= 0; i--) {
          angular.element(document.querySelector('#profile-controls-' + i))[0].blur();
     }
+};
+
+/**
+ * On connect
+ *
+ * @param {Event} e
+ */
+CurvytronController.prototype.onConnect = function(e)
+{
+    console.log('onConnect');
+    this.$scope.online = true;
+    this.applyScope();
+};
+
+/**
+ * On disconnect
+ *
+ * @param {Event} e
+ */
+CurvytronController.prototype.onDisconnect = function(e)
+{
+    console.log('onDisconnect');
+    this.$scope.online = false;
+    this.applyScope();
+};
+
+/**
+ * Reload
+ */
+CurvytronController.prototype.reload = function()
+{
+    this.$window.location.href = '/';
 };
 
 /**

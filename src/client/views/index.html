@@ -40,7 +40,21 @@
             <ng-include ng-if="profile" src="'js/views/profile/link.html'"></ng-include>
         </header>
 
-        <div id="main" ng-view></div>
+        <div id="connecting" ng-if="online === null" class="container">
+            <h3>Connecting...</h3>
+        </div>
+
+        <div id="error" ng-if="online === false" class="container">
+            <section class="centered">
+                <h3>You are not connected to Curvytron server :(</h3>
+                <button ng-click="reload()" class="btn btn-default">
+                    Try again now!
+                </button>
+            </section>
+        </div>
+
+        <div id="main" ng-if="online === true" ng-view></div>
+
 
         <footer>
             <div class="container">

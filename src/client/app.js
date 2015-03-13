@@ -15,7 +15,7 @@ curvytronApp.service('Analyser', ['$rootScope', Analyser]);
 
 curvytronApp.controller(
     'CurvytronController',
-    ['$scope', 'Profile', 'Analyser', 'ActivityWatcher', CurvytronController]
+    ['$scope', '$window', 'Profile', 'Analyser', 'ActivityWatcher', 'SocketClient', CurvytronController]
 );
 
 curvytronApp.controller(
