@@ -1,13 +1,20 @@
 <div id="feed">
     <div ng-repeat="message in messages" class="one-message">
-        <strong style="color: {{ message.player.color ? message.player.color : '#75858c' }};">
+        <strong style="color: {{ message.getPlayerColor() }};">
             <span ng-if="message.getPlayerIcon()" class="message-icon {{ message.getPlayerIcon() }}"></span>
-            {{ message.getPlayerName() }}:
+            <span ng-if="!message.getPlayerIcon()">{{ message.getPlayerName() }}:</span>
         </strong>
         <span class="message-content" ng-switch="message.type">
             <!-- Vote Kick -->
             <span ng-switch-when="vote-kick">
-                A new vote has been started to kick <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>.
+                <span ng-if="!message.target.kicked">
+                    Do you want to kick <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>?
+                    <span class="action" ng-click="kickPlayer(message.target)">Yes!</span>
+                </span>
+                <span ng-if="message.target.kicked">
+                    Ongoing vote to kick <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>.
+                    <span class="action" ng-click="kickPlayer(message.target)">Cancel?</span>
+                </span>
             </span>
 
             <!-- Kick -->

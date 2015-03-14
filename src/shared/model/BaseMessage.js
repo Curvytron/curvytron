@@ -3,13 +3,11 @@
  *
  * @param {String} content
  * @param {SocketClient} client
- * @param {Player} player
  */
-function BaseMessage (content, client, player)
+function BaseMessage(content)
 {
-    this.content = typeof(content) !== 'undefined' ? content : '';
-    this.client  = typeof(client) !== 'undefined' ? client : null;
-    this.player  = typeof(player) !== 'undefined' ? player : null;
+    this.content  = content;
+    this.creation = new Date().getTime();
 }
 
 /**
@@ -28,26 +26,6 @@ BaseMessage.prototype.clear = function()
 };
 
 /**
- * Get player name
- *
- * @return {String}
- */
-BaseMessage.prototype.getPlayerName = function()
-{
-    return this.player ? this.player.name : 'Anonymous';
-};
-
-/**
- * Get player icon
- *
- * @return {String}
- */
-BaseMessage.prototype.getPlayerIcon = function()
-{
-    return this.player && typeof(this.player.icon) !== 'undefined' ? this.player.icon : null;
-};
-
-/**
  * Serialize
  *
  * @return {Object}
@@ -55,8 +33,7 @@ BaseMessage.prototype.getPlayerIcon = function()
 BaseMessage.prototype.serialize = function()
 {
     return {
-        content: this.content.substr(0, this.maxLength),
-        client: this.client ? this.client.id : null,
-        player: this.player ? this.player.id : null
+        content: this.content,
+        creation: this.creation,
     };
 };

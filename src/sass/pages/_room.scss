@@ -43,7 +43,7 @@
                 max-height: 270px;
                 overflow-y: auto;
                 background: #1c1c1c;
-                color:  #ffffff;
+                color: #ffffff;
 
                 .one-message {
                     margin: 0 15px;
@@ -54,6 +54,15 @@
 
                     .message-icon {
                         color: #75858c;
+                    }
+                }
+
+                .action {
+                    color: darken(#ffffff, 30%);
+                    cursor: pointer;
+
+                    &:hover {
+                        color: #ffffff;
                     }
                 }
             }

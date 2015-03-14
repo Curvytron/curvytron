@@ -8,7 +8,7 @@ function Chat(client)
     BaseChat.call(this);
 
     this.client  = client;
-    this.message = new Message();
+    this.message = new Message(null, this.client);
     this.room    = null;
     this.$scope  = null;
     this.feed    = null;
@@ -144,9 +144,9 @@ Chat.prototype.talk = function()
 Chat.prototype.onTalk = function(e)
 {
     var data = e.detail,
-        player = this.room.players.getById(data.player);
+        player = this.room.getPlayerByClient(data.client);
 
-    this.addMessage(new Message(data.content, data.client, player));
+    this.addMessage(new Message(data.content, data.client, player ? player : {name: data.name, color: data.color}));
     this.refresh();
 };
 
@@ -156,7 +156,7 @@ Chat.prototype.onTalk = function(e)
 Chat.prototype.clear = function()
 {
     this.clearMessages();
-    this.message = new Message();
+    this.message = new Message(null, this.client);
     this.room    = null;
     this.$scope  = null;
 };

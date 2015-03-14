@@ -18,7 +18,7 @@ BaseChat.prototype.constructor = BaseChat;
  */
 BaseChat.prototype.addMessage = function(message)
 {
-    if (message.content.length === 0) {
+    if (!this.isValid(message)) {
         return false;
     }
 
@@ -26,6 +26,18 @@ BaseChat.prototype.addMessage = function(message)
     this.emit('message', message);
 
     return true;
+};
+
+/**
+ * Is message valid?
+ *
+ * @param {Message} message
+ *
+ * @return {Boolean}
+ */
+BaseChat.prototype.isValid = function(message)
+{
+    return message.content.length > 0;
 };
 
 /**
