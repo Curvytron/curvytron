@@ -53,12 +53,24 @@
                     word-wrap: break-word;
 
                     .message-icon {
-                        color: #75858c;
+                        color: $color-gray;
+                    }
+
+                    .details {
+                        @include transition(margin-left 100ms ease-in-out);
+                        color: $color-gray;
+                        margin-left: -100px;
+                        margin-right: 5px;
+                        float: left;
+                    }
+
+                    &:hover .details {
+                        margin-left: 0;
                     }
                 }
 
                 .action {
-                    color: darken(#ffffff, 30%);
+                    color: $color-gray;
                     cursor: pointer;
 
                     &:hover {

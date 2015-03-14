@@ -1,5 +1,8 @@
 <div id="feed">
-    <div ng-repeat="message in messages" class="one-message" title="{{ message.getDate() }}">
+    <div ng-repeat="message in messages" class="one-message">
+        <div class="details">
+            <span class="time">{{ message.getDate() }}</span>
+        </div>
         <strong style="color: {{ message.getPlayerColor() }};">
             <span ng-if="message.getPlayerIcon()" class="message-icon {{ message.getPlayerIcon() }}"></span>
             <span ng-if="!message.getPlayerIcon()">{{ message.getPlayerName() }}:</span>
