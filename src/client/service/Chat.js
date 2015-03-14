@@ -144,9 +144,10 @@ Chat.prototype.talk = function()
 Chat.prototype.onTalk = function(e)
 {
     var data = e.detail,
-        player = this.room.getPlayerByClient(data.client);
+        player = this.room.getPlayerByClient(data.client),
+        message = new Message(data.content, data.client, player ? player : {name: data.name, color: data.color}, data.creation);
 
-    this.addMessage(new Message(data.content, data.client, player ? player : {name: data.name, color: data.color}));
+    this.addMessage(message);
     this.refresh();
 };
 

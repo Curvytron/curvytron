@@ -7,7 +7,7 @@
 function BaseMessage(content)
 {
     this.content  = content;
-    this.creation = new Date().getTime();
+    this.creation = new Date();
 }
 
 /**
@@ -34,6 +34,6 @@ BaseMessage.prototype.serialize = function()
 {
     return {
         content: this.content,
-        creation: this.creation,
+        creation: this.creation.getTime(),
     };
 };

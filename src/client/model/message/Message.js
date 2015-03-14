@@ -4,12 +4,18 @@
  * @param {String} content
  * @param {SocketClient} client
  * @param {Player} player
+ * @param {Number} creation
  */
-function Message (content, client, player)
+function Message (content, client, player, creation)
 {
-    BaseMessage.call(this, content, client);
+    BaseMessage.call(this, content);
 
-    this.player = player;
+    this.client   = client;
+    this.player   = player;
+
+    if (typeof(creation) === 'number') {
+        this.creation = new Date(creation);
+    }
 }
 
 Message.prototype = Object.create(BaseMessage.prototype);
@@ -74,4 +80,18 @@ Message.prototype.getPlayerColor = function()
 Message.prototype.serialize = function()
 {
     return {content: this.content};
+};
+
+/**
+ * Get date to text
+ *
+ * @return {String}
+ */
+Message.prototype.getDate = function()
+{
+    if (!this.creation) {
+        return null;
+    }
+
+    return  this.creation.getHours() + ':' + this.creation.getMinutes();
 };
