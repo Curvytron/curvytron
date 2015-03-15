@@ -29,7 +29,7 @@ function CurvytronController($scope, $window, profile, analyser, watcher, client
     this.$scope.curvytron   = { bodyClass: '' };
     this.$scope.profileOpen = false;
     this.$scope.profileTuto = false;
-    this.$scope.online      = null;
+    this.$scope.status      = 'connecting';
     this.$scope.profile     = profile;
 
     this.$scope.toggleProfile = this.toggleProfile;
@@ -91,8 +91,7 @@ CurvytronController.prototype.blurProfile = function(e)
  */
 CurvytronController.prototype.onConnect = function(e)
 {
-    console.log('onConnect');
-    this.$scope.online = true;
+    this.$scope.status = 'online';
     this.applyScope();
 };
 
@@ -103,8 +102,7 @@ CurvytronController.prototype.onConnect = function(e)
  */
 CurvytronController.prototype.onDisconnect = function(e)
 {
-    console.log('onDisconnect');
-    this.$scope.online = false;
+    this.$scope.status = 'disconnected';
     this.applyScope();
 };
 
