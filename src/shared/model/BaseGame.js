@@ -64,7 +64,14 @@ BaseGame.prototype.warmdownTime = 5000;
  *
  * @type {Number}
  */
-BaseGame.prototype.spawnMargin = 0.2;
+BaseGame.prototype.spawnMargin = 0.05;
+
+/**
+ * Angle margin from borders
+ *
+ * @type {Number}
+ */
+BaseGame.prototype.spawnAngleMargin = 0.3;
 
 /**
  * Update
