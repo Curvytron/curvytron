@@ -12,10 +12,12 @@ function Chat(client)
     this.room    = null;
     this.$scope  = null;
     this.feed    = null;
+    this.auto    = true;
 
     this.talk       = this.talk.bind(this);
     this.onTalk     = this.onTalk.bind(this);
     this.scrollDown = this.scrollDown.bind(this);
+    this.onActivity = this.onActivity.bind(this);
 
     this.attachEvents();
 }
@@ -88,6 +90,8 @@ Chat.prototype.setScope = function($scope)
     this.$scope.currentMessage   = this.message;
     this.$scope.messageMaxLength = Message.prototype.maxLength;
 
+    this.feed.addEventListener('scroll', this.onActivity);
+
     setTimeout(this.scrollDown, 0);
 };
 
@@ -102,7 +106,9 @@ Chat.prototype.refresh = function()
 
     }
 
-    this.scrollDown();
+    if (this.auto) {
+        this.scrollDown();
+    }
 };
 
 /**
@@ -129,7 +135,6 @@ Chat.prototype.talk = function()
             function (result) {
                 if (result.success) {
                     chat.message.clear();
-                    chat.refresh();
                 } else {
                     console.error('Could not send %s', chat.message);
                 }
@@ -140,6 +145,8 @@ Chat.prototype.talk = function()
 
 /**
  * On talk
+ *
+ * @param {Event} e
  */
 Chat.prototype.onTalk = function(e)
 {
@@ -152,11 +159,29 @@ Chat.prototype.onTalk = function(e)
 };
 
 /**
+ * On activity
+ *
+ * @param {Event} e
+ */
+Chat.prototype.onActivity = function(e)
+{
+    if (this.feed) {
+        this.auto = this.feed.scrollTop === this.feed.scrollHeight - this.feed.clientHeight;
+    }
+};
+
+/**
  * Clear
  */
 Chat.prototype.clear = function()
 {
     this.clearMessages();
+
+    if (this.feed) {
+        this.feed.removeEventListener('scroll', this.onActivity);
+        this.feed = null;
+    }
+
     this.message = new Message(null, this.client);
     this.room    = null;
     this.$scope  = null;
