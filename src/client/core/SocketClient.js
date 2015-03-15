@@ -77,8 +77,6 @@ SocketClient.prototype.onClose = function(e)
     this.pingLogger.stop();
 
     this.emit('disconnected');
-
-    throw 'Connexion lost';
 };
 
 /**
@@ -98,5 +96,9 @@ SocketClient.prototype.sendPing = function(ping)
  */
 SocketClient.prototype.onError = function (e)
 {
-    throw e;
+    console.error(e);
+
+    if (!this.connected) {
+        this.onClose();
+    }
 };
