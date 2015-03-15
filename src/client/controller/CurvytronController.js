@@ -102,7 +102,8 @@ CurvytronController.prototype.onConnect = function(e)
  */
 CurvytronController.prototype.onDisconnect = function(e)
 {
-    this.$scope.status = 'disconnected';
+    this.$scope.status    = 'disconnected';
+    this.$scope.curvytron = { bodyClass: '' };
     this.applyScope();
 };
 
