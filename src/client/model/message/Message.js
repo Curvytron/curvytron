@@ -93,5 +93,16 @@ Message.prototype.getDate = function()
         return null;
     }
 
-    return  this.creation.getHours() + ':' + this.creation.getMinutes();
+    var hours = this.creation.getHours().toString(),
+        minutes = this.creation.getMinutes().toString();
+
+    if (hours.length === 1) {
+        hours = '0' + hours;
+    }
+
+    if (minutes.length === 1) {
+        minutes = '0' + minutes;
+    }
+
+    return hours + ':' + minutes;
 };

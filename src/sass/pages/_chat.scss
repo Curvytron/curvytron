@@ -37,15 +37,11 @@
         }
 
         .details {
-            @include transition(margin-left 100ms ease-in-out);
             color: $color-gray;
-            margin-left: -100px;
             margin-right: 5px;
             float: left;
-        }
-
-        &:hover .details {
-            margin-left: 0;
+            font-size: 13px;
+            line-height: 22px;
         }
     }
 
