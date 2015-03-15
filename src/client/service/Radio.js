@@ -17,7 +17,7 @@ function Radio (profile)
  *
  * @type {String}
  */
-Radio.prototype.source = 'http://streaming.radionomy.com/Curvytron';
+Radio.prototype.source = 'http://streaming.radionomy.com/Curvyradio';
 
 /**
  * Volume
