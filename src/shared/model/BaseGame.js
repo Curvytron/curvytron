@@ -60,6 +60,13 @@ BaseGame.prototype.warmupTime = 3000;
 BaseGame.prototype.warmdownTime = 5000;
 
 /**
+ * Margin from borders
+ *
+ * @type {Number}
+ */
+BaseGame.prototype.spawnMargin = 0.2;
+
+/**
  * Update
  *
  * @param {Number} step

@@ -230,7 +230,7 @@ Game.prototype.onRoundNew = function()
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         if (avatar.present) {
-            avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
+            avatar.setPosition(this.world.getRandomPosition(avatar.radius, this.spawnMargin));
             avatar.setAngle(Math.random() * Math.PI * 2);
         } else {
             this.deaths.add(avatar);
