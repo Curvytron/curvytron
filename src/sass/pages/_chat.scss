@@ -1,0 +1,60 @@
+#feed {
+    overflow-y: auto;
+    background: #1c1c1c;
+    color: #ffffff;
+    padding: 15px 0;
+
+    &::-webkit-scrollbar {
+        width: $aside-border-size;
+        height: 1px;
+        border-left: 0;
+        @include gradient($header-background-from, $header-background-to);
+    }
+
+    &::-webkit-scrollbar-track {
+        background: none;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #FFF;
+        border-radius: 0;
+    }
+
+    .welcome {
+        text-transform: uppercase;
+        font-size: 16px;
+    }
+
+    .one-message {
+        margin: 0 15px;
+        padding: 3px 0;
+        line-height: 22px;
+        font-size: 16px;
+        word-wrap: break-word;
+
+        .message-icon {
+            color: $color-gray;
+        }
+
+        .details {
+            @include transition(margin-left 100ms ease-in-out);
+            color: $color-gray;
+            margin-left: -100px;
+            margin-right: 5px;
+            float: left;
+        }
+
+        &:hover .details {
+            margin-left: 0;
+        }
+    }
+
+    .action {
+        color: $color-gray;
+        cursor: pointer;
+
+        &:hover {
+            color: #ffffff;
+        }
+    }
+}

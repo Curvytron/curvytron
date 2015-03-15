@@ -37,46 +37,9 @@
             margin-top: 50px;
 
             #feed {
-                padding: 15px 0;
                 position: relative;
                 height: 270px;
                 max-height: 270px;
-                overflow-y: auto;
-                background: #1c1c1c;
-                color: #ffffff;
-
-                .one-message {
-                    margin: 0 15px;
-                    font-size: 16px;
-                    line-height: 22px;
-                    padding: 3px 0;
-                    word-wrap: break-word;
-
-                    .message-icon {
-                        color: $color-gray;
-                    }
-
-                    .details {
-                        @include transition(margin-left 100ms ease-in-out);
-                        color: $color-gray;
-                        margin-left: -100px;
-                        margin-right: 5px;
-                        float: left;
-                    }
-
-                    &:hover .details {
-                        margin-left: 0;
-                    }
-                }
-
-                .action {
-                    color: $color-gray;
-                    cursor: pointer;
-
-                    &:hover {
-                        color: #ffffff;
-                    }
-                }
             }
 
             .action-line {

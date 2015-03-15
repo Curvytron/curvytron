@@ -467,39 +467,8 @@
             position: relative;
             height: 195px;
             overflow-y: auto;
-            padding: 15px 20px 15px;
-            background: #1c1c1c;
+            //padding: 15px 20px 15px;
             // border-right: $aside-border-size solid lighten($aside-background, 8%);
-
-            &::-webkit-scrollbar {
-                width: $aside-border-size;
-                height: 1px;
-                border-left: 0;
-                @include gradient($header-background-from, $header-background-to);
-            }
-            &::-webkit-scrollbar-track {
-                background: none;
-            }
-            &::-webkit-scrollbar-thumb {
-                background: #FFF;
-                border-radius: 0;
-            }
-
-            .welcome {
-                text-transform: uppercase;
-                font-size: 16px;
-            }
-
-            .one-message {
-                font-size: 16px;
-                line-height: 22px;
-                padding: 3px 0;
-                word-wrap: break-word;
-
-                .message-icon {
-                    color: $color-gray;
-                }
-            }
         }
 
         .action-line {
