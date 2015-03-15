@@ -12,7 +12,6 @@ function Chat(client)
     this.room    = null;
     this.$scope  = null;
     this.feed    = null;
-    this.muted   = [];
 
     this.talk       = this.talk.bind(this);
     this.onTalk     = this.onTalk.bind(this);
@@ -148,22 +147,8 @@ Chat.prototype.onTalk = function(e)
         player = this.room.getPlayerByClient(data.client),
         message = new Message(data.content, data.client, player ? player : {name: data.name, color: data.color}, data.creation);
 
-    if (!this.isMuted(data.client)) {
-        this.addMessage(message);
-        this.refresh();
-    }
-};
-
-/**
- * Is the id muted?
- *
- * @param {String} id
- *
- * @return {Boolean}
- */
-Chat.prototype.isMuted = function(id)
-{
-    return this.muted.indexOf(id) >= 0;
+    this.addMessage(message);
+    this.refresh();
 };
 
 /**
@@ -175,5 +160,4 @@ Chat.prototype.clear = function()
     this.message = new Message(null, this.client);
     this.room    = null;
     this.$scope  = null;
-    this.muted   = [];
 };
