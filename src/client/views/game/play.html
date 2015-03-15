@@ -32,6 +32,9 @@
             <div class="chat-wrapper" ng-include="'js/views/chat/chat.html'" onload="chatLoaded()"></div>
         </aside>
         <div id="col-right">
+            <div class="spectating" ng-if="spectating">
+                <p><i class="icon-viewer"></i> You are in spectator mode</p>
+            </div>
             <div class="waiting" ng-if="!game.isReady()">
                 <p>Waiting for players...</p>
                 <ul>

@@ -68,6 +68,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.$scope.chatLoaded  = this.onChatLoaded;
     this.$scope.roundWinner = null;
     this.$scope.gameWinner  = null;
+    this.$scope.spectating  = false;
     this.$scope.spectators  = 0;
 
     this.repository.start();
@@ -377,6 +378,8 @@ GameController.prototype.onDie = function(e)
 GameController.prototype.onSpectate = function(e)
 {
     var data = e.detail;
+
+    this.$scope.spectating = true;
 
     this.game.maxScore = data.maxScore;
 

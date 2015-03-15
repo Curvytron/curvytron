@@ -306,6 +306,19 @@
             }
         }
 
+        .spectating {
+            position:   absolute;
+            top: 40px;
+            width: 100%;
+            z-index: 120;
+            @include opacity(30);
+
+            p {
+                font-size: $font-size-h1;
+                color: #FFF;
+            }
+        }
+
         .tie-break {
             font-size: $font-size-h1;
             position:   absolute;
