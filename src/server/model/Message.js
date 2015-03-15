@@ -12,10 +12,6 @@ function Message (content, client)
     this.name   = null;
     this.color  = null;
 
-    this.buildPlayer = this.buildPlayer.bind(this);
-
-    this.client.on('close', this.buildPlayer);
-
     this.buildPlayer();
 }
 
@@ -43,6 +39,10 @@ Message.prototype.buildPlayer = function()
 Message.prototype.serialize = function()
 {
     var data = BaseMessage.prototype.serialize.call(this);
+
+    if (this.name === null) {
+        this.buildPlayer();
+    }
 
     data.client = this.client.id;
     data.name   = this.name;

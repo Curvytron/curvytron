@@ -55,10 +55,12 @@ BaseChat.prototype.clearMessages = function()
  */
 BaseChat.prototype.serialize = function(max)
 {
-    var length = typeof(max) === 'number' ? Math.min(max, this.messages.length) : this.messages.length,
+    var length = this.messages.length,
+        limit = typeof(max) === 'number' ? Math.min(max, length) : length,
+        min = length - limit,
         messages = new Array(length);
 
-    for (var i = length - 1; i >= 0; i--) {
+    for (var i = length - 1; i >= min; i--) {
         messages[i] = this.messages[i].serialize();
     }
 
