@@ -34,6 +34,6 @@ BaseMessage.prototype.serialize = function()
 {
     return {
         content: this.content,
-        creation: this.creation.getTime(),
+        creation: this.creation.getTime()
     };
 };

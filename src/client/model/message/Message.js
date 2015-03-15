@@ -49,7 +49,7 @@ Message.prototype.defaultName = 'Anonymous';
  */
 Message.prototype.getPlayerName = function()
 {
-    return this.player ? this.player.name : this.defaultName;
+    return typeof(this.player.name) === 'string' ? this.player.name : this.defaultName;
 };
 
 /**
@@ -59,7 +59,7 @@ Message.prototype.getPlayerName = function()
  */
 Message.prototype.getPlayerIcon = function()
 {
-    return this.player && typeof(this.player.icon) !== 'undefined' ? this.player.icon : null;
+    return typeof(this.player.icon) !== 'undefined' ? this.player.icon : null;
 };
 
 /**
@@ -69,7 +69,7 @@ Message.prototype.getPlayerIcon = function()
  */
 Message.prototype.getPlayerColor = function()
 {
-    return this.player ? this.player.color : this.defaultColor;
+    return typeof(this.player.color) === 'string' ? this.player.color : this.defaultColor;
 };
 
 /**
