@@ -10,13 +10,16 @@
         <span class="message-content" ng-switch="message.type">
             <!-- Vote Kick -->
             <span ng-switch-when="vote-kick">
-                <span ng-if="!message.target.kicked">
+                <span ng-if="!message.target.local && !message.target.kicked">
                     Do you want to kick <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>?
                     <span class="action" ng-click="kickPlayer(message.target)">Yes!</span>
                 </span>
-                <span ng-if="message.target.kicked">
+                <span ng-if="!message.target.local && message.target.kicked">
                     Ongoing vote to kick <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>.
                     <span class="action" ng-click="kickPlayer(message.target)">Cancel?</span>
+                </span>
+                <span ng-if="message.target.local">
+                    Ongoing vote to kick <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>.
                 </span>
             </span>
 
