@@ -33,12 +33,14 @@ function Inspector (server, config)
     this.server.roomRepository.on('room:open', this.onRoomOpen);
     this.server.roomRepository.on('room:close', this.onRoomClose);
 
+    this.client.writePoint(this.DEPLOY);
     this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() });
     this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() });
 
     this.logInterval = setInterval(this.onLog, this.logFrequency);
 }
 
+Inspector.prototype.DEPLOY             = 'deploy';
 Inspector.prototype.CLIENT             = 'client';
 Inspector.prototype.CLIENTS            = 'client.total';
 Inspector.prototype.CLIENT_PLAYER      = 'client.player';
