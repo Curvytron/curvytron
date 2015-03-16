@@ -64,14 +64,34 @@ BonusManager.prototype.popBonus = function ()
         this.popingTimeout = null;
 
         if (this.bonuses.count() < this.bonusCap) {
-            var position = this.game.world.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
-                bonus = this.getRandomBonus(position);
+            var position = this.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
+                bonus    = this.getRandomBonus(position);
 
             this.add(bonus);
         }
 
         this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
     }
+};
+
+/**
+ * Get random position
+ *
+ * @param {Number} radius
+ * @param {Number} border
+ *
+ * @return {Array}
+ */
+BonusManager.prototype.getRandomPosition = function(radius, border)
+{
+    var margin = radius + border * this.game.world.size,
+        point = this.game.world.getRandomPoint(margin);
+
+    while (!this.game.world.testBody(new Body(point, margin)) || !this.world.testBody(new Body(point, margin))) {
+        point = this.game.world.getRandomPoint(margin);
+    }
+
+    return point;
 };
 
 /**
@@ -171,4 +191,13 @@ BonusManager.prototype.getRandomBonus = function(position)
     }
 
     return bonuses[bonuses.length-1];
+};
+
+/**
+ * Update size
+ */
+BonusManager.prototype.setSize = function(size)
+{
+    this.world.clear();
+    this.world = new World(this.game.size, 1);
 };

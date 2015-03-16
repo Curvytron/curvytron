@@ -199,8 +199,9 @@ Game.prototype.setSize = function(size)
     BaseGame.prototype.setSize.call(this, size);
 
     this.world.clear();
-
     this.world = new World(this.size);
+
+    this.bonusManager.setSize(size);
 };
 
 /**
