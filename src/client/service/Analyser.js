@@ -81,8 +81,8 @@ Analyser.prototype.getTitle = function(controller, params)
  */
 Analyser.prototype.sendPageView = function(page, title)
 {
-    ga('send', 'pageview', {
-        page: page,
-        title: title
-    });
+    // ga('send', 'pageview', {
+    //     page: page,
+    //     title: title
+    // });
 };
