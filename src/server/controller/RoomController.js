@@ -23,6 +23,7 @@ function RoomController(room)
     this.onVoteNew     = this.onVoteNew.bind(this);
     this.onVoteClose   = this.onVoteClose.bind(this);
     this.onKick        = this.onKick.bind(this);
+    this.checkForClose = this.checkForClose.bind(this);
 
     this.callbacks = {
         onTalk: function (data) { controller.onTalk(this, data.data, data.callback); },
@@ -45,6 +46,13 @@ function RoomController(room)
 
 RoomController.prototype = Object.create(EventEmitter.prototype);
 RoomController.prototype.constructor = RoomController;
+
+/**
+ * Time before closing an empty room
+ *
+ * @type {Number}
+ */
+RoomController.prototype.timeToClose = 5000;
 
 /**
  * Load room
@@ -205,6 +213,16 @@ RoomController.prototype.onClientRemove = function(client)
 
     client.players.clear();
 
+    if (this.room.players.isEmpty()) {
+        setTimeout(this.checkForClose, this.timeToClose);
+    }
+};
+
+/**
+ * Check is room is empty and shoul be closed
+ */
+RoomController.prototype.checkForClose = function()
+{
     if (this.room.players.isEmpty()) {
         this.room.close();
     }
