@@ -1,4 +1,4 @@
-var curvytronApp = angular.module('curvytronApp', ['ngRoute', 'ngCookies', 'colorpicker.module']),
+var curvytronApp = angular.module('curvytronApp', ['ngRoute', 'ngCookies', 'colorpicker.module','angulartics', 'angulartics.google.analytics']),
     gamepadListener = new GamepadListener({analog: false, deadZone: 0.4});
 
 gamepadListener.start();

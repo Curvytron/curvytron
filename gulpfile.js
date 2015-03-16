@@ -35,7 +35,9 @@ var fs        = require('fs'),
             './bower_components/tom32i-option-resolver.js/dist/option-resolver.min.js',
             './bower_components/tom32i-gamepad.js/dist/gamepad.min.js',
             './bower_components/tom32i-key-mapper.js/dist/key-mapper.min.js',
-            './bower_components/tom32i-asset-loader.js/dist/asset-loader.min.js'
+            './bower_components/tom32i-asset-loader.js/dist/asset-loader.min.js',
+            './bower_components/angulartics/dist/angulartics.min.js',
+            './bower_components/angulartics/dist/angulartics-ga.min.js'
         ],
         recipes = {
             server: require('./recipes/server.json'),
