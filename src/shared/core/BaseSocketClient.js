@@ -104,7 +104,7 @@ BaseSocketClient.prototype.attachEvents = function()
  */
 BaseSocketClient.prototype.detachEvents = function()
 {
-    this.socket.removeEventListener('mesage', this.onMessage);
+    this.socket.removeEventListener('message', this.onMessage);
     this.socket.removeEventListener('close', this.onClose);
 
     this.removeListener('ping', this.onPing);

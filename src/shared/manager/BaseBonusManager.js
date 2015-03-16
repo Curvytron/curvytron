@@ -35,12 +35,15 @@ BaseBonusManager.prototype.bonusPopingTime = 3000;
  *
  * @type {Number}
  */
-BaseBonusManager.prototype.bonusPopingMargin = 0.02;
+BaseBonusManager.prototype.bonusPopingMargin = 0.01;
 
 /**
  * Start
  */
-BaseBonusManager.prototype.start = function() {};
+BaseBonusManager.prototype.start = function()
+{
+    this.clear();
+};
 
 /**
  * Stop

@@ -16,7 +16,14 @@ BonusEnemyStraightAngle.prototype.constructor = BonusEnemyStraightAngle;
  *
  * @type {Number}
  */
-BonusEnemyStraightAngle.prototype.duration = 7500;
+BonusEnemyStraightAngle.prototype.duration = 5000;
+
+/**
+ * Probability
+ *
+ * @type {Number}
+ */
+BonusEnemyStraightAngle.prototype.probability = 0.6;
 
 /**
  * Get effects

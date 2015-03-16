@@ -13,6 +13,7 @@ function RoomController(room)
     this.clients     = new Collection();
     this.socketGroup = new SocketGroup(this.clients);
     this.kickManager = new KickManager(this);
+    this.chat        = new Chat();
 
     this.onPlayerJoin  = this.onPlayerJoin.bind(this);
     this.onPlayerLeave = this.onPlayerLeave.bind(this);
@@ -170,9 +171,16 @@ RoomController.prototype.removePlayer = function(player)
  */
 RoomController.prototype.onClientAdd = function(client)
 {
-    var events = [];
+    var messages = this.chat.serialize(100),
+        events = new Array(messages.length);
 
     client.players.clear();
+
+    for (var i = messages.length - 1; i >= 0; i--) {
+        events[i] = ['room:talk', messages[i]];
+    }
+
+    client.addEvents(events);
 
     if (this.room.game) {
         this.room.game.controller.attach(client);
@@ -197,7 +205,7 @@ RoomController.prototype.onClientRemove = function(client)
 
     client.players.clear();
 
-    if (this.clients.isEmpty()) {
+    if (this.room.players.isEmpty()) {
         this.room.close();
     }
 };
@@ -286,8 +294,8 @@ RoomController.prototype.onPlayerRemove = function(client, data, callback)
  */
 RoomController.prototype.onTalk = function(client, data, callback)
 {
-    var message = new Message(client.players.getById(data.player), data.content),
-        success = message.content.length > 0;
+    var message = new Message(data.content, client),
+        success = this.chat.addMessage(message);
 
     callback({success: success});
 
@@ -366,7 +374,7 @@ RoomController.prototype.onReady = function(client, data, callback)
             this.room.newGame();
         }
     } else {
-        callback({success: false});
+        callback({success: false, error: 'Player with id "' + data.player + '" not found'});
     }
 };
 

@@ -10,6 +10,7 @@ function Game(room)
     this.world      = new World(this.size);
     this.deaths     = new Collection([], 'id');
     this.controller = new GameController(this);
+    this.winner     = null;
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -141,16 +142,6 @@ Game.prototype.checkRoundEnd = function()
 };
 
 /**
- * Is ready
- *
- * @return {Boolean}
- */
-Game.prototype.isReady = function()
-{
-    return this.avatars.filter(function () { return !this.ready; }).isEmpty();
-};
-
-/**
  * Resolve scores
  */
 Game.prototype.resolveScores = function()
@@ -164,6 +155,7 @@ Game.prototype.resolveScores = function()
     }
 
     if (winner) {
+        this.winner = winner;
         winner.addScore(Math.max(this.avatars.count() - 1, 1));
         this.emit('round:winner', {game: this, winner: winner});
     }
@@ -207,8 +199,9 @@ Game.prototype.setSize = function(size)
     BaseGame.prototype.setSize.call(this, size);
 
     this.world.clear();
-
     this.world = new World(this.size);
+
+    this.bonusManager.setSize(size);
 };
 
 /**
@@ -231,14 +224,15 @@ Game.prototype.onRoundNew = function()
 
     var avatar, i;
 
+    this.winner = null;
     this.world.clear();
     this.deaths.clear();
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         if (avatar.present) {
-            avatar.setPosition(this.world.getRandomPosition(avatar.radius, 0.1));
-            avatar.setAngle(Math.random() * Math.PI * 2);
+            avatar.setPosition(this.world.getRandomPosition(avatar.radius, this.spawnMargin));
+            avatar.setAngle(this.world.getRandomDirection(avatar.head, this.spawnAngleMargin));
         } else {
             this.deaths.add(avatar);
         }

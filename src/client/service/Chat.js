@@ -5,19 +5,25 @@
  */
 function Chat(client)
 {
-    this.client         = client;
-    this.currentMessage = new Message();
-    this.messages       = [];
-    this.room           = null;
-    this.$scope         = null;
-    this.feed           = null;
+    BaseChat.call(this);
+
+    this.client  = client;
+    this.message = new Message(null, this.client);
+    this.room    = null;
+    this.$scope  = null;
+    this.feed    = null;
+    this.auto    = true;
 
     this.talk       = this.talk.bind(this);
     this.onTalk     = this.onTalk.bind(this);
     this.scrollDown = this.scrollDown.bind(this);
+    this.onActivity = this.onActivity.bind(this);
 
     this.attachEvents();
 }
+
+Chat.prototype = Object.create(BaseChat.prototype);
+Chat.prototype.constructor = Chat;
 
 /**
  * Curvybot profile
@@ -54,7 +60,7 @@ Chat.prototype.detachEvents = function()
 Chat.prototype.setPlayer = function(player)
 {
     if (this.room) {
-        this.currentMessage.player = player;
+        this.message.player = player;
     }
 };
 
@@ -67,7 +73,7 @@ Chat.prototype.setRoom = function(room)
 {
     if (!this.room || !this.room.equal(room)) {
         this.room = room;
-        this.messages.length = 0;
+        this.clearMessages();
     }
 };
 
@@ -81,8 +87,10 @@ Chat.prototype.setScope = function($scope)
 
     this.$scope.messages         = this.messages;
     this.$scope.submitTalk       = this.talk;
-    this.$scope.currentMessage   = this.currentMessage;
+    this.$scope.currentMessage   = this.message;
     this.$scope.messageMaxLength = Message.prototype.maxLength;
+
+    this.feed.addEventListener('scroll', this.onActivity);
 
     setTimeout(this.scrollDown, 0);
 };
@@ -98,7 +106,9 @@ Chat.prototype.refresh = function()
 
     }
 
-    this.scrollDown();
+    if (this.auto) {
+        this.scrollDown();
+    }
 };
 
 /**
@@ -118,16 +128,15 @@ Chat.prototype.talk = function()
 {
     var chat = this;
 
-    if (this.currentMessage.content.length) {
+    if (this.message.content.length) {
         this.client.addEvent(
             'room:talk',
-            this.currentMessage.serialize(),
+            this.message.serialize(),
             function (result) {
                 if (result.success) {
-                    chat.currentMessage.clear();
-                    chat.refresh();
+                    chat.message.clear();
                 } else {
-                    console.error('Could not send %s', chat.currentMessage);
+                    console.error('Could not send %s', chat.message);
                 }
             }
         );
@@ -136,14 +145,29 @@ Chat.prototype.talk = function()
 
 /**
  * On talk
+ *
+ * @param {Event} e
  */
 Chat.prototype.onTalk = function(e)
 {
-    var data = e.detail,
-        player = this.room.players.getById(data.player);
+    var data    = e.detail,
+        player  = this.room.getPlayerByClient(data.client),
+        message = new Message(data.content, data.client, player ? player : {name: data.name, color: data.color}, data.creation);
 
-    this.messages.push(new Message(player, data.content));
+    this.addMessage(message);
     this.refresh();
+};
+
+/**
+ * On activity
+ *
+ * @param {Event} e
+ */
+Chat.prototype.onActivity = function(e)
+{
+    if (this.feed) {
+        this.auto = this.feed.scrollTop === this.feed.scrollHeight - this.feed.clientHeight;
+    }
 };
 
 /**
@@ -151,8 +175,14 @@ Chat.prototype.onTalk = function(e)
  */
 Chat.prototype.clear = function()
 {
-    this.currentMessage  = new Message();
-    this.room            = null;
-    this.$scope          = null;
-    this.messages.length = 0;
+    this.clearMessages();
+
+    if (this.feed) {
+        this.feed.removeEventListener('scroll', this.onActivity);
+        this.feed = null;
+    }
+
+    this.message = new Message(null, this.client);
+    this.room    = null;
+    this.$scope  = null;
 };

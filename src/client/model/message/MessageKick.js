@@ -6,12 +6,12 @@
  */
 function KickMessage (player, target)
 {
-    BaseMessage.call(this, player);
+    Message.call(this, null, null, player);
 
     this.target = target;
 }
 
-KickMessage.prototype = Object.create(BaseMessage.prototype);
+KickMessage.prototype = Object.create(Message.prototype);
 KickMessage.prototype.constructor = KickMessage;
 
 /**

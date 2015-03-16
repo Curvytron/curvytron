@@ -43,7 +43,7 @@ BaseGame.prototype.framerate = 1/60 * 1000;
  *
  * @type {Number}
  */
-BaseGame.prototype.perPlayerSize = 100;
+BaseGame.prototype.perPlayerSize = 80;
 
 /**
  * Time before round start
@@ -58,6 +58,20 @@ BaseGame.prototype.warmupTime = 3000;
  * @type {Number}
  */
 BaseGame.prototype.warmdownTime = 5000;
+
+/**
+ * Margin from borders
+ *
+ * @type {Number}
+ */
+BaseGame.prototype.spawnMargin = 0.05;
+
+/**
+ * Angle margin from borders
+ *
+ * @type {Number}
+ */
+BaseGame.prototype.spawnAngleMargin = 0.3;
 
 /**
  * Update
@@ -145,6 +159,8 @@ BaseGame.prototype.onStop = function()
  */
 BaseGame.prototype.onRoundNew = function()
 {
+    this.bonusManager.clear();
+
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         if (this.avatars.items[i].present) {
             this.avatars.items[i].clear();
@@ -211,6 +227,26 @@ BaseGame.prototype.getSize = function(players)
 };
 
 /**
+ * Are all avatars ready?
+ *
+ * @return {Boolean}
+ */
+BaseGame.prototype.isReady = function()
+{
+    return this.getLoadingAvatars().isEmpty();
+};
+
+/**
+ * Get still loading avatars
+ *
+ * @return {Collection}
+ */
+BaseGame.prototype.getLoadingAvatars = function()
+{
+    return this.avatars.filter(function () { return this.present && !this.ready; });
+};
+
+/**
  * Get alive avatars
  *
  * @return {Collection}
@@ -256,7 +292,8 @@ BaseGame.prototype.serialize = function()
 {
     return {
         name: this.name,
-        players: this.avatars.map(function () { return this.serialize(); }).items
+        players: this.avatars.map(function () { return this.serialize(); }).items,
+        maxScore: this.maxScore
     };
 };
 
@@ -269,8 +306,8 @@ BaseGame.prototype.newRound = function(time)
 
     if (!this.inRound) {
         this.inRound = true;
-        setTimeout(this.start, typeof(time) !== 'undefined' ? time : this.warmupTime);
         this.onRoundNew();
+        setTimeout(this.start, typeof(time) !== 'undefined' ? time : this.warmupTime);
     }
 };
 

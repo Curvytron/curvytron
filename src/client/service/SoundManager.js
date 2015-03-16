@@ -7,12 +7,20 @@ function SoundManager (profile)
 {
     this.profile = profile;
     this.active  = this.profile.sound;
-    this.volume  = 0.5;
+
+    this.toggle = this.toggle.bind(this);
 
     createjs.Sound.alternateExtensions = ['mp3'];
     createjs.Sound.registerSounds(this.sounds, this.directory);
     createjs.Sound.setVolume(this.active ? this.volume : 0);
 }
+
+/**
+ * Volume
+ *
+ * @type {Number}
+ */
+SoundManager.prototype.volume = 0.5;
 
 /**
  * Sounds

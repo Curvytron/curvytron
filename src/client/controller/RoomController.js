@@ -121,8 +121,9 @@ RoomController.prototype.onJoined = function(result)
     } else {
         console.error('Could not join room %s', name);
         this.goHome();
-        this.applyScope();
     }
+
+    this.applyScope();
 };
 
 /**
@@ -427,8 +428,10 @@ RoomController.prototype.start = function(e)
  */
 RoomController.prototype.addProfileUser = function()
 {
-    this.profile.on('change', this.updateProfile);
-    this.addPlayer(this.profile.name, this.profile.color);
+    if (this.room.isNameAvailable(this.profile.name)) {
+        this.profile.on('change', this.updateProfile);
+        this.addPlayer(this.profile.name, this.profile.color);
+    }
 };
 
 /**
@@ -462,8 +465,9 @@ RoomController.prototype.updateCurrentMessage = function()
 RoomController.prototype.addTip = function()
 {
     this.chat.messages.push(new Message(
-        this.chat.curvybot,
-        this.tips[Math.floor(Math.random() * this.tips.length)]
+        this.tips[Math.floor(Math.random() * this.tips.length)],
+        null,
+        this.chat.curvybot
     ));
 };
 

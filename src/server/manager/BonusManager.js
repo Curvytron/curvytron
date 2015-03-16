@@ -64,14 +64,34 @@ BonusManager.prototype.popBonus = function ()
         this.popingTimeout = null;
 
         if (this.bonuses.count() < this.bonusCap) {
-            var position = this.game.world.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
-                bonus = this.getRandomBonus(position);
+            var position = this.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
+                bonus    = this.getRandomBonus(position);
 
             this.add(bonus);
         }
 
         this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
     }
+};
+
+/**
+ * Get random position
+ *
+ * @param {Number} radius
+ * @param {Number} border
+ *
+ * @return {Array}
+ */
+BonusManager.prototype.getRandomPosition = function(radius, border)
+{
+    var margin = radius + border * this.game.world.size,
+        point = this.game.world.getRandomPoint(margin);
+
+    while (!this.game.world.testBody(new Body(point, margin)) || !this.world.testBody(new Body(point, margin))) {
+        point = this.game.world.getRandomPoint(margin);
+    }
+
+    return point;
 };
 
 /**
@@ -145,9 +165,39 @@ BonusManager.prototype.getRandomPopingTime  = function()
  */
 BonusManager.prototype.getRandomBonus = function(position)
 {
-    if (!this.bonusTypes.length) {return; }
+    if (!this.bonusTypes.length) { return; }
 
-    var type = this.bonusTypes[Math.floor(Math.random() * this.bonusTypes.length)];
+    var total = this.bonusTypes.length,
+        pot = [],
+        bonuses = [],
+        bonus,
+        probability;
 
-    return new type(position);
+    for (var i = 0; i < total; i++) {
+        bonus = new (this.bonusTypes[i])(position);
+        probability = bonus.getProbability(this.game);
+
+        if (probability > 0) {
+            bonuses.push(bonus);
+            pot.push(probability + (i > 0 ? pot[pot.length-1] : 0));
+        }
+    }
+    var value = Math.random() * pot[pot.length - 1];
+
+    for (i = 0; i < total; i++) {
+        if (value < pot[i]) {
+            return bonuses[i];
+        }
+    }
+
+    return bonuses[bonuses.length-1];
+};
+
+/**
+ * Update size
+ */
+BonusManager.prototype.setSize = function(size)
+{
+    this.world.clear();
+    this.world = new World(this.game.size, 1);
 };

@@ -23,33 +23,33 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.room           = null;
     this.game           = null;
     this.warmupInterval = null;
+    this.assetsLoaded   = false;
+    this.setup          = false;
 
     // Binding
-    this.onLoaded      = this.onLoaded.bind(this);
-    this.onChatLoaded  = this.onChatLoaded.bind(this);
-    this.onMove        = this.onMove.bind(this);
-    this.onBonusPop    = this.onBonusPop.bind(this);
-    this.onBonusClear  = this.onBonusClear.bind(this);
-    this.onBonusStack  = this.onBonusStack.bind(this);
-    this.onPoint       = this.onPoint.bind(this);
-    this.onDie         = this.onDie.bind(this);
-    this.onProperty    = this.onProperty.bind(this);
-    this.onWarmup      = this.onWarmup.bind(this);
-    this.endWarmup     = this.endWarmup.bind(this);
-    this.onRoundNew    = this.onRoundNew.bind(this);
-    this.onRoundEnd    = this.onRoundEnd.bind(this);
-    this.onRoundWinner = this.onRoundWinner.bind(this);
-    this.onClear       = this.onClear.bind(this);
-    this.onEnd         = this.onEnd.bind(this);
-    this.onLeave       = this.onLeave.bind(this);
-    this.onSpectate    = this.onSpectate.bind(this);
-    this.onSpectators  = this.onSpectators.bind(this);
-    this.leaveGame     = this.leaveGame.bind(this);
-    this.backToRoom    = this.backToRoom.bind(this);
-    this.toggleSound   = this.toggleSound.bind(this);
-    this.toggleRadio   = this.toggleRadio.bind(this);
-
-    this.attachSocketEvents();
+    this.onReady        = this.onReady.bind(this);
+    this.onAssetsLoaded = this.onAssetsLoaded.bind(this);
+    this.onChatLoaded   = this.onChatLoaded.bind(this);
+    this.onMove         = this.onMove.bind(this);
+    this.onBonusPop     = this.onBonusPop.bind(this);
+    this.onBonusClear   = this.onBonusClear.bind(this);
+    this.onBonusStack   = this.onBonusStack.bind(this);
+    this.onPoint        = this.onPoint.bind(this);
+    this.onDie          = this.onDie.bind(this);
+    this.onProperty     = this.onProperty.bind(this);
+    this.onWarmup       = this.onWarmup.bind(this);
+    this.endWarmup      = this.endWarmup.bind(this);
+    this.onRoundNew     = this.onRoundNew.bind(this);
+    this.onRoundEnd     = this.onRoundEnd.bind(this);
+    this.onRoundWinner  = this.onRoundWinner.bind(this);
+    this.onClear        = this.onClear.bind(this);
+    this.onEnd          = this.onEnd.bind(this);
+    this.onLeave        = this.onLeave.bind(this);
+    this.onSpectate     = this.onSpectate.bind(this);
+    this.onSpectators   = this.onSpectators.bind(this);
+    this.leaveGame      = this.leaveGame.bind(this);
+    this.backToRoom     = this.backToRoom.bind(this);
+    this.updateBorders  = this.updateBorders.bind(this);
 
     this.$scope.$on('$destroy', this.leaveGame);
 
@@ -63,11 +63,12 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.$scope.radio       = this.radio;
     this.$scope.sound       = this.sound;
     this.$scope.backToRoom  = this.backToRoom;
-    this.$scope.toggleSound = this.toggleSound;
-    this.$scope.toggleRadio = this.toggleRadio;
+    this.$scope.toggleSound = this.sound.toggle;
+    this.$scope.toggleRadio = this.radio.toggle;
     this.$scope.chatLoaded  = this.onChatLoaded;
     this.$scope.roundWinner = null;
     this.$scope.gameWinner  = null;
+    this.$scope.spectating  = false;
     this.$scope.spectators  = 0;
 
     this.repository.start();
@@ -86,6 +87,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
  */
 GameController.prototype.attachSocketEvents = function()
 {
+    this.client.on('ready', this.onReady);
     this.client.on('property', this.onProperty);
     this.client.on('point', this.onPoint);
     this.client.on('die', this.onDie);
@@ -107,6 +109,7 @@ GameController.prototype.attachSocketEvents = function()
  */
 GameController.prototype.detachSocketEvents = function()
 {
+    this.client.off('ready', this.onReady);
     this.client.off('property', this.onProperty);
     this.client.off('point', this.onPoint);
     this.client.off('die', this.onDie);
@@ -133,32 +136,70 @@ GameController.prototype.loadGame = function(room)
     this.room = room;
     this.game = room.newGame();
 
-    this.game.bonusManager.on('load', this.onLoaded);
+    this.game.bonusManager.on('load', this.onAssetsLoaded);
 
-    avatars = this.game.avatars.filter(function () { return this.local; });
+    var avatar;
 
-    for (var i = avatars.items.length - 1; i >= 0; i--) {
-        avatars.items[i].input.on('move', this.onMove);
+    for (var i = this.game.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.game.avatars.items[i];
+
+        avatar.bonusStack.on('change', this.updateBorders);
+
+        if (avatar.local) {
+            avatar.input.on('move', this.onMove);
+        }
     }
 
-    this.game.setSpectate(avatars.isEmpty());
     this.game.fps.setElement(document.getElementById('fps'));
     this.client.pingLogger.setElement(document.getElementById('ping'));
+    this.radio.play();
 
     // Hydrate scope:
     this.$scope.curvytron.bodyClass = 'game-mode';
     this.$scope.game                = this.game;
     this.$scope.avatars             = this.game.avatars.items;
 
+    this.attachSocketEvents();
     setTimeout(this.chat.scrollDown, 0);
+
+    this.setup = true;
+    this.checkReady();
 };
 
 /**
  * On assets loaded
  */
-GameController.prototype.onLoaded = function()
+GameController.prototype.onAssetsLoaded = function()
 {
-    this.client.addEvent('loaded');
+    this.assetsLoaded = true;
+    this.game.bonusManager.off('load', this.onAssetsLoaded);
+    this.checkReady();
+};
+
+/**
+ * Check loading is done
+ */
+GameController.prototype.checkReady = function()
+{
+    if (this.assetsLoaded && this.setup) {
+        this.client.addEvent('ready');
+    }
+};
+
+/**
+ * On avatar ready (client loaded)
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onReady = function(e)
+{
+    var data = e.detail,
+        avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        avatar.ready = true;
+        this.applyScope();
+    }
 };
 
 /**
@@ -262,16 +303,10 @@ GameController.prototype.onBonusStack = function(e)
 {
     var data = e.detail,
         avatar = this.game.avatars.getById(data.avatar),
-        bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration),
-        borderless = bonus.type === 'BonusAllBorderless';
+        bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration);
 
-    if (avatar && (avatar.local || borderless)) {
+    if (avatar && avatar.local) {
         avatar.bonusStack[data.method](bonus);
-
-        if (borderless) {
-            this.updateBorders();
-            this.applyScope();
-        }
     }
 };
 
@@ -340,13 +375,24 @@ GameController.prototype.onDie = function(e)
 /**
  * On spectate
  */
-GameController.prototype.onSpectate = function()
+GameController.prototype.onSpectate = function(e)
 {
+    var data = e.detail;
+
+    this.$scope.spectating = true;
+
+    this.game.maxScore = data.maxScore;
+
     for (var i = this.game.avatars.items.length - 1; i >= 0; i--) {
         this.game.avatars.items[i].local = true;
+        this.game.avatars.items[i].ready = true;
     }
 
-    this.game.newRound(0);
+    if (data.inRound) {
+        this.game.newRound(0);
+    } else if(data.rendered) {
+        this.game.start();
+    }
 };
 
 /**
@@ -373,7 +419,6 @@ GameController.prototype.onRoundNew = function(e)
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
     this.updateBorders();
-    this.applyScope();
 };
 
 /**
@@ -444,6 +489,7 @@ GameController.prototype.onLeave = function(e)
         avatar = this.game.avatars.getById(data.avatar);
 
     if (avatar) {
+        avatar.bonusStack.off('change', this.updateBorders);
         this.game.removeAvatar(avatar);
         this.applyScope();
     }
@@ -454,7 +500,8 @@ GameController.prototype.onLeave = function(e)
  */
 GameController.prototype.updateBorders = function()
 {
-    this.$scope.borderless = this.game.avatars.match(function () { return this.borderless; }) !== null;
+    this.$scope.borderless = this.game.isBorderless();
+    this.applyScope();
 };
 
 /**
@@ -464,6 +511,7 @@ GameController.prototype.leaveGame = function()
 {
     if (this.room && this.$location.path() !== this.room.url) {
         this.repository.leave();
+        this.chat.clear();
     }
 
     this.radio.stop();
@@ -482,7 +530,7 @@ GameController.prototype.close = function()
         this.detachSocketEvents();
         this.game.end();
 
-        avatars = this.game.avatars.filter(function () { return this.local; }).items;
+        avatars = this.game.avatars.filter(function () { return this.input; }).items;
 
         for (var i = avatars.length - 1; i >= 0; i--) {
             avatars[i].input.off('move', this.onMove);
@@ -500,22 +548,6 @@ GameController.prototype.close = function()
 GameController.prototype.backToRoom = function()
 {
     this.$location.path(this.room.url);
-};
-
-/**
- * Toggle sound
- */
-GameController.prototype.toggleSound = function()
-{
-    this.sound.toggle();
-};
-
-/**
- * Toggle radio
- */
-GameController.prototype.toggleRadio = function()
-{
-    this.radio.toggle();
 };
 
 /**
