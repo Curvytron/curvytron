@@ -24,7 +24,7 @@ function Server(config)
     this.server.on('upgrade', this.authorizationHandler);
     this.server.listen(config.port);
 
-    console.info('Listening on: %s', config.port);
+    console.info('Listening on port %s', config.port);
 }
 
 Server.prototype = Object.create(EventEmitter.prototype);
@@ -39,29 +39,33 @@ Server.prototype.constructor = Server;
  */
 Server.prototype.authorizationHandler = function(request, socket, head)
 {
-    return WebSocket.isWebSocket(request) ? this.onSocketConnection(new WebSocket(request, socket, head, ['websocket'], {ping: 5})) : socket.end();
+    if (!WebSocket.isWebSocket(request)) {
+        return socket.end();
+    }
+
+
+    var websocket = new WebSocket(request, socket, head, ['websocket'], {ping: 5}),
+        ip = request.headers['x-real-ip'] || request.connection.remoteAddress;
+
+    return this.onSocketConnection(websocket, ip);
 };
 
 /**
  * On socket connection
  *
  * @param {Socket} socket
+ * @param {String} ip
  */
-Server.prototype.onSocketConnection = function(socket)
+Server.prototype.onSocketConnection = function(socket, ip)
 {
-    var server = this,
-        client = new SocketClient(socket, 3);
-
+    var client = new SocketClient(socket, 3, ip);
     this.clients.add(client);
 
     client.on('close', this.onSocketDisconnection);
-
     this.roomsController.attach(client);
-
-    client.addEvent('open', client.id);
-
     this.emit('client', client);
-    console.info('Client connected', client.id);
+
+    console.info('Client %s connected.', client.id);
 };
 
 /**
@@ -71,7 +75,7 @@ Server.prototype.onSocketConnection = function(socket)
  */
 Server.prototype.onSocketDisconnection = function(client)
 {
-    console.info('Client disconnected', client.id);
+    console.info('Client %s disconnected.', client.id);
 
     this.clients.remove(client);
 };

@@ -23,6 +23,19 @@ Room.prototype.getLocalPlayers = function()
 {
     return this.players.filter(function () { return this.local; });
 };
+
+/**
+ * Get player by client Id
+ *
+ * @param {Number} client
+ *
+ * @return {Player}
+ */
+Room.prototype.getPlayerByClient = function(client)
+{
+    return this.players.match(function () { return this.client === client; });
+};
+
 /**
  * Close game
  */

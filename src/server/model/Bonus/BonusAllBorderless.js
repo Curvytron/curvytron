@@ -19,6 +19,13 @@ BonusAllBorderless.prototype.constructor = BonusAllBorderless;
 BonusAllBorderless.prototype.duration = 10000;
 
 /**
+ * Probability
+ *
+ * @type {Number}
+ */
+BonusAllBorderless.prototype.probability = 0.8;
+
+/**
  * Get effects
  *
  * @param {Avatar} avatar

@@ -8,6 +8,8 @@ function Profile()
     this.name     = null;
     this.color    = null;
     this.sound    = true;
+    this.radio    = false;
+    this.loading  = false;
     this.controls = [
         new PlayerControl(37, 'icon-left-dir'),
         new PlayerControl(39, 'icon-right-dir')
@@ -48,6 +50,7 @@ Profile.prototype.serialize = function()
         name: this.name,
         color: this.color,
         sound: this.sound,
+        radio: this.radio,
         controls: this.getMapping()
     };
 };
@@ -71,6 +74,10 @@ Profile.prototype.unserialize = function(data)
         this.setSound(data.sound);
     }
 
+    if (typeof(data.radio) !== 'undefined') {
+        this.setRadio(data.radio);
+    }
+
     if (typeof(data.controls) !== 'undefined') {
         this.setControls(data.controls);
     }
@@ -81,6 +88,8 @@ Profile.prototype.unserialize = function(data)
  */
 Profile.prototype.persist = function()
 {
+    if (this.loading) { return; }
+
     if (this.isValid()) {
         window.localStorage.setItem(this.localKey, JSON.stringify(this.serialize()));
         this.emit('change');
@@ -94,12 +103,20 @@ Profile.prototype.persist = function()
  */
 Profile.prototype.load = function()
 {
+    this.loading = true;
+
     var data = window.localStorage.getItem(this.localKey);
 
     if (data) {
         this.unserialize(JSON.parse(data));
         this.emit('change');
     }
+
+    if (!this.color) {
+        this.setColor(BasePlayer.prototype.getRandomColor());
+    }
+
+    this.loading = false;
 };
 
 /**
@@ -173,6 +190,19 @@ Profile.prototype.setSound = function(sound)
 };
 
 /**
+ * Set radio
+ *
+ * @param {Boolean} radio
+ */
+Profile.prototype.setRadio = function(radio)
+{
+    if (this.radio !== radio) {
+        this.radio = radio;
+        this.persist();
+    }
+};
+
+/**
  *
  * Profile
  *
@@ -190,7 +220,7 @@ Profile.prototype.onControlChange = function(e)
  */
 Profile.prototype.isComplete = function()
 {
-    return this.name && this.color ? true : false;
+    return this.name && this.color;
 };
 
 /**

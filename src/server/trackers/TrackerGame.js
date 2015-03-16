@@ -101,8 +101,6 @@ GameTracker.prototype.serialize = function()
 {
     var data = Tracker.prototype.serialize.call(this);
 
-    data.id       = this.uniqId;
-    data.name     = this.game.name;
     data.size     = this.size;
     data.rounds   = this.rounds;
     data.finished = this.finished;

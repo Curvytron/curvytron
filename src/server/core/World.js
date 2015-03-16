@@ -6,11 +6,23 @@ function World(size, islands)
     islands = typeof(islands) === 'number' ? islands : this.islandGridSize;
 
     this.size       = size;
-    this.from       = [0, 0];
-    this.to         = [size, size];
     this.islands    = new Collection();
     this.islandSize = this.size / islands;
     this.active     = false;
+
+    this.angles = {
+        topLeft: [0, 0],
+        topRight: [this.size, 0],
+        bottomRight: [this.size, this.size],
+        bottomLeft: [0, this.size]
+    };
+
+    this.borders = [
+        [this.angles.topLeft, this.angles.topRight],
+        [this.angles.topRight, this.angles.bottomRight],
+        [this.angles.bottomRight, this.angles.bottomLeft],
+        [this.angles.bottomLeft, this.angles.topLeft]
+    ];
 
     var x, y, id;
 
@@ -144,8 +156,9 @@ World.prototype.testBody = function(body)
 
     return true;
 };
+
 /**
- * Random Position
+ * Random random position
  *
  * @param {Number} radius
  * @param {Number} border
@@ -162,6 +175,81 @@ World.prototype.getRandomPosition = function(radius, border)
     }
 
     return point;
+};
+
+/**
+ * Random random direction
+ *
+ * @param {Array} point
+ *
+ * @return {Float}
+ */
+World.prototype.getRandomDirection = function(point, tolerance)
+{
+    var direction = this.getRandomAngle(),
+        margin = tolerance * this.size;
+
+    while (!this.isDirectionValid(direction, point, margin)) {
+        direction = this.getRandomAngle();
+    }
+
+    return direction;
+};
+
+/**
+ * Is directino valid
+ *
+ * @param {Float} angle
+ * @param {Array} point
+ * @param {Float} margin
+ *
+ * @return {Boolean}
+ */
+World.prototype.isDirectionValid = function(angle, point, margin)
+{
+    var quarter = Math.PI/2,
+        from,
+        to;
+
+    for (var i = 0; i < 4; i++) {
+        from = quarter * i;
+        to   = quarter * (i+1);
+
+        if (angle >= from && angle < to) {
+            if (this.getHypotenuse(angle - from, this.getDistanceToBorder(i, point)) < margin) {
+                return false;
+            }
+
+            if (this.getHypotenuse(to - angle, this.getDistanceToBorder(i < 3 ? i+1 : 0, point)) < margin) {
+                return false;
+            }
+
+            return true;
+        }
+    }
+};
+
+/**
+ * Get hypostenuse from adjacent side
+ *
+ * @param {Float} angle
+ * @param {Number} adjacent
+ *
+ * @return {Float}
+ */
+World.prototype.getHypotenuse = function(angle, adjacent)
+{
+    return adjacent / Math.cos(angle);
+};
+
+/**
+ * Get random angle
+ *
+ * @return {Float}
+ */
+World.prototype.getRandomAngle = function()
+{
+    return Math.random() * Math.PI * 2;
 };
 
 /**
@@ -190,20 +278,20 @@ World.prototype.getBoundIntersect = function(body, margin)
 {
     margin = typeof(margin) !== 'undefined' ? margin : 0;
 
-    if (body.position[0] - margin < this.from[0]) {
-        return [this.from[0], body.position[1]];
+    if (body.position[0] - margin < this.angles.topLeft[0]) {
+        return [this.angles.topLeft[0], body.position[1]];
     }
 
-    if (body.position[0] + margin > this.to[0]) {
-        return [this.to[0], body.position[1]];
+    if (body.position[0] + margin > this.angles.bottomRight[0]) {
+        return [this.angles.bottomRight[0], body.position[1]];
     }
 
-    if (body.position[1] - margin < this.from[1]) {
-        return [body.position[0], this.from[1]];
+    if (body.position[1] - margin < this.angles.topLeft[1]) {
+        return [body.position[0], this.angles.topLeft[1]];
     }
 
-    if (body.position[1] + margin > this.to[1]) {
-        return [body.position[0], this.to[1]];
+    if (body.position[1] + margin > this.angles.bottomRight[1]) {
+        return [body.position[0], this.angles.bottomRight[1]];
     }
 
     return null;
@@ -218,23 +306,50 @@ World.prototype.getBoundIntersect = function(body, margin)
  */
 World.prototype.getOposite = function(point)
 {
-    if (point[0] === this.from[0]) {
-        return [this.to[0], point[1], 0];
+    if (point[0] === this.angles.topLeft[0]) {
+        return [this.angles.bottomRight[0], point[1], 0];
     }
 
-    if (point[0] === this.to[0]) {
-        return [this.from[0], point[1], 0];
+    if (point[0] === this.angles.bottomRight[0]) {
+        return [this.angles.topLeft[0], point[1], 0];
     }
 
-    if (point[1] === this.from[1]) {
-        return [point[0], this.to[1], 1];
+    if (point[1] === this.angles.topLeft[1]) {
+        return [point[0], this.angles.bottomRight[1], 1];
     }
 
-    if (point[1] === this.to[1]) {
-        return [point[0], this.from[1], 1];
+    if (point[1] === this.angles.bottomRight[1]) {
+        return [point[0], this.angles.topLeft[1], 1];
     }
 
     return point;
+};
+
+/**
+ * Get the distance of a point to the border
+ *
+ * @param {Number} border
+ * @param {Array} point
+ *
+ * @return {Float}
+ */
+World.prototype.getDistanceToBorder = function(border, point)
+{
+    if (border === 0) {
+        return this.size - point[0];
+    }
+
+    if (border === 1) {
+        return this.size - point[1];
+    }
+
+    if (border === 2) {
+        return point[0];
+    }
+
+    if (border === 3) {
+        return point[1];
+    }
 };
 
 /**

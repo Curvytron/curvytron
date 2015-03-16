@@ -36,6 +36,13 @@ BaseBonus.prototype.radius = 3;
 BaseBonus.prototype.duration = 5000;
 
 /**
+ * Probability to appear
+ *
+ * @type {Number}
+ */
+BaseBonus.prototype.probability = 1;
+
+/**
  * Clear
  *
  * @param {Array} point
@@ -51,6 +58,18 @@ BaseBonus.prototype.clear = function () {};
  * @return {Number}
  */
 BaseBonus.prototype.applyTo = function (avatar, game) {};
+
+/**
+ * Get probability
+ *
+ * @param {Game} game
+ *
+ * @return {Number}
+ */
+BaseBonus.prototype.getProbability = function (game)
+{
+    return this.probability;
+};
 
 /**
  * Serialize

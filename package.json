@@ -1,6 +1,6 @@
 {
   "name": "curvytron",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A web multiplayer Tron game like... with curves!",
   "keywords": [
     "tron",
@@ -42,12 +42,13 @@
     "gulp-util": "^2.2.*"
   },
   "dependencies": {
-    "faye-websocket": "^0.9.*",
-    "express": "~4.11.*"
+    "express": "~4.11.*",
+    "faye-websocket": "^0.9.*"
   },
   "optionalDependencies": {
     "influx": "^3.2.*",
-    "usage": "^0.5.*"
+    "usage": "^0.5.*",
+    "MD5": "^1.2.*"
   },
   "scripts": {
     "install": "bower install"

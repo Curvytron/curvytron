@@ -4,14 +4,14 @@
  * @param {Player} player
  * @param {Player} target
  */
-function VoteKickMessage (player, target)
+function VoteKickMessage(player, target)
 {
-    BaseMessage.call(this, player);
+    Message.call(this, null, null, player);
 
     this.target = target;
 }
 
-VoteKickMessage.prototype = Object.create(BaseMessage.prototype);
+VoteKickMessage.prototype = Object.create(Message.prototype);
 VoteKickMessage.prototype.constructor = VoteKickMessage;
 
 /**
