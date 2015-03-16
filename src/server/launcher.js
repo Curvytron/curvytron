@@ -1,4 +1,5 @@
-var config;
+var config,
+    packageInfo = require('../package.json');
 
 try {
     config = require('../config.json');

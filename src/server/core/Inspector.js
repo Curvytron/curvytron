@@ -33,7 +33,7 @@ function Inspector (server, config)
     this.server.roomRepository.on('room:open', this.onRoomOpen);
     this.server.roomRepository.on('room:close', this.onRoomClose);
 
-    this.client.writePoint(this.DEPLOY);
+    this.client.writePoint(this.DEPLOY, {version: packageInfo.version});
     this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() });
     this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() });
 
