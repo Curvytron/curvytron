@@ -2,19 +2,27 @@
  * Analyser
  *
  * @param {Object} $rootScope
+ * @param {Object} $document
+ * @param {RoomsRepository} roomsRepository
+ * @param {RoomRepository} roomRepository
  */
-function Analyser($rootScope)
+function Analyser($rootScope, $document, roomsRepository, roomRepository)
 {
     if (typeof(ga) === 'undefined') {
         return false;
     }
 
-    this.$rootScope = $rootScope;
+    this.$rootScope      = $rootScope;
+    this.$document       = $document[0];
+    this.roomsRepository = roomsRepository;
+    this.roomRepository  = roomRepository;
 
     this.onRouteChange = this.onRouteChange.bind(this);
+    this.onRoomCreated = this.onRoomCreated.bind(this);
 
     this.$rootScope.$on('$routeChangeSuccess', this.onRouteChange);
     this.$rootScope.$on('$routeUpdate', this.onRouteChange);
+    this.roomsRepository.on('action:room:created', this.onRoomCreated);
 }
 
 /**
@@ -30,6 +38,23 @@ Analyser.prototype.onRouteChange = function(event, currentScope, previousScope)
         title = this.getTitle(currentScope.$$route.controller, currentScope.params);
 
     this.sendPageView(path, title);
+};
+
+/**
+ * On room created
+ *
+ * @param {Event} e
+ */
+Analyser.prototype.onRoomCreated = function(e)
+{
+    var name = e.detail.name,
+        room = e.detail.room;
+
+    this.sendClickEvent({
+        action: 'Create Room',
+        withName: name ? true : false,
+        name: room.name
+    });
 };
 
 /**
@@ -72,6 +97,8 @@ Analyser.prototype.getTitle = function(controller, params)
     if (controller === 'GameController') {
         return 'Game: ' + (typeof(params.name) !== 'undefined' ? params.name : null);
     }
+
+    return this.$document.title;
 };
 
 /**
@@ -81,8 +108,29 @@ Analyser.prototype.getTitle = function(controller, params)
  */
 Analyser.prototype.sendPageView = function(page, title)
 {
-    // ga('send', 'pageview', {
-    //     page: page,
-    //     title: title
-    // });
+    ga('send', 'pageview', title ? { page: page, title: title } : page);
+};
+
+/**
+ * Send default click event
+ *
+ * @param {String} label
+ * @param {Number} value
+ */
+Analyser.prototype.sendClickEvent = function(label, value)
+{
+    this.sendEvent('button', 'click', label, value);
+};
+
+/**
+ * Send event
+ *
+ * @param {String} category
+ * @param {String} action
+ * @param {String} label
+ * @param {Number} value
+ */
+Analyser.prototype.sendEvent = function(category, action, label, value)
+{
+    ga('send', 'event', category, action, label, value);
 };

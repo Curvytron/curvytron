@@ -66,15 +66,28 @@ RoomsRepository.prototype.get = function(name)
  * Create
  *
  * @param {String} name
- * @param {Function} callback
+ * @param {Function} onSuccess
  */
-RoomsRepository.prototype.create = function(name, callback)
+RoomsRepository.prototype.create = function(name, onSuccess, onError)
 {
     if (typeof(name) === 'string') {
         name = name.substr(0, Room.prototype.maxLength).trim();
     }
 
-    this.client.addEvent('room:create', {name: name}, callback);
+    var repository = this;
+
+    this.client.addEvent('room:create', {name: name}, function (result) {
+        if (result.success) {
+            var room = repository.createRoom(result.room);
+            repository.emit('action:room:created', {name: name, room : room});
+            onSuccess(room);
+        } else {
+            console.error('Could not create room %s', name);
+            if (typeof(onError) !== 'undefined') {
+                onError(result);
+            }
+        }
+    });
 };
 
 /**

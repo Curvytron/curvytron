@@ -3,15 +3,16 @@
  *
  * @param {Object} $scope
  * @param {Object} $location
+ * @param {RoomsRepository} repository
  * @param {SocketClient} client
  * @param {Profile} profile
  */
-function RoomsController($scope, $location, client, profile)
+function RoomsController($scope, $location, repository, client, profile)
 {
     this.$scope     = $scope;
     this.$location  = $location;
     this.client     = client;
-    this.repository = new RoomsRepository(this.client);
+    this.repository = repository;
 
     // Binding:
     this.createRoom   = this.createRoom.bind(this);
@@ -75,15 +76,11 @@ RoomsController.prototype.createRoom = function(e)
  *
  * @param {Object} result
  */
-RoomsController.prototype.onCreateRoom = function(result)
+RoomsController.prototype.onCreateRoom = function(room)
 {
-    if (result.success) {
-        this.$scope.name = null;
-        this.joinRoom(this.repository.createRoom(result.room));
-        this.applyScope();
-    } else {
-        console.error('Could not create room %s', this.$scope.name);
-    }
+    this.$scope.name = null;
+    this.joinRoom(room);
+    this.applyScope();
 };
 
 /**
