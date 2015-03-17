@@ -358,12 +358,26 @@
             background-repeat: no-repeat;
         }
 
-        #game {
-            z-index: 50;
+        .game-render {
+            display: block;
+            position: relative;
             border: 4px solid lighten($game-background, 30%);
+            margin: auto;
 
             &.borderless {
                 border-style: dashed;
+            }
+
+            .game-background {
+                z-index: 40;
+                position: absolute;
+                display: block;
+            }
+
+            .game-front {
+                z-index: 50;
+                position: absolute;
+                display: block;
             }
         }
 

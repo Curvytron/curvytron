@@ -49,7 +49,7 @@ Avatar.prototype.setPosition = function(point)
 {
     BaseAvatar.prototype.setPosition.call(this, point);
 
-    this.updateStart();
+    this.changed = true;
 
     if (this.printing) {
         this.addPoint(point);
@@ -66,7 +66,7 @@ Avatar.prototype.setScale = function(scale)
     var width = this.width * scale;
 
     this.canvas.setDimension(width, width, scale);
-    this.updateStart();
+    this.changed = true;
     this.drawHead();
 };
 
@@ -151,10 +151,13 @@ Avatar.prototype.drawArrow = function()
  */
 Avatar.prototype.updateStart = function()
 {
-    this.start = [
-        this.head[0] * this.canvas.scale - this.canvas.element.width/2,
-        this.head[1] * this.canvas.scale - this.canvas.element.width/2
-    ];
+    if (this.changed) {
+        this.changed = false;
+        this.start   = [
+            this.head[0] * this.canvas.scale - this.canvas.element.width/2,
+            this.head[1] * this.canvas.scale - this.canvas.element.width/2
+        ];
+    }
 };
 
 /**

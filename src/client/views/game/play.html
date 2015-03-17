@@ -94,7 +94,10 @@
                     </div>
                 </section>
             </section>
-            <canvas id="game" class="game {{ borderless ? 'borderless' : '' }}"></canvas>
+            <div id="render" class="game-render {{ borderless ? 'borderless' : '' }}">
+                <canvas id="game" class="game-front"></canvas>
+                <canvas id="background" class="game-background"></canvas>
+            </div>
         </div>
     </section>
 </section>
