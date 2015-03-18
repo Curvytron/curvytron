@@ -26,7 +26,7 @@ function CurvytronController($scope, $window, profile, analyser, watcher, client
     this.reload        = this.reload.bind(this);
 
     // Hydrate scope
-    this.$scope.curvytron   = { bodyClass: '' };
+    this.$scope.curvytron   = {bodyClass: ''};
     this.$scope.profileOpen = false;
     this.$scope.profileTuto = false;
     this.$scope.status      = 'connecting';

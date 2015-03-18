@@ -7,8 +7,9 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
+    this.render     = document.getElementById('render');
     this.canvas     = new Canvas(0, 0, document.getElementById('game'));
-    this.background = new Canvas(0, 0);
+    this.background = new Canvas(0, 0, document.getElementById('background'));
 
     this.onResize = this.onResize.bind(this);
 
@@ -152,35 +153,28 @@ Game.prototype.setSize = function(size)
  */
 Game.prototype.draw = function()
 {
-    var i, avatar, width, position, points;
+    var i, avatar;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-
         if (avatar.present) {
-            points = avatar.trail.getLastSegment();
-            if (points) {
-                this.background.drawLineScaled(points, avatar.width, avatar.color);
-            }
+            this.drawTail(avatar);
         }
     }
 
-    this.canvas.drawImage(this.background.element, [0, 0]);
+    this.canvas.clear();
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-
         if (avatar.present) {
-            this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
+            this.drawAvatar(avatar);
 
             if (avatar.alive && avatar.hasBonus()) {
-                this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
+                this.drawBonusStack(avatar);
             }
 
             if (!this.frame && avatar.local) {
-                width = 10;
-                position = [avatar.head[0] - width/2, avatar.head[1] - width/2];
-                this.canvas.drawImageScaled(avatar.arrow.element, position, width, width, avatar.angle);
+                this.drawArrow(avatar);
             }
 
             if (avatar.animation) {
@@ -189,6 +183,68 @@ Game.prototype.draw = function()
         }
     }
 
+    this.drawBonuses();
+};
+
+/**
+ * Draw tail
+ *
+ * @param {Avatar} avatar
+ */
+Game.prototype.drawTail = function(avatar)
+{
+    var points = avatar.trail.getLastSegment();
+
+    if (points) {
+        this.background.drawLineScaled(points, avatar.width, avatar.color);
+    }
+};
+
+/**
+ * Draw avatar
+ *
+ * @param {Avatar} avatar
+ */
+Game.prototype.drawAvatar = function(avatar)
+{
+    avatar.updateStart();
+    this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
+};
+
+/**
+ * Draw bonus stack
+ *
+ * @param {Avatar} avatar
+ */
+Game.prototype.drawBonusStack = function(avatar)
+{
+    this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
+};
+
+/**
+ * Draw arrow
+ *
+ * @param {Avatar} avatar
+ */
+Game.prototype.drawArrow = function(avatar)
+{
+    this.canvas.drawImageScaled(
+        avatar.arrow.element,
+        [
+            avatar.head[0] - 5,
+            avatar.head[1] - 5
+        ],
+        10,
+        10,
+        avatar.angle
+    );
+};
+
+/**
+ * Draw bonuses
+ */
+Game.prototype.drawBonuses = function()
+{
     this.bonusManager.draw(this.canvas);
 };
 
@@ -221,6 +277,8 @@ Game.prototype.onResize = function()
         }
     }
 
+    this.render.style.width = (width + 8) + 'px';
+    this.render.style.height = (width + 8) + 'px';
     this.canvas.setDimension(width, width, scale);
     this.background.setDimension(width, width, scale, true);
     this.draw();
