@@ -20,8 +20,8 @@ function RoomsController(repository)
 
     this.callbacks = {
         emitAllRooms: function () { controller.emitAllRooms(this); },
-        onCreateRoom: function (data) { controller.onCreateRoom(this, data.data, data.callback); },
-        onJoinRoom: function (data) { controller.onJoinRoom(this, data.data, data.callback); }
+        onCreateRoom: function (data) { controller.onCreateRoom(this, data[0], data[1]); },
+        onJoinRoom: function (data) { controller.onJoinRoom(this, data[0], data[1]); }
     };
 
     this.repository.on('room:open', this.onRoomOpen);

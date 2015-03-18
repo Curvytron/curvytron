@@ -39,7 +39,7 @@ SocketClient.prototype.isPlaying = function()
  */
 SocketClient.prototype.identify = function(event)
 {
-    event.callback(this.id);
+    event[1](this.id);
 };
 
 /**
