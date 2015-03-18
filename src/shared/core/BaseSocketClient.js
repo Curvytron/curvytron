@@ -11,7 +11,7 @@ function BaseSocketClient(socket, interval)
     this.socket    = socket;
     this.interval  = typeof(interval) === 'number' ? interval : 0;
     this.events    = [];
-    this.callbacks = {};
+    this.callbacks = [];
     this.loop      = null;
 
     this.flush     = this.flush.bind(this);
@@ -25,20 +25,6 @@ function BaseSocketClient(socket, interval)
 
 BaseSocketClient.prototype = Object.create(EventEmitter.prototype);
 BaseSocketClient.prototype.constructor = BaseSocketClient;
-
-/**
- * Event prefix
- *
- * @type {String}
- */
-BaseSocketClient.prototype.eventPrefix = 'evt/';
-
-/**
- * Callback prefix
- *
- * @type {String}
- */
-BaseSocketClient.prototype.callbackPrefix = 'clb/';
 
 /**
  * On socket close
@@ -93,9 +79,8 @@ BaseSocketClient.prototype.stop = function()
  */
 BaseSocketClient.prototype.attachEvents = function()
 {
-    this.socket.onmessage = this.onMessage;
-    this.socket.onclose   = this.onClose;
-
+    this.socket.addEventListener('message', this.onMessage);
+    this.socket.addEventListener('close', this.onClose);
     this.on('ping', this.onPing);
 };
 
@@ -106,7 +91,6 @@ BaseSocketClient.prototype.detachEvents = function()
 {
     this.socket.removeEventListener('message', this.onMessage);
     this.socket.removeEventListener('close', this.onClose);
-
     this.removeListener('ping', this.onPing);
 };
 
@@ -120,15 +104,14 @@ BaseSocketClient.prototype.detachEvents = function()
  */
 BaseSocketClient.prototype.addEvent = function (name, data, callback, force)
 {
-    var event = [this.eventPrefix + name];
+    var event = [name];
 
     if (typeof(data) !== 'undefined') {
         event[1] = data;
     }
 
     if (typeof(callback) !== 'undefined') {
-        event[2] = new Date().getTime();
-        this.callbacks[event[2]] = callback;
+        event[2] = this.indexCallback(callback);
     }
 
     if (!this.interval || (typeof(force) !== 'undefined' && force)) {
@@ -148,22 +131,13 @@ BaseSocketClient.prototype.addEvent = function (name, data, callback, force)
 BaseSocketClient.prototype.addEvents = function (sources, force)
 {
     var length = sources.length,
-        events = [],
-        event;
+        events = [];
 
     for (var i = 0; i < length; i++) {
-        event = [this.eventPrefix + sources[i][0]];
-
-        if (typeof(sources[i][1]) !== 'undefined') {
-            event[1] = sources[i][1];
-        }
-
         if (typeof(sources[i][2]) !== 'undefined') {
-            event[2] = new Date().getTime();
-            this.callbacks[event[2]] = sources[i][2];
+            sources[i][2] = this.indexCallback(callback);
         }
-
-        events.push(event);
+        events.push(sources[i]);
     }
 
     if (!this.interval || force) {
@@ -175,6 +149,22 @@ BaseSocketClient.prototype.addEvents = function (sources, force)
 };
 
 /**
+ * Index a new callback
+ *
+ * @param {Function} callback
+ *
+ * @return {Number}
+ */
+BaseSocketClient.prototype.indexCallback = function(callback)
+{
+    var index = this.callbacks.length++;
+
+    this.callbacks[index] = callback;
+
+    return index;
+};
+
+/**
  * Add a callback
  *
  * @param {Number} id
@@ -182,7 +172,7 @@ BaseSocketClient.prototype.addEvents = function (sources, force)
  */
 BaseSocketClient.prototype.addCallback = function (id, data)
 {
-    var event = [this.callbackPrefix + id];
+    var event = [id];
 
     if (typeof(data) !== 'undefined') {
         event[1] = data;
@@ -227,28 +217,35 @@ BaseSocketClient.prototype.onMessage = function (e)
 {
     var data = JSON.parse(e.data),
         length = data.length,
-        name,
-        isEvent;
+        name;
 
     for (var i = 0; i < length; i++) {
+        source = data[i];
+        name = source[0];
 
-        isEvent = data[i][0].substr(0, this.eventPrefix.length) === this.eventPrefix;
-        name = data[i][0].substr(this.eventPrefix.length);
-
-        if (isEvent) {
-            if (typeof(data[i][2]) === 'number') {
-                this.emit(name, {data: data[i][1], callback: this.createCallback(data[i][2])});
+        if (typeof(name) === 'string') {
+            if (source.length === 3) {
+                this.emit(name, [source[1], this.createCallback(source[2])]);
             } else {
-                this.emit(name, data[i][1]);
+                this.emit(name, source[1]);
             }
         } else {
-            id = parseInt(name, 10);
-
-            if(typeof(this.callbacks[id]) !== 'undefined') {
-                this.callbacks[id](typeof(data[i][1]) !== 'undefined' ? data[i][1] : null);
-                delete this.callbacks[id];
-            }
+            this.playCallback(name, typeof(source[1]) !== 'undefined' ? source[1] : null);
         }
+    }
+};
+
+/**
+ * Play an indexed callback
+ *
+ * @param {Number} id
+ * @param {Object|null} data
+ */
+BaseSocketClient.prototype.playCallback = function(id, data)
+{
+    if(typeof(this.callbacks[id]) !== 'undefined') {
+        this.callbacks[id](data);
+        delete this.callbacks[id];
     }
 };
 

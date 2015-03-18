@@ -25,19 +25,19 @@ function RoomController(room)
     this.onKick        = this.onKick.bind(this);
 
     this.callbacks = {
-        onTalk: function (data) { controller.onTalk(this, data.data, data.callback); },
-        onPlayerAdd: function (data) { controller.onPlayerAdd(this, data.data, data.callback); },
-        onPlayerRemove: function (data) { controller.onPlayerRemove(this, data.data, data.callback); },
-        onReady: function (data) { controller.onReady(this, data.data, data.callback); },
-        onKickVote: function (data) { controller.onKickVote(this, data.data, data.callback); },
-        onName: function (data) { controller.onName(this, data.data, data.callback); },
-        onColor: function (data) { controller.onColor(this, data.data, data.callback); },
+        onTalk: function (data) { controller.onTalk(this, data[0], data[1]); },
+        onPlayerAdd: function (data) { controller.onPlayerAdd(this, data[0], data[1]); },
+        onPlayerRemove: function (data) { controller.onPlayerRemove(this, data[0], data[1]); },
+        onReady: function (data) { controller.onReady(this, data[0], data[1]); },
+        onKickVote: function (data) { controller.onKickVote(this, data[0], data[1]); },
+        onName: function (data) { controller.onName(this, data[0], data[1]); },
+        onColor: function (data) { controller.onColor(this, data[0], data[1]); },
         onLeave: function () { controller.onLeave(this); },
         onActivity: function () { controller.onActivity(this); },
 
-        onConfigMaxScore: function (data) { controller.onConfigMaxScore(this, data.data, data.callback); },
-        onConfigVariable:  function (data) { controller.onConfigVariable(this, data.data, data.callback); },
-        onConfigBonus:  function (data) { controller.onConfigBonus(this, data.data, data.callback); }
+        onConfigMaxScore: function (data) { controller.onConfigMaxScore(this, data[0], data[1]); },
+        onConfigVariable:  function (data) { controller.onConfigVariable(this, data[0], data[1]); },
+        onConfigBonus:  function (data) { controller.onConfigBonus(this, data[0], data[1]); }
     };
 
     this.loadRoom();
