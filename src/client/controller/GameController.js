@@ -52,7 +52,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.backToRoom     = this.backToRoom.bind(this);
     this.updateBorders  = this.updateBorders.bind(this);
 
-    this.offUnload        = this.$scope.$on('$locationChangeStart', this.onUnload)
+    this.offUnload        = this.$scope.$on('$locationChangeStart', this.onUnload);
     this.offDestroy       = this.$scope.$on('$destroy', this.onExit);
     window.onbeforeunload = this.onUnload;
 
