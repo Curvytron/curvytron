@@ -47,11 +47,14 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onLeave        = this.onLeave.bind(this);
     this.onSpectate     = this.onSpectate.bind(this);
     this.onSpectators   = this.onSpectators.bind(this);
-    this.leaveGame      = this.leaveGame.bind(this);
+    this.onUnload       = this.onUnload.bind(this);
+    this.onExit         = this.onExit.bind(this);
     this.backToRoom     = this.backToRoom.bind(this);
     this.updateBorders  = this.updateBorders.bind(this);
 
-    this.$scope.$on('$destroy', this.leaveGame);
+    this.offUnload        = this.$scope.$on('$locationChangeStart', this.onUnload);
+    this.offDestroy       = this.$scope.$on('$destroy', this.onExit);
+    window.onbeforeunload = this.onUnload;
 
     // Hydrate scope:
     this.$scope.sortorder   = '-score';
@@ -81,6 +84,13 @@ function GameController($scope, $routeParams, $location, client, repository, cha
         this.loadGame(this.repository.room);
     }
 }
+
+/**
+ * Confirmation message
+ *
+ * @type {String}
+ */
+GameController.prototype.confirmation = 'Are you sure you want to leave the game?';
 
 /**
  * Attach socket Events
@@ -455,7 +465,6 @@ GameController.prototype.onEnd = function(e)
     this.$scope.phase      = 'game';
 
     this.applyScope();
-
     this.close();
 };
 
@@ -507,16 +516,42 @@ GameController.prototype.updateBorders = function()
 /**
  * Leave room
  */
-GameController.prototype.leaveGame = function()
+GameController.prototype.onExit = function()
 {
-    if (this.room && this.$location.path() !== this.room.url) {
+    if ((this.room && this.$location.path() !== this.room.url) || (this.game && this.game.started)) {
         this.repository.leave();
         this.chat.clear();
     }
 
-    this.radio.stop();
-    this.sound.stop('win');
     this.close();
+};
+
+/**
+ * On unload
+ *
+ * @param {Event} e
+ *
+ * @return {String}
+ */
+GameController.prototype.onUnload = function(e)
+{
+    if (this.needConfirmation()) {
+        if (e.type === 'beforeunload') {
+            return this.confirmation;
+        } else if (!confirm(this.confirmation)) {
+            return e.preventDefault();
+        }
+    }
+};
+
+/**
+ * Do we need confirmation before leaving?
+ *
+ * @return {Boolean}
+ */
+GameController.prototype.needConfirmation = function()
+{
+    return !this.$scope.spectating && !this.$scope.end;
 };
 
 /**
@@ -524,7 +559,13 @@ GameController.prototype.leaveGame = function()
  */
 GameController.prototype.close = function()
 {
+    window.onbeforeunload = null;
+
+    this.offUnload();
+    this.offDestroy();
     this.clearWarmup();
+    this.radio.stop();
+    this.sound.stop('win');
 
     if (this.game) {
         this.detachSocketEvents();
