@@ -29,7 +29,7 @@
                 />
             </span>
             <form ng-submit="createRoom()" class="top-right-form">
-                <button type="submit" id="submit">
+                <button type="submit" id="submit" analytics-on="click" analytics-event="Create Room">
                     <span><i class="icon-plus"></i></span>
                 </button>
                 <input type="text" ng-model="roomName" class="form-control clearfix" name="name" placeholder="Create a new room..." maxlength="{{ roomMaxLength }}" />
