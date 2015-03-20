@@ -53,10 +53,14 @@ Game.prototype.update = function(step)
                         avatar.setPosition(this.world.getOposite(border));
                     }
                 } else {
-                    avatar.die();
+                    avatar.die(null);
                 }
-            } else if (!avatar.invincible && !this.world.testBody(avatar.body)) {
-                avatar.die();
+            } else if (!avatar.invincible) {
+                var killer = this.world.getBody(avatar.body);
+
+                if (null !== killer) {
+                    avatar.die(killer.avatar);
+                }
             }
 
             if (avatar.alive) {
