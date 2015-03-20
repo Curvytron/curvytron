@@ -371,7 +371,8 @@ GameController.prototype.onPoint = function(e)
 GameController.prototype.onDie = function(e)
 {
     var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
+        avatar = this.game.avatars.getById(data.avatar),
+        killer = (data.killer) ? this.game.avatars.getById(data.killer) : null;
 
     if (avatar) {
         avatar.setAngle(data.angle);
@@ -379,6 +380,7 @@ GameController.prototype.onDie = function(e)
         this.applyScope();
 
         this.sound.play('death');
+        this.chat.messages.push(new DieMessage(this.chat.curvybot, avatar, killer));
     }
 };
 

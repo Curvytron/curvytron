@@ -309,7 +309,11 @@ GameController.prototype.onPoint = function(data)
  */
 GameController.prototype.onDie = function(data)
 {
-    this.socketGroup.addEvent('die', {avatar: data.avatar.id, angle: data.avatar.angle});
+    this.socketGroup.addEvent('die', {
+        avatar: data.avatar.id,
+        angle: data.avatar.angle,
+        killer: data.killer ? data.killer.id : null
+    });
 };
 
 /**
