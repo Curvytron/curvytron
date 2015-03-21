@@ -23,6 +23,29 @@ Duplicate `config.json.sample` to `config.json`:
 
 Go to `http://localhost:8080/`, join a room, choose a player name and get ready!
 
+## Configuration reference:
+
+```
+{
+    # The port on wich Curvytron server will run
+    "port": 8080,
+
+    # Optional Google Analytocs Identifier
+    "googleAnalyticsId": null,
+
+    # Inspector (InfluxDb statistics):
+    "inspector": {
+        "enabled": false,
+        # InfluxDb configuration:
+        "host": "127.0.0.1",
+        "port": 8086,
+        "username": "root",
+        "password": "root",
+        "database": "curvytron"
+    }
+}
+```
+
 ## Setting it up with Nginx:
 
 Create a virtual host:
