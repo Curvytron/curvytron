@@ -6,10 +6,13 @@
 function Radio (profile)
 {
     this.profile = profile;
-    this.element = this.getVideo(this.source);
-    this.active  = this.profile.radio;
+    this.active  = false;
+    this.enabled = this.profile.radio;
+    this.element = this.getVideo();
 
     this.toggle = this.toggle.bind(this);
+
+    this.resolve();
 }
 
 /**
@@ -33,40 +36,52 @@ Radio.prototype.volume = 0.8;
  *
  * @return {DOMElement}
  */
-Radio.prototype.getVideo = function(src)
+Radio.prototype.getVideo = function()
 {
-    var video = document.createElement('video'),
+    var video  = document.createElement('video'),
         source = document.createElement('source');
 
     video.appendChild(source);
 
     video.name     = 'media';
     video.autoplay = true;
-    video.volume   = this.active ? this.volume : 0;
+    video.volume   = this.volume;
     source.type    = 'audio/mpeg';
-    source.src     = this.source;
 
     return video;
 };
 
 /**
- * Toggle active
+ * Toggle enabled
  */
 Radio.prototype.toggle = function ()
 {
-    this.setActive(!this.active);
+    this.setEnabled(!this.enabled);
 };
 
 /**
- * Set active/inactive
+ * Set enabled/disabled (controlled by the user)
  *
- * @param {Boolean} active
+ * @param {Boolean} enabled
+ */
+Radio.prototype.setEnabled = function(enabled)
+{
+    this.enabled = enabled ? true : false;
+
+    this.profile.setRadio(this.enabled);
+    this.resolve();
+};
+
+/**
+ * Set active/inactive (controlled by the game)
+ *
+ * @param {Boolean} enabled
  */
 Radio.prototype.setActive = function(active)
 {
     this.active = active ? true : false;
-    this.setVolume(this.active ? this.volume : 0);
-    this.profile.setRadio(this.active);
+
+    this.resolve();
 };
 
 /**
@@ -80,19 +95,29 @@ Radio.prototype.setVolume = function(volume)
 };
 
 /**
+ * Resolve radio status
+ */
+Radio.prototype.resolve = function()
+{
+    if (this.active && this.enabled) {
+        this.play();
+    } else {
+        this.stop();
+    }
+};
+
+/**
  * Play
  */
 Radio.prototype.play = function()
 {
-    if (this.active) {
-        this.setVolume();
-    }
+    this.element.src = this.source;
 };
 
 /**
  * Stop
  */
-Radio.prototype.stop = function(save)
+Radio.prototype.stop = function()
 {
-    this.setVolume(0);
+    this.element.src = '';
 };
