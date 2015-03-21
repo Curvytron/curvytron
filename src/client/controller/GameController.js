@@ -162,7 +162,7 @@ GameController.prototype.loadGame = function(room)
 
     this.game.fps.setElement(document.getElementById('fps'));
     this.client.pingLogger.setElement(document.getElementById('ping'));
-    this.radio.play();
+    this.radio.setActive(true);
 
     // Hydrate scope:
     this.$scope.curvytron.bodyClass = 'game-mode';
@@ -525,6 +525,12 @@ GameController.prototype.onExit = function()
         this.chat.clear();
     }
 
+    window.onbeforeunload = null;
+
+    this.radio.setActive(false);
+    this.sound.stop('win');
+    this.offUnload();
+    this.offDestroy();
     this.close();
 };
 
@@ -561,13 +567,7 @@ GameController.prototype.needConfirmation = function()
  */
 GameController.prototype.close = function()
 {
-    window.onbeforeunload = null;
-
-    this.offUnload();
-    this.offDestroy();
     this.clearWarmup();
-    this.radio.stop();
-    this.sound.stop('win');
 
     if (this.game) {
         this.detachSocketEvents();
