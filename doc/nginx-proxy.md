@@ -2,7 +2,7 @@
 
 Create a virtual host:
 
-```
+```nginx
 server {
     listen 80;
 
