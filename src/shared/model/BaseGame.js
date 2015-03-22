@@ -318,8 +318,8 @@ BaseGame.prototype.endRound = function()
 {
     if (this.inRound) {
         this.inRound = false;
-        setTimeout(this.stop, this.warmdownTime);
         this.onRoundEnd();
+        setTimeout(this.stop, this.warmdownTime);
     }
 };
 
