@@ -3,7 +3,8 @@
  */
 function BaseFPSLogger()
 {
-    this.value = 0;
+    this.value    = 0;
+    this.interval = null;
 
     this.update = this.update.bind(this);
     this.log    = this.log.bind(this);
