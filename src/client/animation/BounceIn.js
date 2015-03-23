@@ -6,10 +6,20 @@
 function BounceIn(duration)
 {
     this.duration = duration;
-    this.target   = 1;
     this.created  = new Date().getTime();
     this.done     = false;
+
+    this.end = this.end.bind(this);
+
+    setTimeout(this.end, duration);
 }
+
+/**
+ * Target value
+ *
+ * @type {Number}
+ */
+BounceIn.prototype.target = 1;
 
 /**
  * Easing constant
@@ -25,17 +35,25 @@ BounceIn.prototype.factor = 1.77635683940025e-15;
  */
 BounceIn.prototype.getValue = function()
 {
-    if (this.done) { return this.target; }
+    return this.done ? this.target : this.easeOutBack(this.getAge(), 0, this.target, this.duration, this.factor);
+};
 
-    var age = new Date().getTime() - this.created;
+/**
+ * Get age in millisecond
+ *
+ * @return {Number}
+ */
+BounceIn.prototype.getAge = function()
+{
+    return new Date().getTime() - this.created;
+};
 
-    if (age > this.duration) {
-        this.done = true;
-
-        return this.target;
-    }
-
-    return this.easeOutBack(age, 0, this.target, this.duration, this.factor);
+/**
+ * End
+ */
+BounceIn.prototype.end = function()
+{
+    this.done = true;
 };
 
 /**
