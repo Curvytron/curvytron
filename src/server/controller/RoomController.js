@@ -73,10 +73,13 @@ RoomController.prototype.loadRoom = function()
  */
 RoomController.prototype.unloadRoom = function()
 {
+    this.room.removeListener('close', this.unloadRoom);
     this.room.removeListener('player:join', this.onPlayerJoin);
     this.room.removeListener('player:leave', this.onPlayerLeave);
     this.room.removeListener('game:new', this.onGame);
     this.kickManager.removeListener('kick', this.onKick);
+    this.kickManager.removeListener('vote:new', this.onVoteNew);
+    this.kickManager.removeListener('vote:close', this.onVoteClose);
     this.kickManager.clear();
 };
 
@@ -281,6 +284,7 @@ RoomController.prototype.onPlayerAdd = function(client, data, callback)
 
     this.room.addPlayer(player);
     client.players.add(player);
+    this.emit('player:add', { room: this.room, player: player});
     callback({success: true});
 };
 
@@ -297,10 +301,10 @@ RoomController.prototype.onPlayerRemove = function(client, data, callback)
 
     if (player) {
         this.removePlayer(player);
-        callback({success: true});
-    } else {
-        callback({success: false});
+        this.emit('player:remove', { room: this.room, player: player});
     }
+
+    callback({success: player ? true : false});
 };
 
 /**

@@ -74,6 +74,8 @@ GameController.prototype.unloadGame = function()
     this.game.removeListener('game:start', this.onGameStart);
     this.game.removeListener('game:stop', this.onGameStop);
     this.game.removeListener('end', this.onEnd);
+    this.game.removeListener('clear', this.onClear);
+    this.game.removeListener('player:leave', this.onPlayerLeave);
     this.game.removeListener('round:new', this.onRoundNew);
     this.game.removeListener('round:end', this.onRoundEnd);
     this.game.removeListener('round:winner', this.onRoundWinner);
