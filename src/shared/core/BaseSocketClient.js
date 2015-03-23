@@ -17,7 +17,6 @@ function BaseSocketClient(socket, interval)
     this.flush     = this.flush.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.onClose   = this.onClose.bind(this);
-    this.ping      = this.onPing.bind(this);
 
     this.attachEvents();
     this.start();
@@ -81,7 +80,6 @@ BaseSocketClient.prototype.attachEvents = function()
 {
     this.socket.addEventListener('message', this.onMessage);
     this.socket.addEventListener('close', this.onClose);
-    this.on('ping', this.onPing);
 };
 
 /**
@@ -91,7 +89,6 @@ BaseSocketClient.prototype.detachEvents = function()
 {
     this.socket.removeEventListener('message', this.onMessage);
     this.socket.removeEventListener('close', this.onClose);
-    this.removeListener('ping', this.onPing);
 };
 
 /**
@@ -261,14 +258,4 @@ BaseSocketClient.prototype.createCallback = function(id)
     var client = this;
 
     return function (data) { client.addCallback(id, data); };
-};
-
-/**
- * On ping
- *
- * @param {Number} ping
- */
-BaseSocketClient.prototype.onPing = function (ping)
-{
-    this.addEvent('pong', ping);
 };
