@@ -67,6 +67,7 @@ RoomRepository.prototype.detachEvents = function()
     this.client.off('room:config:bonus', this.onConfigBonus);
     this.client.off('vote:new', this.onVote);
     this.client.off('vote:close', this.onVote);
+    this.client.off('client:activity', this.onClientActivity);
 };
 
 /**
