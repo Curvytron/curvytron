@@ -386,7 +386,7 @@ GameController.prototype.onDie = function(e)
         this.applyScope();
 
         this.sound.play('death');
-        this.chat.messages.push(new DieMessage(this.chat.curvybot, avatar, killer));
+        //this.chat.messages.push(new DieMessage(this.chat.curvybot, avatar, killer));
     }
 };
 
