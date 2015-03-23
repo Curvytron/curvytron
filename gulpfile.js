@@ -33,8 +33,8 @@ var fs        = require('fs'),
             './bower_components/createjs-soundjs/lib/soundjs-0.6.0.min.js',
             './bower_components/tom32i-event-emitter.js/dist/event-emitter.min.js',
             './bower_components/tom32i-option-resolver.js/dist/option-resolver.min.js',
-            './bower_components/tom32i-gamepad.js/dist/gamepad.min.js',
-            './bower_components/tom32i-key-mapper.js/dist/key-mapper.min.js',
+            './bower_components/tom32i-gamepad.js/dist/gamepad.src.js',
+            './bower_components/tom32i-key-mapper.js/dist/key-mapper.src.js',
             './bower_components/tom32i-asset-loader.js/dist/asset-loader.min.js'
         ],
         recipes = {
