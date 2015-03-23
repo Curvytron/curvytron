@@ -27,6 +27,8 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.setup          = false;
 
     // Binding
+    this.onGameStart    = this.onGameStart.bind(this);
+    this.onGameStop     = this.onGameStop.bind(this);
     this.onReady        = this.onReady.bind(this);
     this.onAssetsLoaded = this.onAssetsLoaded.bind(this);
     this.onChatLoaded   = this.onChatLoaded.bind(this);
@@ -51,10 +53,6 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onExit         = this.onExit.bind(this);
     this.backToRoom     = this.backToRoom.bind(this);
     this.updateBorders  = this.updateBorders.bind(this);
-
-    this.offUnload        = this.$scope.$on('$locationChangeStart', this.onUnload);
-    this.offDestroy       = this.$scope.$on('$destroy', this.onExit);
-    window.onbeforeunload = this.onUnload;
 
     // Hydrate scope:
     this.$scope.sortorder   = '-score';
@@ -97,6 +95,8 @@ GameController.prototype.confirmation = 'Are you sure you want to leave the game
  */
 GameController.prototype.attachSocketEvents = function()
 {
+    this.client.on('game:start', this.onGameStart);
+    this.client.on('game:stop', this.onGameStop);
     this.client.on('ready', this.onReady);
     this.client.on('property', this.onProperty);
     this.client.on('point', this.onPoint);
@@ -119,6 +119,8 @@ GameController.prototype.attachSocketEvents = function()
  */
 GameController.prototype.detachSocketEvents = function()
 {
+    this.client.off('game:start', this.onGameStart);
+    this.client.off('game:stop', this.onGameStop);
     this.client.off('ready', this.onReady);
     this.client.off('property', this.onProperty);
     this.client.off('point', this.onPoint);
@@ -143,6 +145,10 @@ GameController.prototype.detachSocketEvents = function()
  */
 GameController.prototype.loadGame = function(room)
 {
+    this.offUnload        = this.$scope.$on('$locationChangeStart', this.onUnload);
+    this.offDestroy       = this.$scope.$on('$destroy', this.onExit);
+    window.onbeforeunload = this.onUnload;
+
     this.room = room;
     this.game = room.newGame();
 
@@ -162,7 +168,7 @@ GameController.prototype.loadGame = function(room)
 
     this.game.fps.setElement(document.getElementById('fps'));
     this.client.pingLogger.setElement(document.getElementById('ping'));
-    this.radio.play();
+    this.radio.setActive(true);
 
     // Hydrate scope:
     this.$scope.curvytron.bodyClass = 'game-mode';
@@ -371,7 +377,8 @@ GameController.prototype.onPoint = function(e)
 GameController.prototype.onDie = function(e)
 {
     var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
+        avatar = this.game.avatars.getById(data.avatar),
+        killer = (data.killer) ? this.game.avatars.getById(data.killer) : null;
 
     if (avatar) {
         avatar.setAngle(data.angle);
@@ -379,6 +386,7 @@ GameController.prototype.onDie = function(e)
         this.applyScope();
 
         this.sound.play('death');
+        this.chat.messages.push(new DieMessage(this.chat.curvybot, avatar, killer));
     }
 };
 
@@ -399,9 +407,9 @@ GameController.prototype.onSpectate = function(e)
     }
 
     if (data.inRound) {
-        this.game.newRound(0);
-    } else if(data.rendered) {
-        this.game.start();
+        return data.rendered ? this.game.newRound(0) : this.onRoundNew();
+    } else {
+        return this.game.start();
     }
 };
 
@@ -414,6 +422,27 @@ GameController.prototype.onSpectators = function(e)
 {
     this.$scope.spectators = e.detail;
     this.applyScope();
+};
+
+/**
+ * On game start
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onGameStart = function(e)
+{
+    this.endWarmup();
+    this.game.start();
+};
+
+/**
+ * On game stop
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onGameStop = function(e)
+{
+    this.game.stop();
 };
 
 /**
@@ -523,6 +552,12 @@ GameController.prototype.onExit = function()
         this.chat.clear();
     }
 
+    window.onbeforeunload = null;
+
+    this.radio.setActive(false);
+    this.sound.stop('win');
+    this.offUnload();
+    this.offDestroy();
     this.close();
 };
 
@@ -559,13 +594,7 @@ GameController.prototype.needConfirmation = function()
  */
 GameController.prototype.close = function()
 {
-    window.onbeforeunload = null;
-
-    this.offUnload();
-    this.offDestroy();
     this.clearWarmup();
-    this.radio.stop();
-    this.sound.stop('win');
 
     if (this.game) {
         this.detachSocketEvents();

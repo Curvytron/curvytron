@@ -10,6 +10,8 @@ function GameController(game)
     this.socketGroup = new SocketGroup(this.clients);
     this.waiting     = null;
 
+    this.onGameStart   = this.onGameStart.bind(this);
+    this.onGameStop    = this.onGameStop.bind(this);
     this.onDie         = this.onDie.bind(this);
     this.onPoint       = this.onPoint.bind(this);
     this.onProperty    = this.onProperty.bind(this);
@@ -44,6 +46,8 @@ GameController.prototype.waitingTime = 5000;
  */
 GameController.prototype.loadGame = function()
 {
+    this.game.on('game:start', this.onGameStart);
+    this.game.on('game:stop', this.onGameStop);
     this.game.on('end', this.onEnd);
     this.game.on('clear', this.onClear);
     this.game.on('player:leave', this.onPlayerLeave);
@@ -67,6 +71,8 @@ GameController.prototype.loadGame = function()
  */
 GameController.prototype.unloadGame = function()
 {
+    this.game.removeListener('game:start', this.onGameStart);
+    this.game.removeListener('game:stop', this.onGameStop);
     this.game.removeListener('end', this.onEnd);
     this.game.removeListener('round:new', this.onRoundNew);
     this.game.removeListener('round:end', this.onRoundEnd);
@@ -309,7 +315,11 @@ GameController.prototype.onPoint = function(data)
  */
 GameController.prototype.onDie = function(data)
 {
-    this.socketGroup.addEvent('die', {avatar: data.avatar.id, angle: data.avatar.angle});
+    this.socketGroup.addEvent('die', {
+        avatar: data.avatar.id,
+        angle: data.avatar.angle,
+        killer: data.killer ? data.killer.id : null
+    });
 };
 
 /**
@@ -357,6 +367,26 @@ GameController.prototype.onBonusStack = function(data)
 // Game events:
 
 /**
+ * On game start
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onGameStart = function(data)
+{
+    this.socketGroup.addEvent('game:start');
+};
+
+/**
+ * On game stop
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onGameStop = function(data)
+{
+    this.socketGroup.addEvent('game:stop');
+};
+
+/**
  * On round new
  *
  * @param {Object} data
@@ -367,7 +397,7 @@ GameController.prototype.onRoundNew = function(data)
 };
 
 /**
- * On round new
+ * On round end
  *
  * @param {Object} data
  */

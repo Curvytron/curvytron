@@ -142,14 +142,19 @@ Avatar.prototype.setPrinting = function(printing)
 
 /**
  * Die
+ *
+ * @param {Avatar|null} killer
  */
-Avatar.prototype.die = function()
+Avatar.prototype.die = function(killer)
 {
     BaseAvatar.prototype.die.call(this);
 
     this.printManager.stop();
     this.addPoint(this.head.slice(0));
-    this.emit('die', {avatar: this});
+    this.emit('die', {
+        avatar: this,
+        killer: killer
+    });
 };
 
 /**
