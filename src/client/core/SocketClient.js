@@ -19,8 +19,6 @@ function SocketClient()
     this.socket.addEventListener('open', this.onOpen);
     this.socket.addEventListener('error', this.onError);
     this.socket.addEventListener('close', this.onClose);
-
-    this.on('pong', this.pingLogger.pong);
 }
 
 SocketClient.prototype = Object.create(BaseSocketClient.prototype);
@@ -31,7 +29,7 @@ SocketClient.prototype.constructor = SocketClient;
  *
  * @type {Number}
  */
-SocketClient.prototype.pingFrequency = 5000;
+SocketClient.prototype.pingFrequency = 2000;
 
 /**
  * On socket connection
@@ -86,7 +84,7 @@ SocketClient.prototype.onClose = function(e)
  */
 SocketClient.prototype.sendPing = function(ping)
 {
-    this.addEvent('ping', ping);
+    this.addEvent('ping', ping, this.pingLogger.pong);
 };
 
 /**

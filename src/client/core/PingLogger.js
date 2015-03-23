@@ -56,13 +56,12 @@ PingLogger.prototype.ping = function()
  *
  * @param {Event} e
  */
-PingLogger.prototype.pong = function(e)
+PingLogger.prototype.pong = function(pong)
 {
-    var pong = new Date().getTime(),
-        index = this.queue.indexOf(e.detail);
+    var index = this.queue.indexOf(pong);
 
     if (index >= 0) {
-        this.setPing(pong - this.queue[index]);
+        this.setPing(new Date().getTime() - this.queue[index]);
         this.queue.splice(index, 1);
     }
 };
