@@ -113,7 +113,7 @@ Inspector.prototype.onRoomClose = function(data)
 {
     var room = data.room,
         game = room.game,
-        tracker = this.trackers.room.getById(room.name)
+        tracker = this.trackers.room.getById(room.name);
 
     room.removeListener('game:new', this.onGameNew);
 
