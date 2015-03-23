@@ -17,8 +17,8 @@ function KickManager (controller)
 
     this.controller.on('client:add', this.updateVotes);
     this.controller.on('client:remove', this.onClientLeave);
-    this.room.on('player:join', this.updateVotes);
-    this.room.on('player:leave', this.onPlayerLeave);
+    this.controller.on('player:add', this.updateVotes);
+    this.controller.on('player:remove', this.onPlayerLeave);
     this.room.on('game:new', this.clear);
 }
 
