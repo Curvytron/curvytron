@@ -549,6 +549,23 @@
             }
         }
     }
+
+    /* Kill log */
+    .kill-log-wrapper {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 20%;
+        height: auto;
+        font-size: 14px;
+        z-index: 100;
+
+        .feed {
+            position: relative;
+            background: none;
+            text-align: right;
+        }
+    }
 }
 
 .btn-toogle {

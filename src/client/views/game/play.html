@@ -34,6 +34,7 @@
             </div>
         </aside>
         <div id="col-right">
+        <div class="kill-log-wrapper" ng-include="'js/views/game/kill_log.html'" onload="logLoaded()"></div>
             <div class="spectating" ng-if="spectating">
                 <p><i class="icon-viewer"></i> You are in spectator mode</p>
             </div>

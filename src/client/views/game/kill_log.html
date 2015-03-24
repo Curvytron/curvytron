@@ -1,0 +1,24 @@
+<div class="feed">
+    <div ng-repeat="message in logs" class="one-message">
+        <strong style="color: {{ message.getPlayerColor() }};">
+            <span ng-if="message.getPlayerIcon()" class="message-icon {{ message.getPlayerIcon() }}"></span>
+            <span ng-if="!message.getPlayerIcon()">{{ message.getPlayerName() }}:</span>
+        </strong>
+        <span class="message-content" ng-switch="message.type">
+             <!-- Die -->
+            <span ng-switch-when="die">
+                <span ng-if="message.deadPlayer.name === message.killerPlayer.name">
+                    <span style="color: {{ message.deadPlayer.color }}">{{ message.deadPlayer.name }}</span> committed suicide.
+                </span>
+                <span ng-if="(message.deadPlayer && message.killerPlayer) && (message.deadPlayer.name !== message.killerPlayer.name)">
+                    <span style="color: {{ message.deadPlayer.color }}">{{ message.deadPlayer.name }}</span>
+                    was killed by
+                    <span style="color: {{ message.killerPlayer.color }}">{{ message.killerPlayer.name }}</span>.
+                </span>
+                <span ng-if="message.deadPlayer.name && !message.killerPlayer">
+                    <span style="color: {{ message.deadPlayer.color }}">{{ message.deadPlayer.name }}</span> crashed on the wall.
+                </span>
+            </span>
+        </span>
+    </div>
+</div>
