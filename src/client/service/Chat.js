@@ -29,6 +29,23 @@ Chat.prototype = Object.create(BaseChat.prototype);
 Chat.prototype.constructor = Chat;
 
 /**
+ * Tips
+ *
+ * @type {Array}
+ */
+Chat.prototype.tips = [
+    'To customize your left/right controls, click the [←]/[→] buttons and press any key.',
+    'Curvytron supports gamepads! Connect it, press A, then setup your controls.',
+    'Yes, you can play Curvytron on your smartphone ;)',
+    'You can add multiple players on the same computer.',
+    'Green bonuses apply only to you.',
+    'Red bonuses target your ennemies.',
+    'White bonuses affect everyone.',
+    'Making a Snail™ is a sure way to win, but other players might hate you for it.',
+    'The Enrichment Center regrets to inform you that this next test is impossible. Make no attempt to solve it.'
+];
+
+/**
  * Curvybot profile
  *
  * @type {Object}
@@ -168,6 +185,27 @@ Chat.prototype.onActivity = function(e)
     if (this.element) {
         this.auto = this.element.scrollTop === this.element.scrollHeight - this.element.clientHeight;
     }
+};
+
+/**
+ * Add tutorial message
+ */
+Chat.prototype.addTip = function()
+{
+    this.addMessage(new Message(
+        this.tips[Math.floor(Math.random() * this.tips.length)],
+        null,
+        this.curvybot
+    ));
+};
+
+/**
+ * Clear messages
+ */
+Chat.prototype.clearMessages = function()
+{
+    BaseChat.prototype.clearMessages.call(this);
+    this.addTip();
 };
 
 /**
