@@ -6,7 +6,7 @@
  * @param {Object} $location
  * @param {SocketClient} SocketClient
  * @param {RoomRepository} repository
- * @param {Profuile} profile
+ * @param {Profile} profile
  * @param {Chat} chat
  * @param {Notifier} notifier
  */
@@ -32,9 +32,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.applyScope       = this.applyScope.bind(this);
     this.onJoin           = this.onJoin.bind(this);
     this.onJoined         = this.onJoined.bind(this);
-    this.onChatLoaded     = this.onChatLoaded.bind(this);
     this.onControlChange  = this.onControlChange.bind(this);
-    this.onVote           = this.onVote.bind(this);
     this.joinRoom         = this.joinRoom.bind(this);
     this.leaveRoom        = this.leaveRoom.bind(this);
     this.setColor         = this.setColor.bind(this);
@@ -56,7 +54,6 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.$scope.setName             = this.setName;
     this.$scope.setTouch            = this.setTouch;
     this.$scope.toggleParameters    = this.toggleParameters;
-    this.$scope.chatLoaded          = this.onChatLoaded;
     this.$scope.nameMaxLength       = Player.prototype.maxLength;
     this.$scope.colorMaxLength      = Player.prototype.colorMaxLength;
     this.$scope.hasTouch            = this.hasTouch;
@@ -72,23 +69,6 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
         this.joinRoom();
     }
 }
-
-/**
- * Tips
- *
- * @type {Array}
- */
-RoomController.prototype.tips = [
-    'To customize your left/right controls, click the [←]/[→] buttons and press any key.',
-    'Curvytron supports gamepads! Connect it, press A, then setup your controls.',
-    'Yes, you can play Curvytron on your smartphone ;)',
-    'You can add multiple players on the same computer.',
-    'Green bonuses apply only to you.',
-    'Red bonuses target your ennemies.',
-    'White bonuses affect everyone.',
-    'Making a Snail™ is a sure way to win, but other players might hate you for it.',
-    'The Enrichment Center regrets to inform you that this next test is impossible. Make no attempt to solve it.'
-];
 
 /**
  * Join room and load scope
@@ -115,9 +95,7 @@ RoomController.prototype.onJoined = function(result)
         this.$scope.room = this.room;
 
         this.attachEvents();
-        this.chat.setRoom(this.room);
         this.addProfileUser();
-        this.addTip();
     } else {
         console.error('Could not join room %s', name);
         this.goHome();
@@ -127,21 +105,12 @@ RoomController.prototype.onJoined = function(result)
 };
 
 /**
- * On chat loaded
- */
-RoomController.prototype.onChatLoaded = function ()
-{
-    this.chat.setScope(this.$scope);
-};
-
-/**
  * Leave room
  */
 RoomController.prototype.leaveRoom = function()
 {
     if (this.room && this.$location.path() !== this.room.gameUrl) {
         this.repository.leave();
-        this.chat.clear();
     }
 
     this.detachEvents();
@@ -155,14 +124,12 @@ RoomController.prototype.leaveRoom = function()
 RoomController.prototype.attachEvents = function(name)
 {
     this.repository.on('room:close', this.goHome);
-    this.repository.on('room:join', this.onJoin);
-    this.repository.on('room:leave', this.applyScope);
+    this.repository.on('player:join', this.onJoin);
+    this.repository.on('player:leave', this.applyScope);
     this.repository.on('player:ready', this.applyScope);
     this.repository.on('player:color', this.applyScope);
     this.repository.on('player:name', this.applyScope);
     this.repository.on('client:activity', this.applyScope);
-    this.repository.on('vote:new', this.onVote);
-    this.repository.on('vote:close', this.onVote);
     this.repository.on('room:game:start', this.start);
 
     for (var i = this.room.players.items.length - 1; i >= 0; i--) {
@@ -178,14 +145,12 @@ RoomController.prototype.attachEvents = function(name)
 RoomController.prototype.detachEvents = function(name)
 {
     this.repository.off('room:close', this.goHome);
-    this.repository.off('room:join', this.onJoin);
-    this.repository.off('room:leave', this.applyScope);
+    this.repository.off('player:join', this.onJoin);
+    this.repository.off('player:leave', this.applyScope);
     this.repository.off('player:ready', this.applyScope);
     this.repository.off('player:color', this.applyScope);
     this.repository.off('player:name', this.applyScope);
     this.repository.off('client:activity', this.applyScope);
-    this.repository.off('vote:new', this.onVote);
-    this.repository.off('vote:close', this.onVote);
     this.repository.off('room:game:start', this.start);
 
     if (this.room) {
@@ -290,24 +255,6 @@ RoomController.prototype.onJoin = function(e)
         }
     } else {
         this.notifier.notify('New player joined!');
-    }
-
-    this.applyScope();
-};
-
-/**
- * On vote
- *
- * @param {Event} e
- */
-RoomController.prototype.onVote = function(e)
-{
-    var player = e.detail.target;
-
-    if (e.type === 'vote:new') {
-        this.chat.messages.push(new VoteKickMessage(this.chat.curvybot, player));
-    } else if (e.type === 'vote:close' && e.detail.result) {
-        this.chat.messages.push(new KickMessage(this.chat.curvybot, player));
     }
 
     this.applyScope();
@@ -457,18 +404,6 @@ RoomController.prototype.updateCurrentMessage = function()
         player = this.room.players.match(function (player) { return this.local; });
 
     this.chat.setPlayer(profile ? profile : player);
-};
-
-/**
- * Add tutorial message
- */
-RoomController.prototype.addTip = function()
-{
-    this.chat.messages.push(new Message(
-        this.tips[Math.floor(Math.random() * this.tips.length)],
-        null,
-        this.chat.curvybot
-    ));
 };
 
 /**

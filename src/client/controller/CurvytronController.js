@@ -118,11 +118,11 @@ CurvytronController.prototype.reload = function()
 /**
  * Apply scope
  */
-CurvytronController.prototype.applyScope = function(fn)
+CurvytronController.prototype.applyScope = function()
 {
     var phase = this.$scope.$root ? this.$scope.$root.$$phase : null;
 
-    if(phase !== '$apply' && phase !== '$digest') {
+    if (phase !== '$apply' && phase !== '$digest') {
         this.$scope.$apply();
     }
 };

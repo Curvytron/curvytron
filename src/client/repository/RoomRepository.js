@@ -85,38 +85,65 @@ RoomRepository.prototype.join = function(name, callback)
 
     this.client.addEvent('room:join', {name: name}, function (result) {
         if (result.success) {
-            repository.room = new Room(result.room.name);
-
-            for (var i = result.room.players.length - 1; i >= 0; i--) {
-                repository.room.addPlayer(new Player(
-                    result.room.players[i].id,
-                    result.room.players[i].client,
-                    result.room.players[i].name,
-                    result.room.players[i].color,
-                    result.room.players[i].ready,
-                    result.room.players[i].active
-                ));
-            }
-
-            repository.room.config.setMaxScore(result.room.config.maxScore);
-
-            for (var variable in result.room.config.variables) {
-                if (result.room.config.variables.hasOwnProperty(variable)) {
-                    repository.room.config.setVariable(variable, result.room.config.variables[variable]);
-                }
-            }
-
-            for (var bonus in result.room.config.bonuses) {
-                if (result.room.config.bonuses.hasOwnProperty(bonus)) {
-                    repository.room.config.setBonus(bonus, result.room.config.bonuses[bonus]);
-                }
-            }
-
-            callback({success: true, room: repository.room});
+            var room = repository.createRoom(result.room);
+            repository.setRoom(room);
+            callback({success: true, room: room});
         } else {
             callback({success: false});
         }
     });
+};
+
+/**
+ * Create room rom server data
+ *
+ * @param {Object} data
+ *
+ * @return {Room}
+ */
+RoomRepository.prototype.createRoom = function(data)
+{
+    var room = new Room(data.name);
+
+    for (var i = data.players.length - 1; i >= 0; i--) {
+        room.addPlayer(new Player(
+            data.players[i].id,
+            data.players[i].client,
+            data.players[i].name,
+            data.players[i].color,
+            data.players[i].ready,
+            data.players[i].active
+        ));
+    }
+
+    room.config.setMaxScore(data.config.maxScore);
+
+    for (var variable in data.config.variables) {
+        if (data.config.variables.hasOwnProperty(variable)) {
+            room.config.setVariable(variable, data.config.variables[variable]);
+        }
+    }
+
+    for (var bonus in data.config.bonuses) {
+        if (data.config.bonuses.hasOwnProperty(bonus)) {
+            room.config.setBonus(bonus, data.config.bonuses[bonus]);
+        }
+    }
+
+    return room;
+};
+
+/**
+ * Set current room
+ *
+ * @param {Room} room
+ */
+RoomRepository.prototype.setRoom = function(room)
+{
+    if (!this.room || !this.room.equal(room)) {
+        this.room = room;
+        this.emit(this.room ? 'room:join': 'room:leave');
+    }
 };
 
 /**
@@ -171,6 +198,7 @@ RoomRepository.prototype.leave = function()
 {
     this.client.addEvent('room:leave');
     this.stop();
+    this.emit('room:leave');
 };
 
 /**
@@ -273,7 +301,7 @@ RoomRepository.prototype.onJoinRoom = function(e)
         );
 
     if (this.room.addPlayer(player)) {
-        this.emit('room:join', {player: player});
+        this.emit('player:join', {player: player});
     }
 };
 
@@ -291,7 +319,7 @@ RoomRepository.prototype.onLeaveRoom = function(e)
 
     if (player && this.room.removePlayer(player)) {
         this.playerCache.add(player);
-        this.emit('room:leave', {player: player});
+        this.emit('player:leave', {player: player});
     }
 };
 
@@ -462,5 +490,5 @@ RoomRepository.prototype.stop = function()
 {
     this.detachEvents();
     this.playerCache.clear();
-    this.room = null;
+    this.setRoom(null);
 };

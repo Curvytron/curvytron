@@ -48,7 +48,7 @@ BaseRoom.prototype.addPlayer = function(player)
  */
 BaseRoom.prototype.equal = function(room)
 {
-    return this.name === room.name;
+    return room ? this.name === room.name : false;
 };
 
 /**
