@@ -32,7 +32,6 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onGameStop     = this.onGameStop.bind(this);
     this.onReady        = this.onReady.bind(this);
     this.onAssetsLoaded = this.onAssetsLoaded.bind(this);
-    this.onChatLoaded   = this.onChatLoaded.bind(this);
     this.onMove         = this.onMove.bind(this);
     this.onBonusPop     = this.onBonusPop.bind(this);
     this.onBonusClear   = this.onBonusClear.bind(this);
@@ -67,7 +66,6 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.$scope.backToRoom  = this.backToRoom;
     this.$scope.toggleSound = this.sound.toggle;
     this.$scope.toggleRadio = this.radio.toggle;
-    this.$scope.chatLoaded  = this.onChatLoaded;
     this.$scope.roundWinner = null;
     this.$scope.gameWinner  = null;
     this.$scope.spectating  = false;
@@ -179,7 +177,6 @@ GameController.prototype.loadGame = function(room)
     this.$scope.avatars             = this.game.avatars.items;
 
     this.attachSocketEvents();
-    setTimeout(this.chat.scrollDown, 0);
 
     this.setup = true;
     this.checkReady();
@@ -219,14 +216,6 @@ GameController.prototype.onReady = function(e)
         avatar.ready = true;
         this.applyScope();
     }
-};
-
-/**
- * On chat loaded
- */
-GameController.prototype.onChatLoaded = function ()
-{
-    this.chat.setScope(this.$scope);
 };
 
 /**
