@@ -29,7 +29,9 @@
                 </span>
                 <a href="http://www.elao.com" class="game-copy pull-left" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>
             </footer>
-            <div class="chat-wrapper" ng-include="'js/views/chat/chat.html'" onload="chatLoaded()"></div>
+            <div class="room-chat" ng-controller="ChatController">
+                <div class="chat-wrapper" ng-include="'js/views/chat/chat.html'" onload="chatLoaded()"></div>
+            </div>
         </aside>
         <div id="col-right">
             <div class="spectating" ng-if="spectating">
