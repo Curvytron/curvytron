@@ -2,22 +2,25 @@
  * Chat system
  *
  * @param {SocketClient} client
+ * @param {RoomRepository} repository
  */
-function Chat(client)
+function Chat(client, repository)
 {
     BaseChat.call(this);
 
-    this.client  = client;
-    this.message = new Message(null, this.client);
-    this.room    = null;
-    this.$scope  = null;
-    this.feed    = null;
-    this.auto    = true;
+    this.client     = client;
+    this.repository = repository;
+    this.message    = new Message(null, this.client);
+    this.room       = null;
+    this.$scope     = null;
+    this.element    = null;
+    this.auto       = true;
 
     this.talk       = this.talk.bind(this);
     this.onTalk     = this.onTalk.bind(this);
     this.scrollDown = this.scrollDown.bind(this);
     this.onActivity = this.onActivity.bind(this);
+    this.setRoom    = this.setRoom.bind(this);
 
     this.attachEvents();
 }
@@ -42,6 +45,10 @@ Chat.prototype.curvybot = {
 Chat.prototype.attachEvents = function()
 {
     this.client.on('room:talk', this.onTalk);
+    this.repository.on('room:join', this.setRoom);
+    this.repository.on('room:leave', this.setRoom);
+    this.repository.on('vote:new', this.onVote);
+    this.repository.on('vote:close', this.onVote);
 };
 
 /**
@@ -50,6 +57,10 @@ Chat.prototype.attachEvents = function()
 Chat.prototype.detachEvents = function()
 {
     this.client.off('room:talk', this.onTalk);
+    this.repository.off('room:join', this.setRoom);
+    this.repository.off('room:leave', this.setRoom);
+    this.repository.off('vote:new', this.onVote);
+    this.repository.off('vote:close', this.onVote);
 };
 
 /**
@@ -69,29 +80,24 @@ Chat.prototype.setPlayer = function(player)
  *
  * @param {Room} room
  */
-Chat.prototype.setRoom = function(room)
+Chat.prototype.setRoom = function()
 {
-    if (!this.room || !this.room.equal(room)) {
-        this.room = room;
+    this.room = this.repository.room;
+
+    if (this.room) {
         this.clearMessages();
+    } else {
+        this.clear();
     }
 };
 
 /**
- * Set scope
+ * Set DOM element
  */
-Chat.prototype.setScope = function($scope)
+Chat.prototype.setElement = function(element)
 {
-    this.$scope = $scope;
-    this.feed   = document.getElementById('feed');
-
-    this.$scope.messages         = this.messages;
-    this.$scope.submitTalk       = this.talk;
-    this.$scope.currentMessage   = this.message;
-    this.$scope.messageMaxLength = Message.prototype.maxLength;
-
-    this.feed.addEventListener('scroll', this.onActivity);
-
+    this.element = element;
+    this.element.addEventListener('scroll', this.onActivity);
     setTimeout(this.scrollDown, 0);
 };
 
@@ -100,12 +106,6 @@ Chat.prototype.setScope = function($scope)
  */
 Chat.prototype.refresh = function()
 {
-    try {
-        this.$scope.$apply();
-    } catch (e) {
-
-    }
-
     if (this.auto) {
         this.scrollDown();
     }
@@ -116,8 +116,8 @@ Chat.prototype.refresh = function()
  */
 Chat.prototype.scrollDown = function()
 {
-    if (this.feed) {
-        this.feed.scrollTop = this.feed.scrollHeight;
+    if (this.element) {
+        this.element.scrollTop = this.element.scrollHeight;
     }
 };
 
@@ -165,8 +165,8 @@ Chat.prototype.onTalk = function(e)
  */
 Chat.prototype.onActivity = function(e)
 {
-    if (this.feed) {
-        this.auto = this.feed.scrollTop === this.feed.scrollHeight - this.feed.clientHeight;
+    if (this.element) {
+        this.auto = this.element.scrollTop === this.element.scrollHeight - this.element.clientHeight;
     }
 };
 
@@ -177,12 +177,11 @@ Chat.prototype.clear = function()
 {
     this.clearMessages();
 
-    if (this.feed) {
-        this.feed.removeEventListener('scroll', this.onActivity);
-        this.feed = null;
+    if (this.element) {
+        this.element.removeEventListener('scroll', this.onActivity);
     }
 
     this.message = new Message(null, this.client);
     this.room    = null;
-    this.$scope  = null;
+    this.element = null;
 };

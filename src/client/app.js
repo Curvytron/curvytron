@@ -6,7 +6,7 @@ gamepadListener.start();
 curvytronApp.service('SocketClient', SocketClient);
 curvytronApp.service('ActivityWatcher', ['SocketClient', ActivityWatcher]);
 curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);
-curvytronApp.service('Chat', ['SocketClient', Chat]);
+curvytronApp.service('Chat', ['SocketClient', 'RoomRepository', Chat]);
 curvytronApp.service('Profile', ['$rootScope', Profile]);
 curvytronApp.service('Radio', ['Profile', Radio]);
 curvytronApp.service('SoundManager', ['Profile', SoundManager]);
@@ -33,6 +33,10 @@ curvytronApp.controller(
 curvytronApp.controller(
     'GameController',
     ['$scope', '$routeParams', '$location', 'SocketClient', 'RoomRepository', 'Chat', 'Radio', 'Notifier', 'SoundManager', GameController]
+);
+curvytronApp.controller(
+    'ChatController',
+    ['$scope', 'Chat', ChatController]
 );
 
 curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
