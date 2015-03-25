@@ -16,44 +16,50 @@ function SocketClient(socket, interval, ip)
 
     this.onActivity = this.onActivity.bind(this);
     this.identify   = this.identify.bind(this);
-    this.ping       = this.onPing.bind(this);
+    this.ping       = this.ping.bind(this);
 
     this.on('whoami', this.identify);
     this.on('activity', this.onActivity);
+
+    setInterval(this.ping, this.pingInterval);
 }
 
 SocketClient.prototype = Object.create(BaseSocketClient.prototype);
 SocketClient.prototype.constructor = SocketClient;
 
 /**
- * Attach events
+ * Ping interval
+ *
+ * @type {Number}
  */
-SocketClient.prototype.attachEvents = function()
+SocketClient.prototype.pingInterval = 1000;
+
+/**
+ * Ping
+ */
+SocketClient.prototype.ping = function()
 {
-    BaseSocketClient.prototype.attachEvents.call(this);
-    this.on('ping', this.onPing);
+    var client = this,
+        ping = new Date().getTime();
+
+    this.socket.ping(null, function () {
+        client.pong(ping);
+    })
 };
 
 /**
- * Detach Events
- */
-SocketClient.prototype.detachEvents = function()
-{
-    BaseSocketClient.prototype.detachEvents.call(this);
-    this.removeListener('ping', this.onPing);
-};
-
-/**
- * On ping
+ * Pong
  *
  * @param {Number} ping
  */
-SocketClient.prototype.onPing = function (event)
+SocketClient.prototype.pong = function(ping)
 {
-    var ping = event[0],
-        callback = event[1];
+    var pong = new Date().getTime(),
+        latency = pong - ping;
 
-    callback(ping);
+    console.log('%sms', latency);
+    this.emit('latency', latency);
+    this.addEvent('latency', latency, null, true);
 };
 
 /**

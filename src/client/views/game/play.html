@@ -23,7 +23,7 @@
             </ul>
             <footer>
                 <span id="fps" class="pull-right">0</span>
-                <span id="ping" class="pull-right">0</span>
+                <span id="ping" class="pull-right" style="color: {{ latency <= 100 ? 'green' : (latency <= 300 ? 'orange' : 'red') }}">{{ latency }}ms</span>
                 <span id="spectators" ng-if="spectators" class="pull-right">
                     {{ spectators }} <span class="icon-viewer"></span>
                 </span>
