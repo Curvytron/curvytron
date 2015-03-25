@@ -44,7 +44,7 @@ SocketClient.prototype.ping = function()
 
     this.socket.ping(null, function () {
         client.pong(ping);
-    })
+    });
 };
 
 /**
