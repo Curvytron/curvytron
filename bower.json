@@ -26,7 +26,7 @@
   "main": "dist/curvytron.min.js",
   "dependencies": {
     "tom32i-event-emitter.js": "~0.1.*",
-    "tom32i-gamepad.js": "~0.0.*",
+    "tom32i-gamepad.js": "~0.1.*",
     "tom32i-key-mapper.js": "~0.1.*",
     "tom32i-option-resolver.js": "~0.0.*",
     "tom32i-asset-loader.js": "~0.0.*",
