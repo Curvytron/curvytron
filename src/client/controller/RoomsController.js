@@ -4,9 +4,8 @@
  * @param {Object} $scope
  * @param {Object} $location
  * @param {SocketClient} client
- * @param {Profile} profile
  */
-function RoomsController($scope, $location, client, profile)
+function RoomsController($scope, $location, client)
 {
     this.$scope     = $scope;
     this.$location  = $location;
