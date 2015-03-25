@@ -3,16 +3,14 @@
  */
 function SocketClient()
 {
-    var Socket = window.MozWebSocket || window.WebSocket;
+    this.id        = null;
+    this.connected = false;
 
-    this.sendPing     = this.sendPing.bind(this);
     this.onError      = this.onError.bind(this);
     this.onOpen       = this.onOpen.bind(this);
     this.onConnection = this.onConnection.bind(this);
 
-    this.id         = null;
-    this.connected  = false;
-    this.pingLogger = new PingLogger(this.sendPing, this.pingFrequency);
+    var Socket = window.MozWebSocket || window.WebSocket;
 
     BaseSocketClient.call(this, new Socket('ws://' + document.location.host + document.location.pathname, ['websocket']));
 
@@ -23,13 +21,6 @@ function SocketClient()
 
 SocketClient.prototype = Object.create(BaseSocketClient.prototype);
 SocketClient.prototype.constructor = SocketClient;
-
-/**
- * Ping frequency
- *
- * @type {Number}
- */
-SocketClient.prototype.pingFrequency = 2000;
 
 /**
  * On socket connection
@@ -55,7 +46,6 @@ SocketClient.prototype.onConnection = function(id)
     this.connected = true;
 
     this.start();
-    this.pingLogger.start();
     this.emit('connected');
 };
 
@@ -72,19 +62,8 @@ SocketClient.prototype.onClose = function(e)
     this.id        = null;
 
     this.stop();
-    this.pingLogger.stop();
 
     this.emit('disconnected');
-};
-
-/**
- * On Ping
- *
- * @param {Number} ping
- */
-SocketClient.prototype.sendPing = function(ping)
-{
-    this.addEvent('ping', ping, this.pingLogger.pong);
 };
 
 /**

@@ -97,6 +97,7 @@ GameController.prototype.attach = function(client)
     if (this.clients.add(client)) {
         this.attachEvents(client);
         this.socketGroup.addEvent('game:spectators', this.countSpectators());
+        client.pingLogger.start();
     }
 };
 
@@ -114,6 +115,7 @@ GameController.prototype.detach = function(client)
             this.game.removeAvatar(client.players.items[i].avatar);
         }
         this.socketGroup.addEvent('game:spectators', this.countSpectators());
+        client.pingLogger.stop();
     }
 };
 

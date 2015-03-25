@@ -17,15 +17,16 @@ function Inspector (server, config)
         game:   new Collection()
     };
 
-    this.onClientOpen  = this.onClientOpen.bind(this);
-    this.onClientClose = this.onClientClose.bind(this);
-    this.onRoomOpen    = this.onRoomOpen.bind(this);
-    this.onRoomClose   = this.onRoomClose.bind(this);
-    this.onGameNew     = this.onGameNew.bind(this);
-    this.onGameEnd     = this.onGameEnd.bind(this);
-    this.onGameFPS     = this.onGameFPS.bind(this);
-    this.onLog         = this.onLog.bind(this);
-    this.logUsage      = this.logUsage.bind(this);
+    this.onClientOpen    = this.onClientOpen.bind(this);
+    this.onClientClose   = this.onClientClose.bind(this);
+    this.onClientLatency = this.onClientLatency.bind(this);
+    this.onRoomOpen      = this.onRoomOpen.bind(this);
+    this.onRoomClose     = this.onRoomClose.bind(this);
+    this.onGameNew       = this.onGameNew.bind(this);
+    this.onGameEnd       = this.onGameEnd.bind(this);
+    this.onGameFPS       = this.onGameFPS.bind(this);
+    this.onLog           = this.onLog.bind(this);
+    this.logUsage        = this.logUsage.bind(this);
 
     this.server.on('client', this.onClientOpen);
     this.server.roomRepository.on('room:open', this.onRoomOpen);
@@ -43,6 +44,7 @@ Inspector.prototype.CLIENT             = 'client';
 Inspector.prototype.CLIENTS            = 'client.total';
 Inspector.prototype.CLIENT_PLAYER      = 'client.player';
 Inspector.prototype.CLIENT_GAME_PLAYER = 'client.game.player';
+Inspector.prototype.CLIENT_LATENCY     = 'client.latency';
 Inspector.prototype.ROOM               = 'room';
 Inspector.prototype.ROOMS              = 'room.total';
 Inspector.prototype.GAME               = 'game';
@@ -64,11 +66,14 @@ Inspector.prototype.logFrequency = 1000;
  */
 Inspector.prototype.onClientOpen = function(client)
 {
-    this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() });
+    var tracker = new ClientTracker(this, client);
 
+    this.trackers.client.add(tracker);
+
+    tracker.on('latency', this.onClientLatency);
     client.on('close', this.onClientClose);
 
-    this.trackers.client.add(new ClientTracker(this, client));
+    this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() });
 };
 
 /**
@@ -83,9 +88,24 @@ Inspector.prototype.onClientClose = function(client)
     this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() });
 
     if (tracker) {
+        client.removeListener('close', this.onClientClose);
+        tracker.removeListener('latency', this.onClientLatency);
         this.client.writePoint(this.CLIENT, tracker.serialize());
         this.trackers.client.remove(tracker.destroy());
     }
+};
+
+/**
+ * On client latency
+ *
+ * @param {Object} data
+ */
+Inspector.prototype.onClientLatency = function(data)
+{
+    this.client.writePoint(this.CLIENT_LATENCY, {
+        value: data.latency,
+        game: data.tracker.uniqId
+    });
 };
 
 /**

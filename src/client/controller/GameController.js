@@ -27,6 +27,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.setup          = false;
 
     // Binding
+    this.onLatency      = this.onLatency.bind(this);
     this.onGameStart    = this.onGameStart.bind(this);
     this.onGameStop     = this.onGameStop.bind(this);
     this.onReady        = this.onReady.bind(this);
@@ -71,6 +72,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.$scope.gameWinner  = null;
     this.$scope.spectating  = false;
     this.$scope.spectators  = 0;
+    this.$scope.latency     = 0;
 
     this.repository.start();
 
@@ -95,6 +97,7 @@ GameController.prototype.confirmation = 'Are you sure you want to leave the game
  */
 GameController.prototype.attachSocketEvents = function()
 {
+    this.client.on('latency', this.onLatency);
     this.client.on('game:start', this.onGameStart);
     this.client.on('game:stop', this.onGameStop);
     this.client.on('ready', this.onReady);
@@ -119,6 +122,7 @@ GameController.prototype.attachSocketEvents = function()
  */
 GameController.prototype.detachSocketEvents = function()
 {
+    this.client.off('latency', this.onLatency);
     this.client.off('game:start', this.onGameStart);
     this.client.off('game:stop', this.onGameStop);
     this.client.off('ready', this.onReady);
@@ -167,7 +171,6 @@ GameController.prototype.loadGame = function(room)
     }
 
     this.game.fps.setElement(document.getElementById('fps'));
-    this.client.pingLogger.setElement(document.getElementById('ping'));
     this.radio.setActive(true);
 
     // Hydrate scope:
@@ -618,6 +621,17 @@ GameController.prototype.close = function()
 GameController.prototype.backToRoom = function()
 {
     this.$location.path(this.room.url);
+};
+
+/**
+ * Set latency
+ *
+ * @param {Event} event
+ */
+GameController.prototype.onLatency = function(event)
+{
+    this.$scope.latency = event.detail[0];
+    this.applyScope();
 };
 
 /**

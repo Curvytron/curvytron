@@ -9,51 +9,39 @@ function SocketClient(socket, interval, ip)
 {
     BaseSocketClient.call(this, socket, interval);
 
-    this.ip      = ip;
-    this.id      = null;
-    this.active  = true;
-    this.players = new Collection([], 'id');
+    this.ip         = ip;
+    this.id         = null;
+    this.active     = true;
+    this.players    = new Collection([], 'id');
+    this.pingLogger = new PingLogger(this.socket);
 
-    this.onActivity = this.onActivity.bind(this);
     this.identify   = this.identify.bind(this);
-    this.ping       = this.onPing.bind(this);
+    this.onActivity = this.onActivity.bind(this);
+    this.onLatency  = this.onLatency.bind(this);
 
     this.on('whoami', this.identify);
     this.on('activity', this.onActivity);
+    this.pingLogger.on('latency', this.onLatency);
 }
 
 SocketClient.prototype = Object.create(BaseSocketClient.prototype);
 SocketClient.prototype.constructor = SocketClient;
 
 /**
- * Attach events
- */
-SocketClient.prototype.attachEvents = function()
-{
-    BaseSocketClient.prototype.attachEvents.call(this);
-    this.on('ping', this.onPing);
-};
-
-/**
- * Detach Events
- */
-SocketClient.prototype.detachEvents = function()
-{
-    BaseSocketClient.prototype.detachEvents.call(this);
-    this.removeListener('ping', this.onPing);
-};
-
-/**
- * On ping
+ * Ping interval
  *
- * @param {Number} ping
+ * @type {Number}
  */
-SocketClient.prototype.onPing = function (event)
-{
-    var ping = event[0],
-        callback = event[1];
+SocketClient.prototype.pingInterval = 1000;
 
-    callback(ping);
+/**
+ * On ping logger latency value
+ *
+ * @param {Number} latency
+ */
+SocketClient.prototype.onLatency = function(latency)
+{
+    this.addEvent('latency', latency, null, true);
 };
 
 /**
@@ -82,4 +70,13 @@ SocketClient.prototype.identify = function(event)
 SocketClient.prototype.onActivity = function(active)
 {
     this.active = active;
+};
+
+/**
+ * Stop
+ */
+SocketClient.prototype.stop = function()
+{
+    BaseSocketClient.prototype.stop.call(this);
+    this.pingLogger.stop();
 };
