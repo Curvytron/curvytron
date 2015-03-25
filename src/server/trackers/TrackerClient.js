@@ -13,7 +13,7 @@ function ClientTracker (inspector, client)
 
     this.onLatency = this.onLatency.bind(this);
 
-    this.client.on('latency', this.onLatency);
+    this.client.pingLogger.on('latency', this.onLatency);
 }
 
 ClientTracker.prototype = Object.create(Tracker.prototype);
