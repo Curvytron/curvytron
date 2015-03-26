@@ -351,17 +351,16 @@ GameController.prototype.onBonusClear = function(e)
 };
 
 /**
- * On point
+ * On position
  *
  * @param {Event} e
  */
 GameController.prototype.onPosition = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail[0]),
-        position = this.compressor.decompressPosition(e.detail[1][0], e.detail[1][1]);
+    var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
-        avatar.setPosition(position);
+        avatar.setPosition(this.compressor.decompressPosition(e.detail[1][0], e.detail[1][1]));
     }
 };
 
@@ -372,11 +371,10 @@ GameController.prototype.onPosition = function(e)
  */
 GameController.prototype.onPoint = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail[0]),
-        position = this.compressor.decompressPosition(e.detail[1][0], e.detail[1][1]);
+    var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
-        avatar.addPoint(position);
+        avatar.addPoint(this.compressor.decompressPosition(e.detail[1][0], e.detail[1][1]));
     }
 };
 

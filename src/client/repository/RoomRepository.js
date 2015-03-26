@@ -457,18 +457,15 @@ RoomRepository.prototype.onGameEnd = function(e)
  */
 RoomRepository.prototype.onVote = function(e)
 {
-    console.log(e);
-    var data = e.detail,
-        type = e.type,
-        player = this.room.players.getById(data.target);
+    var player = this.room.players.getById(e.detail.target);
 
     if (!player) {
-        player = this.playerCache.getById(data.target);
+        player = this.playerCache.getById(e.detail.target);
     }
 
     if (player) {
-        player.vote = type === 'vote:new';
-        this.emit(type, {target: player, result: data.result});
+        player.vote = e.type === 'vote:new';
+        this.emit(e.type, {target: player, result: e.detail.result});
     }
 };
 
