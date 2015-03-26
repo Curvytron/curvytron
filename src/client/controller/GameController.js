@@ -25,6 +25,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.warmupInterval = null;
     this.assetsLoaded   = false;
     this.setup          = false;
+    this.compressor     = new Compressor();
 
     // Binding
     this.onLatency      = this.onLatency.bind(this);
@@ -36,6 +37,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onBonusPop     = this.onBonusPop.bind(this);
     this.onBonusClear   = this.onBonusClear.bind(this);
     this.onBonusStack   = this.onBonusStack.bind(this);
+    this.onPosition     = this.onPosition.bind(this);
     this.onPoint        = this.onPoint.bind(this);
     this.onDie          = this.onDie.bind(this);
     this.onProperty     = this.onProperty.bind(this);
@@ -100,6 +102,7 @@ GameController.prototype.attachSocketEvents = function()
     this.client.on('game:stop', this.onGameStop);
     this.client.on('ready', this.onReady);
     this.client.on('property', this.onProperty);
+    this.client.on('position', this.onPosition);
     this.client.on('point', this.onPoint);
     this.client.on('die', this.onDie);
     this.client.on('bonus:pop', this.onBonusPop);
@@ -125,6 +128,7 @@ GameController.prototype.detachSocketEvents = function()
     this.client.off('game:stop', this.onGameStop);
     this.client.off('ready', this.onReady);
     this.client.off('property', this.onProperty);
+    this.client.off('position', this.onPosition);
     this.client.off('point', this.onPoint);
     this.client.off('die', this.onDie);
     this.client.off('bonus:pop', this.onBonusPop);
@@ -351,13 +355,28 @@ GameController.prototype.onBonusClear = function(e)
  *
  * @param {Event} e
  */
-GameController.prototype.onPoint = function(e)
+GameController.prototype.onPosition = function(e)
 {
-    var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
+    var avatar = this.game.avatars.getById(e.detail[0]),
+        position = this.compressor.decompressPosition(e.detail[1][0], e.detail[1][1]);
 
     if (avatar) {
-        avatar.addPoint(data.point);
+        avatar.setPosition(position);
+    }
+};
+
+/**
+ * On point
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onPoint = function(e)
+{
+    var avatar = this.game.avatars.getById(e.detail[0]),
+        position = this.compressor.decompressPosition(e.detail[1][0], e.detail[1][1]);
+
+    if (avatar) {
+        avatar.addPoint(position);
     }
 };
 

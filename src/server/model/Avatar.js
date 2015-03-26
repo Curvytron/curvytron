@@ -48,7 +48,7 @@ Avatar.prototype.setPosition = function(point)
     this.body.position = this.head;
     this.body.num      = this.bodyCount;
 
-    this.emit('property', {avatar: this, property: 'position', value: this.head});
+    this.emit('position', {avatar: this, value: this.head});
 };
 
 /**
@@ -151,10 +151,7 @@ Avatar.prototype.die = function(killer)
 
     this.printManager.stop();
     this.addPoint(this.head.slice(0));
-    this.emit('die', {
-        avatar: this,
-        killer: killer
-    });
+    this.emit('die', {avatar: this, killer: killer});
 };
 
 /**

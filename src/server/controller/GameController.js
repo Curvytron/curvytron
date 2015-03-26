@@ -8,11 +8,13 @@ function GameController(game)
     this.game        = game;
     this.clients     = new Collection();
     this.socketGroup = new SocketGroup(this.clients);
+    this.compressor  = new Compressor();
     this.waiting     = null;
 
     this.onGameStart   = this.onGameStart.bind(this);
     this.onGameStop    = this.onGameStop.bind(this);
     this.onDie         = this.onDie.bind(this);
+    this.onPosition    = this.onPosition.bind(this);
     this.onPoint       = this.onPoint.bind(this);
     this.onProperty    = this.onProperty.bind(this);
     this.onBonusStack  = this.onBonusStack.bind(this);
@@ -146,6 +148,7 @@ GameController.prototype.attachEvents = function(client)
         avatar = client.players.items[i].getAvatar();
 
         avatar.on('die', this.onDie);
+        avatar.on('position', this.onPosition);
         avatar.on('point', this.onPoint);
         avatar.on('property', this.onProperty);
         avatar.bonusStack.on('change', this.onBonusStack);
@@ -172,6 +175,7 @@ GameController.prototype.detachEvents = function(client)
 
         if (avatar) {
             avatar.removeListener('die', this.onDie);
+            avatar.removeListener('position', this.onPosition);
             avatar.removeListener('point', this.onPoint);
             avatar.removeListener('property', this.onProperty);
             avatar.bonusStack.removeListener('change', this.onBonusStack);
@@ -191,8 +195,7 @@ GameController.prototype.attachSpectator = function(client)
             radius: 'radius',
             color: 'color',
             printing: 'printing',
-            score: 'score',
-            position: 'head'
+            score: 'score'
         },
         events = [['spectate', {
             inRound: this.game.inRound,
@@ -203,6 +206,8 @@ GameController.prototype.attachSpectator = function(client)
 
     for (i = this.game.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.game.avatars.items[i];
+
+        events.push(['position', [avatar.id, this.compressor.compressPosition(avatar.head[0], avatar.head[1])]]);
 
         for (var property in properties) {
             if (properties.hasOwnProperty(property)) {
@@ -309,7 +314,23 @@ GameController.prototype.onMove = function(client, data)
  */
 GameController.prototype.onPoint = function(data)
 {
-    this.socketGroup.addEvent('point', {avatar: data.avatar.id, point: data.point});
+    this.socketGroup.addEvent('point', [
+        data.avatar.id,
+        this.compressor.compressPosition(data.point[0], data.point[1])
+    ]);
+};
+
+/**
+ * On position
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onPosition = function(data)
+{
+    this.socketGroup.addEvent('position', [
+        data.avatar.id,
+        this.compressor.compressPosition(data.value[0], data.value[1])
+    ]);
 };
 
 /**
