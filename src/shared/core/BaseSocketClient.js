@@ -240,7 +240,7 @@ BaseSocketClient.prototype.onMessage = function (e)
  */
 BaseSocketClient.prototype.playCallback = function(id, data)
 {
-    if(typeof(this.callbacks[id]) !== 'undefined') {
+    if (typeof(this.callbacks[id]) !== 'undefined') {
         this.callbacks[id](data);
         delete this.callbacks[id];
     }
