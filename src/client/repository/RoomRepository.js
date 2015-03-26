@@ -457,6 +457,7 @@ RoomRepository.prototype.onGameEnd = function(e)
  */
 RoomRepository.prototype.onVote = function(e)
 {
+    console.log(e);
     var data = e.detail,
         type = e.type,
         player = this.room.players.getById(data.target);
@@ -467,7 +468,7 @@ RoomRepository.prototype.onVote = function(e)
 
     if (player) {
         player.vote = type === 'vote:new';
-        this.emit(type, { target: player, result: data.result });
+        this.emit(type, {target: player, result: data.result});
     }
 };
 

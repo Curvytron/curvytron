@@ -18,6 +18,7 @@ function Chat(client, repository)
 
     this.talk       = this.talk.bind(this);
     this.onTalk     = this.onTalk.bind(this);
+    this.onVote     = this.onVote.bind(this);
     this.scrollDown = this.scrollDown.bind(this);
     this.onActivity = this.onActivity.bind(this);
     this.setRoom    = this.setRoom.bind(this);
@@ -119,11 +120,13 @@ Chat.prototype.setElement = function(element)
 };
 
 /**
- * Refresh
+ * Add message
+ *
+ * @param {Message} message
  */
-Chat.prototype.refresh = function()
+Chat.prototype.addMessage = function(message)
 {
-    if (this.auto) {
+    if (BaseChat.prototype.addMessage.call(this, message) && this.auto) {
         this.scrollDown();
     }
 };
@@ -172,7 +175,22 @@ Chat.prototype.onTalk = function(e)
         message = new Message(data.content, data.client, player ? player : {name: data.name, color: data.color}, data.creation);
 
     this.addMessage(message);
-    this.refresh();
+};
+
+/**
+ * On vote
+ *
+ * @param {Event} e
+ */
+Chat.prototype.onVote = function(e)
+{
+    var player = e.detail.target;
+
+    if (e.type === 'vote:new') {
+        this.addMessage(new VoteKickMessage(this.curvybot, e.detail.target));
+    } else if (e.type === 'vote:close' && e.detail.result) {
+        this.addMessage(new KickMessage(this.curvybot, e.detail.target));
+    }
 };
 
 /**
