@@ -20,8 +20,7 @@ var fs        = require('fs'),
         config = { googleAnalyticsId: null };
     }
 
-    var srcDir  = './src/',
-        jsDir   = './web/js/',
+    var jsDir   = './web/js/',
         cssDir  = './web/css/',
         sassDir = './src/sass/',
         expose  = [],
@@ -131,6 +130,11 @@ gulp.task('sass-min', function() {
         .pipe(gulp.dest(cssDir));
 });
 
+gulp.task('copy-stress-test', function() {
+    return gulp.src('src/client/stressTest.js')
+        .pipe(gulp.dest(recipes.client.path));
+});
+
 gulp.task('watch', ['dev'], function () {
     gulp.watch('src/**/*.js', ['jshint', 'server', 'front-full']);
     gulp.watch('src/client/views/**/*', ['views']);
@@ -138,4 +142,4 @@ gulp.task('watch', ['dev'], function () {
 });
 
 gulp.task('default', ['jshint', 'server', 'front-expose', 'ga', 'views', 'front-min', 'sass-min']);
-gulp.task('dev', ['jshint', 'server', 'front-expose', 'ga', 'views', 'front-full', 'sass-full']);
+gulp.task('dev', ['jshint', 'server', 'front-expose', 'copy-stress-test', 'ga', 'views', 'front-full', 'sass-full']);

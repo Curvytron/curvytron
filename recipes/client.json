@@ -4,6 +4,7 @@
     "files": [
         "src/shared/**/*.js",
         "src/client/*/**/*.js",
-        "src/client/*.js"
+        "src/client/*.js",
+        "!src/client/stressTest.js"
     ]
 }
