@@ -53,3 +53,15 @@ server {
     }
 }
 ```
+
+## Stress test
+
+Open your console an run :
+
+```js
+var stressTest = document.createElement('script');
+stressTest.type = 'text/javascript';
+stressTest.src = 'js/stressTest.js';
+document.head.appendChild(stressTest);
+```
+
