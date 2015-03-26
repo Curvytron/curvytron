@@ -37,7 +37,7 @@ BaseChat.prototype.addMessage = function(message)
  */
 BaseChat.prototype.isValid = function(message)
 {
-    return message.content.length > 0;
+    return true;
 };
 
 /**

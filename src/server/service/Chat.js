@@ -20,5 +20,5 @@ Chat.prototype.constructor = Chat;
  */
 Chat.prototype.isValid = function(message)
 {
-    return BaseChat.prototype.isValid.call(this, message) && this.floodFilter.isValid(message);
+    return message.content.length > 0 && this.floodFilter.isValid(message);
 };
