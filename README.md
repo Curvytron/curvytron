@@ -12,6 +12,7 @@ A web multiplayer Tron game like with curves
 ## Wann help?
 
 [See how you can make the game better](doc/contribution.md)
+[Setup you development environment](doc/dev.md)
 
 ---
 

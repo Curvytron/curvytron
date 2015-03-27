@@ -30,3 +30,5 @@ If you're skilled in development, design, motion design, game design or any othe
 * Create a pull request from your fork to `Curvytron:develop` [https://github.com/Elao/curvytron/compare/develop...You:your-feature](https://github.com/Elao/curvytron/compare/develop...You:your-feature)
 * You and the Curvytron team discuss your PR
 * You PR get merged as soon as it's aproved
+
+Aslo, see the documentation chapter on [local development](dev.md)
