@@ -62,7 +62,5 @@ PingLogger.prototype.ping = function()
  */
 PingLogger.prototype.pong = function(ping)
 {
-    var latency = new Date().getTime() - ping;
-
-    this.emit('latency', latency);
+    this.emit('latency', new Date().getTime() - ping);
 };
