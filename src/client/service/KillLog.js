@@ -3,9 +3,13 @@
  */
 function KillLog()
 {
-    this.$scope = null;
-    this.logs   = new Collection([], 'id', true);
+    EventEmitter.call(this);
+
+    this.logs = new Collection([], 'index', true);
 }
+
+KillLog.prototype = Object.create(EventEmitter.prototype);
+KillLog.prototype.constructor = KillLog;
 
 /**
  * Message display duration
@@ -33,31 +37,31 @@ KillLog.prototype.curvybot = {
  */
 KillLog.prototype.logDeath = function(avatar, killer)
 {
-    console.log('logDeath');
-    this.logs.add(new DieMessage(this.curvybot, avatar, killer), this.display);
-
-    if (this.$scope) {
-        this.applyScope();
-    }
+    this.addMessage(new DieMessage(this.curvybot, avatar, killer));
 };
 
 /**
- * Set scope
+ * Kill log
+ *
+ * @param {DieMessage} message
  */
-KillLog.prototype.setScope = function($scope)
+KillLog.prototype.addMessage = function(message)
 {
-    this.clearMessages();
-
-    this.$scope      = $scope;
-    this.$scope.logs = this.logs.items;
+    var killLog = this;
+    this.logs.add(message);
+    setTimeout(function () { killLog.removeMessage(message); }, this.display);
+    this.emit('change');
 };
 
 /**
- * Clear messages
+ * Remove message
+ *
+ * @param {DieMessage} message
  */
-KillLog.prototype.clearMessages = function()
+KillLog.prototype.removeMessage = function (message)
 {
-    this.logs.length = 0;
+    this.logs.remove(message);
+    this.emit('change');
 };
 
 /**
@@ -65,12 +69,5 @@ KillLog.prototype.clearMessages = function()
  */
 KillLog.prototype.clear = function()
 {
-    this.clearMessages();
-
-    this.$scope  = null;
+    this.logs.clear();
 };
-
-/**
- * Apply scope
- */
-KillLog.prototype.applyScope = CurvytronController.prototype.applyScope;

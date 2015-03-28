@@ -2,6 +2,7 @@
  * Chat Controller
  *
  * @param {Object} $scope
+ * @param {Chat} chat
  */
 function ChatController($scope, chat)
 {
@@ -25,7 +26,7 @@ function ChatController($scope, chat)
  */
 ChatController.prototype.onChatLoaded = function ()
 {
-    this.chat.setElement(document.getElementById('feed'));
+    this.chat.setElement(document.getElementById('chat-feed'));
 };
 
 /**
