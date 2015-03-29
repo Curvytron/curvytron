@@ -224,8 +224,8 @@ GameController.prototype.attachSpectator = function(client)
         for (i = this.game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
             events.push(['bonus:pop', this.game.bonusManager.bonuses.items[i].serialize()]);
         }
-    } else if(this.game.winner) {
-        this.socketGroup.addEvent('round:winner', {winner: this.game.winner.id});
+    } else if(this.game.roundWinner) {
+        this.socketGroup.addEvent('round:winner', {winner: this.game.roundWinner.id});
     }
 
     events.push(['game:spectators', this.countSpectators()]);
