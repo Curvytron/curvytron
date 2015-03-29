@@ -564,6 +564,10 @@
             position: relative;
             background: none;
             text-align: right;
+
+            .one-message {
+                @include animation(newLog 300ms forwards);
+            }
         }
     }
 }

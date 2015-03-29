@@ -111,7 +111,28 @@
     @include deadAnim;
 }
 
-
+@mixin newLog {
+    from {
+        opacity: 0;
+        transform: translateX(400px);
+    }
+    to {
+        opacity: 1;
+        transform : translateX(0);
+    }
+}
+@-webkit-keyframes newLog {
+    @include newLog;
+}
+@-moz-keyframes newLog {
+    @include newLog;
+}
+@-o-keyframes newLog {
+    @include newLog;
+}
+@keyframes newLog {
+    @include newLog;
+}
 
 @mixin bonus-sprite($col, $line) {
   $posX: $bonus-size*$col*-1;
