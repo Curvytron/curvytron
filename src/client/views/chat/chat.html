@@ -1,4 +1,4 @@
-<div id="feed">
+<div id="chat-feed" class="feed">
     <div ng-repeat="message in messages" class="one-message">
         <div class="details">
             <span class="time">{{ message.getDate() }}</span>
@@ -26,21 +26,6 @@
             <!-- Kick -->
             <span ng-switch-when="kick">
                 Farewell <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>, you have been kicked.
-            </span>
-
-             <!-- Die -->
-            <span ng-switch-when="die">
-                <span ng-if="message.deadPlayer.name === message.killerPlayer.name">
-                    <span style="color: {{ message.deadPlayer.color }}">{{ message.deadPlayer.name }}</span> committed suicide.
-                </span>
-                <span ng-if="(message.deadPlayer && message.killerPlayer) && (message.deadPlayer.name !== message.killerPlayer.name)">
-                    <span style="color: {{ message.deadPlayer.color }}">{{ message.deadPlayer.name }}</span>
-                    was killed by
-                    <span style="color: {{ message.killerPlayer.color }}">{{ message.killerPlayer.name }}</span>.
-                </span>
-                <span ng-if="message.deadPlayer.name && !message.killerPlayer">
-                    <span style="color: {{ message.deadPlayer.color }}">{{ message.deadPlayer.name }}</span> crashed on the wall.
-                </span>
             </span>
 
             <!-- Default -->

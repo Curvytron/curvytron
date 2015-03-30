@@ -120,7 +120,7 @@ CurvytronController.prototype.reload = function()
  */
 CurvytronController.prototype.applyScope = function()
 {
-    var phase = this.$scope.$root ? this.$scope.$root.$$phase : null;
+    var phase = this.$scope && this.$scope.$root ? this.$scope.$root.$$phase : null;
 
     if (phase !== '$apply' && phase !== '$digest') {
         this.$scope.$apply();

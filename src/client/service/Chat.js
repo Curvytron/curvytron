@@ -12,7 +12,6 @@ function Chat(client, repository)
     this.repository = repository;
     this.message    = new Message(null, this.client);
     this.room       = null;
-    this.$scope     = null;
     this.element    = null;
     this.auto       = true;
 

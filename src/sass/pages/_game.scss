@@ -490,7 +490,7 @@
         background: lighten($aside-background, 5);
         font-size: 14px;
 
-        #feed {
+        .feed {
             position: relative;
             height: 195px;
             overflow-y: auto;
@@ -546,6 +546,33 @@
                 &:hover {
                     padding-right: 20px;
                 }
+            }
+        }
+    }
+
+    /* Kill log */
+    .kill-log-wrapper {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 20%;
+        height: auto;
+        font-size: 14px;
+        z-index: 100;
+        @include opacity(66);
+
+        .feed {
+            position: relative;
+            background: none;
+            text-align: right;
+            max-height: 160px;
+            overflow: hidden;
+            margin: 5px 0;
+            padding: 0;
+
+            .one-message {
+                padding: 5px 0;
+                @include animation(newLog 300ms forwards);
             }
         }
     }
