@@ -1,5 +1,5 @@
 <div id="kill-log-feed" class="feed">
-    <div ng-repeat="message in logs" class="one-message">
+    <div ng-repeat="message in logs.items" class="one-message">
         <strong style="color: {{ message.getPlayerColor() }};">
             <span ng-if="message.getPlayerIcon()" class="message-icon {{ message.getPlayerIcon() }}"></span>
             <span ng-if="!message.getPlayerIcon()">{{ message.getPlayerName() }}:</span>

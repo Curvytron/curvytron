@@ -14,7 +14,7 @@ function KillLogController($scope, killLog)
     this.onChange = this.onChange.bind(this);
 
     this.$scope.killLogLoaded = this.onLoaded;
-    this.$scope.logs          = this.killLog.logs.items;
+    this.$scope.logs          = this.killLog.logs;
 
     this.killLog.on('change', this.onChange);
 }

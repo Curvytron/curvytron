@@ -467,6 +467,7 @@ GameController.prototype.onRoundNew = function(e)
 
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
+    this.killLog.clear();
     this.updateBorders();
 };
 

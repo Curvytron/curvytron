@@ -565,10 +565,13 @@
             position: relative;
             background: none;
             text-align: right;
-            max-height: 150px;
+            max-height: 160px;
             overflow: hidden;
+            margin: 5px 0;
+            padding: 0;
 
             .one-message {
+                padding: 5px 0;
                 @include animation(newLog 300ms forwards);
             }
         }
