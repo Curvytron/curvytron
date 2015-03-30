@@ -559,11 +559,14 @@
         height: auto;
         font-size: 14px;
         z-index: 100;
+        @include opacity(66);
 
         .feed {
             position: relative;
             background: none;
             text-align: right;
+            max-height: 150px;
+            overflow: hidden;
 
             .one-message {
                 @include animation(newLog 300ms forwards);

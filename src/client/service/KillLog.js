@@ -19,6 +19,13 @@ KillLog.prototype.constructor = KillLog;
 KillLog.prototype.display = 5000;
 
 /**
+ * MAx messages to be displayed at the same time
+ *
+ * @type {Number}
+ */
+KillLog.prototype.maxlength = 10;
+
+/**
  * Curvybot profile
  *
  * @type {Object}
@@ -60,8 +67,9 @@ KillLog.prototype.addMessage = function(message)
  */
 KillLog.prototype.removeMessage = function (message)
 {
-    this.logs.remove(message);
-    this.emit('change');
+    if (this.logs.remove(message)) {
+        this.emit('change');
+    }
 };
 
 /**

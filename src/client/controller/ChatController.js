@@ -9,10 +9,10 @@ function ChatController($scope, chat)
     this.$scope = $scope;
     this.chat   = chat;
 
-    this.onChatLoaded = this.onChatLoaded.bind(this);
-    this.onMessage    = this.onMessage.bind(this);
+    this.onLoaded  = this.onLoaded.bind(this);
+    this.onMessage = this.onMessage.bind(this);
 
-    this.$scope.chatLoaded       = this.onChatLoaded;
+    this.$scope.chatLoaded       = this.onLoaded;
     this.$scope.messages         = this.chat.messages;
     this.$scope.currentMessage   = this.chat.message;
     this.$scope.submitTalk       = this.chat.talk;
@@ -22,9 +22,9 @@ function ChatController($scope, chat)
 }
 
 /**
- * On chat loaded
+ * On chat DOM element loaded
  */
-ChatController.prototype.onChatLoaded = function ()
+ChatController.prototype.onLoaded = function ()
 {
     this.chat.setElement(document.getElementById('chat-feed'));
 };
