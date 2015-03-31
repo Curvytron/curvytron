@@ -18,9 +18,11 @@
         top: 0;
         bottom: 0;
         right: -$profile-width;
+        overflow-y: auto;
         width: $profile-width;
+        border-left: $profile-border-size solid #444;
+        background: $profile-background;
         z-index: 30;
-        @include gradient($header-background-from, $header-background-to);
         @include transition(right 0.25s ease);
 
         .title {
@@ -30,6 +32,7 @@
             margin: 0;
             color: #FFF;
             padding: 0 20px;
+            background: #444;
 
             .close {
                 float: right;
@@ -55,19 +58,43 @@
         }
 
         .inner {
-            background: $profile-background;
             padding: 10px 20px;
-            margin-left: $profile-border-size;
-            overflow-y: auto;
-            position: absolute;
-            top: 80px;
-            right: 0;
-            left: 0;
-            bottom: 0;
         }
 
         fieldset {
             margin: 20px 0 40px 0;
+
+            legend {
+                border: 0;
+                text-transform: uppercase;
+                border-bottom: 2px solid #999;
+                padding: 0 0 10px 0;
+                color: #666;
+            }
+
+            .form-row {
+                margin: 0 -10px;
+                .col {
+                    width: 50%;
+                    float: left;
+                    padding: 0 10px;
+                }
+            }
+        }
+
+        .btn-save {
+            padding: 15px 35px;
+            border: 2px solid #555;
+            text-transform: uppercase;
+            background: transparent;
+            color: #555;
+            font-weight: 400;
+            @include transition(all 0.15s ease);
+
+            &:hover {
+                background: #555;
+                color: #FFF;
+            }
         }
     }
 
@@ -90,17 +117,16 @@
 
         .content {
             color: #ffffff;
-            padding: $font-size-h2 * 2;
-            font-size: $font-size-h2;
-            line-height: $font-size-h2 * 1.75;
+            padding: 50px;
+            font-size: 24px;
+            line-height: 34px;
 
             .list {
                 .item {
                     display: block;
                     margin: 20px;
-
-                    font-size: $font-size-h3;
-                    line-height: $font-size-h3 * 1.75;
+                    font-size: 20px;
+                    line-height: 30px;
 
                     small {
                         display: block;
@@ -115,7 +141,8 @@
 
                     .btn-hero {
                         margin-top: 80px;
-                        font-weight: bold;
+                        padding: 10px 40px;
+                        font-size: 20px;
                     }
                 }
             }

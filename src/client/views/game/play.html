@@ -16,8 +16,8 @@
                 <li ng-repeat="avatar in avatars | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
                     <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
                     <span class="local-avatar" style="border-left-color: {{ avatar.player.color }};" ng-if="avatar.local"></span>
-                    <span class="round-points pull-right" ng-if="avatar.roundScore && (!avatar.alive || !game.inRound)">+{{ avatar.roundScore }}</span>
-                    {{ avatar.name }}
+                    <span class="round-points" ng-if="avatar.roundScore && (!avatar.alive || !game.inRound)">+{{ avatar.roundScore }}</span>
+                    <span class="player-name" title="{{ avatar.name }}">{{ avatar.name }}</span>
                     <span class="score">{{ avatar.score }}</span>
                 </li>
             </ul>
@@ -38,7 +38,8 @@
                 <div class="kill-log-wrapper" ng-include="'js/views/game/kill_log.html'" onload="killLogLoaded()"></div>
             </div>
             <div class="spectating" ng-if="spectating">
-                <p><i class="icon-viewer"></i> You are in spectator mode</p>
+                <h2><i class="icon-viewer"></i> You are in spectator mode</h2>
+                <p>You must wait the end of the game to join.</p>
             </div>
             <div class="waiting" ng-if="!game.isReady()">
                 <p>Waiting for players...</p>

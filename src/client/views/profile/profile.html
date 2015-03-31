@@ -10,51 +10,66 @@
         <fieldset>
             <legend>Player:</legend>
 
-            <label for="profile-name">My name:</label>
-            <input
-                id="profile-name"
-                type="text"
-                ng-blur="profile.persist()"
-                ng-model="profile.name"
-                class="form-control"
-                name="name"
-                placeholder="Choose a name"
-                maxlength="{{ nameMaxLength }}"
-            />
+            <div class="form-row">
+                <div class="col">
+                    <label for="profile-name">My name:</label>
+                    <input
+                        id="profile-name"
+                        type="text"
+                        ng-blur="profile.persist()"
+                        ng-model="profile.name"
+                        class="form-control"
+                        name="name"
+                        placeholder="Choose a name"
+                        maxlength="{{ nameMaxLength }}"
+                    />
+                </div>
 
-            <label for="profile-color">My color:</label>
-            <input
-                id="profile-color"
-                type="text"
-                ng-blur="profile.persist()"
-                colorpicker="hex"
-                colorpicker-position="right"
-                ng-model="profile.color"
-                class="form-control player-color"
-                name="color"
-                placeholder="#CCCCCC"
-                style="border-color: {{ profile.color }};"
-                maxlength="{{ colorMaxLength }}"
-            />
+                <div class="col">
+                    <label for="profile-color">My color:</label>
+                    <input
+                        id="profile-color"
+                        type="text"
+                        ng-blur="profile.persist()"
+                        colorpicker="hex"
+                        colorpicker-position="bottom"
+                        ng-model="profile.color"
+                        class="form-control player-color"
+                        name="color"
+                        placeholder="#CCCCCC"
+                        style="border-color: {{ profile.color }};"
+                        maxlength="{{ colorMaxLength }}"
+                    />
+                </div>
+                <div class="clearfix"></div>
+            </div>
         </fieldset>
 
         <fieldset>
             <legend>Controls:</legend>
 
-            <div ng-repeat="control in profile.controls">
-                <label for="profile-controls-{{ $index }}">{{ control.label }}</label>
-                <input
-                    id="profile-controls-{{ $index }}"
-                    type="text"
-                    value="{{ control.mapper.view }}"
-                    class="form-control control"
-                    ng-name="control[{{ $index }}]"
-                    ng-focus="control.start()"
-                    ng-blur="control.stop()"
-                    ng-keyup="blurProfile()"
-                    ng-class="{ 'active': control.mapper.listening }"
-                />
+
+            <div class="form-row">
+                <div class="col" ng-repeat="control in profile.controls">
+                    <label for="profile-controls-{{ $index }}">{{ control.label }}</label>
+                    <input
+                        id="profile-controls-{{ $index }}"
+                        type="text"
+                        value="{{ control.mapper.view }}"
+                        class="form-control control"
+                        ng-name="control[{{ $index }}]"
+                        ng-focus="control.start()"
+                        ng-blur="control.stop()"
+                        ng-keyup="blurProfile()"
+                        ng-class="{ 'active': control.mapper.listening }"
+                    />
+                </div>
+                <div class="clearfix"></div>
             </div>
         </fieldset>
+
+        <div class="text-center">
+            <button type="button" class="btn btn-save" ng-click="toggleProfile()"><span>I'm done</span></button>
+        </div>
     </div>
 </div>
