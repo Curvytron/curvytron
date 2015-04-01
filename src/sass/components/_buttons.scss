@@ -29,7 +29,7 @@
   &.active {
     outline: 0;
     background-image: none;
-    @include box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+    @include box-shadow(none);
   }
 
   &.disabled,
@@ -67,7 +67,7 @@
 .btn-hero {
   @include button-variant(#999, $btn-default-bg, #999);
   font-size: $base-font-size * 1.5;
-  font-weight: 300;
+  font-weight: 400;
   @include button-size($padding-base-vertical * 1.5, $padding-base-horizontal * 1.5, $base-font-size * 1.5, $base-line-height * 1.5, $border-radius-base * 1.5);
   margin: 40px auto;
   display: block;
