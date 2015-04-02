@@ -612,6 +612,10 @@
             .one-message {
                 padding: 5px 0;
                 @include animation(newLog 300ms ease forwards);
+
+                .icon-dead {
+                    font-size: 18px;
+                }
             }
         }
     }
