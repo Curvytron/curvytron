@@ -52,22 +52,6 @@ header {
   position: relative;
   @include gradient($header-background-from, $header-background-to);
 
-  // &:after {
-  //   position: absolute;
-  //   left: 0;
-  //   right: 0;
-  //   top: 0;
-  //   bottom: 0;
-  //   z-index: 10;
-  //   content: '';
-  // }
-
-  // &:after {
-  //   @include gradient($header-background-to, $header-background-from);
-  //   @include opacity(0);
-  //   @include animation(headerGradient 10s infinite);
-  // }
-
   .logo {
     z-index: 10;
     position: relative;
