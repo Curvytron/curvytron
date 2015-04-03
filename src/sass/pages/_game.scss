@@ -45,6 +45,7 @@
                 display: block;
                 line-height: $game-header-height - 4px;
                 height: $game-header-height;
+                text-decoration: none;
                 @include transition(opacity 0.15s linear);
 
                 img {
@@ -55,10 +56,10 @@
                     margin-right: 10px;
                 }
 
-                &:hover {
-                    text-decoration: none;
-                    @include opacity(70);
-                }
+                // &:hover {
+                //     text-decoration: none;
+                //     @include opacity(70);
+                // }
             }
         }
 
@@ -119,7 +120,6 @@
             margin-bottom: 0;
             position: fixed;
             overflow: auto;
-
             top: $game-header-height + 160px;
             bottom: 298px;
             left: 0;
@@ -129,19 +129,22 @@
                 width: $aside-border-size;
                 height: 1px;
                 border-left: 0;
-                @include gradient($header-background-from, $header-background-to);
+                background: transparentize(#FFF, 0.8);
             }
+
             &::-webkit-scrollbar-track {
                 background: none;
             }
+
             &::-webkit-scrollbar-thumb {
-                background: #FFF;
+                @include gradient($header-background-from, $header-background-to);
                 border-radius: 0;
+                cursor: pointer;
             }
 
             li {
                 border-bottom: 2px solid lighten($game-background, 10%);
-                padding: 10px 65px 10px 23px;
+                padding: 10px 5px 10px 23px;
                 position: relative;
                 font-size: 18px;
 
@@ -162,10 +165,27 @@
                     font-size: 18px;
                     margin-left: 10px;
                     font-weight: 300;
+                    display: block;
+                    text-align: center;
+                    position: absolute;
+                    top: 0;
+                    right: 52px;
+                    bottom: 0;
+                    width: 50px;
+                    line-height: 50px;
                 }
 
                 &:first-child {
                     border-top: 2px solid lighten($game-background, 10%);
+                }
+
+                .player-name {
+                    width: 100%;
+                    display: block;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    padding-right: 100px;
                 }
 
                 &.dead {
@@ -307,15 +327,36 @@
         }
 
         .spectating {
-            position:   absolute;
-            top: 40px;
+            position: absolute;
+            top: 20px;
             width: 100%;
             z-index: 120;
-            @include opacity(30);
+
+            h2 {
+                font-size: 26px;
+                padding: 0 0 15px 0;
+                margin-bottom: 10px;
+                color: #FFF;
+                position: relative;
+                @include opacity(30);
+
+                &::after {
+                    content: '';
+                    width: 40px;
+                    height: 2px;
+                    position: absolute;
+                    bottom: 0;
+                    left: 50%;
+                    margin-left: -20px;
+                    background: #FFF;
+                    @include opacity(80);
+                }
+            }
 
             p {
-                font-size: $font-size-h1;
                 color: #FFF;
+                font-size: 15px;
+                @include opacity(15);
             }
         }
 
@@ -494,8 +535,6 @@
             position: relative;
             height: 195px;
             overflow-y: auto;
-            //padding: 15px 20px 15px;
-            // border-right: $aside-border-size solid lighten($aside-background, 8%);
         }
 
         .action-line {
@@ -555,11 +594,11 @@
         position: fixed;
         top: 0;
         right: 0;
-        width: 20%;
+        max-width: 400px;
         height: auto;
         font-size: 14px;
         z-index: 100;
-        @include opacity(66);
+        font-weight: 400;
 
         .feed {
             position: relative;
@@ -572,7 +611,11 @@
 
             .one-message {
                 padding: 5px 0;
-                @include animation(newLog 300ms forwards);
+                @include animation(newLog 300ms ease forwards);
+
+                .icon-dead {
+                    font-size: 18px;
+                }
             }
         }
     }

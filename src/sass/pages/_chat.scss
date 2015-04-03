@@ -6,10 +6,10 @@
     padding: 15px 0;
 
     &::-webkit-scrollbar {
-        width: $aside-border-size;
+        width: $aside-border-size*2;
         height: 1px;
         border-left: 0;
-        @include gradient($header-background-from, $header-background-to);
+        background: transparentize(#FFF, 0.8);
     }
 
     &::-webkit-scrollbar-track {
@@ -17,8 +17,9 @@
     }
 
     &::-webkit-scrollbar-thumb {
-        background: #FFF;
+        @include gradient($header-background-from, $header-background-to);
         border-radius: 0;
+        cursor: pointer;
     }
 
     .welcome {

@@ -33,7 +33,7 @@ KillLog.prototype.maxlength = 10;
 KillLog.prototype.curvybot = {
     name: 'Curvybot',
     color: '#ff8069',
-    icon: 'icon-megaphone'
+    icon: 'icon-dead'
 };
 
 /**
