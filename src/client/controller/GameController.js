@@ -9,8 +9,9 @@
  * @param {Radio} radio
  * @param {Notifier} notifier
  * @param {SoundManager} sound
+ * @param {killLog} killLog
  */
-function GameController($scope, $routeParams, $location, client, repository, chat, radio, notifier, sound)
+function GameController($scope, $routeParams, $location, client, repository, chat, radio, notifier, sound, killLog)
 {
     this.$scope         = $scope;
     this.$location      = $location;
@@ -18,6 +19,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.repository     = repository;
     this.radio          = radio;
     this.chat           = chat;
+    this.killLog        = killLog;
     this.notifier       = notifier;
     this.sound          = sound;
     this.room           = null;
@@ -54,7 +56,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onUnload       = this.onUnload.bind(this);
     this.onExit         = this.onExit.bind(this);
     this.backToRoom     = this.backToRoom.bind(this);
-    this.updateBorders  = this.updateBorders.bind(this);
+    this.updateBorders   = this.updateBorders.bind(this);
 
     // Hydrate scope:
     this.$scope.sortorder   = '-score';
@@ -387,15 +389,14 @@ GameController.prototype.onDie = function(e)
 {
     var data = e.detail,
         avatar = this.game.avatars.getById(data.avatar),
-        killer = (data.killer) ? this.game.avatars.getById(data.killer) : null;
+        killer = data.killer ? this.game.avatars.getById(data.killer) : null;
 
     if (avatar) {
         avatar.setAngle(data.angle);
         avatar.die();
+        this.killLog.logDeath(avatar, killer);
         this.applyScope();
-
         this.sound.play('death');
-        //this.chat.messages.push(new DieMessage(this.chat.curvybot, avatar, killer));
     }
 };
 
@@ -466,6 +467,7 @@ GameController.prototype.onRoundNew = function(e)
 
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
+    this.killLog.clear();
     this.updateBorders();
 };
 
@@ -559,6 +561,7 @@ GameController.prototype.onExit = function()
     if ((this.room && this.$location.path() !== this.room.url) || (this.game && this.game.started)) {
         this.repository.leave();
         this.chat.clear();
+        this.killLog.clear();
     }
 
     window.onbeforeunload = null;

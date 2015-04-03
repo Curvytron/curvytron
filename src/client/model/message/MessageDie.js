@@ -9,7 +9,7 @@ function DieMessage (curvyBot, deadPlayer, killerPlayer)
 {
     Message.call(this, null, null, curvyBot);
 
-    this.deadPlayer = deadPlayer;
+    this.deadPlayer   = deadPlayer;
     this.killerPlayer = killerPlayer;
 }
 

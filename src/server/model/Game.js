@@ -7,10 +7,11 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
-    this.world      = new World(this.size);
-    this.deaths     = new Collection([], 'id');
-    this.controller = new GameController(this);
-    this.winner     = null;
+    this.world       = new World(this.size);
+    this.deaths      = new Collection([], 'id');
+    this.controller  = new GameController(this);
+    this.roundWinner = null;
+    this.gameWinner  = null;
 
     this.addPoint = this.addPoint.bind(this);
     this.onDie    = this.onDie.bind(this);
@@ -159,7 +160,7 @@ Game.prototype.resolveScores = function()
     }
 
     if (winner) {
-        this.winner = winner;
+        this.roundWinner = winner;
         winner.addScore(Math.max(this.avatars.count() - 1, 1));
         this.emit('round:winner', {game: this, winner: winner});
     }
@@ -228,7 +229,7 @@ Game.prototype.onRoundNew = function()
 
     var avatar, i;
 
-    this.winner = null;
+    this.roundWinner = null;
     this.world.clear();
     this.deaths.clear();
 
@@ -269,7 +270,12 @@ Game.prototype.onStop = function()
 
     BaseGame.prototype.onStop.call(this);
 
-    if (this.isWon()) {
+    var won = this.isWon();
+
+    if (won) {
+        if (won instanceof Avatar) {
+            this.gameWinner = won;
+        }
         this.end();
     } else {
         this.newRound();

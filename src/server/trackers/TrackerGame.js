@@ -49,7 +49,7 @@ GameTracker.prototype.onRound = function()
  */
 GameTracker.prototype.onEnd = function()
 {
-    this.finished = true;
+    this.finished = this.game.gameWinner !== null;
 };
 
 /**

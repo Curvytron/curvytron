@@ -132,16 +132,11 @@ Inspector.prototype.onRoomOpen = function(data)
 Inspector.prototype.onRoomClose = function(data)
 {
     var room = data.room,
-        game = room.game,
         tracker = this.trackers.room.getById(room.name);
 
     room.removeListener('game:new', this.onGameNew);
 
     this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() });
-
-    if (game) {
-        this.onGameAbort(game);
-    }
 
     if (tracker) {
         this.client.writePoint(this.ROOM, tracker.serialize());
@@ -211,22 +206,6 @@ Inspector.prototype.onGameFPS = function(data)
         value: data.fps,
         game: data.tracker.uniqId
     });
-};
-
-/**
- * On game is aborted
- *
- * @param {Game} game
- */
-Inspector.prototype.onGameAbort = function(game)
-{
-    var tracker = this.trackers.game.getById(game.name);
-
-    game.removeListener('end', this.onGameEnd);
-
-    if (tracker) {
-        this.collectGameTrackerData(tracker);
-    }
 };
 
 /**
