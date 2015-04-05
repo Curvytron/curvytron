@@ -4,6 +4,7 @@
 function ActivityWatcher(client)
 {
     this.client       = client;
+    this.focused      = true;
     this.active       = true;
     this.lastActivity = new Date().getTime();
     this.interval     = null;
@@ -28,14 +29,14 @@ function ActivityWatcher(client)
  *
  * @type {Number}
  */
-ActivityWatcher.prototype.tolerance = 180000;
+ActivityWatcher.prototype.tolerance = 60000;
 
 /**
  * Activity check interval
  *
  * @type {Number}
  */
-ActivityWatcher.prototype.checkInterval = 60000;
+ActivityWatcher.prototype.checkInterval = 10000;
 
 /**
  * Set active
@@ -51,7 +52,7 @@ ActivityWatcher.prototype.setActive = function(active)
     }
 
     if (this.active !== active) {
-        this.active       = active ? true : false;
+        this.active = active;
         this.client.addEvent('activity', this.active);
 
         if (this.active) {
@@ -63,12 +64,25 @@ ActivityWatcher.prototype.setActive = function(active)
 };
 
 /**
+ * Set focused
+ *
+ * @param {Boolean} focused
+ */
+ActivityWatcher.prototype.setFocused = function(focused)
+{
+    if (this.focused !== focused) {
+        this.focused = focused;
+    }
+};
+
+/**
  * On focus
  *
  * @param {Event} event
  */
 ActivityWatcher.prototype.onFocus = function(event)
 {
+    this.setFocused(true);
     this.setActive(true);
 };
 
@@ -79,17 +93,27 @@ ActivityWatcher.prototype.onFocus = function(event)
  */
 ActivityWatcher.prototype.onBlur = function(event)
 {
-    this.setActive(false);
+    this.setFocused(false);
 };
 
 /**
- * Is active
+ * Is active?
  *
  * @return {Boolean}
  */
 ActivityWatcher.prototype.isActive = function()
 {
     return this.active;
+};
+
+/**
+ * Is focused?
+ *
+ * @return {Boolean}
+ */
+ActivityWatcher.prototype.isFocused = function()
+{
+    return this.focused;
 };
 
 /**

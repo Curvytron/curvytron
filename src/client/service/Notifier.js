@@ -31,7 +31,7 @@ Notifier.prototype.duration = 5000;
  */
 Notifier.prototype.notify = function(message, duration, sound)
 {
-    if (!this.watcher.isActive()) {
+    if (!this.watcher.isActive() || !this.watcher.isFocused()) {
         this.display(message, duration);
     }
 
@@ -46,7 +46,7 @@ Notifier.prototype.notify = function(message, duration, sound)
  */
 Notifier.prototype.notifyInactive = function(message, duration, sound)
 {
-    if (!this.watcher.isActive()) {
+    if (!this.watcher.isActive() || !this.watcher.isFocused()) {
         this.display(message, duration);
         this.sound.play(typeof(sound) === 'string' ? sound : 'notice');
     }
