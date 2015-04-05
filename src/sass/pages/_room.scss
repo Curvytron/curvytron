@@ -125,8 +125,11 @@
                 &.col-player {
                     font-weight: bold;
 
-                    .inactive {
+                    .icon {
                         padding-top: 7px;
+                    }
+
+                    .inactive {
                         color: lighten($text-color, 25%);
                     }
                 }

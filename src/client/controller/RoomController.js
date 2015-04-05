@@ -41,6 +41,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.setTouch         = this.setTouch.bind(this);
     this.updateProfile    = this.updateProfile.bind(this);
     this.toggleParameters = this.toggleParameters.bind(this);
+    this.onRoomMaster     = this.onRoomMaster.bind(this);
     this.start            = this.start.bind(this);
 
     this.$scope.$on('$destroy', this.leaveRoom);
@@ -59,6 +60,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.$scope.hasTouch            = this.hasTouch;
     this.$scope.curvytron.bodyClass = null;
     this.$scope.displayParameters   = false;
+    this.$scope.master              = false;
 
     this.repository.start();
 
@@ -91,7 +93,7 @@ RoomController.prototype.joinRoom = function()
 RoomController.prototype.onJoined = function(result)
 {
     if (result.success) {
-        this.room        = this.repository.room;
+        this.room        = result.room;
         this.$scope.room = this.room;
 
         this.attachEvents();
@@ -130,6 +132,7 @@ RoomController.prototype.attachEvents = function(name)
     this.repository.on('player:color', this.applyScope);
     this.repository.on('player:name', this.applyScope);
     this.repository.on('client:activity', this.applyScope);
+    this.repository.on('room:master', this.onRoomMaster);
     this.repository.on('room:game:start', this.start);
 
     for (var i = this.room.players.items.length - 1; i >= 0; i--) {
@@ -151,6 +154,7 @@ RoomController.prototype.detachEvents = function(name)
     this.repository.off('player:color', this.applyScope);
     this.repository.off('player:name', this.applyScope);
     this.repository.off('client:activity', this.applyScope);
+    this.repository.off('room:master', this.onRoomMaster);
     this.repository.off('room:game:start', this.start);
 
     if (this.room) {
@@ -238,7 +242,7 @@ RoomController.prototype.onJoin = function(e)
 {
     var player = e.detail.player;
 
-    if (player.client === this.client.id) {
+    if (player.client.id === this.client.id) {
         player.on('control:change', this.onControlChange);
         player.setLocal(true);
 
@@ -469,6 +473,15 @@ RoomController.prototype.setProfileColor = function(player)
         player.setColor(this.profile.color);
         this.setColor(player);
     }
+};
+
+/**
+ * Toggle parameters
+ */
+RoomController.prototype.onRoomMaster = function(e)
+{
+    this.$scope.master = this.repository.amIMaster();
+    this.applyScope();
 };
 
 /**

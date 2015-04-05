@@ -15,12 +15,13 @@ function Chat(client, repository)
     this.element    = null;
     this.auto       = true;
 
-    this.talk       = this.talk.bind(this);
-    this.onTalk     = this.onTalk.bind(this);
-    this.onVote     = this.onVote.bind(this);
-    this.scrollDown = this.scrollDown.bind(this);
-    this.onActivity = this.onActivity.bind(this);
-    this.setRoom    = this.setRoom.bind(this);
+    this.talk         = this.talk.bind(this);
+    this.onTalk       = this.onTalk.bind(this);
+    this.onVote       = this.onVote.bind(this);
+    this.onRoomMaster = this.onRoomMaster.bind(this);
+    this.scrollDown   = this.scrollDown.bind(this);
+    this.onActivity   = this.onActivity.bind(this);
+    this.setRoom      = this.setRoom.bind(this);
 
     this.attachEvents();
 }
@@ -66,6 +67,7 @@ Chat.prototype.attachEvents = function()
     this.repository.on('room:leave', this.setRoom);
     this.repository.on('vote:new', this.onVote);
     this.repository.on('vote:close', this.onVote);
+    this.repository.on('room:master', this.onRoomMaster);
 };
 
 /**
@@ -78,6 +80,7 @@ Chat.prototype.detachEvents = function()
     this.repository.off('room:leave', this.setRoom);
     this.repository.off('vote:new', this.onVote);
     this.repository.off('vote:close', this.onVote);
+    this.repository.off('room:master', this.onRoomMaster);
 };
 
 /**
@@ -191,6 +194,18 @@ Chat.prototype.onVote = function(e)
         this.addMessage(new VoteKickMessage(this.curvybot, e.detail.target));
     } else if (e.type === 'vote:close' && e.detail.result) {
         this.addMessage(new KickMessage(this.curvybot, e.detail.target));
+    }
+};
+
+/**
+ * On room master
+ *
+ * @param {Event} e
+ */
+Chat.prototype.onRoomMaster = function(e)
+{
+    if (e.detail.master) {
+        this.addMessage(new RoomMasterMessage(this.curvybot, e.detail.master));
     }
 };
 

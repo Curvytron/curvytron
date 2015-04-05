@@ -40,7 +40,7 @@ RoomConfig.prototype.bonusClasses = {
  * @type {Object}
  */
 RoomConfig.prototype.variablesNames = {
-    bonusRate: 'Quantity'
+    bonusRate: 'Bonus quantity'
 };
 
 /**

@@ -3,9 +3,13 @@
         <h2 class="header">
             {{ room.name }}
             <i class="icon-params" ng-click="toggleParameters()" ng-class="{'active': displayParameters}"></i>
+            <small class="pull-right" ng-if="master">
+                <span class="icon icon-crown"></span>
+                You are the game master
+            </small>
         </h2>
 
-        <div id="room-parameters" ng-controller="RoomConfigController" ng-show="displayParameters">
+        <div id="room-parameters" ng-controller="RoomConfigController" ng-if="displayParameters">
             <ng-include src="'js/views/rooms/parameters.html'"></ng-include>
         </div>
 
@@ -79,14 +83,15 @@
                             </div>
                         </td>
                     </tr>
-                    <tr ng-repeat="player in room.players.items" ng-if="!player.local">
+                    <tr ng-repeat="player in room.players.items | orderBy:client.id" ng-if="!player.local">
                         <td class="col-remove col-show-hover {{ player.vote ? 'active' : '' }}">
                             <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="kickPlayer(player)">
                                 <span class="icon-kick {{ player.kicked ? 'kicked' : '' }}"></span>
                             </button>
                         </td>
                         <td class="col-player">
-                            <span ng-if="!player.active" class="inactive icon-clock pull-left"></span>
+                            <span ng-if="!player.client.active" class="icon inactive icon-clock pull-left"></span>
+                            <span ng-if="player.client.master" class="icon icon-crown pull-left"></span>
                             <p class="player-name">{{ player.name }}</p>
                         </td>
                         <td class="col-color">
