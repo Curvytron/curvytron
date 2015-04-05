@@ -61,7 +61,7 @@
                         <td class="col-color">
                             <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-blur="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ colorMaxLength }}" />
                         </td>
-                        <td>
+                        <td class="col-keys">
                             <button class="btn btn-default control"
                                 ng-repeat="control in player.controls"
                                 ng-click="control.toggle()"
@@ -93,7 +93,7 @@
                             <span class="line-color-preview" style="background-color: {{ player.color }};"></span>
                             <p>{{ player.color }}</p>
                         </td>
-                        <td></td>
+                        <td class="col-keys"></td>
                         <td class="col-ready">
                             <div class="player-ready" ng-class="{ ready: player.ready }">
                                 <span>

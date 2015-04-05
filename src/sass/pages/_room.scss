@@ -234,16 +234,18 @@
         }
     }
 
-
-
     .control {
-        margin: 0 5px;
+        margin: 0;
         height: 40px;
         width: 40px;
         overflow: hidden;
         padding: 0;
         line-height: 36px;
         text-align: center;
+
+        & + .control {
+            margin-left: 10px;
+        }
 
         &.active {
             font-size: 0;
@@ -274,7 +276,7 @@
 
     .col-player { width: auto; }
     .col-color { width: 150px; }
-    .col-keys { width: 150px; }
+    .col-keys { width: 120px; }
     .col-ready { width: 150px; }
     .col-remove {
         width: 32px;
