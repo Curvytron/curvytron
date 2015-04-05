@@ -58,9 +58,9 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.$scope.nameMaxLength       = Player.prototype.maxLength;
     this.$scope.colorMaxLength      = Player.prototype.colorMaxLength;
     this.$scope.hasTouch            = this.hasTouch;
+    this.$scope.master              = this.repository.amIMaster();
     this.$scope.curvytron.bodyClass = null;
     this.$scope.displayParameters   = false;
-    this.$scope.master              = false;
 
     this.repository.start();
 
