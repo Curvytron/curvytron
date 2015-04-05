@@ -41,10 +41,11 @@ KillLog.prototype.curvybot = {
  *
  * @param {Avatar} avatar
  * @param {Avatar|null} killer
+ * @param {Boolean} old
  */
-KillLog.prototype.logDeath = function(avatar, killer)
+KillLog.prototype.logDeath = function(avatar, killer, old)
 {
-    this.addMessage(new DieMessage(this.curvybot, avatar, killer));
+    this.addMessage(new DieMessage(this.curvybot, avatar, killer, old));
 };
 
 /**

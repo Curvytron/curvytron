@@ -388,13 +388,12 @@ GameController.prototype.onPoint = function(e)
 GameController.prototype.onDie = function(e)
 {
     var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar),
-        killer = data.killer ? this.game.avatars.getById(data.killer) : null;
+        avatar = this.game.avatars.getById(data.avatar);
 
     if (avatar) {
         avatar.setAngle(data.angle);
         avatar.die();
-        this.killLog.logDeath(avatar, killer);
+        this.killLog.logDeath(avatar, data.killer ? this.game.avatars.getById(data.killer) : null, data.old);
         this.applyScope();
         this.sound.play('death');
     }
