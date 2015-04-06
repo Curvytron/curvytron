@@ -7,10 +7,15 @@
 
     .header {
         margin-bottom: 25px;
+        min-height: inherit;
 
         .count {
             font-size: 0.7em;
             color: $headings-small-color;
+        }
+
+        small {
+            margin: 11px 0;
         }
 
         .icon-params {
