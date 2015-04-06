@@ -61,3 +61,10 @@ SocketGroup.prototype.addEvent = function(name, data, callback, force)
         this.clients.items[i].addEvent(name, data, callback, force);
     }
 };
+/**
+ * Returns the number of client
+ */
+SocketGroup.prototype.count = function()
+{
+    return this.clients.count();
+};

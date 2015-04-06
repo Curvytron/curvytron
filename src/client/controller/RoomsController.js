@@ -24,6 +24,7 @@ function RoomsController($scope, $location, client)
 
     // Hydrating the scope:
     this.$scope.rooms         = this.repository.rooms;
+    this.$scope.nbPlayers     = this.repository.nbPlayers;
     this.$scope.createRoom    = this.createRoom;
     this.$scope.join          = this.joinRoom;
     this.$scope.quickPlay     = this.quickPlay;
@@ -45,6 +46,12 @@ RoomsController.prototype.attachEvents = function()
     this.repository.on('room:players', this.applyScope);
     this.repository.on('room:game', this.applyScope);
 
+    var self = this;
+    this.repository.on('rooms:nbPlayers', function(e) {
+        self.$scope.nbPlayers = e.detail;
+        self.applyScope();
+    });
+
     this.repository.start();
 };
 
@@ -59,6 +66,7 @@ RoomsController.prototype.detachEvents = function()
     this.repository.off('room:close', this.applyScope);
     this.repository.off('room:players', this.applyScope);
     this.repository.off('room:game', this.applyScope);
+    this.repository.off('client:count', this.applyScope);
 };
 
 /**
