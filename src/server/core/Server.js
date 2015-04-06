@@ -13,6 +13,8 @@ function Server(config)
     this.roomRepository  = new RoomRepository();
     this.roomsController = new RoomsController(this.roomRepository);
 
+    this.curvytronController = new CurvytronController(this.clients);
+
     this.authorizationHandler  = this.authorizationHandler.bind(this);
     this.onSocketConnection    = this.onSocketConnection.bind(this);
     this.onSocketDisconnection = this.onSocketDisconnection.bind(this);
@@ -58,10 +60,18 @@ Server.prototype.authorizationHandler = function(request, socket, head)
  */
 Server.prototype.onSocketConnection = function(socket, ip)
 {
-    var client = new SocketClient(socket, 3, ip);
+    // create socket for this client
+    var client = new SocketClient(socket, 3, ip),
+        curvytronController = this.curvytronController;
     this.clients.add(client);
 
     client.on('close', this.onSocketDisconnection);
+
+    // Notify clients with updated nb players
+    client.on('dispatchNbPlayers', function() {
+        curvytronController.sendNbPlayers();
+    });
+
     this.roomsController.attach(client);
     this.emit('client', client);
 
@@ -76,6 +86,9 @@ Server.prototype.onSocketConnection = function(socket, ip)
 Server.prototype.onSocketDisconnection = function(client)
 {
     console.info('Client %s disconnected.', client.id);
+
+    // Notify clients with updated nb players
+    this.curvytronController.sendNbPlayers();
 
     this.clients.remove(client);
 };

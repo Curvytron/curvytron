@@ -1,20 +1,22 @@
 /**
  * RoomsRepository
  *
- * @param {SocketCLient} client
+ * @param {SocketClient} client
  */
 function RoomsRepository(client)
 {
     EventEmitter.call(this);
 
-    this.client = client;
-    this.rooms  = new Collection([], 'name');
+    this.client       = client;
+    this.rooms        = new Collection([], 'name');
+    this.nbPlayers    = 0;
 
-    this.start         = this.start.bind(this);
-    this.onRoomOpen    = this.onRoomOpen.bind(this);
-    this.onRoomClose   = this.onRoomClose.bind(this);
-    this.onRoomPlayers = this.onRoomPlayers.bind(this);
-    this.onRoomGame    = this.onRoomGame.bind(this);
+    this.start             = this.start.bind(this);
+    this.onRoomOpen        = this.onRoomOpen.bind(this);
+    this.onRoomClose       = this.onRoomClose.bind(this);
+    this.onRoomPlayers     = this.onRoomPlayers.bind(this);
+    this.onRoomGame        = this.onRoomGame.bind(this);
+    this.onUpdateNbPlayers = this.onUpdateNbPlayers.bind(this);
 }
 
 RoomsRepository.prototype = Object.create(EventEmitter.prototype);
@@ -29,6 +31,7 @@ RoomsRepository.prototype.attachEvents = function()
     this.client.on('room:close', this.onRoomClose);
     this.client.on('room:players', this.onRoomPlayers);
     this.client.on('room:game', this.onRoomGame);
+    this.client.on('connect:nbPlayers', this.onUpdateNbPlayers);
 };
 
 /**
@@ -40,6 +43,7 @@ RoomsRepository.prototype.detachEvents = function()
     this.client.off('room:close', this.onRoomClose);
     this.client.off('room:players', this.onRoomPlayers);
     this.client.off('room:game', this.onRoomGame);
+    this.client.off('connect:nbPlayers', this.onUpdateNbPlayers);
 };
 
 /**
@@ -160,6 +164,18 @@ RoomsRepository.prototype.onRoomGame = function(e)
         room.game = e.detail.game;
         this.emit('room:game', room);
     }
+};
+
+/**
+ * On nb players change
+ *
+ * @param {Event} e
+ *
+ */
+RoomsRepository.prototype.onUpdateNbPlayers = function(e)
+{
+    this.nbPlayers = e.detail;
+    this.emit('rooms:nbPlayers', this.nbPlayers);
 };
 
 /**

@@ -93,6 +93,8 @@ CurvytronController.prototype.onConnect = function(e)
 {
     this.$scope.status = 'online';
     this.applyScope();
+
+    this.client.addEvent('dispatchNbPlayers');
 };
 
 /**

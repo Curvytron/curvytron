@@ -22,11 +22,14 @@
     <div class="container room-list">
         <h2 class="header" ng-class="{ 'empty': rooms.isEmpty() }">
             <span class="title">
-                <ng-pluralize count="rooms.items.length" when="{
-                    '0': 'Start by creating a room:',
-                    'one': 'You can join 1 room!',
-                    'other': 'You can join {} rooms!'}"
-                />
+                <span ng-if="!rooms.items.length && nbPlayers <= 1">
+                    You can start by creating a room:
+                </span>
+                <span ng-if="nbPlayers > 1">
+                        {{ nbPlayers - 1 }}
+                        <span><ng-pluralize count="nbPlayers - 1" when="{'1': 'opponent','other': 'opponents'}"/></span>&nbsp;connected,&nbsp;
+                        <ng-pluralize count="rooms.items.length" when="{'0': 'no room created.', 'one': 'with {} room.', 'other': 'with {} rooms.'}"/>
+                </span>
             </span>
             <form ng-submit="createRoom()" class="top-right-form">
                 <button type="submit" id="submit">
