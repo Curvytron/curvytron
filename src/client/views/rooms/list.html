@@ -26,8 +26,8 @@
                     You can start by creating a room:
                 </span>
                 <span ng-if="nbPlayers > 1">
-                        {{ nbPlayers - 1 }}&nbsp;
-                        <span><ng-pluralize count="nbPlayers - 1" when="{'1': 'opponent','other': 'opponents'}"/></span> connected,&nbsp;
+                        {{ nbPlayers - 1 }}
+                        <span><ng-pluralize count="nbPlayers - 1" when="{'1': 'opponent','other': 'opponents'}"/></span>&nbsp;connected,&nbsp;
                         <ng-pluralize count="rooms.items.length" when="{'0': 'no room created.', 'one': 'with {} room.', 'other': 'with {} rooms.'}"/>
                 </span>
             </span>
