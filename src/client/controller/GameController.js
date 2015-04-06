@@ -566,7 +566,6 @@ GameController.prototype.onExit = function()
 
     window.onbeforeunload = null;
 
-    this.radio.setActive(false);
     this.sound.stop('win');
     this.offUnload();
     this.offDestroy();
