@@ -56,25 +56,26 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onUnload       = this.onUnload.bind(this);
     this.onExit         = this.onExit.bind(this);
     this.backToRoom     = this.backToRoom.bind(this);
-    this.updateBorders   = this.updateBorders.bind(this);
+    this.updateBorders  = this.updateBorders.bind(this);
 
     // Hydrate scope:
-    this.$scope.sortorder   = '-score';
-    this.$scope.warmup      = false;
-    this.$scope.phase       = 'round';
-    this.$scope.end         = false;
-    this.$scope.tieBreak    = false;
-    this.$scope.borderless  = false;
-    this.$scope.radio       = this.radio;
-    this.$scope.sound       = this.sound;
-    this.$scope.backToRoom  = this.backToRoom;
-    this.$scope.toggleSound = this.sound.toggle;
-    this.$scope.toggleRadio = this.radio.toggle;
-    this.$scope.roundWinner = null;
-    this.$scope.gameWinner  = null;
-    this.$scope.spectating  = false;
-    this.$scope.spectators  = 0;
-    this.$scope.latency     = 0;
+    this.$scope.sortorder       = '-score';
+    this.$scope.warmup          = false;
+    this.$scope.phase           = 'round';
+    this.$scope.end             = false;
+    this.$scope.tieBreak        = false;
+    this.$scope.borderless      = false;
+    this.$scope.radio           = this.radio;
+    this.$scope.sound           = this.sound;
+    this.$scope.backToRoom      = this.backToRoom;
+    this.$scope.toggleSound     = this.sound.toggle;
+    this.$scope.toggleRadio     = this.radio.toggle;
+    this.$scope.roundWinner     = null;
+    this.$scope.gameWinner      = null;
+    this.$scope.spectating      = false;
+    this.$scope.spectators      = 0;
+    this.$scope.latency         = 0;
+    this.$scope.$parent.profile = false;
 
     this.repository.start();
 

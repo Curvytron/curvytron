@@ -6,7 +6,6 @@
         My profile
     </h3>
     <div class="inner">
-
         <fieldset>
             <legend>Player:</legend>
 
@@ -48,7 +47,6 @@
         <fieldset>
             <legend>Controls:</legend>
 
-
             <div class="form-row">
                 <div class="col" ng-repeat="control in profile.controls">
                     <label for="profile-controls-{{ $index }}">{{ control.label }}</label>
@@ -65,6 +63,26 @@
                     />
                 </div>
                 <div class="clearfix"></div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Options:</legend>
+
+
+            <div class="form-row clearfix">
+                <div class="col">
+                    <label for="profile-radio">Radio:</label>
+                    <span id="profile-radio" class="btn-toogle radio-sound" ng-class="{ active: profile.radio }" ng-click="toggleRadio()">
+                        <i class="icon-radio"></i>
+                    </span>
+                </div>
+                <div class="col">
+                    <label for="profile-sound">Sound effects:</label>
+                    <span id="profile-sound" class="btn-toogle sound" ng-class="{ active: profile.sound }" ng-click="toggleSound()">
+                        <i class="icon-volume"></i>
+                    </span>
+                </div>
             </div>
         </fieldset>
 

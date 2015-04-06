@@ -37,7 +37,6 @@
                 <img src="images/logo.svg" alt="Curvytron" id="logo" />
                 <span class="brand">Curvytron</span>
             </a>
-            <ng-include ng-if="profile" src="'js/views/profile/link.html'"></ng-include>
         </header>
 
         <div id="connecting" ng-if="status === 'connecting'" class="container text-center">
@@ -69,9 +68,12 @@
             </div>
         </footer>
 
-        <div id="profile" ng-class="{ 'active': profileOpen }">
-            <ng-include src="'js/views/profile/tuto.html'"></ng-include>
-            <ng-include src="'js/views/profile/profile.html'"></ng-include>
+        <div ng-controller="ProfileController" ng-if="profile">
+            <ng-include src="'js/views/profile/link.html'"></ng-include>
+            <div id="profile" ng-class="{ 'active': profileOpen }">
+                <ng-include src="'js/views/profile/tuto.html'"></ng-include>
+                <ng-include src="'js/views/profile/profile.html'"></ng-include>
+            </div>
         </div>
 
         <script src="js/dependencies.js"></script>

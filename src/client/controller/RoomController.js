@@ -59,12 +59,13 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.$scope.hasTouch            = this.hasTouch;
     this.$scope.curvytron.bodyClass = null;
     this.$scope.displayParameters   = false;
+    this.$scope.$parent.profile     = true;
 
     this.repository.start();
 
     if (!this.profile.isComplete()) {
         this.profile.on('close', this.joinRoom);
-        this.$scope.openProfile();
+        this.profile.controller.openProfile();
     } else {
         this.joinRoom();
     }

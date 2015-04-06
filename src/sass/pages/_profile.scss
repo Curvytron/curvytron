@@ -1,3 +1,32 @@
+.profile-link {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: $base-font-size;
+    line-height: $base-font-size;
+    font-family: $base-font-family;
+    vertical-align: top;
+    padding: 8px 16px;
+    background-color: $game-background;
+    border: none;
+    border-radius: 40px;
+
+    &,&:visited {
+        color: #ffffff;
+    }
+
+    .circle {
+        width: $base-font-size;
+        height: $base-font-size;
+        border-radius: $base-font-size;
+        display: inline-block;
+        margin-left: -8px;
+        margin-right: 8px;
+        background-color: #ffffff;
+        vertical-align: top;
+    }
+}
+
 #profile {
     visibility:hidden;
 
@@ -153,6 +182,58 @@
                     }
                 }
             }
+        }
+    }
+}
+
+.btn-toogle {
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+    font-size: 30px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    position: relative;
+
+    .icon-volume {
+        @extend .icon-volume-off;
+        @include opacity(66);
+    }
+
+    .icon-radio {
+        @extend .icon-music;
+        @include opacity(66);
+    }
+
+    &::after {
+        content: " ";
+        width: 40px;
+        height: 2px;
+        top: 20px;
+        left: 2px;
+        position: absolute;
+        background: #CCC;
+        @include opacity(100);
+        @include transform(rotate(-45deg));
+        @include transition(opacity 0.15s linear);
+    }
+
+    &.active {
+        .icon-volume {
+            @extend .icon-volume-up;
+            @include opacity(100);
+        }
+
+        .icon-radio {
+            @include opacity(100);
+        }
+
+        &::after {
+            @include opacity(0);
         }
     }
 }
