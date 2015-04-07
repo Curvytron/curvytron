@@ -60,7 +60,7 @@ Game.prototype.update = function(step)
                 var killer = this.world.getBody(avatar.body);
 
                 if (null !== killer) {
-                    avatar.die(killer.avatar);
+                    avatar.die(killer);
                 }
             }
 

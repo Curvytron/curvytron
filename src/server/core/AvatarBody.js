@@ -9,10 +9,18 @@ function AvatarBody(point, avatar)
 
     this.num    = avatar.bodyCount;
     this.avatar = avatar;
+    this.birth  = new Date().getTime();
 }
 
 AvatarBody.prototype = Object.create(Body.prototype);
 AvatarBody.prototype.constructor = AvatarBody;
+
+/**
+ * Age considered old
+ *
+ * @type {Number}
+ */
+AvatarBody.prototype.oldAge = 2000;
 
 /**
  * Match?
@@ -31,12 +39,12 @@ AvatarBody.prototype.match = function(body)
 };
 
 /**
- * Is old
+ * Is old?
  *
  * @return {Boolean}
  */
 AvatarBody.prototype.isOld = function()
 {
-    return this.num - this.avatar.bodyCount > this.avatar.trailLatency;
+    return new Date().getTime() - this.birth >= this.oldAge;
 };
 

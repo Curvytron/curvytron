@@ -28,6 +28,11 @@
                 Farewell <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>, you have been kicked.
             </span>
 
+            <!-- Room master -->
+            <span ng-switch-when="room-master">
+                <span style="color: {{ message.getTarget().color }}">{{ message.getTarget().name }}</span> is now the room master.
+            </span>
+
             <!-- Default -->
             <span ng-switch-default>
                 {{ message.content }}

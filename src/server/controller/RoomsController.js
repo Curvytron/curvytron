@@ -130,8 +130,7 @@ RoomsController.prototype.onJoinRoom = function(client, data, callback)
     var room = this.repository.get(data.name);
 
     if (room) {
-        callback({success: true, room: room.serialize()});
-        room.controller.attach(client);
+        room.controller.attach(client, callback);
     } else {
         callback({success: false});
     }

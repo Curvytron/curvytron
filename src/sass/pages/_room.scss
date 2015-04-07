@@ -7,10 +7,15 @@
 
     .header {
         margin-bottom: 25px;
+        min-height: inherit;
 
         .count {
             font-size: 0.7em;
             color: $headings-small-color;
+        }
+
+        small {
+            margin: 11px 0;
         }
 
         .icon-params {
@@ -124,11 +129,6 @@
 
                 &.col-player {
                     font-weight: bold;
-
-                    .inactive {
-                        padding-top: 7px;
-                        color: lighten($text-color, 25%);
-                    }
                 }
 
                 &.col-ready {
@@ -234,16 +234,18 @@
         }
     }
 
-
-
     .control {
-        margin: 0 5px;
+        margin: 0;
         height: 40px;
         width: 40px;
         overflow: hidden;
         padding: 0;
         line-height: 36px;
         text-align: center;
+
+        & + .control {
+            margin-left: 10px;
+        }
 
         &.active {
             font-size: 0;
@@ -274,7 +276,7 @@
 
     .col-player { width: auto; }
     .col-color { width: 150px; }
-    .col-keys { width: 150px; }
+    .col-keys { width: 120px; }
     .col-ready { width: 150px; }
     .col-remove {
         width: 32px;
@@ -284,6 +286,18 @@
         .icon-kick.kicked {
             color: $color-danger;
             opacity: 1;
+        }
+    }
+    .col-icon {
+        width: auto;
+        padding: 0;
+
+        .icon {
+            padding-top: 7px;
+        }
+
+        .inactive {
+            color: lighten($text-color, 25%);
         }
     }
 
@@ -327,6 +341,10 @@
             font-weight: 400;
         }
 
+        .disabled, [disabled] {
+            cursor: not-allowed;
+        }
+
         .max-score {
             text-align: center;
 
@@ -365,7 +383,6 @@
                 height: 2px;
                 background-color: #CCC;
                 cursor: pointer;
-                //margin: 12px 0;
 
                 &::-webkit-slider-thumb {
                     -webkit-appearance:none;
@@ -381,6 +398,10 @@
                     &:hover {
                         background: #AAA;
                     }
+                }
+
+                &[disabled] {
+                    cursor: not-allowed;
                 }
             }
 
@@ -457,6 +478,17 @@
                     color: $text-color;
                     @include box-shadow(none);
                 }
+
+                &.disabled {
+                    cursor: not-allowed;
+
+                    &:hover {
+                        background: #f3f3f3;
+                    }
+                    &.active {
+                        background: #DDD;
+                    }
+                }
             }
 
             .bonus {
@@ -470,6 +502,10 @@
                 color: #FFF;
                 cursor: pointer;
                 margin: 0 4px;
+
+                &.disabled {
+                    cursor: not-allowed;
+                }
 
                 &.bonus-self-fast {
                     @include bonus-sprite(0, 0);

@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-lg-4 max-score">
         <h2>Victory score</h2>
-        <input type="text" class="form-control" id="max-score" ng-change="setMaxScore(config.maxScore)" ng-model="config.maxScore" placeholder="{{ config.getDefaultMaxScore() }}" maxlength="3" />
+        <input type="text" class="form-control" id="max-score" ng-change="setMaxScore(config.maxScore)" ng-model="config.maxScore" placeholder="{{ config.getDefaultMaxScore() }}" maxlength="3" ng-disabled="!master" />
     </div>
     <div class="col-lg-8 bonus-list">
         <h2>Bonus</h2>
@@ -11,28 +11,28 @@
             <div class="input-range">
                 <span class="range-icon less-icon"><i class="icon-minus"></i></span>
                 <span class="range-icon more-icon"><i class="icon-plus"></i></span>
-                <input id="config-{{ variable }}" type="range" min="-1" max="1" step="0.1" ng-model="config.variables[variable]" ng-change="setVariable(variable)"/>
+                <input id="config-{{ variable }}" type="range" min="-1" max="1" step="0.1" ng-model="config.variables[variable]" ng-change="setVariable(variable)" ng-disabled="!master"/>
             </div>
         </div>
 
         <label>Preset:</label>
         <div class="bonus-selection">
-            <span ng-repeat="preset in config.presets" ng-click="togglePreset(preset)" class="preset" ng-class="{ 'active': preset == config.preset }">
+            <span ng-repeat="preset in config.presets" ng-click="togglePreset(preset)" class="preset" ng-class="{ 'active': preset == config.preset, 'disabled': !master }">
                 {{ preset.name }}
             </span>
-            <span ng-if="config.preset == config.customPreset" ng-click="togglePreset(preset)" class="preset active">
+            <span ng-if="config.preset == config.customPreset" ng-click="togglePreset(preset)" class="preset active" ng-class="{'disabled': !master}">
                 {{ config.customPreset.name }}
             </span>
         </div>
 
         <label>Include:</label>
         <div class="bonus-selection selected">
-            <span ng-repeat="(bonus, enabled) in config.bonuses" ng-click="toggleBonus(bonus)" class="bonus {{ config.bonusClasses[bonus] }}" ng-if="enabled"></span>
+            <span ng-repeat="(bonus, enabled) in config.bonuses" ng-click="toggleBonus(bonus)" class="bonus {{ config.bonusClasses[bonus] }}" ng-if="enabled" ng-class="{'disabled': !master}"></span>
         </div>
 
         <label>Exclude:</label>
         <div class="bonus-selection available">
-            <span ng-repeat="(bonus, enabled) in config.bonuses" ng-click="toggleBonus(bonus)" class="bonus {{ config.bonusClasses[bonus] }}" ng-if="!enabled"></span>
+            <span ng-repeat="(bonus, enabled) in config.bonuses" ng-click="toggleBonus(bonus)" class="bonus {{ config.bonusClasses[bonus] }}" ng-if="!enabled" ng-class="{'disabled': !master}"></span>
         </div>
     </div>
 </div>
