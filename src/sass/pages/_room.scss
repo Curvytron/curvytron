@@ -341,6 +341,10 @@
             font-weight: 400;
         }
 
+        .disabled, [disabled] {
+            cursor: not-allowed;
+        }
+
         .max-score {
             text-align: center;
 
@@ -379,7 +383,6 @@
                 height: 2px;
                 background-color: #CCC;
                 cursor: pointer;
-                //margin: 12px 0;
 
                 &::-webkit-slider-thumb {
                     -webkit-appearance:none;
@@ -395,6 +398,10 @@
                     &:hover {
                         background: #AAA;
                     }
+                }
+
+                &[disabled] {
+                    cursor: not-allowed;
                 }
             }
 
@@ -471,6 +478,17 @@
                     color: $text-color;
                     @include box-shadow(none);
                 }
+
+                &.disabled {
+                    cursor: not-allowed;
+
+                    &:hover {
+                        background: #f3f3f3;
+                    }
+                    &.active {
+                        background: #DDD;
+                    }
+                }
             }
 
             .bonus {
@@ -484,6 +502,10 @@
                 color: #FFF;
                 cursor: pointer;
                 margin: 0 4px;
+
+                &.disabled {
+                    cursor: not-allowed;
+                }
 
                 &.bonus-self-fast {
                     @include bonus-sprite(0, 0);
