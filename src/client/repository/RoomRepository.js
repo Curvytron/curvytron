@@ -134,9 +134,10 @@ RoomRepository.prototype.createClients = function(data)
  */
 RoomRepository.prototype.createRoom = function(data, clients)
 {
-    var room = new Room(data.name);
+    var room = new Room(data.name),
+        length = data.players.length;
 
-    for (var i = data.players.length - 1; i >= 0; i--) {
+    for (var i =  0; i < length; i++) {
         room.addPlayer(new Player(
             data.players[i].id,
             clients.getById(data.players[i].client),

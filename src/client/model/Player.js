@@ -16,6 +16,7 @@ function Player(id, client, name, color, ready)
     this.controls = null;
     this.vote     = false;
     this.kicked   = false;
+    this.position = this.client.id + '-' + this.id;
 
     this.onControlChange = this.onControlChange.bind(this);
 
@@ -101,3 +102,13 @@ Player.prototype.getBinding = function()
 {
     return [this.controls[0].mapper.value, this.controls[1].mapper.value];
 };
+
+/**
+ * Should this player be considered madter?
+ *
+ * @return {Boolean}
+ */
+Player.prototype.isMaster = function ()
+{
+    return this.client.master && this.client.players.getIdIndex(this.id) === 0;
+}

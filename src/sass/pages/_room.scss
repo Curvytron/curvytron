@@ -129,14 +129,6 @@
 
                 &.col-player {
                     font-weight: bold;
-
-                    .icon {
-                        padding-top: 7px;
-                    }
-
-                    .inactive {
-                        color: lighten($text-color, 25%);
-                    }
                 }
 
                 &.col-ready {
@@ -294,6 +286,18 @@
         .icon-kick.kicked {
             color: $color-danger;
             opacity: 1;
+        }
+    }
+    .col-icon {
+        width: auto;
+        padding: 0;
+
+        .icon {
+            padding-top: 7px;
+        }
+
+        .inactive {
+            color: lighten($text-color, 25%);
         }
     }
 
