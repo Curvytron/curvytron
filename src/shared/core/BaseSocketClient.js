@@ -259,3 +259,13 @@ BaseSocketClient.prototype.createCallback = function(id)
 
     return function (data) { client.addCallback(id, data); };
 };
+
+/**
+ * Object version of the lcient
+ *
+ * @return {Object}
+ */
+BaseSocketClient.prototype.serialize = function()
+{
+    return {id: this.id};
+};

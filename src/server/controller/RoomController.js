@@ -14,16 +14,18 @@ function RoomController(room)
     this.socketGroup = new SocketGroup(this.clients);
     this.kickManager = new KickManager(this);
     this.chat        = new Chat();
+    this.roomMaster  = null;
 
-    this.onPlayerJoin  = this.onPlayerJoin.bind(this);
-    this.onPlayerLeave = this.onPlayerLeave.bind(this);
-    this.onGame        = this.onGame.bind(this);
-    this.loadRoom      = this.loadRoom.bind(this);
-    this.unloadRoom    = this.unloadRoom.bind(this);
-    this.onVoteNew     = this.onVoteNew.bind(this);
-    this.onVoteClose   = this.onVoteClose.bind(this);
-    this.onKick        = this.onKick.bind(this);
-    this.checkForClose = this.checkForClose.bind(this);
+    this.onPlayerJoin     = this.onPlayerJoin.bind(this);
+    this.onPlayerLeave    = this.onPlayerLeave.bind(this);
+    this.onGame           = this.onGame.bind(this);
+    this.loadRoom         = this.loadRoom.bind(this);
+    this.unloadRoom       = this.unloadRoom.bind(this);
+    this.onVoteNew        = this.onVoteNew.bind(this);
+    this.onVoteClose      = this.onVoteClose.bind(this);
+    this.onKick           = this.onKick.bind(this);
+    this.checkForClose    = this.checkForClose.bind(this);
+    this.removeRoomMaster = this.removeRoomMaster.bind(this);
 
     this.callbacks = {
         onTalk: function (data) { controller.onTalk(this, data[0], data[1]); },
@@ -87,13 +89,25 @@ RoomController.prototype.unloadRoom = function()
  * Attach events
  *
  * @param {SocketClient} client
+ * @param {Function} callback
  */
-RoomController.prototype.attach = function(client)
+RoomController.prototype.attach = function(client, callback)
 {
     if (this.clients.add(client)) {
+        callback({
+            success: true,
+            room: this.room.serialize(),
+            master: this.roomMaster ? this.roomMaster.id : null,
+            clients: this.clients.map(function () { return this.serialize(); }).items,
+            messages: this.chat.serialize(100),
+            votes: this.kickManager.votes.map(function () { return this.serialize(); }).items
+        });
         this.attachEvents(client);
         this.onClientAdd(client);
+        this.socketGroup.addEvent('client:add', client.id);
         this.emit('client:add', { room: this.room, client: client});
+    } else {
+        callback({success: false});
     }
 };
 
@@ -107,6 +121,7 @@ RoomController.prototype.detach = function(client)
     if (this.clients.remove(client)) {
         this.detachEvents(client);
         this.onClientRemove(client);
+        this.socketGroup.addEvent('client:remove', client.id);
         this.emit('client:remove', { room: this.room, client: client});
     }
 };
@@ -128,10 +143,6 @@ RoomController.prototype.attachEvents = function(client)
     client.on('room:ready', this.callbacks.onReady);
     client.on('room:color', this.callbacks.onColor);
     client.on('room:name', this.callbacks.onName);
-
-    client.on('room:config:max-score', this.callbacks.onConfigMaxScore);
-    client.on('room:config:variable', this.callbacks.onConfigVariable);
-    client.on('room:config:bonus', this.callbacks.onConfigBonus);
 };
 
 /**
@@ -151,10 +162,6 @@ RoomController.prototype.detachEvents = function(client)
     client.removeListener('room:ready', this.callbacks.onReady);
     client.removeListener('room:color', this.callbacks.onColor);
     client.removeListener('room:name', this.callbacks.onName);
-
-    client.removeListener('room:config:max-score', this.callbacks.onConfigMaxScore);
-    client.removeListener('room:config:variable', this.callbacks.onConfigVariable);
-    client.removeListener('room:config:bonus', this.callbacks.onConfigBonus);
 };
 
 /**
@@ -176,27 +183,79 @@ RoomController.prototype.removePlayer = function(player)
 };
 
 /**
+ * Nominate game master
+ */
+RoomController.prototype.nominateRoomMaster = function()
+{
+    if (this.clients.isEmpty() || this.roomMaster) { return; }
+
+    var roomMaster = this.clients.match(function () { return this.active && this.isPlaying(); });
+
+    this.setRoomMaster(roomMaster);
+};
+
+/**
+ * Set game master
+ *
+ * @param {SocketClient} client
+ */
+RoomController.prototype.setRoomMaster = function(client)
+{
+    if (!this.roomMaster && client) {
+        this.roomMaster = client;
+        this.roomMaster.on('close', this.removeRoomMaster);
+        this.roomMaster.on('room:leave', this.removeRoomMaster);
+        this.roomMaster.on('room:config:max-score', this.callbacks.onConfigMaxScore);
+        this.roomMaster.on('room:config:variable', this.callbacks.onConfigVariable);
+        this.roomMaster.on('room:config:bonus', this.callbacks.onConfigBonus);
+        this.socketGroup.addEvent('room:master', {client: client.id});
+    }
+};
+
+/**
+ * Remove game master
+ */
+RoomController.prototype.removeRoomMaster = function()
+{
+    if (this.roomMaster) {
+        this.roomMaster.removeListener('close', this.removeRoomMaster);
+        this.roomMaster.removeListener('room:leave', this.removeRoomMaster);
+        this.roomMaster.removeListener('room:config:max-score', this.callbacks.onConfigMaxScore);
+        this.roomMaster.removeListener('room:config:variable', this.callbacks.onConfigVariable);
+        this.roomMaster.removeListener('room:config:bonus', this.callbacks.onConfigBonus);
+        this.roomMaster = null;
+        this.nominateRoomMaster();
+    }
+};
+
+/**
+ * Is the given client the game master?
+ *
+ * @param {SocketClient} client
+ *
+ * @return {Boolean}
+ */
+RoomController.prototype.isRoomMaster = function(client)
+{
+    return this.roomMaster.id === client.id;
+};
+
+/**
  * Initialise a new client
  *
  * @param {SocketClient} client
  */
 RoomController.prototype.onClientAdd = function(client)
 {
-    var messages = this.chat.serialize(100),
-        events = new Array(messages.length);
-
     client.players.clear();
-
-    for (var i = messages.length - 1; i >= 0; i--) {
-        events[i] = ['room:talk', messages[i]];
-    }
-
-    client.addEvents(events);
 
     if (this.room.game) {
         this.room.game.controller.attach(client);
         client.addEvent('room:game:start');
     }
+
+    this.socketGroup.addEvent('client:add', {client: client.serialize()});
+    this.nominateRoomMaster();
 };
 
 /**
@@ -219,6 +278,8 @@ RoomController.prototype.onClientRemove = function(client)
     if (this.room.players.isEmpty()) {
         setTimeout(this.checkForClose, this.timeToClose);
     }
+
+    this.socketGroup.addEvent('client:remove', {client: client.id});
 };
 
 /**
@@ -286,6 +347,7 @@ RoomController.prototype.onPlayerAdd = function(client, data, callback)
     client.players.add(player);
     this.emit('player:add', { room: this.room, player: player});
     callback({success: true});
+    this.nominateRoomMaster();
 };
 
 /**
@@ -413,9 +475,15 @@ RoomController.prototype.onKickVote = function(client, data, callback)
         var player = this.room.players.getById(data.player);
 
         if (player) {
-            var kickVote = this.kickManager.vote(client, player);
+            if (this.isRoomMaster(client)) {
+                this.onKick(player);
 
-            return callback({success: true, kicked: kickVote.hasVote(client)});
+                return callback({success: true, kicked: true});
+            } else {
+                var kickVote = this.kickManager.vote(client, player);
+
+                return callback({success: true, kicked: kickVote.hasVote(client)});
+            }
         }
     }
 
@@ -431,7 +499,7 @@ RoomController.prototype.onKickVote = function(client, data, callback)
  */
 RoomController.prototype.onConfigMaxScore = function(client, data, callback)
 {
-    var success = client.isPlaying() && this.room.config.setMaxScore(data.maxScore);
+    var success = this.isRoomMaster(client) && this.room.config.setMaxScore(data.maxScore);
 
     callback({success: success, maxScore: this.room.config.maxScore });
 
@@ -449,7 +517,7 @@ RoomController.prototype.onConfigMaxScore = function(client, data, callback)
  */
 RoomController.prototype.onConfigVariable = function(client, data, callback)
 {
-    var success = client.isPlaying() && this.room.config.setVariable(data.variable, data.value);
+    var success = this.isRoomMaster(client) && this.room.config.setVariable(data.variable, data.value);
 
     callback({success: success, value: this.room.config.getVariable(data.variable) });
 
@@ -470,7 +538,7 @@ RoomController.prototype.onConfigVariable = function(client, data, callback)
  */
 RoomController.prototype.onConfigBonus = function(client, data, callback)
 {
-    var success = client.isPlaying() && this.room.config.toggleBonus(data.bonus);
+    var success = this.isRoomMaster(client) && this.room.config.toggleBonus(data.bonus);
 
     callback({success: success, enabled: this.room.config.getBonus(data.bonus) });
 
@@ -523,6 +591,7 @@ RoomController.prototype.onGame = function()
  */
 RoomController.prototype.onKick = function(player)
 {
+    this.socketGroup.addEvent('room:kick', player.id);
     this.removePlayer(player);
 };
 

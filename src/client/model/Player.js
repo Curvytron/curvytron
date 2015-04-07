@@ -6,20 +6,21 @@
  * @param {String} name
  * @param {String} color
  * @param {Boolean} ready
- * @param {Boolean} active
  */
-function Player(id, client, name, color, ready, active)
+function Player(id, client, name, color, ready)
 {
     BasePlayer.call(this, client, name, color, ready);
 
-    this.id        = id;
-    this.active    = active;
-    this.local     = false;
-    this.controls  = null;
-    this.vote      = false;
-    this.kicked    = false;
+    this.id       = id;
+    this.local    = false;
+    this.controls = null;
+    this.vote     = false;
+    this.kicked   = false;
+    this.position = this.client.id + '-' + this.id;
 
     this.onControlChange = this.onControlChange.bind(this);
+
+    this.client.players.add(this);
 }
 
 Player.prototype = Object.create(BasePlayer.prototype);
@@ -100,4 +101,14 @@ Player.prototype.onControlChange = function(e)
 Player.prototype.getBinding = function()
 {
     return [this.controls[0].mapper.value, this.controls[1].mapper.value];
+};
+
+/**
+ * Should this player be considered madter?
+ *
+ * @return {Boolean}
+ */
+Player.prototype.isMaster = function ()
+{
+    return this.client.master && this.client.players.getIdIndex(this.id) === 0;
 };

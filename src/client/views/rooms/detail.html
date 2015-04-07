@@ -5,7 +5,7 @@
             <i class="icon-params" ng-click="toggleParameters()" ng-class="{'active': displayParameters}"></i>
         </h2>
 
-        <div id="room-parameters" ng-controller="RoomConfigController" ng-show="displayParameters">
+        <div id="room-parameters" ng-controller="RoomConfigController" ng-if="displayParameters">
             <ng-include src="'js/views/rooms/parameters.html'"></ng-include>
         </div>
 
@@ -37,6 +37,7 @@
                 <thead>
                     <tr>
                         <th class="col-remove"></th>
+                        <th class="col-icon"></th>
                         <th class="col-player">Name</th>
                         <th class="col-color">Color</th>
                         <th class="col-keys">Controls</th>
@@ -49,11 +50,14 @@
                             Waiting for players...
                         </th>
                     </tr>
-                    <tr ng-repeat="player in room.players.items" ng-if="player.local" class="local">
+                    <tr ng-repeat="player in room.players.items | orderBy:'position'" ng-if="player.local" class="local">
                         <td class="col-remove col-show-hover">
                             <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="removePlayer(player)">
                                 <span class="icon-close"></span>
                             </button>
+                        </td>
+                        <td class="col-icon">
+                            <span ng-if="player.isMaster()" class="icon icon-crown pull-left"></span>
                         </td>
                         <td class="col-player">
                             <input type="text" ng-model="player.name" ng-blur="setName(player)" class="form-control player-name" name="name" maxlength="{{ nameMaxLength }}" />
@@ -79,14 +83,17 @@
                             </div>
                         </td>
                     </tr>
-                    <tr ng-repeat="player in room.players.items" ng-if="!player.local">
+                    <tr ng-repeat="player in room.players.items | orderBy:'position'" ng-if="!player.local">
                         <td class="col-remove col-show-hover {{ player.vote ? 'active' : '' }}">
                             <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="kickPlayer(player)">
                                 <span class="icon-kick {{ player.kicked ? 'kicked' : '' }}"></span>
                             </button>
                         </td>
+                        <td class="col-icon">
+                            <span ng-if="!player.client.active" class="icon inactive icon-clock pull-left"></span>
+                            <span ng-if="player.isMaster()" class="icon icon-crown pull-left"></span>
+                        </td>
                         <td class="col-player">
-                            <span ng-if="!player.active" class="inactive icon-clock pull-left"></span>
                             <p class="player-name">{{ player.name }}</p>
                         </td>
                         <td class="col-color">
