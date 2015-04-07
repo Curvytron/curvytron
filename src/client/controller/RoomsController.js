@@ -23,12 +23,13 @@ function RoomsController($scope, $location, client)
     this.$scope.$on('$destroy', this.detachEvents);
 
     // Hydrating the scope:
-    this.$scope.rooms         = this.repository.rooms;
-    this.$scope.createRoom    = this.createRoom;
-    this.$scope.join          = this.joinRoom;
-    this.$scope.quickPlay     = this.quickPlay;
-    this.$scope.roomMaxLength = Room.prototype.maxLength;
-    this.$scope.roomName      = '';
+    this.$scope.rooms           = this.repository.rooms;
+    this.$scope.createRoom      = this.createRoom;
+    this.$scope.join            = this.joinRoom;
+    this.$scope.quickPlay       = this.quickPlay;
+    this.$scope.roomMaxLength   = Room.prototype.maxLength;
+    this.$scope.roomName        = '';
+    this.$scope.$parent.profile = true;
 
     this.$scope.curvytron.bodyClass = null;
 

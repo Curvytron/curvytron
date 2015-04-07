@@ -43,6 +43,10 @@ curvytronApp.controller(
     'KillLogController',
     ['$scope', 'KillLog', KillLogController]
 );
+curvytronApp.controller(
+    'ProfileController',
+    ['$scope', 'Profile', 'Radio', 'SoundManager', ProfileController]
+);
 
 curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
     //$locationProvider.html5Mode(true);
