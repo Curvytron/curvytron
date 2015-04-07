@@ -17,7 +17,8 @@ function Chat(client, repository)
 
     this.talk         = this.talk.bind(this);
     this.onTalk       = this.onTalk.bind(this);
-    this.onVote       = this.onVote.bind(this);
+    this.onVoteNew    = this.onVoteNew.bind(this);
+    this.onKick       = this.onKick.bind(this);
     this.onRoomMaster = this.onRoomMaster.bind(this);
     this.scrollDown   = this.scrollDown.bind(this);
     this.onActivity   = this.onActivity.bind(this);
@@ -65,8 +66,8 @@ Chat.prototype.attachEvents = function()
     this.client.on('room:talk', this.onTalk);
     this.repository.on('room:join', this.setRoom);
     this.repository.on('room:leave', this.setRoom);
-    this.repository.on('vote:new', this.onVote);
-    this.repository.on('vote:close', this.onVote);
+    this.repository.on('vote:new', this.onVoteNew);
+    this.repository.on('room:kick', this.onKick);
     this.repository.on('room:master', this.onRoomMaster);
 };
 
@@ -78,8 +79,8 @@ Chat.prototype.detachEvents = function()
     this.client.off('room:talk', this.onTalk);
     this.repository.off('room:join', this.setRoom);
     this.repository.off('room:leave', this.setRoom);
-    this.repository.off('vote:new', this.onVote);
-    this.repository.off('vote:close', this.onVote);
+    this.repository.off('vote:new', this.onVoteNew);
+    this.repository.off('room:kick', this.onKick);
     this.repository.off('room:master', this.onRoomMaster);
 };
 
@@ -182,19 +183,23 @@ Chat.prototype.onTalk = function(e)
 };
 
 /**
- * On vote
+ * On new vote
  *
  * @param {Event} e
  */
-Chat.prototype.onVote = function(e)
+Chat.prototype.onVoteNew = function(e)
 {
-    var player = e.detail.target;
+    this.addMessage(new VoteKickMessage(this.curvybot, e.detail.target));
+};
 
-    if (e.type === 'vote:new') {
-        this.addMessage(new VoteKickMessage(this.curvybot, e.detail.target));
-    } else if (e.type === 'vote:close' && e.detail.result) {
-        this.addMessage(new KickMessage(this.curvybot, e.detail.target));
-    }
+/**
+ * On kick
+ *
+ * @param {Event} e
+ */
+Chat.prototype.onKick = function(e)
+{
+    this.addMessage(new KickMessage(this.curvybot, e.detail));
 };
 
 /**

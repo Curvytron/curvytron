@@ -27,6 +27,7 @@ function RoomRepository(client)
     this.onConfigMaxScore = this.onConfigMaxScore.bind(this);
     this.onConfigVariable = this.onConfigVariable.bind(this);
     this.onConfigBonus    = this.onConfigBonus.bind(this);
+    this.onKick           = this.onKick.bind(this);
     this.onVote           = this.onVote.bind(this);
     this.onClientActivity = this.onClientActivity.bind(this);
 }
@@ -52,6 +53,7 @@ RoomRepository.prototype.attachEvents = function()
     this.client.on('room:config:max-score', this.onConfigMaxScore);
     this.client.on('room:config:variable', this.onConfigVariable);
     this.client.on('room:config:bonus', this.onConfigBonus);
+    this.client.on('room:kick', this.onKick);
     this.client.on('vote:new', this.onVote);
     this.client.on('vote:close', this.onVote);
     this.client.on('client:activity', this.onClientActivity);
@@ -75,6 +77,7 @@ RoomRepository.prototype.detachEvents = function()
     this.client.off('room:config:max-score', this.onConfigMaxScore);
     this.client.off('room:config:variable', this.onConfigVariable);
     this.client.off('room:config:bonus', this.onConfigBonus);
+    this.client.off('room:kick', this.onKick);
     this.client.off('vote:new', this.onVote);
     this.client.off('vote:close', this.onVote);
     this.client.off('client:activity', this.onClientActivity);
@@ -98,8 +101,17 @@ RoomRepository.prototype.join = function(name, callback)
             var clients = repository.createClients(result.clients),
                 master  = clients.getById(result.master),
                 room    = repository.createRoom(result.room, clients);
+
             repository.setRoom(room, clients, master);
             callback({success: true, room: room, clients: clients});
+
+            for (var i = result.messages.length - 1; i >= 0; i--) {
+                repository.client.emit('room:talk', result.messages[i]);
+            }
+
+            for (var i = result.votes.length - 1; i >= 0; i--) {
+                repository.client.emit('vote:new', result.votes[i]);
+            }
         } else {
             callback({success: false});
         }
@@ -246,8 +258,6 @@ RoomRepository.prototype.removePlayer = function(player, callback)
  */
 RoomRepository.prototype.kickPlayer = function(player, callback)
 {
-    var client = this.client;
-
     this.client.addEvent('player:kick', { player: player.id },
         function (result) {
             player.kicked = result.kicked;
@@ -563,6 +573,24 @@ RoomRepository.prototype.onVote = function(e)
     if (player) {
         player.vote = e.type === 'vote:new';
         this.emit(e.type, {target: player, result: e.detail.result});
+    }
+};
+
+/**
+ * On kick
+ *
+ * @param {Event} e
+ */
+RoomRepository.prototype.onKick = function(e)
+{
+    var player = this.room.players.getById(e.detail);
+
+    if (!player) {
+        player = this.playerCache.getById(e.detail);
+    }
+
+    if (player) {
+        this.emit(e.type, player);
     }
 };
 

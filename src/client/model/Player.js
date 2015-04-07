@@ -111,4 +111,4 @@ Player.prototype.getBinding = function()
 Player.prototype.isMaster = function ()
 {
     return this.client.master && this.client.players.getIdIndex(this.id) === 0;
-}
+};

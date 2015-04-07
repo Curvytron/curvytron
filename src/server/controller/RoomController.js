@@ -98,7 +98,9 @@ RoomController.prototype.attach = function(client, callback)
             success: true,
             room: this.room.serialize(),
             master: this.roomMaster ? this.roomMaster.id : null,
-            clients: this.clients.map(function () { return this.serialize(); }).items
+            clients: this.clients.map(function () { return this.serialize(); }).items,
+            messages: this.chat.serialize(100),
+            votes: this.kickManager.votes.map(function () { return this.serialize(); }).items
         });
         this.attachEvents(client);
         this.onClientAdd(client);
@@ -245,16 +247,7 @@ RoomController.prototype.isRoomMaster = function(client)
  */
 RoomController.prototype.onClientAdd = function(client)
 {
-    var messages = this.chat.serialize(100),
-        events = new Array(messages.length);
-
     client.players.clear();
-
-    for (var i = messages.length - 1; i >= 0; i--) {
-        events[i] = ['room:talk', messages[i]];
-    }
-
-    client.addEvents(events);
 
     if (this.room.game) {
         this.room.game.controller.attach(client);
@@ -598,6 +591,7 @@ RoomController.prototype.onGame = function()
  */
 RoomController.prototype.onKick = function(player)
 {
+    this.socketGroup.addEvent('room:kick', player.id);
     this.removePlayer(player);
 };
 
