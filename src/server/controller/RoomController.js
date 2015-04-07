@@ -202,6 +202,7 @@ RoomController.prototype.setRoomMaster = function(client)
     if (!this.roomMaster && client) {
         this.roomMaster = client;
         this.roomMaster.on('close', this.removeRoomMaster);
+        this.roomMaster.on('room:leave', this.removeRoomMaster);
         this.roomMaster.on('room:config:max-score', this.callbacks.onConfigMaxScore);
         this.roomMaster.on('room:config:variable', this.callbacks.onConfigVariable);
         this.roomMaster.on('room:config:bonus', this.callbacks.onConfigBonus);
@@ -216,6 +217,7 @@ RoomController.prototype.removeRoomMaster = function()
 {
     if (this.roomMaster) {
         this.roomMaster.removeListener('close', this.removeRoomMaster);
+        this.roomMaster.removeListener('room:leave', this.removeRoomMaster);
         this.roomMaster.removeListener('room:config:max-score', this.callbacks.onConfigMaxScore);
         this.roomMaster.removeListener('room:config:variable', this.callbacks.onConfigVariable);
         this.roomMaster.removeListener('room:config:bonus', this.callbacks.onConfigBonus);
