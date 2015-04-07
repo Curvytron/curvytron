@@ -80,3 +80,17 @@ SocketClient.prototype.stop = function()
     BaseSocketClient.prototype.stop.call(this);
     this.pingLogger.stop();
 };
+
+/**
+ * Object version of the lcient
+ *
+ * @return {Object}
+ */
+SocketClient.prototype.serialize = function()
+{
+    var data = BaseSocketClient.prototype.serialize.call(this);
+
+    data.active = this.active;
+
+    return data;
+};

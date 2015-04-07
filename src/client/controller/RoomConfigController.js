@@ -49,7 +49,7 @@ RoomConfigController.prototype.onJoined = function()
  */
 RoomConfigController.prototype.toggleBonus = function(bonus)
 {
-    if (this.config.bonusExists(bonus)) {
+    if (this.config.bonusExists(bonus) && this.repository.amIMaster()) {
         var config = this.config;
 
         this.repository.setConfigBonus(bonus, function (result) {
@@ -85,13 +85,15 @@ RoomConfigController.prototype.togglePreset = function(preset)
  */
 RoomConfigController.prototype.applyPreset = function(preset)
 {
-    for (var bonus in this.config.bonuses) {
-        if (this.config.bonuses[bonus] !== preset.hasBonus(bonus)) {
-            this.toggleBonus(bonus);
+    if (this.repository.amIMaster()) {
+        for (var bonus in this.config.bonuses) {
+            if (this.config.bonuses[bonus] !== preset.hasBonus(bonus)) {
+                this.toggleBonus(bonus);
+            }
         }
-    }
 
-    this.config.preset = preset;
+        this.config.preset = preset;
+    }
 };
 
 /**
@@ -99,11 +101,13 @@ RoomConfigController.prototype.applyPreset = function(preset)
  */
 RoomConfigController.prototype.setMaxScore = function(maxScore)
 {
-    var config = this.config;
+    if (this.repository.amIMaster()) {
+        var config = this.config;
 
-    this.repository.setConfigMaxScore(maxScore, function (result) {
-        config.setMaxScore(result.maxScore);
-    });
+        this.repository.setConfigMaxScore(maxScore, function (result) {
+            config.setMaxScore(result.maxScore);
+        });
+    }
 };
 
 /**
@@ -111,7 +115,7 @@ RoomConfigController.prototype.setMaxScore = function(maxScore)
  */
 RoomConfigController.prototype.setVariable = function(variable)
 {
-    if (this.config.variableExists(variable)) {
+    if (this.config.variableExists(variable) && this.repository.amIMaster()) {
         var config = this.config;
 
         this.repository.setConfigVariable(variable, this.config.getVariable(variable), function (result) {
