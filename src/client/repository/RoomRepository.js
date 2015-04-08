@@ -104,7 +104,7 @@ RoomRepository.prototype.join = function(name, callback)
                 messages = result.messages.length;
 
             repository.setRoom(room, clients, master);
-            callback({success: true, room: room, clients: clients});
+            callback({success: true, room: room});
 
             for (var m = 0; m < messages; m++) {
                 repository.client.emit('room:talk', result.messages[m]);
