@@ -228,19 +228,24 @@
                     bottom: 0;
                 }
 
-                .local-avatar {
-                    left: 6px;
-                    top: 50%;
-                    border: solid transparent;
-                    content: " ";
-                    height: 0;
-                    width: 0;
-                    position: absolute;
-                    pointer-events: none;
-                    border-color: rgba(136, 183, 213, 0);
-                    border-left-color: transparent;
-                    border-width: 6px;
-                    margin-top: -6px;
+                &.local {
+
+                    background: lighten($aside-background, 5%);
+
+                    .arrow {
+                        left: 6px;
+                        top: 50%;
+                        border: solid transparent;
+                        content: " ";
+                        height: 0;
+                        width: 0;
+                        position: absolute;
+                        pointer-events: none;
+                        border-color: rgba(136, 183, 213, 0);
+                        border-left-color: transparent;
+                        border-width: 6px;
+                        margin-top: -6px;
+                    }
                 }
             }
         }
