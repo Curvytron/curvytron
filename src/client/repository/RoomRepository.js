@@ -98,14 +98,15 @@ RoomRepository.prototype.join = function(name, callback)
 
     this.client.addEvent('room:join', {name: name}, function (result) {
         if (result.success) {
-            var clients = repository.createClients(result.clients),
-                master  = clients.getById(result.master),
-                room    = repository.createRoom(result.room, clients);
+            var clients  = repository.createClients(result.clients),
+                master   = clients.getById(result.master),
+                room     = repository.createRoom(result.room, clients),
+                messages = result.messages.length;
 
             repository.setRoom(room, clients, master);
             callback({success: true, room: room, clients: clients});
 
-            for (var m = result.messages.length - 1; m >= 0; m--) {
+            for (var m = 0; m < messages; m++) {
                 repository.client.emit('room:talk', result.messages[m]);
             }
 
