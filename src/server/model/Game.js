@@ -199,14 +199,14 @@ Game.prototype.clearTrails = function()
 /**
  * Update size
  */
-Game.prototype.setSize = function(size)
+Game.prototype.setSize = function()
 {
-    BaseGame.prototype.setSize.call(this, size);
+    BaseGame.prototype.setSize.call(this);
 
     this.world.clear();
     this.world = new World(this.size);
 
-    this.bonusManager.setSize(size);
+    this.bonusManager.setSize();
 };
 
 /**
@@ -251,7 +251,7 @@ Game.prototype.onStart = function()
 {
     this.emit('game:start', {game: this});
 
-    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+    for (var avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         setTimeout(avatar.printManager.start, 3000);
     }

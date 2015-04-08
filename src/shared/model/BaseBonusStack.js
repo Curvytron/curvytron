@@ -44,7 +44,7 @@ BaseBonusStack.prototype.remove = function(bonus)
 BaseBonusStack.prototype.resolve = function(bonus)
 {
     var properties = {},
-        effects, property, value, i, j;
+        effects, property, i, j;
 
     if (typeof(bonus) !== 'undefined') {
         effects = bonus.getEffects(this.avatar);
@@ -117,7 +117,7 @@ BaseBonusStack.prototype.apply = function(property, value)
  *
  * @return {Number}
  */
-BaseBonusStack.prototype.getDefaultProperty = function(property, avatar)
+BaseBonusStack.prototype.getDefaultProperty = function(property)
 {
     switch (property) {
         case 'printing':

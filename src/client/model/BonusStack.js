@@ -98,7 +98,7 @@ BonusStack.prototype.draw = function()
 {
     this.canvas.clear();
 
-    for (var i = this.bonuses.items.length - 1; i >= 0; i--) {
+    for (var bonus, i = this.bonuses.items.length - 1; i >= 0; i--) {
         bonus = this.bonuses.items[i];
         this.canvas.drawImage(bonus.asset, [i * this.bonusWidth, 0], this.bonusWidth, this.bonusWidth, 0, bonus.opacity);
     }

@@ -196,7 +196,7 @@ BonusManager.prototype.getRandomBonus = function(position)
 /**
  * Update size
  */
-BonusManager.prototype.setSize = function(size)
+BonusManager.prototype.setSize = function()
 {
     this.world.clear();
     this.world = new World(this.game.size, 1);

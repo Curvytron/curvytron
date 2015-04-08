@@ -20,12 +20,16 @@
         "window",
         "document",
         "setInterval",
+        "clearInterval",
         "setTimeout",
+        "clearTimeout",
         "confirm",
-        "CustomEvent",
-        "Event",
         "console",
         "navigator",
-        "WebSocket"
+        "JSON",
+        "angular",
+        "require",
+        "module",
+        "process"
     ]
 }

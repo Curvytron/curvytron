@@ -207,7 +207,7 @@ BaseGame.prototype.onFrame = function(step)
 /**
  * Update game size
  */
-BaseGame.prototype.setSize = function(size)
+BaseGame.prototype.setSize = function()
 {
     this.size = this.getSize(this.getPresentAvatars().count());
 };

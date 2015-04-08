@@ -230,8 +230,6 @@ GameController.prototype.onReady = function(e)
  */
 GameController.prototype.displayWarmup = function(time)
 {
-    var controller = this;
-
     this.$scope.count  = time/1000;
     this.$scope.warmup = true;
     this.applyScope();
@@ -256,7 +254,7 @@ GameController.prototype.onWarmup = function()
 /**
  * End warmup
  */
-GameController.prototype.endWarmup = function(interval)
+GameController.prototype.endWarmup = function()
 {
     this.clearWarmup();
     this.$scope.warmup = false;
@@ -611,7 +609,7 @@ GameController.prototype.close = function()
         this.detachSocketEvents();
         this.game.end();
 
-        avatars = this.game.avatars.filter(function () { return this.input; }).items;
+        var avatars = this.game.avatars.filter(function () { return this.input; }).items;
 
         for (var i = avatars.length - 1; i >= 0; i--) {
             avatars[i].input.off('move', this.onMove);

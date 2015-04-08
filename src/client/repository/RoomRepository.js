@@ -105,15 +105,15 @@ RoomRepository.prototype.join = function(name, callback)
             repository.setRoom(room, clients, master);
             callback({success: true, room: room, clients: clients});
 
-            for (var i = result.messages.length - 1; i >= 0; i--) {
-                repository.client.emit('room:talk', result.messages[i]);
+            for (var m = result.messages.length - 1; m >= 0; m--) {
+                repository.client.emit('room:talk', result.messages[m]);
             }
 
-            for (var i = result.votes.length - 1; i >= 0; i--) {
-                repository.client.emit('vote:new', result.votes[i]);
+            for (var v = result.votes.length - 1; v >= 0; v--) {
+                repository.client.emit('vote:new', result.votes[v]);
             }
         } else {
-            callback({success: false});
+            callback({success: false, name: name});
         }
     });
 };

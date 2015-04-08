@@ -153,13 +153,13 @@ Inspector.prototype.onGameNew = function(data)
 {
     var game = data.game,
         tracker = new GameTracker(this, game),
-        avatar, client;
+        avatar, client, clientTracker;
 
     this.trackers.game.add(tracker);
 
     for (var i = game.avatars.items.length - 1; i >= 0; i--) {
-        avatar = game.avatars.items[i];
-        client = avatar.player.client;
+        avatar        = game.avatars.items[i];
+        client        = avatar.player.client;
         clientTracker = this.trackers.client.getById(client.id);
 
         this.client.writePoint(

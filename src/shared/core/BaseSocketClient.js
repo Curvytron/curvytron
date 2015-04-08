@@ -131,9 +131,6 @@ BaseSocketClient.prototype.addEvents = function (sources, force)
         events = [];
 
     for (var i = 0; i < length; i++) {
-        if (typeof(sources[i][2]) !== 'undefined') {
-            sources[i][2] = this.indexCallback(callback);
-        }
         events.push(sources[i]);
     }
 
@@ -175,12 +172,7 @@ BaseSocketClient.prototype.addCallback = function (id, data)
         event[1] = data;
     }
 
-    if (!this.interval || (typeof(force) !== 'undefined' && force)) {
-        this.sendEvents([event]);
-    } else {
-        this.events.push(event);
-        this.start();
-    }
+    this.sendEvents([event]);
 };
 
 /**
@@ -214,7 +206,7 @@ BaseSocketClient.prototype.onMessage = function (e)
 {
     var data = JSON.parse(e.data),
         length = data.length,
-        name;
+        name, source;
 
     for (var i = 0; i < length; i++) {
         source = data[i];

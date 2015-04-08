@@ -139,9 +139,9 @@ Game.prototype.end = function()
 /**
  * Update size
  */
-Game.prototype.setSize = function(size)
+Game.prototype.setSize = function()
 {
-    BaseGame.prototype.setSize.call(this, size);
+    BaseGame.prototype.setSize.call(this);
 
     this.onResize();
 };
@@ -267,7 +267,7 @@ Game.prototype.onResize = function()
         scale = width / this.size,
         avatar;
 
-    for (i = this.avatars.items.length - 1; i >= 0; i--) {
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
         avatar.setScale(scale);

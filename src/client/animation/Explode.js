@@ -70,7 +70,7 @@ Explode.prototype.draw = function (canvas)
     if (age <= this.duration) {
         var step = age / this.duration;
 
-        for (var i = this.particles.length - 1; i >= 0; i--) {
+        for (var particle, i = this.particles.length - 1; i >= 0; i--) {
             particle = this.particles[i];
             particle.update(age, step);
             canvas.drawImageScaled(this.canvas.element, particle.position, particle.radius, particle.radius, 0, particle.opacity);

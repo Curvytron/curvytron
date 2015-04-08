@@ -99,7 +99,7 @@ KickVote.prototype.check = function()
 /**
  * Close the vote
  */
-KickVote.prototype.close = function (success)
+KickVote.prototype.close = function ()
 {
     this.closed = true;
     this.votes.clear();

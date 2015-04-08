@@ -100,7 +100,7 @@ RoomController.prototype.onJoined = function(result)
         this.attachEvents();
         this.addProfileUser();
     } else {
-        console.error('Could not join room %s', name);
+        console.error('Could not join room %s', result.name);
         this.goHome();
     }
 
@@ -120,11 +120,9 @@ RoomController.prototype.leaveRoom = function()
 };
 
 /**
- * Attach Events
- *
- * @param {String} name
+ * Attach events
  */
-RoomController.prototype.attachEvents = function(name)
+RoomController.prototype.attachEvents = function()
 {
     this.repository.on('room:close', this.goHome);
     this.repository.on('player:join', this.onJoin);
@@ -142,11 +140,9 @@ RoomController.prototype.attachEvents = function(name)
 };
 
 /**
- * Attach Events
- *
- * @param {String} name
+ * Detach events
  */
-RoomController.prototype.detachEvents = function(name)
+RoomController.prototype.detachEvents = function()
 {
     this.repository.off('room:close', this.goHome);
     this.repository.off('player:join', this.onJoin);
@@ -206,8 +202,6 @@ RoomController.prototype.addPlayer = function(name, color)
 RoomController.prototype.removePlayer = function(player)
 {
     if (!player.local) { return; }
-
-    var controller = this;
 
     this.repository.removePlayer(
         player,
@@ -347,11 +341,9 @@ RoomController.prototype.setReady = function(player)
 };
 
 /**
- * Set touch
- *
- * @param {Player} player
+ * Set touch for local players
  */
-RoomController.prototype.setTouch = function(player)
+RoomController.prototype.setTouch = function()
 {
     if (!this.hasTouch) { return; }
 
@@ -391,7 +383,7 @@ RoomController.prototype.addProfileUser = function()
  */
 RoomController.prototype.updateProfile = function()
 {
-    var player = this.room.players.match(function (player) { return this.profile; });
+    var player = this.room.players.match(function () { return this.profile; });
 
     if (player) {
         this.setProfileName(player);
@@ -405,8 +397,8 @@ RoomController.prototype.updateProfile = function()
  */
 RoomController.prototype.updateCurrentMessage = function()
 {
-    var profile = this.room.players.match(function (player) { return this.profile; }),
-        player = this.room.players.match(function (player) { return this.local; });
+    var profile = this.room.players.match(function () { return this.profile; }),
+        player = this.room.players.match(function () { return this.local; });
 
     this.chat.setPlayer(profile ? profile : player);
 };
@@ -427,7 +419,7 @@ RoomController.prototype.onControlChange = function(e)
  */
 RoomController.prototype.saveProfileControls = function()
 {
-    var player = this.room.players.match(function (player) { return this.profile; });
+    var player = this.room.players.match(function () { return this.profile; });
 
     if (player && !this.controlSynchro) {
         this.controlSynchro = true;
