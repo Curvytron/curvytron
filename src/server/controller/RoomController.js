@@ -178,6 +178,10 @@ RoomController.prototype.removePlayer = function(player)
 
         if (!client.isPlaying()) {
             this.kickManager.removeClient(client);
+
+            if (this.roomMaster.id === client.id) {
+                this.removeRoomMaster();
+            }
         }
     }
 };
