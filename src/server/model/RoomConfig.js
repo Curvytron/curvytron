@@ -32,6 +32,25 @@ RoomConfig.prototype.bonusTypes = {
 };
 
 /**
+ * Set open
+ *
+ * @param {Boolean} open
+ */
+RoomConfig.prototype.setOpen = function(open)
+{
+    if (this.open !== open) {
+        this.open     = open;
+        this.password = this.open ? null : this.generatePassword();
+
+        this.emit('room:visibility', {open: this.open});
+
+        return true;
+    }
+
+    return false;
+};
+
+/**
  * Get available bonuses
  *
  * @return {Array}

@@ -167,8 +167,9 @@ GameController.prototype.onSpectate = function(e)
  */
 GameController.prototype.onExit = function()
 {
-    if ((this.room && this.$location.path() !== this.room.url) || (this.game && this.game.started)) {
+    if ((this.room && this.$location.path() !== this.room.getUrl()) || (this.game && this.game.started)) {
         this.repository.parent.leave();
+        this.repository.leave();
         this.chat.clear();
     }
 
@@ -231,7 +232,7 @@ GameController.prototype.close = function()
  */
 GameController.prototype.backToRoom = function()
 {
-    this.$location.path(this.room.url);
+    this.$location.path(this.room.getUrl());
 };
 
 /**

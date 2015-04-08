@@ -129,11 +129,17 @@ RoomsController.prototype.onJoinRoom = function(client, data, callback)
 {
     var room = this.repository.get(data.name);
 
-    if (room) {
-        room.controller.attach(client, callback);
-    } else {
-        callback({success: false});
+    if (!room) {
+        return callback({success: false, error: 'Unknown room "' + data.name + '".'});
     }
+
+    var password = typeof(data.password) !== 'undefined' ? data.password : null;
+
+    if (!room.config.allow(password)) {
+        return callback({success: false, error: 'Wrong password.'});
+    }
+
+    room.controller.attach(client, callback);
 };
 
 /**

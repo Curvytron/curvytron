@@ -24,6 +24,7 @@ function RoomsController($scope, $location, client)
     this.digestScope  = this.digestScope.bind(this);
 
     this.$scope.$on('$destroy', this.detachEvents);
+    this.$location.search('password', null);
 
     // Hydrating the scope:
     this.$scope.rooms           = this.repository.rooms;
@@ -92,7 +93,11 @@ RoomsController.prototype.onCreateRoom = function(result)
  */
 RoomsController.prototype.joinRoom = function(room)
 {
-    this.$location.path(room.url);
+    if (room.open) {
+        this.$location.path(room.getUrl());
+    } else if (room.password && room.password.match(new RegExp('[0-9]{4}'))) {
+        this.$location.path(room.getUrl()).search('password', room.password);
+    }
 };
 
 /**

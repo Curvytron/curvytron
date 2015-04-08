@@ -86,12 +86,7 @@ RoomsRepository.prototype.create = function(name, callback)
  */
 RoomsRepository.prototype.createRoom = function(data)
 {
-    return {
-        name: data.name,
-        players: data.players,
-        game: data.game,
-        url: '/room/' + encodeURIComponent(data.name)
-    };
+    return new RoomListItem(data.name, data.players,  data.game, data.open);
 };
 
 // EVENTS:

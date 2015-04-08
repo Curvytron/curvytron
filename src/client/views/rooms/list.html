@@ -38,7 +38,7 @@
 
         <table id="rooms" class="rooms table table-hover v-align-middle" ng-if="!rooms.isEmpty()">
             <tbody>
-                <tr ng-repeat="room in rooms.items" ng-if="!room.game" ng-click="join(room)" class="room">
+                <tr ng-repeat="room in rooms.items" ng-if="!room.game" ng-click="join(room)" class="room" ng-class="{private: !room.open}">
                     <td class="room-name">{{ ::room.name }}</td>
                     <td class="room-nb-players">
                         <ng-pluralize count="room.players" when="{
@@ -48,6 +48,7 @@
                         />
                     </td>
                     <td class="room-enter-col">
+                        <input type="text" class="form-control" maxlength="4" ng-model="room.password" ng-if="!room.open"/>
                         <p class="room-enter">
                             <span><i class="icon-game"></i> Join</span>
                         </p>

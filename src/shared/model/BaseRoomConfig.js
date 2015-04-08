@@ -3,8 +3,12 @@
  */
 function BaseRoomConfig(room)
 {
+    EventEmitter.call(this);
+
     this.room     = room;
     this.maxScore = null;
+    this.open     = true;
+    this.password = null;
 
     this.variables = {
         bonusRate: 0
@@ -26,6 +30,21 @@ function BaseRoomConfig(room)
     };
 }
 
+BaseRoomConfig.prototype = Object.create(EventEmitter.prototype);
+BaseRoomConfig.prototype.constructor = BaseRoomConfig;
+
+/**
+ * Password length
+ *
+ * @type {Number}
+ */
+BaseRoomConfig.prototype.passwordLength = 4;
+
+/**
+ * Set max score
+ *
+ * @param {Number} maxScore
+ */
 BaseRoomConfig.prototype.setMaxScore = function(maxScore)
 {
     maxScore = parseInt(maxScore, 10);
@@ -160,6 +179,34 @@ BaseRoomConfig.prototype.getDefaultMaxScore = function()
 };
 
 /**
+ * Authorise joinning the room
+ *
+ * @param {String} password
+ *
+ * @return {Boolean}
+ */
+BaseRoomConfig.prototype.allow = function(password)
+{
+    return this.open || this.password === password;
+};
+
+/**
+ * Generate password
+ *
+ * @return {String}
+ */
+BaseRoomConfig.prototype.generatePassword = function()
+{
+    var password = '';
+
+    for (var i = 0; i < this.passwordLength; i++) {
+        password += Math.ceil(Math.random() * 9).toString();
+    }
+
+    return password;
+};
+
+/**
  * Serialize
  *
  * @return {Object}
@@ -169,6 +216,8 @@ BaseRoomConfig.prototype.serialize = function()
     return {
         maxScore: this.maxScore,
         variables: this.variables,
-        bonuses: this.bonuses
+        bonuses: this.bonuses,
+        open: this.open,
+        password: this.password
     };
 };
