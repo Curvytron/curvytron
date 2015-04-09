@@ -172,11 +172,11 @@ li.player-row {
 
             &.room-nb-players {
                 font-size: 26px;
-                width: 350px;
+                width: 150px;
             }
 
             &.room-enter-col {
-                width: 320px;
+                width: 250px;
                 padding: 0;
 
                 .room-enter {
@@ -204,6 +204,19 @@ li.player-row {
                             font-size: 60px;
                         }
                     }
+                }
+            }
+
+            &.room-password-col {
+                width: 140px;
+
+                .icon-lock {
+                    font-size: 24px;
+                    padding: 6px 4px;
+                }
+                .password {
+                    width: 70px;
+                    background-color: #ffffff;
                 }
             }
         }
