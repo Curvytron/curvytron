@@ -42,7 +42,7 @@ Room.prototype.getUrl = function()
 {
     var url = '/room/' + encodeURIComponent(this.name);
 
-    return this.config.open ? url : url + '?password=' + encodeURIComponent(room.config.password);
+    return this.config.open ? url : url + '?password=' + encodeURIComponent(this.config.password);
 };
 
 /**

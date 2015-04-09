@@ -42,7 +42,7 @@ RoomConfig.prototype.setOpen = function(open)
         this.open     = open;
         this.password = this.open ? null : this.generatePassword();
 
-        this.emit('room:visibility', {open: this.open});
+        this.emit('room:config:open', {room: this.room, open: this.open});
 
         return true;
     }

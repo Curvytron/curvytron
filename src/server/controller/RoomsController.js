@@ -12,11 +12,12 @@ function RoomsController(repository)
     this.socketGroup = new SocketGroup();
     this.repository  = repository;
 
-    this.onRoomOpen   = this.onRoomOpen.bind(this);
-    this.onRoomClose  = this.onRoomClose.bind(this);
-    this.onRoomPlayer = this.onRoomPlayer.bind(this);
-    this.onRoomGame   = this.onRoomGame.bind(this);
-    this.detach       = this.detach.bind(this);
+    this.onRoomOpen       = this.onRoomOpen.bind(this);
+    this.onRoomClose      = this.onRoomClose.bind(this);
+    this.onRoomPlayer     = this.onRoomPlayer.bind(this);
+    this.onRoomGame       = this.onRoomGame.bind(this);
+    this.onRoomConfigOpen = this.onRoomConfigOpen.bind(this);
+    this.detach           = this.detach.bind(this);
 
     this.callbacks = {
         emitAllRooms: function () { controller.emitAllRooms(this); },
@@ -149,12 +150,15 @@ RoomsController.prototype.onJoinRoom = function(client, data, callback)
  */
 RoomsController.prototype.onRoomOpen = function(data)
 {
-    data.room.on('game:new', this.onRoomGame);
-    data.room.on('game:end', this.onRoomGame);
-    data.room.on('player:join', this.onRoomPlayer);
-    data.room.on('player:leave', this.onRoomPlayer);
+    var room = data.room;
 
-    this.socketGroup.addEvent('room:open', data.room.serialize(false));
+    room.on('game:new', this.onRoomGame);
+    room.on('game:end', this.onRoomGame);
+    room.on('player:join', this.onRoomPlayer);
+    room.on('player:leave', this.onRoomPlayer);
+    room.config.on('room:config:open', this.onRoomConfigOpen);
+
+    this.socketGroup.addEvent('room:open', room.serialize(false));
 };
 
 /**
@@ -164,12 +168,25 @@ RoomsController.prototype.onRoomOpen = function(data)
  */
 RoomsController.prototype.onRoomClose = function(data)
 {
-    data.room.removeListener('game:new', this.onRoomGame);
-    data.room.removeListener('game:end', this.onRoomGame);
-    data.room.removeListener('player:join', this.onRoomPlayer);
-    data.room.removeListener('player:leave', this.onRoomPlayer);
+    var room = data.room;
 
-    this.socketGroup.addEvent('room:close', {name: data.room.name});
+    room.removeListener('game:new', this.onRoomGame);
+    room.removeListener('game:end', this.onRoomGame);
+    room.removeListener('player:join', this.onRoomPlayer);
+    room.removeListener('player:leave', this.onRoomPlayer);
+    room.config.on('room:config:open', this.onRoomConfigOpen);
+
+    this.socketGroup.addEvent('room:close', {name: room.name});
+};
+
+/**
+ * On room config open
+ *
+ * @param {Object} data
+ */
+RoomsController.prototype.onRoomConfigOpen = function(data)
+{
+    this.socketGroup.addEvent('room:config:open', {name: data.room.name, open: data.open});
 };
 
 /**

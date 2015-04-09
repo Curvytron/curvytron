@@ -10,11 +10,12 @@ function RoomsRepository(client)
     this.client = client;
     this.rooms  = new Collection([], 'name');
 
-    this.start         = this.start.bind(this);
-    this.onRoomOpen    = this.onRoomOpen.bind(this);
-    this.onRoomClose   = this.onRoomClose.bind(this);
-    this.onRoomPlayers = this.onRoomPlayers.bind(this);
-    this.onRoomGame    = this.onRoomGame.bind(this);
+    this.start            = this.start.bind(this);
+    this.onRoomOpen       = this.onRoomOpen.bind(this);
+    this.onRoomClose      = this.onRoomClose.bind(this);
+    this.onRoomPlayers    = this.onRoomPlayers.bind(this);
+    this.onRoomGame       = this.onRoomGame.bind(this);
+    this.onRoomConfigOpen = this.onRoomConfigOpen.bind(this);
 }
 
 RoomsRepository.prototype = Object.create(EventEmitter.prototype);
@@ -29,6 +30,7 @@ RoomsRepository.prototype.attachEvents = function()
     this.client.on('room:close', this.onRoomClose);
     this.client.on('room:players', this.onRoomPlayers);
     this.client.on('room:game', this.onRoomGame);
+    this.client.on('room:config:open', this.onRoomConfigOpen);
 };
 
 /**
@@ -40,6 +42,7 @@ RoomsRepository.prototype.detachEvents = function()
     this.client.off('room:close', this.onRoomClose);
     this.client.off('room:players', this.onRoomPlayers);
     this.client.off('room:game', this.onRoomGame);
+    this.client.off('room:config:open', this.onRoomConfigOpen);
 };
 
 /**
@@ -120,6 +123,23 @@ RoomsRepository.prototype.onRoomClose = function(e)
 
     if(room && this.rooms.remove(room)) {
         this.emit('room:close', room);
+    }
+};
+
+/**
+ * On room config open change
+ *
+ * @param {Event} e
+ *
+ * @return {Boolean}
+ */
+RoomsRepository.prototype.onRoomConfigOpen = function(e)
+{
+    var room = this.get(e.detail.name);
+
+    if(room) {
+        room.open = e.detail.open;
+        this.emit('room:config:open', room);
     }
 };
 
