@@ -12,7 +12,9 @@ function Explode(avatar)
     this.created   = new Date().getTime();
     this.done      = false;
 
-    this.canvas.drawCircle([this.width/2,this.width/2], this.width/2, avatar.color);
+    var width = this.width/2;
+
+    this.canvas.drawCircle(width, width, width, avatar.color);
 
     for (var i = this.particles.length - 1; i >= 0; i--) {
         this.particles[i] = new ExplodeParticle(
@@ -73,7 +75,7 @@ Explode.prototype.draw = function (canvas)
         for (var particle, i = this.particles.length - 1; i >= 0; i--) {
             particle = this.particles[i];
             particle.update(age, step);
-            canvas.drawImageScaled(this.canvas.element, particle.position, particle.radius, particle.radius, 0, particle.opacity);
+            canvas.drawImageScaled(this.canvas.element, particle.position[0], particle.position[1], particle.radius, particle.radius, 0, particle.opacity);
         }
     }
 };

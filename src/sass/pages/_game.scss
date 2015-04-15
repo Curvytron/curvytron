@@ -436,6 +436,12 @@
             }
 
             .game-background {
+                z-index: 30;
+                position: absolute;
+                display: block;
+            }
+
+            .game-bonus {
                 z-index: 40;
                 position: absolute;
                 display: block;

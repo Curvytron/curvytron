@@ -51,7 +51,7 @@ Bonus.prototype.getDrawWidth = function()
 Bonus.prototype.clear = function()
 {
     if (this.timeout) {
-        clearInterval(this.timeout);
+        this.timeout = clearInterval(this.timeout);
     }
 
     BaseBonus.prototype.clear.call(this);

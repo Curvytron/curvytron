@@ -171,7 +171,7 @@ Game.prototype.draw = function()
         }
     }
 
-    this.drawBonuses();
+    this.bonusManager.draw();
 };
 
 /**
@@ -196,7 +196,7 @@ Game.prototype.drawTail = function(avatar)
 Game.prototype.drawAvatar = function(avatar)
 {
     avatar.updateStart();
-    this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
+    this.canvas.drawImage(avatar.canvas.element, avatar.startX, avatar.startY, avatar.angle);
 };
 
 /**
@@ -206,7 +206,7 @@ Game.prototype.drawAvatar = function(avatar)
  */
 Game.prototype.drawBonusStack = function(avatar)
 {
-    this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
+    this.canvas.drawImage(avatar.bonusStack.canvas.element, avatar.startX + 15, avatar.startY + 15);
 };
 
 /**
@@ -216,24 +216,7 @@ Game.prototype.drawBonusStack = function(avatar)
  */
 Game.prototype.drawArrow = function(avatar)
 {
-    this.canvas.drawImageScaled(
-        avatar.arrow.element,
-        [
-            avatar.head[0] - 5,
-            avatar.head[1] - 5
-        ],
-        10,
-        10,
-        avatar.angle
-    );
-};
-
-/**
- * Draw bonuses
- */
-Game.prototype.drawBonuses = function()
-{
-    this.bonusManager.draw(this.canvas);
+    this.canvas.drawImageScaled(avatar.arrow.element, avatar.head[0] - 5, avatar.head[1] - 5, 10, 10, avatar.angle);
 };
 
 /**
@@ -269,5 +252,6 @@ Game.prototype.onResize = function()
     this.render.style.height = (width + 8) + 'px';
     this.canvas.setDimension(width, width, scale);
     this.background.setDimension(width, width, scale, true);
+    this.bonusManager.setDimension(width, scale);
     this.draw();
 };
