@@ -11,6 +11,7 @@ function BonusManager(game)
 
     this.onLoad = this.onLoad.bind(this);
 
+    this.canvas = new Canvas(0, 0, document.getElementById('bonus'));
     this.sprite = new SpriteAsset('images/bonus.png', 3, 4, this.onLoad, true);
     this.assets = {};
 }
@@ -55,18 +56,73 @@ BonusManager.prototype.onLoad = function()
 };
 
 /**
+ * Remove bonus
+ *
+ * @param {Bonus} bonus
+ */
+BonusManager.prototype.remove = function(bonus)
+{
+    this.clearBonus(bonus);
+    BaseBonusManager.prototype.remove.call(this, bonus);
+};
+
+/**
+ * Clear
+ */
+BonusManager.prototype.clear = function()
+{
+    this.canvas.clear();
+    BaseBonusManager.prototype.clear.call(this, bonus);
+};
+
+/**
  * Draw
  *
  * @param {Canvas} canvas
  */
-BonusManager.prototype.draw = function(canvas)
+BonusManager.prototype.draw = function()
 {
-    var i, bonus, width;
-
-    for (i = this.bonuses.items.length - 1; i >= 0; i--) {
+    for (var bonus, i = this.bonuses.items.length - 1; i >= 0; i--) {
         bonus = this.bonuses.items[i];
-        width = bonus.getDrawWidth();
-
-        canvas.drawImageScaled(bonus.asset, [(bonus.position[0] - width/2), (bonus.position[1] - width/2)], width, width);
+        if (!bonus.animation.done) {
+            this.drawBonus(bonus);
+        }
     }
+};
+
+/**
+ * Draw bonus
+ *
+ * @param {Bonus} bonus
+ */
+BonusManager.prototype.drawBonus = function(bonus)
+{
+    var width = bonus.getDrawWidth();
+
+    this.clearBonus(bonus);
+    this.canvas.drawImageScaled(bonus.asset, bonus.position[0] - width/2, bonus.position[1] - width/2, width, width);
+};
+
+/**
+ * Clear bonus from the canvas
+ *
+ * @param {Bonus} bonus
+ */
+BonusManager.prototype.clearBonus = function(bonus)
+{
+    var clearWidth = bonus.width * 1.3;
+
+    this.canvas.clearZoneScaled(bonus.position[0] - clearWidth/2, bonus.position[1] - clearWidth/2, clearWidth, clearWidth);
+};
+
+/**
+ * Set dimension
+ *
+ * @param {Number} width
+ * @param {Float} scale
+ */
+BonusManager.prototype.setDimension = function(width, scale)
+{
+    this.canvas.setDimension(width, width, scale);
+    this.draw();
 };

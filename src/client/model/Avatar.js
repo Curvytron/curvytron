@@ -10,7 +10,8 @@ function Avatar(player)
     this.local     = player.local;
     this.canvas    = new Canvas(100, 100);
     this.arrow     = new Canvas(this.arrowSize, this.arrowSize);
-    this.start     = new Array(2);
+    this.startX    = 0;
+    this.startY    = 0;
     this.width     = this.radius * 2;
     this.animation = null;
 
@@ -126,7 +127,7 @@ Avatar.prototype.drawHead = function()
     var middle = this.canvas.element.width/2;
 
     this.canvas.clear();
-    this.canvas.drawCircle([middle, middle], this.radius * this.canvas.scale, this.color);
+    this.canvas.drawCircle(middle, middle, this.radius * this.canvas.scale, this.color);
 };
 
 /**
@@ -153,10 +154,8 @@ Avatar.prototype.updateStart = function()
 {
     if (this.changed) {
         this.changed = false;
-        this.start   = [
-            this.head[0] * this.canvas.scale - this.canvas.element.width/2,
-            this.head[1] * this.canvas.scale - this.canvas.element.width/2
-        ];
+        this.startX  = this.head[0] * this.canvas.scale - this.canvas.element.width/2;
+        this.startY  = this.head[1] * this.canvas.scale - this.canvas.element.width/2;
     }
 };
 
