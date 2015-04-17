@@ -10,17 +10,31 @@ function Game(room)
     this.render     = document.getElementById('render');
     this.canvas     = new Canvas(0, 0, document.getElementById('game'));
     this.background = new Canvas(0, 0, document.getElementById('background'));
+    this.effect     = new Canvas(0, 0, document.getElementById('effect'));
+    this.animations = [];
 
     this.onResize = this.onResize.bind(this);
+    this.onDie    = this.onDie.bind(this);
 
     window.addEventListener('error', this.stop);
     window.addEventListener('resize', this.onResize);
+
+    for (var avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
+        this.avatars.items[i].on('die', this.onDie);
+    }
 
     this.onResize();
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
 Game.prototype.constructor = Game;
+
+/**
+ * Margin between player an bonus stack
+ *
+ * @type {Number}
+ */
+Game.prototype.stackMargin = 15;
 
 /**
  * Background color
@@ -65,6 +79,15 @@ Game.prototype.onRoundNew = function()
     BaseGame.prototype.onRoundNew.call(this);
     this.clearBackground();
     this.draw();
+};
+
+/**
+ * On start
+ */
+Game.prototype.onStart = function()
+{
+    this.effect.clear();
+    BaseGame.prototype.onStart.call(this);
 };
 
 /**
@@ -121,6 +144,7 @@ Game.prototype.end = function()
         this.stop();
         this.fps.stop();
         this.canvas.clear();
+        this.effect.clear();
     }
 };
 
@@ -141,20 +165,23 @@ Game.prototype.setSize = function()
  */
 Game.prototype.draw = function()
 {
-    var i, avatar;
+    if (!this.frame) {
+        this.effect.clear();
+    }
 
-    for (i = this.avatars.items.length - 1; i >= 0; i--) {
-        avatar = this.avatars.items[i];
-        if (avatar.present) {
-            this.drawTail(avatar);
+    for (var animation, a = this.animations.length - 1; a >= 0; a--) {
+        animation = this.animations[a];
+        animation.draw(this.effect);
+        if (animation.done && animation.cleared) {
+            this.animations.splice(a, 1);
         }
     }
 
-    this.canvas.clear();
-
-    for (i = this.avatars.items.length - 1; i >= 0; i--) {
+    for (var avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         if (avatar.present) {
+            this.drawTail(avatar);
+            this.clearAvatar(avatar);
             this.drawAvatar(avatar);
 
             if (avatar.alive && avatar.hasBonus()) {
@@ -163,10 +190,6 @@ Game.prototype.draw = function()
 
             if (!this.frame && avatar.local) {
                 this.drawArrow(avatar);
-            }
-
-            if (avatar.animation) {
-                avatar.animation.draw(this.canvas);
             }
         }
     }
@@ -200,13 +223,26 @@ Game.prototype.drawAvatar = function(avatar)
 };
 
 /**
+ * Clear bonus from the canvas
+ *
+ * @param {Bonus} bonus
+ */
+Game.prototype.clearAvatar = function(avatar)
+{
+    var height    = Math.max(avatar.canvas.element.height, avatar.bonusStack.canvas.element.height),
+        width     = avatar.canvas.element.width + avatar.bonusStack.canvas.element.width + this.stackMargin;
+
+    this.canvas.clearZone(avatar.startX, avatar.startY, width, width);
+};
+
+/**
  * Draw bonus stack
  *
  * @param {Avatar} avatar
  */
 Game.prototype.drawBonusStack = function(avatar)
 {
-    this.canvas.drawImage(avatar.bonusStack.canvas.element, avatar.startX + 15, avatar.startY + 15);
+    this.canvas.drawImage(avatar.bonusStack.canvas.element, avatar.startX + this.stackMargin, avatar.startY + this.stackMargin);
 };
 
 /**
@@ -216,7 +252,7 @@ Game.prototype.drawBonusStack = function(avatar)
  */
 Game.prototype.drawArrow = function(avatar)
 {
-    this.canvas.drawImageScaled(avatar.arrow.element, avatar.head[0] - 5, avatar.head[1] - 5, 10, 10, avatar.angle);
+    this.effect.drawImageScaled(avatar.arrow.element, avatar.head[0] - 5, avatar.head[1] - 5, 10, 10, avatar.angle);
 };
 
 /**
@@ -225,6 +261,16 @@ Game.prototype.drawArrow = function(avatar)
 Game.prototype.clearBackground = function()
 {
     this.background.color(this.backgroundColor);
+};
+
+/**
+ * On die
+ *
+ * @param {Event} event
+ */
+Game.prototype.onDie = function(event)
+{
+    this.animations.push(new Explode(event.detail));
 };
 
 /**
@@ -248,9 +294,10 @@ Game.prototype.onResize = function()
         }
     }
 
-    this.render.style.width = (width + 8) + 'px';
+    this.render.style.width  = (width + 8) + 'px';
     this.render.style.height = (width + 8) + 'px';
     this.canvas.setDimension(width, width, scale);
+    this.effect.setDimension(width, width, scale);
     this.background.setDimension(width, width, scale, true);
     this.bonusManager.setDimension(width, scale);
     this.draw();

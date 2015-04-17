@@ -7,19 +7,16 @@ function Avatar(player)
 {
     BaseAvatar.call(this, player);
 
-    this.local     = player.local;
-    this.canvas    = new Canvas(100, 100);
-    this.arrow     = new Canvas(this.arrowSize, this.arrowSize);
-    this.startX    = 0;
-    this.startY    = 0;
-    this.width     = this.radius * 2;
-    this.animation = null;
+    this.local  = player.local;
+    this.canvas = new Canvas(100, 100);
+    this.arrow  = new Canvas(this.arrowSize, this.arrowSize);
+    this.startX = 0;
+    this.startY = 0;
+    this.width  = this.radius * 2;
 
     if (this.local) {
         this.input = new PlayerInput(this, player.getBinding());
     }
-
-    this.clearAnimation = this.clearAnimation.bind(this);
 
     this.drawArrow();
 }
@@ -114,9 +111,7 @@ Avatar.prototype.die = function()
 {
     BaseAvatar.prototype.die.call(this);
     this.addPoint(this.head);
-
-    setTimeout(this.clearAnimation, Explode.prototype.duration);
-    this.animation = new Explode(this);
+    this.emit('die', this);
 };
 
 /**
@@ -192,15 +187,6 @@ Avatar.prototype.clear = function()
 {
     BaseAvatar.prototype.clear.call(this);
     this.updateWidth();
-    this.clearAnimation();
-};
-
-/**
- * Clear animation
- */
-Avatar.prototype.clearAnimation = function ()
-{
-    this.animation = null;
 };
 
 /**

@@ -110,9 +110,9 @@ BonusManager.prototype.drawBonus = function(bonus)
  */
 BonusManager.prototype.clearBonus = function(bonus)
 {
-    var clearWidth = bonus.width * 1.3;
+    var width = bonus.width * 1.3;
 
-    this.canvas.clearZoneScaled(bonus.position[0] - clearWidth/2, bonus.position[1] - clearWidth/2, clearWidth, clearWidth);
+    this.canvas.clearZoneScaled(bonus.position[0] - width/2, bonus.position[1] - width/2, width, width);
 };
 
 /**
