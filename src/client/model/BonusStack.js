@@ -84,10 +84,7 @@ BonusStack.prototype.clear = function()
  */
 BonusStack.prototype.updateDimensions = function()
 {
-    this.drawWidth  = this.bonuses.items.length;
-    this.drawHeight = 1;
-
-    this.canvas.setDimension(this.drawWidth * this.bonusWidth, this.drawHeight * this.bonusWidth);
+    this.canvas.setDimension(this.bonuses.items.length * this.bonusWidth, this.bonusWidth);
     this.draw();
 };
 
@@ -98,8 +95,13 @@ BonusStack.prototype.draw = function()
 {
     this.canvas.clear();
 
-    for (var bonus, i = this.bonuses.items.length - 1; i >= 0; i--) {
+    for (var bonus, x, i = this.bonuses.items.length - 1; i >= 0; i--) {
         bonus = this.bonuses.items[i];
-        this.canvas.drawImage(bonus.asset, i * this.bonusWidth, 0, this.bonusWidth, this.bonusWidth, 0, bonus.opacity);
+        if (bonus.changed) {
+            x = i * this.bonusWidth;
+            this.canvas.clearZone(x, 0, this.bonusWidth, this.bonusWidth);
+            this.canvas.drawImage(bonus.asset, x, 0, this.bonusWidth, this.bonusWidth, 0, bonus.opacity);
+            bonus.changed = false;
+        }
     }
 };

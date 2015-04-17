@@ -452,6 +452,12 @@
                 position: absolute;
                 display: block;
             }
+
+            .game-effect {
+                z-index: 60;
+                position: absolute;
+                display: block;
+            }
         }
 
         #end {
