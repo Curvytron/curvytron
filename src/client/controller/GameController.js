@@ -313,12 +313,11 @@ GameController.prototype.onProperty = function(e)
  */
 GameController.prototype.onBonusStack = function(e)
 {
-    var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar),
-        bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration);
+    var data   = e.detail,
+        avatar = this.game.avatars.getById(data.avatar);
 
     if (avatar && avatar.local) {
-        avatar.bonusStack[data.method](bonus);
+        avatar.bonusStack[data.method](new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration));
     }
 };
 
@@ -329,7 +328,7 @@ GameController.prototype.onBonusStack = function(e)
  */
 GameController.prototype.onBonusPop = function(e)
 {
-    var data = e.detail,
+    var data  = e.detail,
         bonus = new Bonus(data.id, data.position, data.type, data.affect, data.radius, data.duration);
 
     this.game.bonusManager.add(bonus);
@@ -343,8 +342,7 @@ GameController.prototype.onBonusPop = function(e)
  */
 GameController.prototype.onBonusClear = function(e)
 {
-    var data = e.detail,
-        bonus = this.game.bonusManager.bonuses.getById(data.bonus);
+    var bonus = this.game.bonusManager.bonuses.getById(e.detail.bonus);
 
     this.game.bonusManager.remove(bonus);
     this.sound.play('bonus-clear');
