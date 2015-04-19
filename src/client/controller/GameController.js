@@ -162,6 +162,7 @@ GameController.prototype.loadGame = function(room)
     this.room = room;
     this.game = room.newGame();
 
+    gamepadListener.stop();
     this.game.bonusManager.on('load', this.onAssetsLoaded);
 
     var avatar;
@@ -171,6 +172,9 @@ GameController.prototype.loadGame = function(room)
 
         if (avatar.local) {
             avatar.input.on('move', this.onMove);
+            if (avatar.input.useGamepad()) {
+                gamepadListener.start();
+            }
         }
     }
 

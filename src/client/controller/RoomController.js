@@ -64,6 +64,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.$scope.$parent.profile     = true;
 
     this.repository.start();
+    gamepadListener.start();
 
     if (!this.profile.isComplete()) {
         this.profile.on('close', this.joinRoom);
