@@ -235,6 +235,22 @@ PlayerInput.prototype.resolve = function()
 };
 
 /**
+ * Use gamepad?
+ *
+ * @return {Boolean}
+ */
+PlayerInput.prototype.useGamepad = function()
+{
+    for (var i = this.binding.length - 1; i >= 0; i--) {
+        if (new RegExp('^gamepad:').test(this.getBindingType(this.binding[i]))) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+/**
  * Set move
  *
  * @param {Boolean} move
