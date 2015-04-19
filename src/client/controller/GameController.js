@@ -49,6 +49,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onRoundEnd     = this.onRoundEnd.bind(this);
     this.onRoundWinner  = this.onRoundWinner.bind(this);
     this.onClear        = this.onClear.bind(this);
+    this.onBorderless   = this.onBorderless.bind(this);
     this.onEnd          = this.onEnd.bind(this);
     this.onLeave        = this.onLeave.bind(this);
     this.onSpectate     = this.onSpectate.bind(this);
@@ -56,7 +57,6 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onUnload       = this.onUnload.bind(this);
     this.onExit         = this.onExit.bind(this);
     this.backToRoom     = this.backToRoom.bind(this);
-    this.updateBorders  = this.updateBorders.bind(this);
 
     // Hydrate scope:
     this.$scope.sortorder       = '-score';
@@ -64,7 +64,6 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.$scope.phase           = 'round';
     this.$scope.end             = false;
     this.$scope.tieBreak        = false;
-    this.$scope.borderless      = false;
     this.$scope.radio           = this.radio;
     this.$scope.sound           = this.sound;
     this.$scope.backToRoom      = this.backToRoom;
@@ -115,6 +114,7 @@ GameController.prototype.attachSocketEvents = function()
     this.client.on('round:end', this.onRoundEnd);
     this.client.on('round:winner', this.onRoundWinner);
     this.client.on('clear', this.onClear);
+    this.client.on('borderless', this.onBorderless);
     this.client.on('end', this.onEnd);
     this.client.on('game:leave', this.onLeave);
     this.client.on('spectate', this.onSpectate);
@@ -141,6 +141,7 @@ GameController.prototype.detachSocketEvents = function()
     this.client.off('round:end', this.onRoundEnd);
     this.client.off('round:winner', this.onRoundWinner);
     this.client.off('clear', this.onClear);
+    this.client.off('borderless', this.onBorderless);
     this.client.off('end', this.onEnd);
     this.client.off('game:leave', this.onLeave);
     this.client.off('spectate', this.onSpectate);
@@ -167,8 +168,6 @@ GameController.prototype.loadGame = function(room)
 
     for (var i = this.game.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.game.avatars.items[i];
-
-        avatar.bonusStack.on('change', this.updateBorders);
 
         if (avatar.local) {
             avatar.input.on('move', this.onMove);
@@ -466,7 +465,6 @@ GameController.prototype.onRoundNew = function(e)
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
     this.killLog.clear();
-    this.updateBorders();
 };
 
 /**
@@ -477,6 +475,17 @@ GameController.prototype.onRoundNew = function(e)
 GameController.prototype.onRoundEnd = function(e)
 {
     this.game.endRound();
+};
+
+/**
+ * On borderless
+ *
+ * @param {Event} e
+ */
+GameController.prototype.onBorderless = function(e)
+{
+    this.game.setBorderless(e.detail);
+    this.applyScope();
 };
 
 /**
@@ -536,19 +545,9 @@ GameController.prototype.onLeave = function(e)
         avatar = this.game.avatars.getById(data.avatar);
 
     if (avatar) {
-        avatar.bonusStack.off('change', this.updateBorders);
         this.game.removeAvatar(avatar);
         this.applyScope();
     }
-};
-
-/**
- * Update map border
- */
-GameController.prototype.updateBorders = function()
-{
-    this.$scope.borderless = this.game.isBorderless();
-    this.applyScope();
 };
 
 /**

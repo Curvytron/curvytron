@@ -39,7 +39,7 @@ BonusGameClear.prototype.getProbability = function (game)
 /**
  * Apply on
  */
-BonusGame.prototype.on = function()
+BonusGameClear.prototype.on = function()
 {
     this.target.clearTrails();
 };

@@ -31,7 +31,7 @@ DefaultPreset.prototype.bonuses = [
     'BonusEnemyBig',
     'BonusEnemyInverse',
     'BonusEnemyStraightAngle',
-    'BonusAllBorderless',
+    'BonusGameBorderless',
     'BonusAllColor',
     'BonusGameClear'
 ];

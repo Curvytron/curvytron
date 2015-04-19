@@ -74,6 +74,13 @@ BaseGame.prototype.spawnMargin = 0.05;
 BaseGame.prototype.spawnAngleMargin = 0.3;
 
 /**
+ * Borderless
+ *
+ * @type {Boolean}
+ */
+BaseGame.prototype.borderless = false;
+
+/**
  * Update
  *
  * @param {Number} step
@@ -159,6 +166,8 @@ BaseGame.prototype.onStop = function()
  */
 BaseGame.prototype.onRoundNew = function()
 {
+    this.borderless = BaseGame.prototype.borderless;
+
     this.bonusManager.clear();
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
@@ -171,10 +180,7 @@ BaseGame.prototype.onRoundNew = function()
 /**
  * On round end
  */
-BaseGame.prototype.onRoundEnd = function()
-{
-
-};
+BaseGame.prototype.onRoundEnd = function() {};
 
 /**
  * Get new frame
@@ -282,6 +288,15 @@ BaseGame.prototype.sortAvatars = function(avatars)
     return avatars;
 };
 
+/**
+ * Set borderless
+ *
+ * @param {Boolean} borderless
+ */
+BaseGame.prototype.setBorderless = function(borderless)
+{
+    this.borderless = borderless ? true : false;
+};
 
 /**
  * Serialize

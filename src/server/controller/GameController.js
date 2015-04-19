@@ -25,6 +25,7 @@ function GameController(game)
     this.onRoundWinner = this.onRoundWinner.bind(this);
     this.onPlayerLeave = this.onPlayerLeave.bind(this);
     this.onClear       = this.onClear.bind(this);
+    this.onBorderless  = this.onBorderless.bind(this);
     this.onEnd         = this.onEnd.bind(this);
     this.stopWaiting   = this.stopWaiting.bind(this);
 
@@ -56,6 +57,7 @@ GameController.prototype.loadGame = function()
     this.game.on('round:new', this.onRoundNew);
     this.game.on('round:end', this.onRoundEnd);
     this.game.on('round:winner', this.onRoundWinner);
+    this.game.on('borderless', this.onBorderless);
     this.game.bonusManager.on('bonus:pop', this.onBonusPop);
     this.game.bonusManager.on('bonus:clear', this.onBonusClear);
 
@@ -81,6 +83,7 @@ GameController.prototype.unloadGame = function()
     this.game.removeListener('round:new', this.onRoundNew);
     this.game.removeListener('round:end', this.onRoundEnd);
     this.game.removeListener('round:winner', this.onRoundWinner);
+    this.game.removeListener('borderless', this.onBorderless);
     this.game.bonusManager.removeListener('bonus:pop', this.onBonusPop);
     this.game.bonusManager.removeListener('bonus:clear', this.onBonusClear);
 
@@ -450,6 +453,16 @@ GameController.prototype.onRoundWinner = function(data)
 GameController.prototype.onClear = function(data)
 {
     this.socketGroup.addEvent('clear');
+};
+
+/**
+ * On borderless
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onBorderless = function(data)
+{
+    this.socketGroup.addEvent('borderless', data);
 };
 
 /**

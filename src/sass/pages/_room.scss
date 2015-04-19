@@ -519,7 +519,7 @@
                 &.bonus-enemy-slow {
                     @include bonus-sprite(0, 1);
                 }
-                &.bonus-all-borderless {
+                &.bonus-game-borderless {
                     @include bonus-sprite(1, 1);
                 }
                 &.bonus-self-master {
