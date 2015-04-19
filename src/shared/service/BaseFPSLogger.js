@@ -3,25 +3,33 @@
  */
 function BaseFPSLogger()
 {
-    this.value    = 0;
-    this.interval = null;
+    this.interval  = null;
+    this.frequency = 0;
+    this.period    = 0;
+    this.frame     = 0;
+    this.frames    = [];
 
-    this.update = this.update.bind(this);
-    this.log    = this.log.bind(this);
+    this.startFrame = this.startFrame.bind(this);
+    this.endFrame   = this.endFrame.bind(this);
+    this.log        = this.log.bind(this);
 
     this.start();
 }
 
 /**
- * Update
- *
- * @param {Number} step
+ * Start frame
  */
-BaseFPSLogger.prototype.update = function(step)
+BaseFPSLogger.prototype.startFrame = function ()
 {
-    var fps = step > 0 ? 1000/step : 60;
+    this.frame = new Date().getTime();
+};
 
-    this.value = ~~ (0.5 + (this.value ? (this.value + fps)/2 : fps));
+/**
+ * End frame
+ */
+BaseFPSLogger.prototype.endFrame = function ()
+{
+    this.frames.push(new Date().getTime() - this.frame);
 };
 
 /**
@@ -29,7 +37,9 @@ BaseFPSLogger.prototype.update = function(step)
  */
 BaseFPSLogger.prototype.log = function()
 {
-    this.value = 0;
+    this.frequency     = this.frames.length;
+    this.period        = this.processPeriod();
+    this.frames.length = 0;
 };
 
 /**
@@ -52,3 +62,19 @@ BaseFPSLogger.prototype.stop = function()
         this.interval = null;
     }
 };
+
+/**
+ * Process period
+ *
+ * @return {Number}
+ */
+BaseFPSLogger.prototype.processPeriod = function()
+{
+    if (!this.frames.length) {
+        return 0;
+    }
+
+    return this.frames.reduce(function(previous, current, index, array) {
+        return previous + current;
+    }) / this.frames.length;
+}

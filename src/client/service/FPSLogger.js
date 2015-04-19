@@ -26,9 +26,8 @@ FPSLogger.prototype.setElement = function(element)
  */
 FPSLogger.prototype.log = function()
 {
-    this.draw();
-
     BaseFPSLogger.prototype.log.call(this);
+    this.draw();
 };
 
 /**
@@ -36,5 +35,5 @@ FPSLogger.prototype.log = function()
  */
 FPSLogger.prototype.draw = function()
 {
-    this.element.innerHTML = this.value + 'fps';
+    this.element.innerHTML = this.frequency + 'fps';
 };
