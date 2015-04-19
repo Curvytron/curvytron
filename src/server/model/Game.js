@@ -10,6 +10,7 @@ function Game(room)
     this.world       = new World(this.size);
     this.deaths      = new Collection([], 'id');
     this.controller  = new GameController(this);
+    this.bonusStack  = new GameBonusStack(this);
     this.roundWinner = null;
     this.gameWinner  = null;
 
@@ -46,10 +47,10 @@ Game.prototype.update = function(step)
         if (avatar.alive) {
             avatar.update(step);
 
-            border = this.world.getBoundIntersect(avatar.body, avatar.borderless ? 0 : avatar.radius);
+            border = this.world.getBoundIntersect(avatar.body, this.borderless ? 0 : avatar.radius);
 
             if (border) {
-                if (avatar.borderless) {
+                if (this.borderless) {
                     if (this.testBorder(avatar.head, avatar.velocities, border)) {
                         avatar.setPosition(this.world.getOposite(border));
                     }
@@ -232,6 +233,7 @@ Game.prototype.onRoundNew = function()
     this.roundWinner = null;
     this.world.clear();
     this.deaths.clear();
+    this.bonusStack.clear();
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
@@ -279,6 +281,19 @@ Game.prototype.onStop = function()
         this.end();
     } else {
         this.newRound();
+    }
+};
+
+/**
+ * Set borderless
+ *
+ * @param {Boolean} borderless
+ */
+Game.prototype.setBorderless = function(borderless)
+{
+    if (this.borderless !== borderless) {
+        BaseGame.prototype.setBorderless.call(this, borderless);
+        this.emit('borderless', this.borderless);
     }
 };
 

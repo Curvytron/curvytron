@@ -1,13 +1,13 @@
 /**
  * Base Bonus Stack
  *
- * @param {Avatar} avatar
+ * @param {Object} target
  */
-function BaseBonusStack (avatar)
+function BaseBonusStack (target)
 {
     EventEmitter.call(this);
 
-    this.avatar  = avatar;
+    this.target  = target;
     this.bonuses = new Collection();
 }
 
@@ -39,6 +39,14 @@ BaseBonusStack.prototype.remove = function(bonus)
 };
 
 /**
+ * Clear
+ */
+BaseBonusStack.prototype.clear = function()
+{
+    this.bonuses.clear();
+};
+
+/**
  * Resolve
  */
 BaseBonusStack.prototype.resolve = function(bonus)
@@ -47,7 +55,7 @@ BaseBonusStack.prototype.resolve = function(bonus)
         effects, property, i, j;
 
     if (typeof(bonus) !== 'undefined') {
-        effects = bonus.getEffects(this.avatar);
+        effects = bonus.getEffects(this.target);
         for (i = effects.length - 1; i >= 0; i--) {
             property = effects[i][0];
             properties[property] = this.getDefaultProperty(property);
@@ -55,7 +63,7 @@ BaseBonusStack.prototype.resolve = function(bonus)
     }
 
     for (i = this.bonuses.items.length - 1; i >= 0; i--) {
-        effects = this.bonuses.items[i].getEffects(this.avatar);
+        effects = this.bonuses.items[i].getEffects(this.target);
         for (j = effects.length - 1; j >= 0; j--) {
             property = effects[j][0];
 
@@ -63,7 +71,7 @@ BaseBonusStack.prototype.resolve = function(bonus)
                 properties[property] = this.getDefaultProperty(property);
             }
 
-            properties = this.append(properties, property, effects[j][1]);
+            this.append(properties, property, effects[j][1]);
         }
     }
 
@@ -75,39 +83,14 @@ BaseBonusStack.prototype.resolve = function(bonus)
 };
 
 /**
- * Apply the value to avatar's property
+ * Apply the value to target's property
  *
  * @param {String} property
  * @param {Number} value
  */
 BaseBonusStack.prototype.apply = function(property, value)
 {
-    switch (property) {
-        case 'radius':
-            this.avatar.setRadius(Avatar.prototype.radius * Math.pow(2, value));
-            break;
-        case 'velocity':
-            this.avatar.setVelocity(value);
-            break;
-        case 'inverse':
-            this.avatar.setInverse(value%2 !== 0);
-            break;
-        case 'invincible':
-            this.avatar.setInvincible(value ? true : false);
-            break;
-        case 'printing':
-            this.avatar.printManager[value > 0 ? 'start' : 'stop']();
-            break;
-        case 'color':
-            this.avatar.setColor(value);
-            break;
-        case 'borderless':
-            this.avatar.setBorderless(value ? true : false);
-            break;
-        default:
-            this.avatar[property] = value;
-            break;
-    }
+    this.target[property] = value;
 };
 
 /**
@@ -119,16 +102,7 @@ BaseBonusStack.prototype.apply = function(property, value)
  */
 BaseBonusStack.prototype.getDefaultProperty = function(property)
 {
-    switch (property) {
-        case 'printing':
-            return 1;
-        case 'radius':
-            return 0;
-        case 'color':
-            return this.avatar.player.color;
-        default:
-            return Avatar.prototype[property];
-    }
+    return 0;
 };
 
 /**
@@ -137,31 +111,8 @@ BaseBonusStack.prototype.getDefaultProperty = function(property)
  * @param {Object} properties
  * @param {String} property
  * @param {Number} value
- *
- * @return {Object}
  */
 BaseBonusStack.prototype.append = function(properties, property, value)
 {
-    switch (property) {
-
-        case 'directionInLoop':
-        case 'angularVelocityBase':
-        case 'color':
-            properties[property] = value;
-            break;
-
-        default:
-            properties[property] += value;
-            break;
-    }
-
-    return properties;
-};
-
-/**
- * Clear
- */
-BaseBonusStack.prototype.clear = function()
-{
-    this.bonuses.clear();
+    properties[property] += value;
 };

@@ -36,9 +36,19 @@ BonusGame.prototype.getTarget = function(avatar, game)
 /**
  * Apply on
  */
-BonusGame.prototype.on = function() {};
+BonusGame.prototype.on = function()
+{
+    if (this.target) {
+        this.target.bonusStack.add(this);
+    }
+};
 
 /**
- * Apply off
+ * Apply on
  */
-BonusGame.prototype.off = function() {};
+BonusGame.prototype.off = function()
+{
+    if (this.target) {
+        this.target.bonusStack.remove(this);
+    }
+};

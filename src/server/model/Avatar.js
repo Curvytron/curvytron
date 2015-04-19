@@ -86,17 +86,6 @@ Avatar.prototype.setInvincible = function(invincible)
 };
 
 /**
- * Set borderless
- *
- * @param {Number} borderless
- */
-Avatar.prototype.setBorderless = function(borderless)
-{
-    BaseAvatar.prototype.setBorderless.call(this, borderless);
-    this.emit('property', {avatar: this, property: 'borderless', value: this.borderless});
-};
-
-/**
  * Set inverse
  *
  * @param {Number} inverse

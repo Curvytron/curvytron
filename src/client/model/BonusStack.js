@@ -40,7 +40,7 @@ BonusStack.prototype.add = function(bonus)
     setTimeout(bonus.setEnding, bonus.duration - this.warning);
     this.bonuses.add(bonus);
 
-    if (this.avatar.local) {
+    if (this.target.local) {
         this.updateDimensions();
     }
 
@@ -58,7 +58,7 @@ BonusStack.prototype.remove = function(bonus)
     bonus.off('change', this.draw);
     this.bonuses.remove(bonus);
 
-    if (this.avatar.local) {
+    if (this.target.local) {
         this.updateDimensions();
     }
 
@@ -72,7 +72,7 @@ BonusStack.prototype.clear = function()
 {
     BaseBonusStack.prototype.clear.call(this);
 
-    if (this.avatar.local) {
+    if (this.target.local) {
         this.updateDimensions();
     }
 

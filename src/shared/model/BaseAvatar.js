@@ -30,14 +30,54 @@ function BaseAvatar(player)
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 BaseAvatar.prototype.constructor = BaseAvatar;
 
+/**
+ * Movement velocity
+ *
+ * @type {Number}
+ */
 BaseAvatar.prototype.velocity            = 16;
+
+/**
+ * Turn velicity
+ *
+ * @type {Float}
+ */
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
-BaseAvatar.prototype.radius              = 0.6;
-BaseAvatar.prototype.trailLatency        = 3;
-BaseAvatar.prototype.inverse             = false;
-BaseAvatar.prototype.invincible          = false;
-BaseAvatar.prototype.borderless          = false;
-BaseAvatar.prototype.directionInLoop     = true;
+
+/**
+ * Radius
+ *
+ * @type {Number}
+ */
+BaseAvatar.prototype.radius = 0.6;
+
+/**
+ * Number of trail points that don't kill the player
+ *
+ * @type {Number}
+ */
+BaseAvatar.prototype.trailLatency = 3;
+
+/**
+ * Inverted controls
+ *
+ * @type {Boolean}
+ */
+BaseAvatar.prototype.inverse = false;
+
+/**
+ * Invincible
+ *
+ * @type {Boolean}
+ */
+BaseAvatar.prototype.invincible = false;
+
+/**
+ * Type of tunrn: round or straight
+ *
+ * @type {Boolean}
+ */
+BaseAvatar.prototype.directionInLoop = true;
 
 /**
  * Equal
@@ -205,16 +245,6 @@ BaseAvatar.prototype.setInvincible = function(invincible)
 };
 
 /**
- * Set borderless
- *
- * @param {Number} borderless
- */
-BaseAvatar.prototype.setBorderless = function(borderless)
-{
-    this.borderless = borderless ? true : false;
-};
-
-/**
  * Get distance
  *
  * @param {Array} from
@@ -326,7 +356,6 @@ BaseAvatar.prototype.clear = function()
     this.radius              = BaseAvatar.prototype.radius;
     this.inverse             = BaseAvatar.prototype.inverse;
     this.invincible          = BaseAvatar.prototype.invincible;
-    this.borderless          = BaseAvatar.prototype.borderless;
     this.directionInLoop     = BaseAvatar.prototype.directionInLoop;
     this.angularVelocityBase = BaseAvatar.prototype.angularVelocityBase;
 

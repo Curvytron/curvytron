@@ -25,7 +25,7 @@ RoomConfig.prototype.bonusTypes = {
     BonusEnemyFast: BonusEnemyFast,
     BonusEnemyBig: BonusEnemyBig,
     BonusEnemyInverse: BonusEnemyInverse,
-    BonusAllBorderless: BonusAllBorderless,
+    BonusGameBorderless: BonusGameBorderless,
     BonusAllColor: BonusAllColor,
     BonusGameClear: BonusGameClear,
     BonusEnemyStraightAngle: BonusEnemyStraightAngle
