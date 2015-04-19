@@ -7,7 +7,10 @@ function BonusStack(avatar)
 {
     BaseBonusStack.call(this, avatar);
 
-    this.canvas = new Canvas(this.width, this.width);
+    this.canvas     = new Canvas(this.width, this.width);
+    this.changed    = true;
+    this.lastWidth  = this.width;
+    this.lastHeight = this.width;
 
     this.draw = this.draw.bind(this);
 }
@@ -39,12 +42,7 @@ BonusStack.prototype.add = function(bonus)
     bonus.on('change', this.draw);
     setTimeout(bonus.setEnding, bonus.duration - this.warning);
     this.bonuses.add(bonus);
-
-    if (this.target.local) {
-        this.updateDimensions();
-    }
-
-    this.emit('change');
+    this.updateDimensions();
 };
 
 /**
@@ -57,12 +55,7 @@ BonusStack.prototype.remove = function(bonus)
     bonus.clear();
     bonus.off('change', this.draw);
     this.bonuses.remove(bonus);
-
-    if (this.target.local) {
-        this.updateDimensions();
-    }
-
-    this.emit('change');
+    this.updateDimensions();
 };
 
 /**
@@ -71,12 +64,7 @@ BonusStack.prototype.remove = function(bonus)
 BonusStack.prototype.clear = function()
 {
     BaseBonusStack.prototype.clear.call(this);
-
-    if (this.target.local) {
-        this.updateDimensions();
-    }
-
-    this.emit('change');
+    this.updateDimensions();
 };
 
 /**
@@ -85,6 +73,7 @@ BonusStack.prototype.clear = function()
 BonusStack.prototype.updateDimensions = function()
 {
     this.canvas.setDimension(this.bonuses.items.length * this.bonusWidth, this.bonusWidth);
+    this.changed = true;
     this.draw();
 };
 
@@ -93,15 +82,21 @@ BonusStack.prototype.updateDimensions = function()
  */
 BonusStack.prototype.draw = function()
 {
-    this.canvas.clear();
+    if (this.changed) {
+        this.canvas.clear();
+    }
 
     for (var bonus, x, i = this.bonuses.items.length - 1; i >= 0; i--) {
         bonus = this.bonuses.items[i];
-        if (bonus.changed) {
+        if (this.changed || bonus.changed) {
             x = i * this.bonusWidth;
-            this.canvas.clearZone(x, 0, this.bonusWidth, this.bonusWidth);
+            if (!this.changed) {
+                this.canvas.clearZone(x, 0, this.bonusWidth, this.bonusWidth);
+            }
             this.canvas.drawImage(bonus.asset, x, 0, this.bonusWidth, this.bonusWidth, 0, bonus.opacity);
             bonus.changed = false;
         }
     }
+
+    this.changed = false;
 };

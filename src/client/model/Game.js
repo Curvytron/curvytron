@@ -182,11 +182,9 @@ Game.prototype.draw = function()
         if (avatar.present) {
             this.drawTail(avatar);
             this.clearAvatar(avatar);
+            this.clearBonusStack(avatar);
             this.drawAvatar(avatar);
-
-            if (avatar.alive && avatar.hasBonus()) {
-                this.drawBonusStack(avatar);
-            }
+            this.drawBonusStack(avatar);
 
             if (!this.frame && avatar.local) {
                 this.drawArrow(avatar);
@@ -229,11 +227,26 @@ Game.prototype.drawAvatar = function(avatar)
  */
 Game.prototype.clearAvatar = function(avatar)
 {
-    var height    = Math.max(avatar.canvas.element.height, avatar.bonusStack.canvas.element.height),
-        width     = avatar.canvas.element.width + avatar.bonusStack.canvas.element.width + this.stackMargin;
-
-    this.canvas.clearZone(avatar.startX, avatar.startY, width, width);
+    this.canvas.clearZone(avatar.startX, avatar.startY, avatar.canvas.element.width, avatar.canvas.element.height);
 };
+
+/**
+ * Clear bonus stack
+ *
+ * @param {Avatar} avatar
+ */
+Game.prototype.clearBonusStack = function(avatar)
+{
+    if (avatar.bonusStack.lastWidth) {
+        this.canvas.clearZone(
+            avatar.startX + this.stackMargin,
+            avatar.startY + this.stackMargin,
+            avatar.bonusStack.lastWidth,
+            avatar.bonusStack.lastHeight
+        );
+    }
+};
+
 
 /**
  * Draw bonus stack
@@ -242,7 +255,16 @@ Game.prototype.clearAvatar = function(avatar)
  */
 Game.prototype.drawBonusStack = function(avatar)
 {
-    this.canvas.drawImage(avatar.bonusStack.canvas.element, avatar.startX + this.stackMargin, avatar.startY + this.stackMargin);
+    if (avatar.alive && avatar.hasBonus()) {
+        avatar.bonusStack.lastWidth  = avatar.bonusStack.canvas.element.width;
+        avatar.bonusStack.lastHeight = avatar.bonusStack.canvas.element.height;
+
+        this.canvas.drawImage(
+            avatar.bonusStack.canvas.element,
+            avatar.startX + this.stackMargin,
+            avatar.startY + this.stackMargin
+        );
+    }
 };
 
 /**
