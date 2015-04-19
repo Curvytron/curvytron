@@ -68,7 +68,6 @@ Game.prototype.clearFrame = function()
 Game.prototype.onFrame = function(step)
 {
     this.draw();
-    BaseGame.prototype.onFrame.call(this, step);
 };
 
 /**
@@ -78,6 +77,8 @@ Game.prototype.onRoundNew = function()
 {
     BaseGame.prototype.onRoundNew.call(this);
     this.clearBackground();
+    this.effect.clear();
+    this.canvas.clear();
     this.draw();
 };
 
