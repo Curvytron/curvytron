@@ -291,8 +291,10 @@ Game.prototype.onStop = function()
  */
 Game.prototype.setBorderless = function(borderless)
 {
-    BaseGame.prototype.setBorderless.call(this, borderless);
-    this.emit('borderless', this.borderless);
+    if (this.borderless !== borderless) {
+        BaseGame.prototype.setBorderless.call(this, borderless);
+        this.emit('borderless', this.borderless);
+    }
 };
 
 /**
