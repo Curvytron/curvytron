@@ -32,8 +32,6 @@ Avatar.prototype.update = function(step)
             this.addPoint(this.head.slice(0));
         }
     }
-
-    BaseAvatar.prototype.update.call(this);
 };
 
 /**
@@ -52,26 +50,56 @@ Avatar.prototype.setPosition = function(point)
 };
 
 /**
+ * Set velocity
+ *
+ * @param {Number} step
+ */
+Avatar.prototype.setVelocity = function(velocity)
+{
+    if (this.velocity !== velocity) {
+        BaseAvatar.prototype.setVelocity.call(this, velocity);
+        this.emit('property', {avatar: this, property: 'velocity', value: this.velocity});
+    }
+};
+
+/**
  * Set angle
  *
  * @param {Array} point
  */
 Avatar.prototype.setAngle = function(angle)
 {
-    BaseAvatar.prototype.setAngle.call(this, angle);
-    this.emit('property', {avatar: this, property: 'angle', value: this.angle});
+    if (this.angle !== angle) {
+        BaseAvatar.prototype.setAngle.call(this, angle);
+        this.emit('property', {avatar: this, property: 'angle', value: this.angle});
+    }
 };
 
 /**
- * Set radius
+ * Set angular velocity
  *
- * @param {Number} radius
+ * @param {Number} velocity
+ */
+Avatar.prototype.setAngularVelocity = function(angularVelocity)
+{
+    if (this.angularVelocity !== angularVelocity) {
+        BaseAvatar.prototype.setAngularVelocity.call(this, angularVelocity);
+        this.emit('property', {avatar: this, property: 'angularVelocity', value: this.angularVelocity});
+    }
+};
+
+/**
+ * Set angular velocity
+ *
+ * @param {Float} velocity
  */
 Avatar.prototype.setRadius = function(radius)
 {
-    BaseAvatar.prototype.setRadius.call(this, radius);
-    this.body.radius = this.radius;
-    this.emit('property', {avatar: this, property: 'radius', value: this.radius});
+    if (this.radius !== radius) {
+        BaseAvatar.prototype.setRadius.call(this, radius);
+        this.body.radius = this.radius;
+        this.emit('property', {avatar: this, property: 'radius', value: this.radius});
+    }
 };
 
 /**

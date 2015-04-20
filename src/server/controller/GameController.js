@@ -306,7 +306,7 @@ GameController.prototype.onMove = function(client, data)
     var player = client.players.getById(data.avatar);
 
     if (player && player.avatar) {
-        player.avatar.setAngularVelocity(data.move);
+        player.avatar.updateAngularVelocity(data.move);
     }
 };
 
@@ -378,8 +378,6 @@ GameController.prototype.onBonusClear = function(data)
  */
 GameController.prototype.onProperty = function(data)
 {
-    if (data.property === 'angle' && this.game.frame && data.avatar.alive) { return; }
-
     this.socketGroup.addEvent('property', {avatar: data.avatar.id, property: data.property, value: data.value});
 };
 

@@ -35,7 +35,7 @@ BaseAvatar.prototype.constructor = BaseAvatar;
  *
  * @type {Number}
  */
-BaseAvatar.prototype.velocity            = 16;
+BaseAvatar.prototype.velocity = 16;
 
 /**
  * Turn velicity
@@ -114,18 +114,28 @@ BaseAvatar.prototype.addPoint = function(point)
 };
 
 /**
- * Set angular velocity
+ * Update angular velocity
  *
  * @param {Number} factor
  */
-BaseAvatar.prototype.setAngularVelocity = function(factor)
+BaseAvatar.prototype.updateAngularVelocity = function(factor)
 {
     if (typeof(factor) === 'undefined') {
         if (this.angularVelocity === 0) { return; }
         factor = (this.angularVelocity > 0 ? 1 : -1) * (this.inverse ? -1 : 1);
     }
 
-    this.angularVelocity = factor * this.angularVelocityBase * (this.inverse ? -1 : 1);
+    this.setAngularVelocity(factor * this.angularVelocityBase * (this.inverse ? -1 : 1));
+};
+
+/**
+ * Set angular velocity
+ *
+ * @param {Float} angularVelocity
+ */
+BaseAvatar.prototype.setAngularVelocity = function(angularVelocity)
+{
+    this.angularVelocity = angularVelocity;
 };
 
 /**
@@ -135,8 +145,10 @@ BaseAvatar.prototype.setAngularVelocity = function(factor)
  */
 BaseAvatar.prototype.setAngle = function(angle)
 {
-    this.angle = angle;
-    this.updateVelocities();
+    if (this.angle !== angle) {
+        this.angle = angle;
+        this.updateVelocities();
+    }
 };
 
 /**
@@ -158,7 +170,7 @@ BaseAvatar.prototype.updateAngle = function(step)
             this.setAngle(this.angle + this.angularVelocity * step);
         } else {
             this.setAngle(this.angle + this.angularVelocity);
-            this.setAngularVelocity(0);
+            this.updateAngularVelocity(0);
         }
     }
 };
@@ -183,8 +195,12 @@ BaseAvatar.prototype.updatePosition = function(step)
  */
 BaseAvatar.prototype.setVelocity = function(velocity)
 {
-    this.velocity = Math.max(velocity, BaseAvatar.prototype.velocity/2);
-    this.updateVelocities();
+    velocity = Math.max(velocity, BaseAvatar.prototype.velocity/2);
+
+    if (this.velocity !== velocity) {
+        this.velocity = velocity;
+        this.updateVelocities();
+    }
 };
 
 /**
@@ -197,19 +213,18 @@ BaseAvatar.prototype.updateVelocities = function()
         Math.sin(this.angle) * this.velocity/1000
     ];
 
-    this.updateAngularVelocity();
+    this.updateBaseAngularVelocity();
 };
 
 /**
- * Update angular velocity
+ * Update base angular velocity
  */
-BaseAvatar.prototype.updateAngularVelocity = function()
+BaseAvatar.prototype.updateBaseAngularVelocity = function()
 {
     if (this.directionInLoop) {
         var ratio = this.velocity / BaseAvatar.prototype.velocity;
-
         this.angularVelocityBase = ratio * BaseAvatar.prototype.angularVelocityBase + Math.log(1/ratio)/1000;
-        this.setAngularVelocity();
+        this.updateAngularVelocity();
     }
 };
 
@@ -230,8 +245,10 @@ BaseAvatar.prototype.setRadius = function(radius)
  */
 BaseAvatar.prototype.setInverse = function(inverse)
 {
-    this.inverse = inverse ? true : false;
-    this.setAngularVelocity();
+    if (this.inverse !== inverse) {
+        this.inverse = inverse ? true : false;
+        this.updateAngularVelocity();
+    }
 };
 
 /**

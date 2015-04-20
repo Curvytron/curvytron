@@ -6,8 +6,10 @@ function BaseFPSLogger()
     this.interval  = null;
     this.frequency = 0;
     this.period    = 0;
+    this.maxPeriod = 0;
     this.frame     = 0;
     this.frames    = [];
+    this.max       = 0;
 
     this.startFrame = this.startFrame.bind(this);
     this.endFrame   = this.endFrame.bind(this);
@@ -29,7 +31,11 @@ BaseFPSLogger.prototype.startFrame = function ()
  */
 BaseFPSLogger.prototype.endFrame = function ()
 {
-    this.frames.push(new Date().getTime() - this.frame);
+    var period = new Date().getTime() - this.frame;
+
+    this.max = Math.max(period, this.max);
+
+    this.frames.push(period);
 };
 
 /**
@@ -39,7 +45,9 @@ BaseFPSLogger.prototype.log = function()
 {
     this.frequency     = this.frames.length;
     this.period        = this.processPeriod();
+    this.maxPeriod     = this.max;
     this.frames.length = 0;
+    this.max           = 0;
 };
 
 /**
@@ -77,4 +85,4 @@ BaseFPSLogger.prototype.processPeriod = function()
     return this.frames.reduce(function(previous, current, index, array) {
         return previous + current;
     }) / this.frames.length;
-}
+};
