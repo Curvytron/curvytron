@@ -149,9 +149,7 @@ GameController.prototype.detachSocketEvents = function()
 };
 
 /**
- * Rooms action
- *
- * @return {Array}
+ * Load game
  */
 GameController.prototype.loadGame = function(room)
 {
@@ -362,7 +360,7 @@ GameController.prototype.onPosition = function(e)
     var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
-        avatar.setPosition(this.compressor.decompressPosition(e.detail[1][0], e.detail[1][1]));
+        avatar.setPositionFromServer(this.compressor.decompressPosition(e.detail[1][0], e.detail[1][1]));
     }
 };
 

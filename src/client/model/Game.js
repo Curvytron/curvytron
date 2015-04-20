@@ -67,7 +67,7 @@ Game.prototype.clearFrame = function()
  */
 Game.prototype.onFrame = function(step)
 {
-    this.draw();
+    this.draw(step);
 };
 
 /**
@@ -164,7 +164,7 @@ Game.prototype.setSize = function()
  *
  * @param {Number} step
  */
-Game.prototype.draw = function()
+Game.prototype.draw = function(step)
 {
     if (!this.frame) {
         this.effect.clear();
@@ -180,10 +180,20 @@ Game.prototype.draw = function()
 
     for (var avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        if (avatar.present) {
+        if (avatar.alive || avatar.changed) {
             this.drawTail(avatar);
             this.clearAvatar(avatar);
             this.clearBonusStack(avatar);
+        }
+    }
+
+    for (var avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        if (avatar.alive || avatar.changed) {
+            if (avatar.alive) {
+                avatar.update(this.frame ? step : 0);
+            }
+
             this.drawAvatar(avatar);
             this.drawBonusStack(avatar);
 
@@ -217,8 +227,12 @@ Game.prototype.drawTail = function(avatar)
  */
 Game.prototype.drawAvatar = function(avatar)
 {
-    avatar.updateStart();
-    this.canvas.drawImage(avatar.canvas.element, avatar.startX, avatar.startY, avatar.angle);
+    this.canvas.drawImage(
+        avatar.canvas.element,
+        avatar.startX,
+        avatar.startY,
+        avatar.angle
+    );
 };
 
 /**
@@ -228,7 +242,12 @@ Game.prototype.drawAvatar = function(avatar)
  */
 Game.prototype.clearAvatar = function(avatar)
 {
-    this.canvas.clearZone(avatar.startX, avatar.startY, avatar.canvas.element.width, avatar.canvas.element.height);
+    this.canvas.clearZone(
+        avatar.startX,
+        avatar.startY,
+        avatar.clearWidth,
+        avatar.clearWidth
+    );
 };
 
 /**
@@ -256,7 +275,7 @@ Game.prototype.clearBonusStack = function(avatar)
  */
 Game.prototype.drawBonusStack = function(avatar)
 {
-    if (avatar.alive && avatar.hasBonus()) {
+    if (avatar.hasBonus()) {
         avatar.bonusStack.lastWidth  = avatar.bonusStack.canvas.element.width;
         avatar.bonusStack.lastHeight = avatar.bonusStack.canvas.element.height;
 

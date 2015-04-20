@@ -35,5 +35,5 @@ FPSLogger.prototype.log = function()
  */
 FPSLogger.prototype.draw = function()
 {
-    this.element.innerHTML = this.frequency + 'fps';
+    this.element.innerHTML = this.frequency + 'fps (' + Math.ceil(this.period) + 'ms)';
 };
