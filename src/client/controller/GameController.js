@@ -392,7 +392,6 @@ GameController.prototype.onDie = function(e)
         avatar.setAngle(data.angle);
         avatar.die();
         this.killLog.logDeath(avatar, data.killer ? this.game.avatars.getById(data.killer) : null, data.old);
-        this.applyScope();
         this.sound.play('death');
     }
 };
