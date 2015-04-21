@@ -12,15 +12,10 @@
                 <i class="icon-radio"></i>
             </span>
 
-            <ul id="game-players">
-                <li ng-repeat="avatar in avatars | orderBy:sortorder" ng-class="{ dead: avatar.alive == false, local: avatar.local && !spectating }">
-                    <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
-                    <span class="arrow" style="border-left-color: {{ avatar.player.color }};" ng-if="avatar.local && !spectating"></span>
-                    <span class="round-points" ng-if="avatar.roundScore && (!avatar.alive || !game.inRound)">+{{ avatar.roundScore }}</span>
-                    <span class="player-name" title="{{ avatar.name }}">{{ avatar.name }}</span>
-                    <span class="score">{{ avatar.score }}</span>
-                </li>
-            </ul>
+            <div class="game-players" ng-controller="PlayerListController">
+                <div class="player-list-wrapper" ng-include="'js/views/game/players.html'"></div>
+            </div>
+
             <footer>
                 <span id="fps" class="pull-right">0</span>
                 <span id="ping" class="pull-right" style="color: {{ latency <= 100 ? 'green' : (latency <= 300 ? 'orange' : 'red') }}">{{ latency }}ms</span>

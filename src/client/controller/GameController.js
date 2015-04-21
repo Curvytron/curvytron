@@ -300,10 +300,6 @@ GameController.prototype.onProperty = function(e)
         if (!this.game.frame) {
             this.game.draw();
         }
-
-        if (data.property === 'score' || data.property === 'roundScore') {
-            this.applyScope();
-        }
     }
 };
 
@@ -521,15 +517,12 @@ GameController.prototype.onEnd = function(e)
  */
 GameController.prototype.onRoundWinner = function(e)
 {
-    var data = e.detail,
-        avatar = this.game.avatars.getById(data.winner);
+    var avatar = this.game.avatars.getById(e.detail.winner);
 
     if (avatar) {
         this.notifier.notifyInactive(avatar.name + ' won round!');
         this.$scope.roundWinner = avatar;
-        this.applyScope();
-
-        this.$scope.end = true;
+        this.$scope.end         = true;
     }
 };
 
@@ -540,12 +533,10 @@ GameController.prototype.onRoundWinner = function(e)
  */
 GameController.prototype.onLeave = function(e)
 {
-    var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
+    var avatar = this.game.avatars.getById(e.detail.avatar);
 
     if (avatar) {
         this.game.removeAvatar(avatar);
-        this.applyScope();
     }
 };
 

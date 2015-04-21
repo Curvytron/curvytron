@@ -16,6 +16,8 @@ function GameController(game)
     this.onDie         = this.onDie.bind(this);
     this.onPosition    = this.onPosition.bind(this);
     this.onPoint       = this.onPoint.bind(this);
+    this.onScore       = this.onScore.bind(this);
+    this.onRoundScore  = this.onRoundScore.bind(this);
     this.onProperty    = this.onProperty.bind(this);
     this.onBonusStack  = this.onBonusStack.bind(this);
     this.onBonusPop    = this.onBonusPop.bind(this);
@@ -153,6 +155,8 @@ GameController.prototype.attachEvents = function(client)
         avatar.on('die', this.onDie);
         avatar.on('position', this.onPosition);
         avatar.on('point', this.onPoint);
+        avatar.on('score', this.onScore);
+        avatar.on('score:round', this.onRoundScore);
         avatar.on('property', this.onProperty);
         avatar.bonusStack.on('change', this.onBonusStack);
     }
@@ -180,6 +184,8 @@ GameController.prototype.detachEvents = function(client)
             avatar.removeListener('die', this.onDie);
             avatar.removeListener('position', this.onPosition);
             avatar.removeListener('point', this.onPoint);
+            avatar.removeListener('score', this.onScore);
+            avatar.removeListener('score:round', this.onRoundScore);
             avatar.removeListener('property', this.onProperty);
             avatar.bonusStack.removeListener('change', this.onBonusStack);
         }
@@ -369,6 +375,26 @@ GameController.prototype.onBonusPop = function(data)
 GameController.prototype.onBonusClear = function(data)
 {
     this.socketGroup.addEvent('bonus:clear', {bonus: data.bonus.id});
+};
+
+/**
+ * On score
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onScore = function(data)
+{
+    this.socketGroup.addEvent('score', {avatar: data.avatar.id, score: data.score});
+};
+
+/**
+ * On round score
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onRoundScore = function(data)
+{
+    this.socketGroup.addEvent('score:round', {avatar: data.avatar.id, score: data.score});
 };
 
 /**

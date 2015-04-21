@@ -136,8 +136,7 @@
             text-overflow: ellipsis;
         }
 
-        #game-players {
-            @extend .no-bullet;
+        .game-players {
             margin-bottom: 0;
             position: fixed;
             overflow: auto;
@@ -163,7 +162,7 @@
                 cursor: pointer;
             }
 
-            li {
+            .player {
                 border-bottom: 2px solid lighten($game-background, 10%);
                 padding: 10px 5px 10px 23px;
                 position: relative;

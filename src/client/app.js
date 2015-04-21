@@ -38,6 +38,10 @@ curvytronApp.controller(
     ['$scope', 'Chat', ChatController]
 );
 curvytronApp.controller(
+    'PlayerListController',
+    ['$scope', 'RoomRepository', 'SocketClient', PlayerListController]
+);
+curvytronApp.controller(
     'KillLogController',
     ['$scope', 'KillLog', KillLogController]
 );

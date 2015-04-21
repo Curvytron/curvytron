@@ -1,0 +1,7 @@
+<div ng-repeat="avatar in avatars | orderBy:sortorder" class="player" ng-class="{ dead: avatar.alive == false, local: avatar.local && !spectating }">
+    <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
+    <span class="arrow" style="border-left-color: {{ avatar.player.color }};" ng-if="avatar.local && !spectating"></span>
+    <span class="round-points" ng-if="avatar.roundScore && (!avatar.alive || !game.inRound)">+{{ avatar.roundScore }}</span>
+    <span class="player-name" title="{{ avatar.name }}">{{ avatar.name }}</span>
+    <span class="score">{{ avatar.score }}</span>
+</div>
