@@ -28,12 +28,12 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.assetsLoaded   = false;
     this.setup          = false;
     this.compressor     = new Compressor();
+    this.body           = document.body;
 
     // Binding
     this.onLatency      = this.onLatency.bind(this);
     this.onGameStart    = this.onGameStart.bind(this);
     this.onGameStop     = this.onGameStop.bind(this);
-    this.onReady        = this.onReady.bind(this);
     this.onAssetsLoaded = this.onAssetsLoaded.bind(this);
     this.onMove         = this.onMove.bind(this);
     this.onBonusPop     = this.onBonusPop.bind(this);
@@ -57,18 +57,20 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onUnload       = this.onUnload.bind(this);
     this.onExit         = this.onExit.bind(this);
     this.backToRoom     = this.backToRoom.bind(this);
+    this.applyScope     = this.applyScope.bind(this);
+    this.digestScope    = this.digestScope.bind(this);
 
     // Hydrate scope:
-    this.$scope.sortorder       = '-score';
-    this.$scope.warmup          = false;
-    this.$scope.phase           = 'round';
-    this.$scope.end             = false;
-    this.$scope.tieBreak        = false;
     this.$scope.radio           = this.radio;
     this.$scope.sound           = this.sound;
     this.$scope.backToRoom      = this.backToRoom;
     this.$scope.toggleSound     = this.sound.toggle;
     this.$scope.toggleRadio     = this.radio.toggle;
+    this.$scope.phase           = 'round';
+    this.$scope.warmup          = false;
+    this.$scope.end             = false;
+    this.$scope.tieBreak        = false;
+    this.$scope.avatars         = null;
     this.$scope.roundWinner     = null;
     this.$scope.gameWinner      = null;
     this.$scope.spectating      = false;
@@ -76,6 +78,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.$scope.latency         = 0;
     this.$scope.$parent.profile = false;
 
+    this.body.classList.add('game-mode');
     this.repository.start();
 
     var name = decodeURIComponent($routeParams.name);
@@ -97,12 +100,11 @@ GameController.prototype.confirmation = 'Are you sure you want to leave the game
 /**
  * Attach socket Events
  */
-GameController.prototype.attachSocketEvents = function()
+GameController.prototype.attachEvents = function()
 {
     this.client.on('latency', this.onLatency);
     this.client.on('game:start', this.onGameStart);
     this.client.on('game:stop', this.onGameStop);
-    this.client.on('ready', this.onReady);
     this.client.on('property', this.onProperty);
     this.client.on('position', this.onPosition);
     this.client.on('point', this.onPoint);
@@ -124,12 +126,11 @@ GameController.prototype.attachSocketEvents = function()
 /**
  * Attach socket Events
  */
-GameController.prototype.detachSocketEvents = function()
+GameController.prototype.detachEvents = function()
 {
     this.client.off('latency', this.onLatency);
     this.client.off('game:start', this.onGameStart);
     this.client.off('game:stop', this.onGameStop);
-    this.client.off('ready', this.onReady);
     this.client.off('property', this.onProperty);
     this.client.off('position', this.onPosition);
     this.client.off('point', this.onPoint);
@@ -157,17 +158,14 @@ GameController.prototype.loadGame = function(room)
     this.offDestroy       = this.$scope.$on('$destroy', this.onExit);
     window.onbeforeunload = this.onUnload;
 
-    this.room = room;
-    this.game = room.newGame();
+    this.room  = room;
+    this.game  = room.newGame();
 
     gamepadListener.stop();
     this.game.bonusManager.on('load', this.onAssetsLoaded);
 
-    var avatar;
-
-    for (var i = this.game.avatars.items.length - 1; i >= 0; i--) {
+    for (var avatar, i = this.game.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.game.avatars.items[i];
-
         if (avatar.local) {
             avatar.input.on('move', this.onMove);
             if (avatar.input.useGamepad()) {
@@ -180,11 +178,10 @@ GameController.prototype.loadGame = function(room)
     this.radio.setActive(true);
 
     // Hydrate scope:
-    this.$scope.curvytron.bodyClass = 'game-mode';
-    this.$scope.game                = this.game;
-    this.$scope.avatars             = this.game.avatars.items;
+    this.$scope.game    = this.game;
+    this.$scope.avatars = this.game.avatars.items;
 
-    this.attachSocketEvents();
+    this.attachEvents();
 
     this.setup = true;
     this.checkReady();
@@ -211,29 +208,13 @@ GameController.prototype.checkReady = function()
 };
 
 /**
- * On avatar ready (client loaded)
- *
- * @param {Event} e
- */
-GameController.prototype.onReady = function(e)
-{
-    var data = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
-
-    if (avatar) {
-        avatar.ready = true;
-        this.applyScope();
-    }
-};
-
-/**
  * Start warmup
  */
 GameController.prototype.displayWarmup = function(time)
 {
     this.$scope.count  = time/1000;
     this.$scope.warmup = true;
-    this.applyScope();
+    this.digestScope();
 
     this.notifier.notify('Round start in ' + this.$scope.count + '...');
 
@@ -249,7 +230,7 @@ GameController.prototype.onWarmup = function()
 {
     this.$scope.count--;
     this.notifier.notify('Round start in ' + this.$scope.count + '...');
-    this.applyScope();
+    this.digestScope();
 };
 
 /**
@@ -260,7 +241,7 @@ GameController.prototype.endWarmup = function()
     this.clearWarmup();
     this.$scope.warmup = false;
     this.notifier.notify('Go!', 1000);
-    this.applyScope();
+    this.digestScope();
 };
 
 /**
@@ -423,7 +404,7 @@ GameController.prototype.onSpectate = function(e)
 GameController.prototype.onSpectators = function(e)
 {
     this.$scope.spectators = e.detail;
-    this.applyScope();
+    this.digestScope();
 };
 
 /**
@@ -460,6 +441,7 @@ GameController.prototype.onRoundNew = function(e)
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
     this.killLog.clear();
+    this.digestScope();
 };
 
 /**
@@ -470,6 +452,7 @@ GameController.prototype.onRoundNew = function(e)
 GameController.prototype.onRoundEnd = function(e)
 {
     this.game.endRound();
+    this.digestScope();
 };
 
 /**
@@ -480,7 +463,7 @@ GameController.prototype.onRoundEnd = function(e)
 GameController.prototype.onBorderless = function(e)
 {
     this.game.setBorderless(e.detail);
-    this.applyScope();
+    this.digestScope();
 };
 
 /**
@@ -506,7 +489,7 @@ GameController.prototype.onEnd = function(e)
     this.$scope.end        = true;
     this.$scope.phase      = 'game';
 
-    this.applyScope();
+    this.digestScope();
     this.close();
 };
 
@@ -523,6 +506,7 @@ GameController.prototype.onRoundWinner = function(e)
         this.notifier.notifyInactive(avatar.name + ' won round!');
         this.$scope.roundWinner = avatar;
         this.$scope.end         = true;
+        this.digestScope();
     }
 };
 
@@ -554,6 +538,7 @@ GameController.prototype.onExit = function()
     window.onbeforeunload = null;
 
     this.sound.stop('win');
+    this.body.classList.remove('game-mode');
     this.offUnload();
     this.offDestroy();
     this.close();
@@ -595,7 +580,7 @@ GameController.prototype.close = function()
     this.clearWarmup();
 
     if (this.game) {
-        this.detachSocketEvents();
+        this.detachEvents();
         this.game.end();
 
         var avatars = this.game.avatars.filter(function () { return this.input; }).items;
@@ -626,10 +611,15 @@ GameController.prototype.backToRoom = function()
 GameController.prototype.onLatency = function(event)
 {
     this.$scope.latency = event.detail[0];
-    this.applyScope();
+    this.digestScope();
 };
 
 /**
  * Apply scope
  */
 GameController.prototype.applyScope = CurvytronController.prototype.applyScope;
+
+/**
+ * Digest scope
+ */
+GameController.prototype.digestScope = CurvytronController.prototype.digestScope;

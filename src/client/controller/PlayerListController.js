@@ -7,56 +7,52 @@
  */
 function PlayerListController($scope, repository, client)
 {
+    if (!repository.room || !repository.room.game) { return; }
+
     this.$scope     = $scope;
     this.repository = repository;
     this.client     = client;
-    this.game       = null;
+    this.game       = this.repository.room.game;
 
-    this.onChange     = this.onChange.bind(this);
+    // Binding
     this.onScore      = this.onScore.bind(this);
     this.onRoundScore = this.onRoundScore.bind(this);
+    this.detachEvents = this.detachEvents.bind(this);
+    this.applyScope   = this.applyScope.bind(this);
+    this.digestScope  = this.digestScope.bind(this);
 
-    if (this.repository.room) {
+    this.$scope.$on('$destroy', this.detachEvents);
+
+    /*if (this.repository.room) {
         if (this.repository.room.game) {
             this.loadGame();
         } else {
             this.repository.room.on('game:new', this.loadGame);
         }
-    }
+    }*/
+    this.attachEvents();
 }
 
 /**
- * Load game
- */
-PlayerListController.prototype.loadGame = function()
-{
-    this.repository.room.off('game:new', this.loadGame);
-
-    this.game = this.repository.room.game;
-
-    this.attachSocketEvents();
-};
-
-/**
  * Attach socket Events
  */
-PlayerListController.prototype.attachSocketEvents = function()
+PlayerListController.prototype.attachEvents = function()
 {
     this.client.on('score', this.onScore);
     this.client.on('score:round', this.onRoundScore);
-    this.client.on('game:leave', this.onChange);
-    this.client.on('round:new', this.onChange);
+    this.client.on('game:leave', this.digestScope);
+    this.client.on('round:new', this.digestScope);
 };
 
 /**
  * Attach socket Events
  */
-PlayerListController.prototype.detachSocketEvents = function()
+PlayerListController.prototype.detachEvents = function()
 {
     this.client.off('score', this.onScore);
     this.client.off('score:round', this.onRoundScore);
-    this.client.off('game:leave', this.onChange);
-    this.client.off('round:new', this.onChange);
+    this.client.off('game:leave', this.digestScope);
+    this.client.off('round:new', this.digestScope);
 };
 
 /**
@@ -70,7 +66,8 @@ PlayerListController.prototype.onScore = function(e)
 
     if (avatar) {
         avatar.setScore(e.detail.score);
-        this.applyScope();
+        this.game.sortAvatars();
+        this.digestScope();
     }
 };
 
@@ -85,21 +82,17 @@ PlayerListController.prototype.onRoundScore = function(e)
 
     if (avatar) {
         avatar.setRoundScore(e.detail.score);
-        this.applyScope();
+        this.game.sortAvatars();
+        this.digestScope();
     }
-};
-
-/**
- * On leave
- *
- * @param {Event} e
- */
-PlayerListController.prototype.onChange = function(e)
-{
-    this.applyScope();
 };
 
 /**
  * Apply scope
  */
 PlayerListController.prototype.applyScope = CurvytronController.prototype.applyScope;
+
+/**
+ * Digest scope
+ */
+PlayerListController.prototype.digestScope = CurvytronController.prototype.digestScope;

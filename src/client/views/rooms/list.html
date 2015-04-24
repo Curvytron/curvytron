@@ -32,14 +32,14 @@
                 <button type="submit" id="submit">
                     <span><i class="icon-plus"></i></span>
                 </button>
-                <input type="text" ng-model="roomName" class="form-control clearfix" name="name" placeholder="Create a new room..." maxlength="{{ roomMaxLength }}" />
+                <input type="text" ng-model="roomName" class="form-control clearfix" name="name" placeholder="Create a new room..." maxlength="{{ ::roomMaxLength }}" />
             </form>
         </h2>
 
         <table id="rooms" class="rooms table table-hover v-align-middle" ng-if="!rooms.isEmpty()">
             <tbody>
                 <tr ng-repeat="room in rooms.items" ng-if="!room.game" ng-click="join(room)" class="room">
-                    <td class="room-name">{{ room.name }}</td>
+                    <td class="room-name">{{ ::room.name }}</td>
                     <td class="room-nb-players">
                         <ng-pluralize count="room.players" when="{
                             '0': 'No player',
@@ -54,7 +54,7 @@
                     </td>
                 </tr>
                 <tr ng-repeat="room in rooms.items" ng-if="room.game" ng-click="join(room)" class="room in-game">
-                    <td class="room-name">{{ room.name }}</td>
+                    <td class="room-name">{{ ::room.name }}</td>
                     <td class="room-nb-players">
                         <ng-pluralize count="room.players" when="{
                             '0': 'No player',

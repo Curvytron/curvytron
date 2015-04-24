@@ -14,7 +14,7 @@ curvytronApp.service('KillLog', KillLog);
 
 curvytronApp.controller(
     'CurvytronController',
-    ['$scope', '$window', 'Profile', 'Analyser', 'ActivityWatcher', 'SocketClient', CurvytronController]
+    ['$scope', '$window', '$location', 'Profile', 'Analyser', 'ActivityWatcher', 'SocketClient', CurvytronController]
 );
 
 curvytronApp.controller(
@@ -42,12 +42,16 @@ curvytronApp.controller(
     ['$scope', 'RoomRepository', 'SocketClient', PlayerListController]
 );
 curvytronApp.controller(
+    'WaitingController',
+    ['$scope', 'RoomRepository', 'SocketClient', WaitingController]
+);
+curvytronApp.controller(
     'KillLogController',
     ['$scope', 'KillLog', KillLogController]
 );
 curvytronApp.controller(
     'ProfileController',
-    ['$scope', 'Profile', 'Radio', 'SoundManager', ProfileController]
+    ['$scope', '$element', 'Profile', 'Radio', 'SoundManager', ProfileController]
 );
 
 curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
@@ -56,6 +60,9 @@ curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvi
         .when('/', {
             templateUrl: 'js/views/rooms/list.html',
             controller: 'RoomsController'
+        })
+        .when('/error', {
+            templateUrl: 'js/views/pages/error.html'
         })
         .when('/about', {
             templateUrl: 'js/views/pages/about.html'

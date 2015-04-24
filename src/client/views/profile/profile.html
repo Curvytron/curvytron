@@ -20,7 +20,7 @@
                         class="form-control"
                         name="name"
                         placeholder="Choose a name"
-                        maxlength="{{ nameMaxLength }}"
+                        maxlength="{{ ::nameMaxLength }}"
                     />
                 </div>
 
@@ -37,7 +37,7 @@
                         name="color"
                         placeholder="#CCCCCC"
                         style="border-color: {{ profile.color }};"
-                        maxlength="{{ colorMaxLength }}"
+                        maxlength="{{ ::colorMaxLength }}"
                     />
                 </div>
                 <div class="clearfix"></div>
@@ -48,14 +48,14 @@
             <legend>Controls:</legend>
 
             <div class="form-row">
-                <div class="col" ng-repeat="control in profile.controls">
-                    <label for="profile-controls-{{ $index }}">{{ control.label }}</label>
+                <div class="col" ng-repeat="control in ::profile.controls">
+                    <label for="profile-controls-{{ ::$index }}">{{ ::control.label }}</label>
                     <input
-                        id="profile-controls-{{ $index }}"
+                        id="profile-controls-{{ ::$index }}"
                         type="text"
                         value="{{ control.mapper.view }}"
                         class="form-control control"
-                        ng-name="control[{{ $index }}]"
+                        ng-name="control[{{ ::$index }}]"
                         ng-focus="control.start()"
                         ng-blur="control.stop()"
                         ng-keyup="blurProfile()"

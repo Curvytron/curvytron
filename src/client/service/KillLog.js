@@ -5,7 +5,7 @@ function KillLog()
 {
     EventEmitter.call(this);
 
-    this.logs = new Collection([], 'index', true);
+    this.logs = [];
 }
 
 KillLog.prototype = Object.create(EventEmitter.prototype);
@@ -19,24 +19,6 @@ KillLog.prototype.constructor = KillLog;
 KillLog.prototype.display = 5000;
 
 /**
- * MAx messages to be displayed at the same time
- *
- * @type {Number}
- */
-KillLog.prototype.maxlength = 10;
-
-/**
- * Curvybot profile
- *
- * @type {Object}
- */
-KillLog.prototype.curvybot = {
-    name: 'Curvybot',
-    color: '#ff8069',
-    icon: 'icon-dead'
-};
-
-/**
  * Load the death of a player's avatar
  *
  * @param {Avatar} avatar
@@ -45,30 +27,35 @@ KillLog.prototype.curvybot = {
  */
 KillLog.prototype.logDeath = function(avatar, killer, old)
 {
-    this.addMessage(new DieMessage(this.curvybot, avatar, killer, old));
+    this.add(new MessageDie(avatar, killer, old));
 };
 
 /**
  * Kill log
  *
- * @param {DieMessage} message
+ * @param {MessageDie} message
  */
-KillLog.prototype.addMessage = function(message)
+KillLog.prototype.add = function(message)
 {
     var killLog = this;
-    this.logs.add(message);
-    setTimeout(function () { killLog.removeMessage(message); }, this.display);
+
+    this.logs.push(message);
     this.emit('change');
+
+    setTimeout(function () { killLog.remove(message); }, this.display);
 };
 
 /**
  * Remove message
  *
- * @param {DieMessage} message
+ * @param {MessageDie} message
  */
-KillLog.prototype.removeMessage = function (message)
+KillLog.prototype.remove = function (message)
 {
-    if (this.logs.remove(message)) {
+    var index = this.logs.indexOf(message);
+
+    if (index >= 0) {
+        this.logs.splice(index, 1);
         this.emit('change');
     }
 };
@@ -78,5 +65,6 @@ KillLog.prototype.removeMessage = function (message)
  */
 KillLog.prototype.clear = function()
 {
-    this.logs.clear();
+    this.logs.length = 0;
+    this.emit('change');
 };

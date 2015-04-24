@@ -3,17 +3,21 @@
  * Curvytron Controller
  *
  * @param {Object} $scope
- * @param {Object} $window
+ * @param {Object} $element
  * @param {Profile} profile
  * @param {Analyser} analyser
  * @param {ActivityWatcher} watcher
  */
-function ProfileController($scope, profile, radio, sound)
+function ProfileController($scope, $element, profile, radio, sound)
 {
-    this.$scope  = $scope;
-    this.profile = profile;
-    this.radio   = radio;
-    this.sound   = sound;
+    this.$scope   = $scope;
+    this.profile  = profile;
+    this.radio    = radio;
+    this.sound    = sound;
+    this.panel    = $element[0].querySelector('.panel');
+    this.tuto     = null;
+    this.controls = null;
+    this.open     = false;
 
     this.profile.controller = this;
 
@@ -22,8 +26,6 @@ function ProfileController($scope, profile, radio, sound)
     this.closeProfile  = this.closeProfile.bind(this);
     this.blurProfile   = this.blurProfile.bind(this);
 
-    this.$scope.profileOpen   = false;
-    this.$scope.profileTuto   = false;
     this.$scope.profile       = this.profile;
     this.$scope.radio         = this.radio;
     this.$scope.sound         = this.sound;
@@ -40,9 +42,17 @@ function ProfileController($scope, profile, radio, sound)
  */
 ProfileController.prototype.openProfile = function()
 {
-    this.$scope.profileOpen = true;
-    this.$scope.profileTuto = !this.profile.isComplete();
-    this.profile.emit('open');
+    if (!this.open) {
+        if (!this.tuto) {
+            this.tuto     = this.panel.querySelector('.profile-tuto');
+            this.controls = this.panel.querySelectorAll('input.control');
+        }
+
+        this.panel.classList.add('active');
+        this.tuto.classList.toggle('active', !this.profile.isComplete());
+        this.profile.emit('open');
+        this.open = true;
+    }
 };
 
 /**
@@ -50,10 +60,11 @@ ProfileController.prototype.openProfile = function()
  */
 ProfileController.prototype.closeProfile = function()
 {
-    if (this.profile.isComplete()) {
-        this.$scope.profileOpen = false;
-        this.$scope.profileTuto = !this.profile.isComplete();
+    if (this.open && this.profile.isComplete()) {
+        this.panel.classList.remove('active');
+        this.tuto.classList.toggle('active', !this.profile.isComplete());
         this.profile.emit('close');
+        this.open = false;
     }
 };
 
@@ -62,7 +73,7 @@ ProfileController.prototype.closeProfile = function()
  */
 ProfileController.prototype.toggleProfile = function()
 {
-    return this.$scope.profileOpen ? this.closeProfile() : this.openProfile();
+    return this.open ? this.closeProfile() : this.openProfile();
 };
 
 /**
@@ -71,11 +82,6 @@ ProfileController.prototype.toggleProfile = function()
 ProfileController.prototype.blurProfile = function(e)
 {
     for (var i = this.profile.controls.length - 1; i >= 0; i--) {
-        angular.element(document.querySelector('#profile-controls-' + i))[0].blur();
+        this.controls[i].blur();
     }
 };
-
-/**
- * Apply scope
- */
-ProfileController.prototype.applyScope = CurvytronController.prototype.applyScope;

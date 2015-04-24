@@ -10,13 +10,15 @@ function KillLogController($scope, killLog)
     this.killLog = killLog;
     this.element = null;
 
-    this.onLoaded = this.onLoaded.bind(this);
-    this.onChange = this.onChange.bind(this);
+    this.onLoaded    = this.onLoaded.bind(this);
+    this.onChange    = this.onChange.bind(this);
+    this.applyScope  = this.applyScope.bind(this);
+    this.digestScope = this.digestScope.bind(this);
 
-    this.$scope.killLogLoaded = this.onLoaded;
-    this.$scope.logs          = this.killLog.logs;
+    this.$scope.onLoaded = this.onLoaded;
+    this.$scope.logs     = this.killLog.logs;
 
-    this.killLog.on('change', this.onChange);
+    this.killLog.on('change', this.digestScope);
 }
 
 /**
@@ -35,7 +37,7 @@ KillLogController.prototype.onLoaded = function ()
  */
 KillLogController.prototype.onChange = function(event)
 {
-    this.applyScope();
+    this.digestScope();
     this.scrollDown();
 };
 
@@ -53,3 +55,8 @@ KillLogController.prototype.scrollDown = function()
  * Apply scope
  */
 KillLogController.prototype.applyScope = CurvytronController.prototype.applyScope;
+
+/**
+ * Digest scope
+ */
+KillLogController.prototype.digestScope = CurvytronController.prototype.digestScope;
