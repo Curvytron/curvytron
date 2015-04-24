@@ -3,14 +3,16 @@
         <h2>Victory score</h2>
         <input type="number" class="form-control" id="max-score" ng-change="setMaxScore(config.maxScore)" ng-model="config.maxScore" placeholder="{{ ::config.getDefaultMaxScore() }}" maxlength="3" ng-disabled="!master" />
 
-        <h2>Visibility</h2>
-        <label for="open">
-            <input type="checkbox" id="open" ng-model="config.open" ng-change="setOpen(config.open)" ng-disabled="!master" />
-            Allow everyone to join
-        </label>
-        <div ng-if="!config.open">
-            <label for="password">Password:</label>
-            <input type="text" class="form-control" id="password" ng-model="config.password" readonly maxlength="4" />
+        <div class="public-room">
+            <h2><i class="icon-lock"></i> Public room</h2>
+            <label for="open">
+                It's a public room
+                <input type="checkbox" id="open" ng-model="config.open" ng-change="setOpen(config.open)" ng-disabled="!master" />
+            </label>
+            <div class="password-container" ng-if="!config.open">
+                <label for="password">Password:</label>
+                <input type="text" class="form-control" id="password" ng-model="config.password" readonly maxlength="4" />
+            </div>
         </div>
     </div>
     <div class="col-lg-8 bonus-list">
