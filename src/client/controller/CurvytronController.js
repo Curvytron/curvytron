@@ -25,7 +25,7 @@ function CurvytronController($scope, $window, $location, profile, analyser, watc
     // Hydrate scope
     this.$scope.status  = 'connecting';
     this.$scope.reload  = this.reload;
-    this.$scope.profile = true;
+    this.$scope.profile = false;
 
     this.client.on('connected', this.onConnect);
     this.client.on('disconnected', this.onDisconnect);
@@ -36,7 +36,10 @@ function CurvytronController($scope, $window, $location, profile, analyser, watc
  *
  * @param {Event} e
  */
-CurvytronController.prototype.onConnect = function(e) {};
+CurvytronController.prototype.onConnect = function(e)
+{
+    this.$scope.profile = true;
+};
 
 /**
  * On disconnect

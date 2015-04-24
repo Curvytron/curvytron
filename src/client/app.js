@@ -55,7 +55,7 @@ curvytronApp.controller(
 );
 curvytronApp.controller(
     'ProfileController',
-    ['$scope', '$element', 'Profile', 'Radio', 'SoundManager', ProfileController]
+    ['$scope', 'Profile', 'Radio', 'SoundManager', ProfileController]
 );
 
 curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {

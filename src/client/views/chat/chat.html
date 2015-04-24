@@ -1,4 +1,4 @@
-<div id="chat-feed" class="feed" onload="onLoaded()">
+<div id="chat-feed" class="feed" ng-init="onLoaded()">
     <div ng-repeat="message in messages" class="one-message">
         <div class="details">
             <span class="time">{{ ::message.date }}</span>

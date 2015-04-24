@@ -84,7 +84,6 @@ MetricController.prototype.onLatency = function(event)
  */
 MetricController.prototype.onSpectators = function(event)
 {
-    console.log(event);
     this.$scope.spectators = event.detail;
     this.digestScope();
 };

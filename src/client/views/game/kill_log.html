@@ -1,4 +1,4 @@
-<div id="kill-log-feed" class="feed" onload="onLoaded()">
+<div id="kill-log-feed" class="feed" ng-init="onLoaded()">
     <div ng-repeat="message in logs" class="one-message">
         <span class="message-icon icon-dead"></span>
         <span class="message-content" ng-switch="message.type">

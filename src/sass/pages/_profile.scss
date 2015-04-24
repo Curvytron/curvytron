@@ -10,6 +10,7 @@
     background-color: $game-background;
     border: none;
     border-radius: 40px;
+    cursor: pointer;
 
     &,&:visited {
         color: #ffffff;
@@ -128,7 +129,7 @@
     }
 
     .profile-tuto {
-        display: none;
+        display: block;
         position: fixed;
         top: 0;
         bottom: 0;
@@ -141,9 +142,9 @@
         @include opacity(0);
         @include transition(opacity 0.25s ease);
 
-        &.active {
+        /*&.active {
             display: block;
-        }
+        }*/
 
         .content {
             color: #ffffff;

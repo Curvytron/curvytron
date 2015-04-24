@@ -41,10 +41,7 @@
 
         <div ng-controller="ProfileController" ng-if="profile">
             <ng-include src="'js/views/profile/link.html'"></ng-include>
-            <div id="profile" class="panel">
-                <ng-include src="'js/views/profile/tuto.html'"></ng-include>
-                <ng-include src="'js/views/profile/profile.html'"></ng-include>
-            </div>
+            <div id="profile" class="panel" ng-include="'js/views/profile/profile.html'" onload="onLoaded()"></div>
         </div>
 
         <div id="main" ng-view>

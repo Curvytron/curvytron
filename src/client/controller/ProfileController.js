@@ -8,23 +8,25 @@
  * @param {Analyser} analyser
  * @param {ActivityWatcher} watcher
  */
-function ProfileController($scope, $element, profile, radio, sound)
+function ProfileController($scope, profile, radio, sound)
 {
     this.$scope   = $scope;
     this.profile  = profile;
     this.radio    = radio;
     this.sound    = sound;
-    this.panel    = $element[0].querySelector('.panel');
-    this.tuto     = null;
-    this.controls = null;
     this.open     = false;
+    this.tuto     = null;
+    this.panel    = null;
+    this.controls = null;
 
     this.profile.controller = this;
 
     this.toggleProfile = this.toggleProfile.bind(this);
     this.openProfile   = this.openProfile.bind(this);
     this.closeProfile  = this.closeProfile.bind(this);
-    this.blurProfile   = this.blurProfile.bind(this);
+    this.onLoaded      = this.onLoaded.bind(this);
+    this.onLoadControl = this.onLoadControl.bind(this);
+    this.blurControls  = this.blurControls.bind(this);
 
     this.$scope.profile       = this.profile;
     this.$scope.radio         = this.radio;
@@ -34,8 +36,27 @@ function ProfileController($scope, $element, profile, radio, sound)
     this.$scope.toggleProfile = this.toggleProfile;
     this.$scope.openProfile   = this.openProfile;
     this.$scope.closeProfile  = this.closeProfile;
-    this.$scope.blurProfile   = this.blurProfile;
+    this.$scope.onLoaded      = this.onLoaded;
+    this.$scope.onLoadControl = this.onLoadControl;
+    this.$scope.blurControls  = this.blurControls;
 }
+
+/**
+ * On dom loaded
+ */
+ProfileController.prototype.onLoaded = function()
+{
+    this.panel = document.querySelector('.panel');
+    this.tuto  = this.panel.querySelector('.profile-tuto');
+};
+
+/**
+ * On dom loaded controls
+ */
+ProfileController.prototype.onLoadControl = function()
+{
+    this.controls = this.panel.querySelectorAll('input.control');
+};
 
 /**
  * Open profile
@@ -43,15 +64,10 @@ function ProfileController($scope, $element, profile, radio, sound)
 ProfileController.prototype.openProfile = function()
 {
     if (!this.open) {
-        if (!this.tuto) {
-            this.tuto     = this.panel.querySelector('.profile-tuto');
-            this.controls = this.panel.querySelectorAll('input.control');
-        }
-
+        this.open = true;
         this.panel.classList.add('active');
         this.tuto.classList.toggle('active', !this.profile.isComplete());
         this.profile.emit('open');
-        this.open = true;
     }
 };
 
@@ -61,10 +77,10 @@ ProfileController.prototype.openProfile = function()
 ProfileController.prototype.closeProfile = function()
 {
     if (this.open && this.profile.isComplete()) {
+        this.open = false;
         this.panel.classList.remove('active');
         this.tuto.classList.toggle('active', !this.profile.isComplete());
         this.profile.emit('close');
-        this.open = false;
     }
 };
 
@@ -77,11 +93,20 @@ ProfileController.prototype.toggleProfile = function()
 };
 
 /**
- * Toggle profile
+ * Blur controls
  */
-ProfileController.prototype.blurProfile = function(e)
+ProfileController.prototype.blurControls = function()
 {
-    for (var i = this.profile.controls.length - 1; i >= 0; i--) {
-        this.controls[i].blur();
-    }
+    this.controls[0].blur();
+    this.controls[1].blur();
 };
+
+/**
+ * Apply scope
+ */
+ProfileController.prototype.applyScope = CurvytronController.prototype.applyScope;
+
+/**
+ * Digest scope
+ */
+ProfileController.prototype.digestScope = CurvytronController.prototype.digestScope;

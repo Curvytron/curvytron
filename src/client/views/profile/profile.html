@@ -48,7 +48,7 @@
             <legend>Controls:</legend>
 
             <div class="form-row">
-                <div class="col" ng-repeat="control in ::profile.controls">
+                <div class="col" ng-repeat="control in profile.controls" ng-init="onLoadControl()">
                     <label for="profile-controls-{{ ::$index }}">{{ ::control.label }}</label>
                     <input
                         id="profile-controls-{{ ::$index }}"
@@ -58,7 +58,7 @@
                         ng-name="control[{{ ::$index }}]"
                         ng-focus="control.start()"
                         ng-blur="control.stop()"
-                        ng-keyup="blurProfile()"
+                        ng-keyup="blurControls()"
                         ng-class="{ 'active': control.mapper.listening }"
                     />
                 </div>
@@ -89,5 +89,28 @@
         <div class="text-center">
             <button type="button" class="btn btn-save" ng-click="toggleProfile()"><span>I'm done</span></button>
         </div>
+    </div>
+</div>
+
+<div class="profile-tuto">
+    <div class="content">
+        <p>
+            Hi there!<br/>
+            We just need to know a few things before you start playing:
+        </p>
+        <ul class="list">
+            <li class="item first" ng-class="{ 'done': profile.name }">
+                Choose yourself player name.
+                <small>A name to find them, a name to rule them all...</small>
+            </li>
+            <li class="item" ng-class="{ 'done': profile.color }">
+                Pick a color that your like.
+                <small>Or one that you don't, why should I care...</small>
+            </li>
+            <li class="item final">
+                You can assign new controls if you're not happy with left and right arrows.
+                <small>Yep. Console controllers are supported.</small>
+            </li>
+        </ul>
     </div>
 </div>
