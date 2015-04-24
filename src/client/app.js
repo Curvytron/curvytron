@@ -65,9 +65,6 @@ curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvi
             templateUrl: 'js/views/rooms/list.html',
             controller: 'RoomsController'
         })
-        .when('/error', {
-            templateUrl: 'js/views/pages/error.html'
-        })
         .when('/about', {
             templateUrl: 'js/views/pages/about.html'
         })

@@ -37,10 +37,6 @@
         .profile-form {
             right: 0;
         }
-
-        .profile-tuto {
-            @include opacity(100);
-        }
     }
 
     .profile-form {
@@ -129,7 +125,7 @@
     }
 
     .profile-tuto {
-        display: block;
+        display: none;
         position: fixed;
         top: 0;
         bottom: 0;
@@ -142,9 +138,10 @@
         @include opacity(0);
         @include transition(opacity 0.25s ease);
 
-        /*&.active {
+        &.active {
             display: block;
-        }*/
+            @include opacity(100);
+        }
 
         .content {
             color: #ffffff;

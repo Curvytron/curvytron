@@ -12,6 +12,8 @@
  */
 function RoomController($scope, $routeParams, $location, client, repository, profile, chat, notifier)
 {
+    document.body.classList.remove('game-mode');
+
     this.$scope         = $scope;
     this.$location      = $location;
     this.client         = client;

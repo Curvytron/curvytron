@@ -185,7 +185,7 @@ Game.prototype.draw = function(step)
         }
     }
 
-    for (var avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
+    for (avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         if (avatar.present && (avatar.alive || avatar.changed)) {
             if (avatar.alive) {

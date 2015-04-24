@@ -38,7 +38,9 @@ function CurvytronController($scope, $window, $location, profile, analyser, watc
  */
 CurvytronController.prototype.onConnect = function(e)
 {
+    this.$scope.status  = 'online';
     this.$scope.profile = true;
+    this.digestScope();
 };
 
 /**
@@ -48,8 +50,8 @@ CurvytronController.prototype.onConnect = function(e)
  */
 CurvytronController.prototype.onDisconnect = function(e)
 {
-    this.$location.path('/error');
-    this.applyScope();
+    this.$scope.status = 'disconnected';
+    this.digestScope();
 };
 
 /**

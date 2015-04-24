@@ -85,6 +85,13 @@ BonusManager.prototype.draw = function()
     for (var bonus, i = this.bonuses.items.length - 1; i >= 0; i--) {
         bonus = this.bonuses.items[i];
         if (!bonus.animation.done) {
+            this.clearBonus(bonus);
+        }
+    }
+
+    for (bonus, i = this.bonuses.items.length - 1; i >= 0; i--) {
+        bonus = this.bonuses.items[i];
+        if (!bonus.animation.done) {
             this.drawBonus(bonus);
         }
     }
@@ -98,8 +105,6 @@ BonusManager.prototype.draw = function()
 BonusManager.prototype.drawBonus = function(bonus)
 {
     var width = bonus.getDrawWidth();
-
-    this.clearBonus(bonus);
     this.canvas.drawImageScaled(bonus.asset, bonus.position[0] - width/2, bonus.position[1] - width/2, width, width);
 };
 
@@ -111,7 +116,6 @@ BonusManager.prototype.drawBonus = function(bonus)
 BonusManager.prototype.clearBonus = function(bonus)
 {
     var width = bonus.width * 1.3;
-
     this.canvas.clearZoneScaled(bonus.position[0] - width/2, bonus.position[1] - width/2, width, width);
 };
 

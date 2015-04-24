@@ -13,6 +13,8 @@
  */
 function GameController($scope, $routeParams, $location, client, repository, chat, radio, notifier, sound, killLog)
 {
+    document.body.classList.add('game-mode');
+
     this.$scope         = $scope;
     this.$location      = $location;
     this.client         = client;
@@ -28,7 +30,6 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.assetsLoaded   = false;
     this.setup          = false;
     this.compressor     = new Compressor();
-    this.body           = document.body;
 
     // Binding
     this.onGameStart    = this.onGameStart.bind(this);
@@ -71,10 +72,9 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.$scope.avatars         = null;
     this.$scope.roundWinner     = null;
     this.$scope.gameWinner      = null;
-    this.$scope.spectating      = false
+    this.$scope.spectating      = false;
     this.$scope.$parent.profile = false;
 
-    this.body.classList.add('game-mode');
     this.repository.start();
 
     var name = decodeURIComponent($routeParams.name);
@@ -518,7 +518,6 @@ GameController.prototype.onExit = function()
     window.onbeforeunload = null;
 
     this.sound.stop('win');
-    this.body.classList.remove('game-mode');
     this.offUnload();
     this.offDestroy();
     this.close();
