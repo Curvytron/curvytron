@@ -47,9 +47,9 @@
                         />
                     </td>
                     <td class="room-enter-col">
-                        <div class="room-password-col" ng-if="!room.open">
-                            <input type="text" class="form-control password" maxlength="4" ng-model="room.password" placeholder="0000"/>
-                        </div>
+                        <form class="room-password-col" ng-if="!room.open" ng-submit="join(room">
+                            <input type="text" class="form-control password" maxlength="4" ng-model="room.password" placeholder="••••"/>
+                        </form>
                         <div class="room-enter-container">
                             <p class="room-enter">
                                 <span><i class="{{ room.open ? 'icon-game' : 'icon-lock' }}"></i> Join</span>
