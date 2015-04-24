@@ -31,7 +31,6 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.body           = document.body;
 
     // Binding
-    this.onLatency      = this.onLatency.bind(this);
     this.onGameStart    = this.onGameStart.bind(this);
     this.onGameStop     = this.onGameStop.bind(this);
     this.onAssetsLoaded = this.onAssetsLoaded.bind(this);
@@ -53,7 +52,6 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onEnd          = this.onEnd.bind(this);
     this.onLeave        = this.onLeave.bind(this);
     this.onSpectate     = this.onSpectate.bind(this);
-    this.onSpectators   = this.onSpectators.bind(this);
     this.onUnload       = this.onUnload.bind(this);
     this.onExit         = this.onExit.bind(this);
     this.backToRoom     = this.backToRoom.bind(this);
@@ -73,9 +71,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.$scope.avatars         = null;
     this.$scope.roundWinner     = null;
     this.$scope.gameWinner      = null;
-    this.$scope.spectating      = false;
-    this.$scope.spectators      = 0;
-    this.$scope.latency         = 0;
+    this.$scope.spectating      = false
     this.$scope.$parent.profile = false;
 
     this.body.classList.add('game-mode');
@@ -102,7 +98,6 @@ GameController.prototype.confirmation = 'Are you sure you want to leave the game
  */
 GameController.prototype.attachEvents = function()
 {
-    this.client.on('latency', this.onLatency);
     this.client.on('game:start', this.onGameStart);
     this.client.on('game:stop', this.onGameStop);
     this.client.on('property', this.onProperty);
@@ -120,7 +115,6 @@ GameController.prototype.attachEvents = function()
     this.client.on('end', this.onEnd);
     this.client.on('game:leave', this.onLeave);
     this.client.on('spectate', this.onSpectate);
-    this.client.on('game:spectators', this.onSpectators);
 };
 
 /**
@@ -128,7 +122,6 @@ GameController.prototype.attachEvents = function()
  */
 GameController.prototype.detachEvents = function()
 {
-    this.client.off('latency', this.onLatency);
     this.client.off('game:start', this.onGameStart);
     this.client.off('game:stop', this.onGameStop);
     this.client.off('property', this.onProperty);
@@ -146,7 +139,6 @@ GameController.prototype.detachEvents = function()
     this.client.off('end', this.onEnd);
     this.client.off('game:leave', this.onLeave);
     this.client.off('spectate', this.onSpectate);
-    this.client.off('game:spectators', this.onSpectators);
 };
 
 /**
@@ -174,7 +166,6 @@ GameController.prototype.loadGame = function(room)
         }
     }
 
-    this.game.fps.setElement(document.getElementById('fps'));
     this.radio.setActive(true);
 
     // Hydrate scope:
@@ -272,7 +263,7 @@ GameController.prototype.onMove = function(e)
  */
 GameController.prototype.onProperty = function(e)
 {
-    var data = e.detail,
+    var data   = e.detail,
         avatar = this.game.avatars.getById(data.avatar);
 
     if (avatar) {
@@ -362,7 +353,7 @@ GameController.prototype.onPoint = function(e)
  */
 GameController.prototype.onDie = function(e)
 {
-    var data = e.detail,
+    var data   = e.detail,
         avatar = this.game.avatars.getById(data.avatar);
 
     if (avatar) {
@@ -394,17 +385,6 @@ GameController.prototype.onSpectate = function(e)
     } else {
         return this.game.start();
     }
-};
-
-/**
- * On spectators
- *
- * @param {Event} e
- */
-GameController.prototype.onSpectators = function(e)
-{
-    this.$scope.spectators = e.detail;
-    this.digestScope();
 };
 
 /**
@@ -601,17 +581,6 @@ GameController.prototype.close = function()
 GameController.prototype.backToRoom = function()
 {
     this.$location.path(this.room.url);
-};
-
-/**
- * Set latency
- *
- * @param {Event} event
- */
-GameController.prototype.onLatency = function(event)
-{
-    this.$scope.latency = event.detail[0];
-    this.digestScope();
 };
 
 /**

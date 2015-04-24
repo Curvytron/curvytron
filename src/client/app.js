@@ -42,6 +42,10 @@ curvytronApp.controller(
     ['$scope', 'RoomRepository', 'SocketClient', PlayerListController]
 );
 curvytronApp.controller(
+    'MetricController',
+    ['$scope', 'RoomRepository', 'SocketClient', MetricController]
+);
+curvytronApp.controller(
     'WaitingController',
     ['$scope', 'RoomRepository', 'SocketClient', WaitingController]
 );

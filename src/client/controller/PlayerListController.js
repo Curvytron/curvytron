@@ -23,13 +23,6 @@ function PlayerListController($scope, repository, client)
 
     this.$scope.$on('$destroy', this.detachEvents);
 
-    /*if (this.repository.room) {
-        if (this.repository.room.game) {
-            this.loadGame();
-        } else {
-            this.repository.room.on('game:new', this.loadGame);
-        }
-    }*/
     this.attachEvents();
 }
 

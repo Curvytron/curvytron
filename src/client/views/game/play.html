@@ -22,9 +22,13 @@
                 </div>
             </div>
 
-            <footer>
-                <span id="fps" class="pull-right">0</span>
-                <span id="ping" class="pull-right" style="color: {{ latency <= 100 ? 'green' : (latency <= 300 ? 'orange' : 'red') }}">{{ latency }}ms</span>
+            <footer ng-controller="MetricController">
+                <span class="fps pull-right" style="color: {{ fps.color }}">
+                    {{ fps.frequency }} fps
+                </span>
+                <span class="ping pull-right" style="color: {{ latencyColor }}">
+                    {{ latency }}ms
+                </span>
                 <span id="spectators" ng-if="spectators" class="pull-right">
                     {{ spectators }} <span class="icon-viewer"></span>
                 </span>
