@@ -72,7 +72,7 @@ BonusManager.prototype.remove = function(bonus)
 BonusManager.prototype.clear = function()
 {
     this.canvas.clear();
-    BaseBonusManager.prototype.clear.call(this, bonus);
+    BaseBonusManager.prototype.clear.call(this);
 };
 
 /**

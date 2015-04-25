@@ -171,7 +171,7 @@ Game.prototype.draw = function(step)
 
     for (var animation, a = this.animations.length - 1; a >= 0; a--) {
         animation = this.animations[a];
-        animation.draw(this.effect);
+        animation.draw();
         if (animation.done && animation.cleared) {
             this.animations.splice(a, 1);
         }
@@ -215,7 +215,7 @@ Game.prototype.drawTail = function(avatar)
     var points = avatar.trail.getLastSegment();
 
     if (points) {
-        this.background.drawLineScaled(points, avatar.width, avatar.color);
+        this.background.drawLineScaled(points, avatar.width, avatar.color, 'round');
     }
 };
 
@@ -226,12 +226,7 @@ Game.prototype.drawTail = function(avatar)
  */
 Game.prototype.drawAvatar = function(avatar)
 {
-    this.canvas.drawImage(
-        avatar.canvas.element,
-        avatar.startX,
-        avatar.startY,
-        avatar.angle
-    );
+    this.canvas.drawImageTo(avatar.canvas.element, avatar.startX, avatar.startY);
 };
 
 /**
@@ -241,12 +236,7 @@ Game.prototype.drawAvatar = function(avatar)
  */
 Game.prototype.clearAvatar = function(avatar)
 {
-    this.canvas.clearZone(
-        avatar.startX,
-        avatar.startY,
-        avatar.clearWidth,
-        avatar.clearWidth
-    );
+    this.canvas.clearZone(avatar.startX, avatar.startY, avatar.clearWidth, avatar.clearWidth);
 };
 
 /**
@@ -278,7 +268,7 @@ Game.prototype.drawBonusStack = function(avatar)
         avatar.bonusStack.lastWidth  = avatar.bonusStack.canvas.element.width;
         avatar.bonusStack.lastHeight = avatar.bonusStack.canvas.element.height;
 
-        this.canvas.drawImage(
+        this.canvas.drawImageTo(
             avatar.bonusStack.canvas.element,
             avatar.startX + this.stackMargin,
             avatar.startY + this.stackMargin
@@ -293,7 +283,7 @@ Game.prototype.drawBonusStack = function(avatar)
  */
 Game.prototype.drawArrow = function(avatar)
 {
-    this.effect.drawImageScaled(avatar.arrow.element, avatar.head[0] - 5, avatar.head[1] - 5, 10, 10, avatar.angle);
+    this.effect.drawImageScaledAngle(avatar.arrow.element, avatar.head[0] - 5, avatar.head[1] - 5, 10, 10, avatar.angle);
 };
 
 /**
@@ -311,7 +301,7 @@ Game.prototype.clearBackground = function()
  */
 Game.prototype.onDie = function(event)
 {
-    this.animations.push(new Explode(event.detail));
+    this.animations.push(new Explode(event.detail, this.effect));
 };
 
 /**

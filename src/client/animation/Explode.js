@@ -2,11 +2,11 @@
  * Explosion animation
  *
  * @param {Array} position
- * @param {Float} velocity
- * @param {Float} angle
+ * @param {Canvas} effect
  */
-function Explode(avatar)
+function Explode(avatar, effect)
 {
+    this.effect    = effect;
     this.particles = new Array(this.particleTotal);
     this.canvas    = new Canvas(this.width, this.width);
     this.created   = new Date().getTime();
@@ -20,10 +20,11 @@ function Explode(avatar)
 
     for (var i = this.particles.length - 1; i >= 0; i--) {
         this.particles[i] = new ExplodeParticle(
-            avatar.head,
-            this.randomize(avatar.velocity/750, 0.2),
+            avatar.head[0] * this.effect.scale,
+            avatar.head[1] * this.effect.scale,
+            this.randomize(avatar.velocity / 750 * this.effect.scale, 0.2),
             this.randomize(avatar.angle, 0.2),
-            this.randomize(avatar.radius * 1.3, 0.2)
+            this.effect.round(this.randomize(avatar.radius * 1.3 * this.effect.scale, 0.2))
         );
     }
 }
@@ -65,9 +66,9 @@ Explode.prototype.randomize = function(value, factor)
 /**
  * Draw particles
  */
-Explode.prototype.draw = function (canvas)
+Explode.prototype.draw = function ()
 {
-    this.clear(canvas);
+    this.clear();
 
     if (this.done) { return; }
 
@@ -82,9 +83,12 @@ Explode.prototype.draw = function (canvas)
         for (var particle, i = this.particles.length - 1; i >= 0; i--) {
             particle = this.particles[i];
             particle.update(age, step);
-            canvas.drawImageScaled(this.canvas.element, particle.position[0], particle.position[1], particle.radius, particle.radius, 0, particle.opacity);
-            this.cache.push(particle.position.concat([particle.radius]));
+            this.effect.setOpacity(particle.opacity);
+            this.effect.drawImage(this.canvas.element, this.effect.round(particle.x), this.effect.round(particle.y), particle.radius, particle.radius);
+            this.cache.push([particle.x, particle.y, particle.radius * 2]);
         }
+
+        this.effect.setOpacity(1);
     } else {
         this.done = true;
     }
@@ -93,16 +97,15 @@ Explode.prototype.draw = function (canvas)
 /**
  * Clear particles from cache
  */
-Explode.prototype.clear = function (canvas)
+Explode.prototype.clear = function ()
 {
     if (this.cleared) { return; }
 
     for (var particle, width, i = this.cache.length - 1; i >= 0; i--) {
         particle = this.cache[i];
-        if (particle) {
-            width    = particle[2] * 2;
-            canvas.clearZoneScaled(particle[0], particle[1], width, width);
-        }
+        //if (particle) {
+            this.effect.clearZone(particle[0], particle[1], particle[2], particle[2]);
+        //}
     }
 
     this.cache.length = 0;

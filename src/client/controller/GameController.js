@@ -339,10 +339,10 @@ GameController.prototype.onPosition = function(e)
  */
 GameController.prototype.onPoint = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail[0]);
+    var avatar = this.game.avatars.getById(e.detail[2]);
 
     if (avatar) {
-        avatar.addPoint(this.compressor.decompressPosition(e.detail[1][0], e.detail[1][1]));
+        avatar.addPoint(this.compressor.decompressPosition(e.detail[0], e.detail[1]));
     }
 };
 

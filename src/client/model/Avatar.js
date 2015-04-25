@@ -12,8 +12,8 @@ function Avatar(player)
     this.arrow      = new Canvas(this.arrowSize, this.arrowSize);
     this.width      = this.radius * 2;
     this.clearWidth = this.canvas.element.width;
-    this.startX     = this.head[0] * this.canvas.scale;
-    this.startY     = this.head[1] * this.canvas.scale;
+    this.startX     = 0;
+    this.startY     = 0;
 
     if (this.local) {
         this.input = new PlayerInput(this, player.getBinding());
@@ -53,9 +53,8 @@ Avatar.prototype.update = function(step)
 
     var width = this.canvas.element.width/2;
 
-    this.startX = this.head[0] * this.canvas.scale - width;
-    this.startY = this.head[1] * this.canvas.scale - width;
-
+    this.startX  = this.canvas.round(this.head[0] * this.canvas.scale - width);
+    this.startY  = this.canvas.round(this.head[1] * this.canvas.scale - width);
     this.changed = false;
 };
 
@@ -163,7 +162,7 @@ Avatar.prototype.drawArrow = function()
     this.arrow.clear();
 
     for (var i = arrowLines.length - 1; i >= 0; i--) {
-        this.arrow.drawLine(arrowLines[i], this.arrowSize * this.arrowWidth/100, this.color);
+        this.arrow.drawLine(arrowLines[i], this.arrowSize * this.arrowWidth/100, this.color, 'round');
     }
 };
 

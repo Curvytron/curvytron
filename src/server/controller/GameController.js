@@ -323,10 +323,11 @@ GameController.prototype.onMove = function(client, data)
  */
 GameController.prototype.onPoint = function(data)
 {
-    this.socketGroup.addEvent('point', [
-        data.avatar.id,
-        this.compressor.compressPosition(data.point[0], data.point[1])
-    ]);
+    if (data.important) {
+        var point = this.compressor.compressPosition(data.point[0], data.point[1]);
+        point.push(data.avatar.id);
+        this.socketGroup.addEvent('point', point);
+    }
 };
 
 /**
