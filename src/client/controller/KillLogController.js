@@ -2,53 +2,130 @@
  * Kill Log Controller
  *
  * @param {Object} $scope
- * @param {KillLog} killLog
+ * @param {Object} $interpolate
+ * @param {SocketClient} client
  */
-function KillLogController($scope, killLog)
+function KillLogController($scope, $interpolate, client)
 {
-    this.$scope  = $scope;
-    this.killLog = killLog;
-    this.element = null;
+    if (!$scope.game) { return; }
 
-    this.onLoaded    = this.onLoaded.bind(this);
-    this.onChange    = this.onChange.bind(this);
+    this.$scope   = $scope;
+    this.client   = client;
+    this.game     = $scope.game;
+    this.element  = document.getElementById('kill-log-feed');
+    this.logs     = [];
+
+    this.clear       = this.clear.bind(this);
+    this.onDie       = this.onDie.bind(this);
     this.applyScope  = this.applyScope.bind(this);
     this.digestScope = this.digestScope.bind(this);
 
     this.$scope.onLoaded = this.onLoaded;
-    this.$scope.logs     = this.killLog.logs;
 
-    this.killLog.on('change', this.digestScope);
+    for (var type in this.templates) {
+        this.templates[type] = $interpolate(this.templates[type]);
+    }
+
+    this.client.on('die', this.onDie);
+    this.client.on('round:new', this.clear);
 }
 
 /**
- * On kill log DOM element loaded
- */
-KillLogController.prototype.onLoaded = function ()
-{
-    this.element = document.getElementById('kill-log-feed');
-    this.scrollDown();
-};
-
-/**
- * On change
+ * Message display duration
  *
- * @param {Event} event
+ * @type {Number}
  */
-KillLogController.prototype.onChange = function(event)
-{
-    this.digestScope();
-    this.scrollDown();
+KillLogController.prototype.display = 5000;
+
+/**
+ * Maximum number of logs
+ *
+ * @type {Number}
+ */
+KillLogController.prototype.maxLogs = 5;
+
+/**
+ * Templates
+ *
+ * @type {Object}
+ */
+KillLogController.prototype.templates = {
+    'suicide': '<span style="color: {{ ::deadPlayer.color }}">{{ ::deadPlayer.name }}</span> committed suicide',
+    'kill': '<span style="color: {{ ::deadPlayer.color }}">{{ ::deadPlayer.name }}</span> was killed by <span style="color: {{ ::killerPlayer.color }}">{{ ::killerPlayer.name }}</span>',
+    'crash': '<span style="color: {{ ::deadPlayer.color }}">{{ ::deadPlayer.name }}</span> crashed on <span style="color: {{ ::killerPlayer.color }}">{{ ::killerPlayer.name }}</span>',
+    'wall': '<span style="color: {{ ::deadPlayer.color }}">{{ ::deadPlayer.name }}</span> crashed on the wall'
 };
 
 /**
- * Scroll down
+ * On die
+ *
+ * @param {Event} e
  */
-KillLogController.prototype.scrollDown = function()
+KillLogController.prototype.onDie = function(e)
 {
-    if (this.element) {
-        this.element.scrollTop = this.element.scrollHeight;
+    var data   = e.detail,
+        avatar = this.game.avatars.getById(data.avatar);
+
+    if (avatar) {
+        var killer = data.killer ? this.game.avatars.getById(data.killer) : null;
+        this.add(new MessageDie(avatar, killer, data.old));
     }
+};
+
+KillLogController.prototype.getElement = function(message) {
+    var element = document.createElement('div');
+
+    element.className = 'one-message';
+    element.innerHTML = '<span class="message-icon icon-dead"></span>' + this.templates[message.type](message);
+
+    return element;
+};
+
+/**
+ * Kill log
+ *
+ * @param {MessageDie} message
+ */
+KillLogController.prototype.add = function(message)
+{
+    var controller = this,
+        element = this.getElement(message);
+
+    this.logs.push(element);
+
+    setTimeout(function () { controller.remove(element); }, this.display);
+
+    if (this.logs.length > this.maxLogs) {
+        for (var i = this.logs.length - this.maxLogs; i >= 0; i--) {
+            this.remove(this.logs[0]);
+        }
+    }
+
+    this.element.appendChild(element);
+};
+
+/**
+ * Remove message
+ *
+ * @param {Element} element
+ */
+KillLogController.prototype.remove = function (element)
+{
+    var index = this.logs.indexOf(element);
+
+    if (index >= 0) {
+        element.parentNode.removeChild(element);
+        this.logs.splice(index, 1);
+    }
+};
+
+/**
+ * Clear
+ */
+KillLogController.prototype.clear = function()
+{
+    this.logs.length       = 0;
+    this.element.innerHTML = '';
 };
 
 /**

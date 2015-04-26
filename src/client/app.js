@@ -10,7 +10,6 @@ curvytronApp.service('Radio', ['Profile', Radio]);
 curvytronApp.service('SoundManager', ['Profile', SoundManager]);
 curvytronApp.service('Notifier', ['SoundManager', 'ActivityWatcher', Notifier]);
 curvytronApp.service('Analyser', ['$rootScope', Analyser]);
-curvytronApp.service('KillLog', KillLog);
 
 curvytronApp.controller(
     'CurvytronController',
@@ -31,7 +30,7 @@ curvytronApp.controller(
 );
 curvytronApp.controller(
     'GameController',
-    ['$scope', '$routeParams', '$location', 'SocketClient', 'RoomRepository', 'Chat', 'Radio', 'Notifier', 'SoundManager', 'KillLog', GameController]
+    ['$scope', '$routeParams', '$location', 'SocketClient', 'RoomRepository', 'Chat', 'Radio', 'Notifier', 'SoundManager', GameController]
 );
 curvytronApp.controller(
     'ChatController',
@@ -51,7 +50,7 @@ curvytronApp.controller(
 );
 curvytronApp.controller(
     'KillLogController',
-    ['$scope', 'KillLog', KillLogController]
+    ['$scope', '$interpolate', 'SocketClient', KillLogController]
 );
 curvytronApp.controller(
     'ProfileController',

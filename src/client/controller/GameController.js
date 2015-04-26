@@ -9,9 +9,8 @@
  * @param {Radio} radio
  * @param {Notifier} notifier
  * @param {SoundManager} sound
- * @param {killLog} killLog
  */
-function GameController($scope, $routeParams, $location, client, repository, chat, radio, notifier, sound, killLog)
+function GameController($scope, $routeParams, $location, client, repository, chat, radio, notifier, sound)
 {
     document.body.classList.add('game-mode');
 
@@ -21,7 +20,6 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.repository     = repository;
     this.radio          = radio;
     this.chat           = chat;
-    this.killLog        = killLog;
     this.notifier       = notifier;
     this.sound          = sound;
     this.room           = null;
@@ -359,7 +357,6 @@ GameController.prototype.onDie = function(e)
     if (avatar) {
         avatar.setAngle(data.angle);
         avatar.die();
-        this.killLog.logDeath(avatar, data.killer ? this.game.avatars.getById(data.killer) : null, data.old);
         this.sound.play('death');
     }
 };
@@ -420,7 +417,6 @@ GameController.prototype.onRoundNew = function(e)
 
     this.displayWarmup(this.game.warmupTime);
     this.game.newRound();
-    this.killLog.clear();
     this.digestScope();
 };
 
@@ -512,7 +508,6 @@ GameController.prototype.onExit = function()
     if ((this.room && this.$location.path() !== this.room.url) || (this.game && this.game.started)) {
         this.repository.leave();
         this.chat.clear();
-        this.killLog.clear();
     }
 
     window.onbeforeunload = null;
