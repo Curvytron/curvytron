@@ -66,10 +66,8 @@ WaitingController.prototype.onReady = function(e)
  */
 WaitingController.prototype.onStart = function(e)
 {
-    console.log('onStart');
     delete this.$scope.list;
     this.detachEvents();
-    //this.$scope.$parent.$apply();
 };
 
 /**

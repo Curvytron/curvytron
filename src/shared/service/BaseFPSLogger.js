@@ -72,7 +72,9 @@ BaseFPSLogger.prototype.stop = function()
 {
     if (this.interval) {
         clearInterval(this.interval);
-        this.interval = null;
+        this.interval      = null;
+        this.frames.length = 0;
+        this.max           = 0;
     }
 };
 

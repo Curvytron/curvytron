@@ -184,7 +184,7 @@ GameController.prototype.onBorderless = function(e)
 GameController.prototype.onSpectate = function(e)
 {
     this.$scope.spectating = true;
-}
+};
 
 /**
  * Leave room

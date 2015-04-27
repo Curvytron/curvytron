@@ -98,9 +98,9 @@ RoundController.prototype.onRoundEnd = function(e)
 RoundController.prototype.onEnd = function(e)
 {
     this.notifier.notify('Game over!', null, 'win');
-    this.$scope.winner = this.game.getFirst();
+    this.$scope.winner = this.game.avatars.getFirst();
     this.digestScope();
-        this.endElement.style.display = 'block';
+    this.endElement.style.display = 'block';
 };
 
 /**
@@ -110,12 +110,9 @@ RoundController.prototype.displayWarmup = function(time)
 {
     this.warmupElement.style.display = 'block';
     this.countElement.innerHTML      = time/1000;
-
-    this.notifier.notify('Round start in ' + this.countElement.innerHTML + '...');
-
-    this.warmupInterval = setInterval(this.onWarmup, 1000);
-
+    this.warmupInterval              = setInterval(this.onWarmup, 1000);
     setTimeout(this.endWarmup, time);
+    this.notifier.notify('Round start in ' + this.countElement.innerHTML + '...');
 };
 
 /**

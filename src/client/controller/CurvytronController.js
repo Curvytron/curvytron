@@ -50,6 +50,7 @@ CurvytronController.prototype.onConnect = function(e)
  */
 CurvytronController.prototype.onDisconnect = function(e)
 {
+    document.body.classList.remove('game-mode');
     this.$scope.status = 'disconnected';
     this.digestScope();
 };
@@ -70,9 +71,7 @@ CurvytronController.prototype.applyScope = function()
     var phase = this.$scope && this.$scope.$root ? this.$scope.$root.$$phase : null;
 
     if (phase !== '$apply' && phase !== '$digest') {
-        var start = new Date().getTime();
         this.$scope.$apply();
-        console.log(this.constructor.name + '.applyScope: %s', new Date().getTime() - start);
     }
 };
 
@@ -84,8 +83,6 @@ CurvytronController.prototype.digestScope = function()
     var phase = this.$scope && this.$scope.$root ? this.$scope.$root.$$phase : null;
 
     if (phase !== '$apply' && phase !== '$digest') {
-        var start = new Date().getTime();
         this.$scope.$digest();
-        console.log(this.constructor.name + '.digestScope: %s', new Date().getTime() - start);
     }
 };

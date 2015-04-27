@@ -17,9 +17,7 @@ FPSLogger.prototype.constructor = FPSLogger;
 FPSLogger.prototype.log = function()
 {
     BaseFPSLogger.prototype.log.call(this);
-
     this.color = this.getColor();
-
     this.emit('fps');
 };
 

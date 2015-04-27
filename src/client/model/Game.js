@@ -18,8 +18,6 @@ function Game(room)
     for (var avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
         this.avatars.items[i].on('die', this.onDie);
     }
-
-    this.onResize();
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
@@ -45,6 +43,7 @@ Game.prototype.backgroundColor = '#222222';
 Game.prototype.loadDOM = function()
 {
     this.render     = document.getElementById('render');
+    this.gameInfos  = document.getElementById('game-infos');
     this.canvas     = new Canvas(0, 0, document.getElementById('game'));
     this.background = new Canvas(0, 0, document.getElementById('background'));
     this.effect     = new Canvas(0, 0, document.getElementById('effect'));
@@ -97,6 +96,7 @@ Game.prototype.onRoundNew = function()
  */
 Game.prototype.onStart = function()
 {
+    this.fps.stop();
     this.effect.clear();
     BaseGame.prototype.onStart.call(this);
 };
@@ -108,6 +108,7 @@ Game.prototype.onStop = function()
 {
     BaseGame.prototype.onStop.call(this);
     this.clearBackground();
+    this.fps.stop();
     this.draw();
 };
 
@@ -319,9 +320,9 @@ Game.prototype.onDie = function(event)
  */
 Game.prototype.onResize = function()
 {
-    var w=window,d=document,e=d.documentElement,g=d.getElementsByTagName('body')[0],x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
+    var w=window,d=document,e=d.documentElement,g=document.body,x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
 
-    var width = Math.min(x - document.getElementById('game-infos').clientWidth - 8, y - 8),
+    var width = Math.min(x - this.gameInfos.clientWidth - 8, y - 8),
         scale = width / this.size,
         avatar;
 

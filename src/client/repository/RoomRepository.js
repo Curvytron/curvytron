@@ -544,7 +544,6 @@ RoomRepository.prototype.onConfigBonus = function(e)
  */
 RoomRepository.prototype.onGameStart = function(e)
 {
-    console.log('onGameStart');
     this.room.newGame();
     this.emit('room:game:start');
 };
@@ -556,7 +555,6 @@ RoomRepository.prototype.onGameStart = function(e)
  */
 RoomRepository.prototype.onGameEnd = function(e)
 {
-    console.log('onGameEnd');
     this.emit('room:game:end');
     this.room.closeGame();
 };
