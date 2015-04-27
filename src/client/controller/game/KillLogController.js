@@ -9,11 +9,11 @@ function KillLogController($scope, $interpolate, client)
 {
     if (!$scope.game) { return; }
 
-    this.$scope   = $scope;
-    this.client   = client;
-    this.game     = $scope.game;
-    this.element  = document.getElementById('kill-log-feed');
-    this.logs     = [];
+    this.$scope  = $scope;
+    this.client  = client;
+    this.game    = $scope.game;
+    this.element = document.getElementById('kill-log-feed');
+    this.logs    = [];
 
     this.clear       = this.clear.bind(this);
     this.onDie       = this.onDie.bind(this);

@@ -24,7 +24,6 @@ function GameController(game)
     this.onBonusClear  = this.onBonusClear.bind(this);
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
-    this.onRoundWinner = this.onRoundWinner.bind(this);
     this.onPlayerLeave = this.onPlayerLeave.bind(this);
     this.onClear       = this.onClear.bind(this);
     this.onBorderless  = this.onBorderless.bind(this);
@@ -58,7 +57,6 @@ GameController.prototype.loadGame = function()
     this.game.on('player:leave', this.onPlayerLeave);
     this.game.on('round:new', this.onRoundNew);
     this.game.on('round:end', this.onRoundEnd);
-    this.game.on('round:winner', this.onRoundWinner);
     this.game.on('borderless', this.onBorderless);
     this.game.bonusManager.on('bonus:pop', this.onBonusPop);
     this.game.bonusManager.on('bonus:clear', this.onBonusClear);
@@ -84,7 +82,6 @@ GameController.prototype.unloadGame = function()
     this.game.removeListener('player:leave', this.onPlayerLeave);
     this.game.removeListener('round:new', this.onRoundNew);
     this.game.removeListener('round:end', this.onRoundEnd);
-    this.game.removeListener('round:winner', this.onRoundWinner);
     this.game.removeListener('borderless', this.onBorderless);
     this.game.bonusManager.removeListener('bonus:pop', this.onBonusPop);
     this.game.bonusManager.removeListener('bonus:clear', this.onBonusClear);
@@ -233,8 +230,8 @@ GameController.prototype.attachSpectator = function(client)
         for (i = this.game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
             events.push(['bonus:pop', this.game.bonusManager.bonuses.items[i].serialize()]);
         }
-    } else if(this.game.roundWinner) {
-        this.socketGroup.addEvent('round:winner', {winner: this.game.roundWinner.id});
+    } else {
+        this.socketGroup.addEvent('round:end', {winner: this.game.roundWinner ? this.game.roundWinner.id : null});
     }
 
     events.push(['game:spectators', this.countSpectators()]);
@@ -457,17 +454,7 @@ GameController.prototype.onRoundNew = function(data)
  */
 GameController.prototype.onRoundEnd = function(data)
 {
-    this.socketGroup.addEvent('round:end');
-};
-
-/**
- * On round winner
- *
- * @param {Object} data
- */
-GameController.prototype.onRoundWinner = function(data)
-{
-    this.socketGroup.addEvent('round:winner', {winner: data.winner.id});
+    this.socketGroup.addEvent('round:end', {winner: data.winner ? data.winner.id : null});
 };
 
 /**

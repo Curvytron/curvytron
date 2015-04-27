@@ -388,7 +388,7 @@ RoomRepository.prototype.onClientRemove = function(e)
  */
 RoomRepository.prototype.onJoinRoom = function(e)
 {
-    var data = e.detail,
+    var data   = e.detail,
         player = new Player(
             data.player.id,
             this.clients.getById(data.player.client),
@@ -411,8 +411,7 @@ RoomRepository.prototype.onJoinRoom = function(e)
  */
 RoomRepository.prototype.onLeaveRoom = function(e)
 {
-    var data = e.detail,
-        player = this.room.players.getById(data.player);
+    var player = this.room.players.getById(e.detail.player);
 
     if (player && this.room.removePlayer(player)) {
         this.playerCache.add(player);
@@ -545,6 +544,8 @@ RoomRepository.prototype.onConfigBonus = function(e)
  */
 RoomRepository.prototype.onGameStart = function(e)
 {
+    console.log('onGameStart');
+    this.room.newGame();
     this.emit('room:game:start');
 };
 
@@ -555,7 +556,9 @@ RoomRepository.prototype.onGameStart = function(e)
  */
 RoomRepository.prototype.onGameEnd = function(e)
 {
+    console.log('onGameEnd');
     this.emit('room:game:end');
+    this.room.closeGame();
 };
 
 /**

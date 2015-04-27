@@ -161,9 +161,8 @@ Game.prototype.resolveScores = function()
     }
 
     if (winner) {
-        this.roundWinner = winner;
         winner.addScore(Math.max(this.avatars.count() - 1, 1));
-        this.emit('round:winner', {game: this, winner: winner});
+        this.roundWinner = winner;
     }
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
@@ -215,9 +214,8 @@ Game.prototype.setSize = function()
  */
 Game.prototype.onRoundEnd = function()
 {
-    this.emit('round:end', {game: this});
-    BaseGame.prototype.onRoundEnd.call(this);
     this.resolveScores();
+    this.emit('round:end', {game: this, winner: this.roundWinner});
 };
 
 /**

@@ -2,17 +2,15 @@
  * Metric controller
  *
  * @param {Object} $scope
- * @param {RoomRepository} repository
  * @param {SocketClient} client
  */
-function MetricController($scope, repository, client)
+function MetricController($scope, client)
 {
-    if (!repository.room || !repository.room.game) { return; }
+    if (!$scope.game) { return; }
 
-    this.$scope     = $scope;
-    this.repository = repository;
-    this.client     = client;
-    this.game       = this.repository.room.game;
+    this.$scope = $scope;
+    this.client = client;
+    this.game   = this.$scope.game;
 
     // Binding
     this.onFPS        = this.onFPS.bind(this);

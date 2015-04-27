@@ -11,7 +11,6 @@ function BonusManager(game)
 
     this.onLoad = this.onLoad.bind(this);
 
-    this.canvas = new Canvas(0, 0, document.getElementById('bonus'));
     this.sprite = new SpriteAsset('images/bonus.png', 3, 4, this.onLoad, true);
     this.assets = {};
 }
@@ -38,6 +37,14 @@ BonusManager.prototype.spritePosition = [
     'BonusGameClear',
     'BonusEnemyStraightAngle'
 ];
+
+/**
+ * Load DOM
+ */
+BonusManager.prototype.loadDOM = function()
+{
+    this.canvas = new Canvas(0, 0, document.getElementById('bonus'));
+};
 
 /**
  * On bonus sprite loaded

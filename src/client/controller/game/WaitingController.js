@@ -2,25 +2,23 @@
  * Waiting players connection controller
  *
  * @param {Object} $scope
- * @param {RoomRepository} repoository
  * @param {SocketClient} client
  */
-function WaitingController($scope, repository, client)
+function WaitingController($scope, client)
 {
-    if (!repository.room || !repository.room.game) { return; }
+    if (!$scope.game) { return; }
 
-    this.$scope     = $scope;
-    this.repository = repository;
-    this.client     = client;
-    this.game       = this.repository.room.game;
-    this.list       = this.repository.room.game.avatars.items.slice(0);
+    this.$scope = $scope;
+    this.client = client;
+    this.game   = $scope.game;
 
     // Binding
     this.onReady      = this.onReady.bind(this);
+    this.onStart      = this.onStart.bind(this);
     this.detachEvents = this.detachEvents.bind(this);
 
     // Hydrate scope
-    this.$scope.waitingList = this.list;
+    this.$scope.waitingList = this.game.avatars.items.slice(0);
 
     this.$scope.$on('$destroy', this.detachEvents);
 
@@ -33,6 +31,7 @@ function WaitingController($scope, repository, client)
 WaitingController.prototype.attachEvents = function()
 {
     this.client.on('ready', this.onReady);
+    this.client.on('round:new', this.onStart);
 };
 
 /**
@@ -41,6 +40,7 @@ WaitingController.prototype.attachEvents = function()
 WaitingController.prototype.detachEvents = function()
 {
     this.client.off('ready', this.onReady);
+    this.client.off('round:new', this.onStart);
 };
 
 /**
@@ -51,12 +51,25 @@ WaitingController.prototype.detachEvents = function()
 WaitingController.prototype.onReady = function(e)
 {
     var avatar = this.game.avatars.getById(e.detail.avatar),
-        index  = this.list.indexOf(avatar);
+        index  = this.$scope.list.indexOf(avatar);
 
     if (avatar && index) {
-        this.list.splice(index, 1);
+        this.$scope.list.splice(index, 1);
         this.digestScope();
     }
+};
+
+/**
+ * On game start
+ *
+ * @param {Event} e
+ */
+WaitingController.prototype.onStart = function(e)
+{
+    console.log('onStart');
+    delete this.$scope.list;
+    this.detachEvents();
+    //this.$scope.$parent.$apply();
 };
 
 /**

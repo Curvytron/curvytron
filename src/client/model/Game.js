@@ -7,10 +7,6 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
-    this.render     = document.getElementById('render');
-    this.canvas     = new Canvas(0, 0, document.getElementById('game'));
-    this.background = new Canvas(0, 0, document.getElementById('background'));
-    this.effect     = new Canvas(0, 0, document.getElementById('effect'));
     this.animations = [];
 
     this.onResize = this.onResize.bind(this);
@@ -42,6 +38,20 @@ Game.prototype.stackMargin = 15;
  * @type {String}
  */
 Game.prototype.backgroundColor = '#222222';
+
+/**
+ * Load DOM
+ */
+Game.prototype.loadDOM = function()
+{
+    this.render     = document.getElementById('render');
+    this.canvas     = new Canvas(0, 0, document.getElementById('game'));
+    this.background = new Canvas(0, 0, document.getElementById('background'));
+    this.effect     = new Canvas(0, 0, document.getElementById('effect'));
+
+    this.bonusManager.loadDOM();
+    this.onResize();
+};
 
 /**
  * Get new frame
