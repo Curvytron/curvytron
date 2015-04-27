@@ -82,12 +82,12 @@ Avatar.prototype.setPositionFromServer = function(point)
  */
 Avatar.prototype.setScale = function(scale)
 {
-    if (scale !== this.canvas.scale) {
-        var width = this.width * scale;
+    var width = this.width * scale;
 
-        this.changed    = true;
-        this.clearWidth = this.canvas.element.width;
+    if (width !== this.canvas.element.width) {
         this.canvas.setDimension(width, width, scale);
+        this.clearWidth = this.canvas.element.width;
+        this.changed    = true;
         this.drawHead();
     }
 };

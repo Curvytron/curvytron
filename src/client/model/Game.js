@@ -155,7 +155,6 @@ Game.prototype.end = function()
 Game.prototype.setSize = function()
 {
     BaseGame.prototype.setSize.call(this);
-
     this.onResize();
 };
 
