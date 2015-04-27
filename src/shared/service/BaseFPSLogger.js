@@ -3,6 +3,8 @@
  */
 function BaseFPSLogger()
 {
+    EventEmitter.call(this);
+
     this.interval  = null;
     this.frequency = 0;
     this.period    = 0;
@@ -17,6 +19,9 @@ function BaseFPSLogger()
 
     this.start();
 }
+
+BaseFPSLogger.prototype = Object.create(EventEmitter.prototype);
+BaseFPSLogger.prototype.constructor = BaseFPSLogger;
 
 /**
  * Start frame

@@ -9,16 +9,16 @@ function ChatController($scope, chat)
     this.$scope = $scope;
     this.chat   = chat;
 
-    this.onLoaded  = this.onLoaded.bind(this);
-    this.onMessage = this.onMessage.bind(this);
+    this.onLoaded    = this.onLoaded.bind(this);
+    this.applyScope  = this.applyScope.bind(this);
+    this.digestScope = this.digestScope.bind(this);
 
-    this.$scope.chatLoaded       = this.onLoaded;
-    this.$scope.messages         = this.chat.messages;
-    this.$scope.currentMessage   = this.chat.message;
-    this.$scope.submitTalk       = this.chat.talk;
-    this.$scope.messageMaxLength = Message.prototype.maxLength;
+    this.$scope.onLoaded       = this.onLoaded;
+    this.$scope.messages       = this.chat.messages;
+    this.$scope.currentMessage = this.chat.message;
+    this.$scope.submitTalk     = this.chat.talk;
 
-    this.chat.on('message', this.onMessage);
+    this.chat.on('message', this.digestScope);
 }
 
 /**
@@ -30,16 +30,11 @@ ChatController.prototype.onLoaded = function ()
 };
 
 /**
- * On message
- *
- * @param {Event} event
- */
-ChatController.prototype.onMessage = function(event)
-{
-    this.applyScope();
-};
-
-/**
  * Apply scope
  */
 ChatController.prototype.applyScope = CurvytronController.prototype.applyScope;
+
+/**
+ * Digest scope
+ */
+ChatController.prototype.digestScope = CurvytronController.prototype.digestScope;

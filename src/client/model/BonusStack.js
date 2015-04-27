@@ -40,7 +40,7 @@ BonusStack.prototype.warning = 1000;
 BonusStack.prototype.add = function(bonus)
 {
     bonus.on('change', this.draw);
-    setTimeout(bonus.setEnding, bonus.duration - this.warning);
+    bonus.setEndingTimeout(this.warning);
     this.bonuses.add(bonus);
     this.updateDimensions();
 };
@@ -63,6 +63,10 @@ BonusStack.prototype.remove = function(bonus)
  */
 BonusStack.prototype.clear = function()
 {
+    for (var i = this.bonuses.items.length - 1; i >= 0; i--) {
+        this.bonuses.items[i].clear();
+    }
+
     BaseBonusStack.prototype.clear.call(this);
     this.updateDimensions();
 };
@@ -80,7 +84,7 @@ BonusStack.prototype.updateDimensions = function()
 /**
  * Draw
  */
-BonusStack.prototype.draw = function()
+BonusStack.prototype.draw = function(e)
 {
     if (this.changed) {
         this.canvas.clear();
@@ -93,7 +97,8 @@ BonusStack.prototype.draw = function()
             if (!this.changed) {
                 this.canvas.clearZone(x, 0, this.bonusWidth, this.bonusWidth);
             }
-            this.canvas.drawImage(bonus.asset, x, 0, this.bonusWidth, this.bonusWidth, 0, bonus.opacity);
+            this.canvas.setOpacity(bonus.opacity);
+            this.canvas.drawImage(bonus.asset, x, 0, this.bonusWidth, this.bonusWidth);
             bonus.changed = false;
         }
     }

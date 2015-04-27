@@ -16,13 +16,14 @@ function GameController(game)
     this.onDie         = this.onDie.bind(this);
     this.onPosition    = this.onPosition.bind(this);
     this.onPoint       = this.onPoint.bind(this);
+    this.onScore       = this.onScore.bind(this);
+    this.onRoundScore  = this.onRoundScore.bind(this);
     this.onProperty    = this.onProperty.bind(this);
     this.onBonusStack  = this.onBonusStack.bind(this);
     this.onBonusPop    = this.onBonusPop.bind(this);
     this.onBonusClear  = this.onBonusClear.bind(this);
     this.onRoundNew    = this.onRoundNew.bind(this);
     this.onRoundEnd    = this.onRoundEnd.bind(this);
-    this.onRoundWinner = this.onRoundWinner.bind(this);
     this.onPlayerLeave = this.onPlayerLeave.bind(this);
     this.onClear       = this.onClear.bind(this);
     this.onBorderless  = this.onBorderless.bind(this);
@@ -56,7 +57,6 @@ GameController.prototype.loadGame = function()
     this.game.on('player:leave', this.onPlayerLeave);
     this.game.on('round:new', this.onRoundNew);
     this.game.on('round:end', this.onRoundEnd);
-    this.game.on('round:winner', this.onRoundWinner);
     this.game.on('borderless', this.onBorderless);
     this.game.bonusManager.on('bonus:pop', this.onBonusPop);
     this.game.bonusManager.on('bonus:clear', this.onBonusClear);
@@ -82,7 +82,6 @@ GameController.prototype.unloadGame = function()
     this.game.removeListener('player:leave', this.onPlayerLeave);
     this.game.removeListener('round:new', this.onRoundNew);
     this.game.removeListener('round:end', this.onRoundEnd);
-    this.game.removeListener('round:winner', this.onRoundWinner);
     this.game.removeListener('borderless', this.onBorderless);
     this.game.bonusManager.removeListener('bonus:pop', this.onBonusPop);
     this.game.bonusManager.removeListener('bonus:clear', this.onBonusClear);
@@ -153,6 +152,8 @@ GameController.prototype.attachEvents = function(client)
         avatar.on('die', this.onDie);
         avatar.on('position', this.onPosition);
         avatar.on('point', this.onPoint);
+        avatar.on('score', this.onScore);
+        avatar.on('score:round', this.onRoundScore);
         avatar.on('property', this.onProperty);
         avatar.bonusStack.on('change', this.onBonusStack);
     }
@@ -180,6 +181,8 @@ GameController.prototype.detachEvents = function(client)
             avatar.removeListener('die', this.onDie);
             avatar.removeListener('position', this.onPosition);
             avatar.removeListener('point', this.onPoint);
+            avatar.removeListener('score', this.onScore);
+            avatar.removeListener('score:round', this.onRoundScore);
             avatar.removeListener('property', this.onProperty);
             avatar.bonusStack.removeListener('change', this.onBonusStack);
         }
@@ -227,8 +230,8 @@ GameController.prototype.attachSpectator = function(client)
         for (i = this.game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
             events.push(['bonus:pop', this.game.bonusManager.bonuses.items[i].serialize()]);
         }
-    } else if(this.game.roundWinner) {
-        this.socketGroup.addEvent('round:winner', {winner: this.game.roundWinner.id});
+    } else {
+        this.socketGroup.addEvent('round:end', {winner: this.game.roundWinner ? this.game.roundWinner.id : null});
     }
 
     events.push(['game:spectators', this.countSpectators()]);
@@ -317,10 +320,11 @@ GameController.prototype.onMove = function(client, data)
  */
 GameController.prototype.onPoint = function(data)
 {
-    this.socketGroup.addEvent('point', [
-        data.avatar.id,
-        this.compressor.compressPosition(data.point[0], data.point[1])
-    ]);
+    if (data.important) {
+        var point = this.compressor.compressPosition(data.point[0], data.point[1]);
+        point.push(data.avatar.id);
+        this.socketGroup.addEvent('point', point);
+    }
 };
 
 /**
@@ -369,6 +373,26 @@ GameController.prototype.onBonusPop = function(data)
 GameController.prototype.onBonusClear = function(data)
 {
     this.socketGroup.addEvent('bonus:clear', {bonus: data.bonus.id});
+};
+
+/**
+ * On score
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onScore = function(data)
+{
+    this.socketGroup.addEvent('score', {avatar: data.avatar.id, score: data.score});
+};
+
+/**
+ * On round score
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onRoundScore = function(data)
+{
+    this.socketGroup.addEvent('score:round', {avatar: data.avatar.id, score: data.score});
 };
 
 /**
@@ -430,17 +454,7 @@ GameController.prototype.onRoundNew = function(data)
  */
 GameController.prototype.onRoundEnd = function(data)
 {
-    this.socketGroup.addEvent('round:end');
-};
-
-/**
- * On round winner
- *
- * @param {Object} data
- */
-GameController.prototype.onRoundWinner = function(data)
-{
-    this.socketGroup.addEvent('round:winner', {winner: data.winner.id});
+    this.socketGroup.addEvent('round:end', {winner: data.winner ? data.winner.id : null});
 };
 
 /**

@@ -11,7 +11,6 @@ function BonusManager(game)
 
     this.onLoad = this.onLoad.bind(this);
 
-    this.canvas = new Canvas(0, 0, document.getElementById('bonus'));
     this.sprite = new SpriteAsset('images/bonus.png', 3, 4, this.onLoad, true);
     this.assets = {};
 }
@@ -38,6 +37,14 @@ BonusManager.prototype.spritePosition = [
     'BonusGameClear',
     'BonusEnemyStraightAngle'
 ];
+
+/**
+ * Load DOM
+ */
+BonusManager.prototype.loadDOM = function()
+{
+    this.canvas = new Canvas(0, 0, document.getElementById('bonus'));
+};
 
 /**
  * On bonus sprite loaded
@@ -72,7 +79,7 @@ BonusManager.prototype.remove = function(bonus)
 BonusManager.prototype.clear = function()
 {
     this.canvas.clear();
-    BaseBonusManager.prototype.clear.call(this, bonus);
+    BaseBonusManager.prototype.clear.call(this);
 };
 
 /**
@@ -83,6 +90,13 @@ BonusManager.prototype.clear = function()
 BonusManager.prototype.draw = function()
 {
     for (var bonus, i = this.bonuses.items.length - 1; i >= 0; i--) {
+        bonus = this.bonuses.items[i];
+        if (!bonus.animation.done) {
+            this.clearBonus(bonus);
+        }
+    }
+
+    for (bonus, i = this.bonuses.items.length - 1; i >= 0; i--) {
         bonus = this.bonuses.items[i];
         if (!bonus.animation.done) {
             this.drawBonus(bonus);
@@ -98,8 +112,6 @@ BonusManager.prototype.draw = function()
 BonusManager.prototype.drawBonus = function(bonus)
 {
     var width = bonus.getDrawWidth();
-
-    this.clearBonus(bonus);
     this.canvas.drawImageScaled(bonus.asset, bonus.position[0] - width/2, bonus.position[1] - width/2, width, width);
 };
 
@@ -111,7 +123,6 @@ BonusManager.prototype.drawBonus = function(bonus)
 BonusManager.prototype.clearBonus = function(bonus)
 {
     var width = bonus.width * 1.3;
-
     this.canvas.clearZoneScaled(bonus.position[0] - width/2, bonus.position[1] - width/2, width, width);
 };
 

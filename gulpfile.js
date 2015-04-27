@@ -137,7 +137,8 @@ gulp.task('copy-stress-test', function() {
 
 gulp.task('watch', ['dev'], function () {
     gulp.watch('src/**/*.js', ['jshint', 'server', 'front-full']);
-    gulp.watch('src/client/views/**/*', ['views']);
+    gulp.watch('src/client/views/*/*.html', ['views']);
+    gulp.watch('src/client/views/*.html', ['ga']);
     gulp.watch('src/**/*.scss', ['sass-full']);
 });
 

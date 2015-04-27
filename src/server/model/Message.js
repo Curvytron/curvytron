@@ -4,19 +4,23 @@
  * @param {String} content
  * @param {SocketClient} client
  */
-function Message (content, client)
+function Message(client, content)
 {
-    BaseMessage.call(this, content);
-
-    this.client = client;
-    this.name   = null;
-    this.color  = null;
+    this.client   = client;
+    this.content  = content;
+    this.creation = new Date();
+    this.name     = null;
+    this.color    = null;
 
     this.buildPlayer();
 }
 
-Message.prototype = Object.create(BaseMessage.prototype);
-Message.prototype.constructor = Message;
+/**
+ * Message max length
+ *
+ * @type {Number}
+ */
+Message.prototype.maxLength = 140;
 
 /**
  * Build player
@@ -38,15 +42,15 @@ Message.prototype.buildPlayer = function()
  */
 Message.prototype.serialize = function()
 {
-    var data = BaseMessage.prototype.serialize.call(this);
-
     if (this.name === null) {
         this.buildPlayer();
     }
 
-    data.client = this.client.id;
-    data.name   = this.name;
-    data.color  = this.color;
-
-    return data;
+    return {
+        client: this.client.id,
+        content: this.content,
+        creation: this.creation.getTime(),
+        name: this.name,
+        color: this.color
+    };
 };

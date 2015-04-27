@@ -54,8 +54,16 @@ Bonus.prototype.clear = function()
     if (this.timeout) {
         this.timeout = clearInterval(this.timeout);
     }
+};
 
-    BaseBonus.prototype.clear.call(this);
+/**
+ * Set ending timeoute
+ *
+ * @param {Number} warning
+ */
+Bonus.prototype.setEndingTimeout = function(warning)
+{
+    this.timeout = setTimeout(this.setEnding, this.duration - warning);
 };
 
 /**

@@ -136,8 +136,7 @@
             text-overflow: ellipsis;
         }
 
-        #game-players {
-            @extend .no-bullet;
+        .game-players {
             margin-bottom: 0;
             position: fixed;
             overflow: auto;
@@ -163,7 +162,7 @@
                 cursor: pointer;
             }
 
-            li {
+            .player {
                 border-bottom: 2px solid lighten($game-background, 10%);
                 padding: 10px 5px 10px 23px;
                 position: relative;
@@ -256,18 +255,18 @@
             bottom: 0;
         }
 
-        #spectators {
+        .spectators {
             width: 75px;
             text-align: right;
         }
 
-        #fps {
-            width: 100px;
+        .fps {
+            width: 50px;
             text-align: right;
             margin-left: 5px;
         }
 
-        #ping {
+        .ping {
             width: 52px;
             text-align: right;
             margin-left: 5px;
@@ -308,6 +307,15 @@
         right: 0;
         left: $aside-width;
         text-align: center;
+
+        .tie-break {
+            font-size: $font-size-h1;
+            position: absolute;
+            top: 25%;
+            color: #FFF;
+            width: 100%;
+            z-index: 110;
+        }
 
         .countdown {
             position: absolute;
@@ -386,15 +394,6 @@
             }
         }
 
-        .tie-break {
-            font-size: $font-size-h1;
-            position:   absolute;
-            top: 25%;
-            color: #FFF;
-            width: 100%;
-            z-index: 110;
-        }
-
         .countdown-anim {
             width: 250px;
             height: 250px;
@@ -471,87 +470,87 @@
             background: transparentize(darken($game-background, 5%), 0.2);
             overflow-y: auto;
 
-            #round-view, #game-view {
+            .victory {
+
+                font-size: 40px;
+                font-weight: 300;
+                line-height: 110px;
+                display: inline-block;
+
+                &:after {
+                    content: '';
+                    display: block;
+                    height: 2px;
+                    width: 40%;
+                    margin: 0 auto;
+                    background-color: #FFF;
+                    margin-top: 15px;
+                }
+
+                .icon-trophy {
+                    display: block;
+                    font-size: 100px;
+                }
+            }
+
+            .recap-view {
                 position: relative;
                 color: #FFF;
 
-                .victory {
+                &.round {
+                    top: 50%;
+                    -webkit-transform: translateY(-50%);
+                    -ms-transform: translateY(-50%);
+                    transform: translateY(-50%);
+                }
 
-                    font-size: 40px;
-                    font-weight: 300;
-                    line-height: 110px;
-                    display: inline-block;
+                &.game {
+                    padding: 60px 0 40px 0;
 
-                    &:after {
-                        content: '';
-                        display: block;
-                        height: 2px;
-                        width: 40%;
+                    .victory .icon-trophy {
+                        float: left;
+                        margin-right: 20px;
+                    }
+
+                    table.recap {
+                        max-width: 700px;
                         margin: 0 auto;
-                        background-color: #FFF;
-                        margin-top: 15px;
-                    }
+                        text-align: left;
 
-                    .icon-trophy {
-                        display: block;
-                        font-size: 100px;
-                    }
-                }
-            }
+                        td {
+                            border-top: 2px solid transparentize(#FFF, 0.95);
+                            background: transparentize(#FFF, 0.95);
+                            @include transition(background 0.2s ease);
+                            padding: 20px 10px;
+                            font-size: 30px;
+                            font-weight: 300;
 
-            #round-view {
-                top: 50%;
-                -webkit-transform: translateY(-50%);
-                -ms-transform: translateY(-50%);
-                transform: translateY(-50%);
-            }
+                            &.rank {
+                                width: 80px;
+                                text-align: center;
+                                font-weight: bold;
+                            }
 
-            #game-view {
-                padding: 60px 0 40px 0;
+                            &.name {
+                                font-weight: bold;
+                            }
 
-                .victory .icon-trophy {
-                    float: left;
-                    margin-right: 20px;
-                }
-
-                table.recap {
-                    max-width: 700px;
-                    margin: 0 auto;
-                    text-align: left;
-
-                    td {
-                        border-top: 2px solid transparentize(#FFF, 0.95);
-                        background: transparentize(#FFF, 0.95);
-                        @include transition(background 0.2s ease);
-                        padding: 20px 10px;
-                        font-size: 30px;
-                        font-weight: 300;
-
-                        &.rank {
-                            width: 80px;
-                            text-align: center;
-                            font-weight: bold;
-                        }
-
-                        &.name {
-                            font-weight: bold;
-                        }
-
-                        &.points {
-                            width: 210px;
-                        }
-                    }
-
-                    tr {
-                        &:first-child {
-                            td {
-                                border: 0;
+                            &.points {
+                                width: 210px;
                             }
                         }
 
-                        &:hover {
-                            td {
-                                background: transparentize(#FFF, 0.9);
+                        tr {
+                            &:first-child {
+                                td {
+                                    border: 0;
+                                }
+                            }
+
+                            &:hover {
+                                td {
+                                    background: transparentize(#FFF, 0.9);
+                                }
                             }
                         }
                     }

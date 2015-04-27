@@ -183,7 +183,7 @@ Avatar.prototype.die = function(body)
 Avatar.prototype.setScore = function(score)
 {
     BaseAvatar.prototype.setScore.call(this, score);
-    this.emit('property', {avatar: this, property: 'score', value: this.score});
+    this.emit('score', {avatar: this, score: this.score});
 };
 
 /**
@@ -194,7 +194,7 @@ Avatar.prototype.setScore = function(score)
 Avatar.prototype.setRoundScore = function(score)
 {
     BaseAvatar.prototype.setRoundScore.call(this, score);
-    this.emit('property', {avatar: this, property: 'roundScore', value: this.roundScore});
+    this.emit('score:round', {avatar: this, score: this.roundScore});
 };
 
 /**
