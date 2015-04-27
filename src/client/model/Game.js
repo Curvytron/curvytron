@@ -179,8 +179,7 @@ Game.prototype.draw = function(step)
 
     for (var avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        if (avatar.alive || avatar.changed) {
-            this.drawTail(avatar);
+        if (avatar.present && (avatar.alive || avatar.changed)) {
             this.clearAvatar(avatar);
             this.clearBonusStack(avatar);
         }
@@ -188,11 +187,12 @@ Game.prototype.draw = function(step)
 
     for (var avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        if (avatar.alive || avatar.changed) {
+        if (avatar.present && (avatar.alive || avatar.changed)) {
             if (avatar.alive) {
                 avatar.update(this.frame ? step : 0);
             }
 
+            this.drawTail(avatar);
             this.drawAvatar(avatar);
             this.drawBonusStack(avatar);
 
