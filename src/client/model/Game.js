@@ -96,7 +96,7 @@ Game.prototype.onRoundNew = function()
  */
 Game.prototype.onStart = function()
 {
-    this.fps.stop();
+    this.fps.start();
     this.effect.clear();
     BaseGame.prototype.onStart.call(this);
 };

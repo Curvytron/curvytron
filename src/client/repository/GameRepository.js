@@ -59,7 +59,6 @@ GameRepository.prototype.stop = function()
     this.game = null;
 };
 
-
 /**
  * Attach events
  */

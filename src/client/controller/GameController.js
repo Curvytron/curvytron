@@ -154,7 +154,7 @@ GameController.prototype.checkReady = function()
  */
 GameController.prototype.onFirstRound = function(e)
 {
-    this.repository.off('round:new', this.onFirstRound);
+    setTimeout(function () { this.repository.off('round:new', this.onFirstRound); }.bind(this), 0);
     this.digestScope();
 };
 

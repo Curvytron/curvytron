@@ -20,13 +20,14 @@ function RoundController($scope, repository, notifier)
     this.warmupInterval  = null;
 
     // Binding
-    this.onRoundNew  = this.onRoundNew.bind(this);
-    this.onRoundEnd  = this.onRoundEnd.bind(this);
-    this.onEnd       = this.onEnd.bind(this);
-    this.onWarmup    = this.onWarmup.bind(this);
-    this.endWarmup   = this.endWarmup.bind(this);
-    this.applyScope  = this.applyScope.bind(this);
-    this.digestScope = this.digestScope.bind(this);
+    this.onRoundNew   = this.onRoundNew.bind(this);
+    this.onRoundEnd   = this.onRoundEnd.bind(this);
+    this.onEnd        = this.onEnd.bind(this);
+    this.onWarmup     = this.onWarmup.bind(this);
+    this.endWarmup    = this.endWarmup.bind(this);
+    this.detachEvents = this.detachEvents.bind(this);
+    this.applyScope   = this.applyScope.bind(this);
+    this.digestScope  = this.digestScope.bind(this);
 
     this.$scope.end         = false;
     this.$scope.roundWinner = null;
