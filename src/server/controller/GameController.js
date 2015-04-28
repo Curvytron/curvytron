@@ -11,24 +11,25 @@ function GameController(game)
     this.compressor  = new Compressor();
     this.waiting     = null;
 
-    this.onGameStart   = this.onGameStart.bind(this);
-    this.onGameStop    = this.onGameStop.bind(this);
-    this.onDie         = this.onDie.bind(this);
-    this.onPosition    = this.onPosition.bind(this);
-    this.onPoint       = this.onPoint.bind(this);
-    this.onScore       = this.onScore.bind(this);
-    this.onRoundScore  = this.onRoundScore.bind(this);
-    this.onProperty    = this.onProperty.bind(this);
-    this.onBonusStack  = this.onBonusStack.bind(this);
-    this.onBonusPop    = this.onBonusPop.bind(this);
-    this.onBonusClear  = this.onBonusClear.bind(this);
-    this.onRoundNew    = this.onRoundNew.bind(this);
-    this.onRoundEnd    = this.onRoundEnd.bind(this);
-    this.onPlayerLeave = this.onPlayerLeave.bind(this);
-    this.onClear       = this.onClear.bind(this);
-    this.onBorderless  = this.onBorderless.bind(this);
-    this.onEnd         = this.onEnd.bind(this);
-    this.stopWaiting   = this.stopWaiting.bind(this);
+    this.onGameStart       = this.onGameStart.bind(this);
+    this.onGameStop        = this.onGameStop.bind(this);
+    this.onDie             = this.onDie.bind(this);
+    this.onPosition        = this.onPosition.bind(this);
+    this.onAngularVelocity = this.onAngularVelocity.bind(this);
+    this.onPoint           = this.onPoint.bind(this);
+    this.onScore           = this.onScore.bind(this);
+    this.onRoundScore      = this.onRoundScore.bind(this);
+    this.onProperty        = this.onProperty.bind(this);
+    this.onBonusStack      = this.onBonusStack.bind(this);
+    this.onBonusPop        = this.onBonusPop.bind(this);
+    this.onBonusClear      = this.onBonusClear.bind(this);
+    this.onRoundNew        = this.onRoundNew.bind(this);
+    this.onRoundEnd        = this.onRoundEnd.bind(this);
+    this.onPlayerLeave     = this.onPlayerLeave.bind(this);
+    this.onClear           = this.onClear.bind(this);
+    this.onBorderless      = this.onBorderless.bind(this);
+    this.onEnd             = this.onEnd.bind(this);
+    this.stopWaiting       = this.stopWaiting.bind(this);
 
     this.callbacks = {
         onReady: function () { controller.onReady(this); },
@@ -151,6 +152,7 @@ GameController.prototype.attachEvents = function(client)
 
         avatar.on('die', this.onDie);
         avatar.on('position', this.onPosition);
+        avatar.on('angularVelocity', this.onAngularVelocity);
         avatar.on('point', this.onPoint);
         avatar.on('score', this.onScore);
         avatar.on('score:round', this.onRoundScore);
@@ -180,6 +182,7 @@ GameController.prototype.detachEvents = function(client)
         if (avatar) {
             avatar.removeListener('die', this.onDie);
             avatar.removeListener('position', this.onPosition);
+            avatar.removeListener('angularVelocity', this.onAngularVelocity);
             avatar.removeListener('point', this.onPoint);
             avatar.removeListener('score', this.onScore);
             avatar.removeListener('score:round', this.onRoundScore);
@@ -334,10 +337,19 @@ GameController.prototype.onPoint = function(data)
  */
 GameController.prototype.onPosition = function(data)
 {
-    this.socketGroup.addEvent('position', [
-        data.avatar.id,
-        this.compressor.compressPosition(data.value[0], data.value[1])
-    ]);
+    var point = this.compressor.compressPosition(data.value[0], data.value[1]);
+    point.push(data.avatar.id);
+    this.socketGroup.addEvent('position', point);
+};
+
+/**
+ * On angular velocity
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onAngularVelocity = function(data)
+{
+    this.socketGroup.addEvent('angularVelocity', [data.avatar.id, data.value, data.angle]);
 };
 
 /**
@@ -402,6 +414,8 @@ GameController.prototype.onRoundScore = function(data)
  */
 GameController.prototype.onProperty = function(data)
 {
+    if (data.property === 'angle' && this.game.frame && data.avatar.alive) { return; }
+
     this.socketGroup.addEvent('property', {avatar: data.avatar.id, property: data.property, value: data.value});
 };
 

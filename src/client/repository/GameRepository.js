@@ -16,24 +16,25 @@ function GameRepository(client, parent, sound, notifier)
     this.compressor = new Compressor();
     this.game       = null;
 
-    this.start          = this.start.bind(this);
-    this.stop           = this.stop.bind(this);
-    this.onGameStart    = this.onGameStart.bind(this);
-    this.onGameStop     = this.onGameStop.bind(this);
-    this.onBonusPop     = this.onBonusPop.bind(this);
-    this.onBonusClear   = this.onBonusClear.bind(this);
-    this.onBonusStack   = this.onBonusStack.bind(this);
-    this.onPosition     = this.onPosition.bind(this);
-    this.onPoint        = this.onPoint.bind(this);
-    this.onDie          = this.onDie.bind(this);
-    this.onProperty     = this.onProperty.bind(this);
-    this.onRoundNew     = this.onRoundNew.bind(this);
-    this.onRoundEnd     = this.onRoundEnd.bind(this);
-    this.onClear        = this.onClear.bind(this);
-    this.onBorderless   = this.onBorderless.bind(this);
-    this.onEnd          = this.onEnd.bind(this);
-    this.onLeave        = this.onLeave.bind(this);
-    this.onSpectate     = this.onSpectate.bind(this);
+    this.start             = this.start.bind(this);
+    this.stop              = this.stop.bind(this);
+    this.onGameStart       = this.onGameStart.bind(this);
+    this.onGameStop        = this.onGameStop.bind(this);
+    this.onBonusPop        = this.onBonusPop.bind(this);
+    this.onBonusClear      = this.onBonusClear.bind(this);
+    this.onBonusStack      = this.onBonusStack.bind(this);
+    this.onPosition        = this.onPosition.bind(this);
+    this.onAngularVelocity = this.onAngularVelocity.bind(this);
+    this.onPoint           = this.onPoint.bind(this);
+    this.onDie             = this.onDie.bind(this);
+    this.onProperty        = this.onProperty.bind(this);
+    this.onRoundNew        = this.onRoundNew.bind(this);
+    this.onRoundEnd        = this.onRoundEnd.bind(this);
+    this.onClear           = this.onClear.bind(this);
+    this.onBorderless      = this.onBorderless.bind(this);
+    this.onEnd             = this.onEnd.bind(this);
+    this.onLeave           = this.onLeave.bind(this);
+    this.onSpectate        = this.onSpectate.bind(this);
 }
 
 GameRepository.prototype = Object.create(EventEmitter.prototype);
@@ -68,6 +69,7 @@ GameRepository.prototype.attachEvents = function()
     this.client.on('game:stop', this.onGameStop);
     this.client.on('property', this.onProperty);
     this.client.on('position', this.onPosition);
+    this.client.on('angularVelocity', this.onAngularVelocity);
     this.client.on('point', this.onPoint);
     this.client.on('die', this.onDie);
     this.client.on('bonus:pop', this.onBonusPop);
@@ -91,6 +93,7 @@ GameRepository.prototype.detachEvents = function()
     this.client.off('game:stop', this.onGameStop);
     this.client.off('property', this.onProperty);
     this.client.off('position', this.onPosition);
+    this.client.off('angularVelocity', this.onAngularVelocity);
     this.client.off('point', this.onPoint);
     this.client.off('die', this.onDie);
     this.client.off('bonus:pop', this.onBonusPop);
@@ -153,10 +156,10 @@ GameRepository.prototype.onProperty = function(e)
  */
 GameRepository.prototype.onPosition = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail[0]);
+    var avatar = this.game.avatars.getById(e.detail[2]);
 
     if (avatar) {
-        avatar.setPositionFromServer(this.compressor.decompressPosition(e.detail[1][0], e.detail[1][1]));
+        avatar.setPositionFromServer(this.compressor.decompressPosition(e.detail[0], e.detail[1]));
     }
 };
 
@@ -171,6 +174,21 @@ GameRepository.prototype.onPoint = function(e)
 
     if (avatar) {
         avatar.addPoint(this.compressor.decompressPosition(e.detail[0], e.detail[1]));
+    }
+};
+
+/**
+ * On angular velocity
+ *
+ * @param {Event} e
+ */
+GameRepository.prototype.onAngularVelocity = function(e)
+{
+    var avatar = this.game.avatars.getById(e.detail[0]);
+
+    if (avatar) {
+        avatar.setAngularVelocity(e.detail[1]);
+        avatar.setAngle(e.detail[2]);
     }
 };
 
