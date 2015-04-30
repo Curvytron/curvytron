@@ -15,6 +15,7 @@ function GameController(game)
     this.onGameStop        = this.onGameStop.bind(this);
     this.onDie             = this.onDie.bind(this);
     this.onPosition        = this.onPosition.bind(this);
+    this.onAngle           = this.onAngle.bind(this);
     this.onAngularVelocity = this.onAngularVelocity.bind(this);
     this.onPoint           = this.onPoint.bind(this);
     this.onScore           = this.onScore.bind(this);
@@ -152,6 +153,7 @@ GameController.prototype.attachEvents = function(client)
 
         avatar.on('die', this.onDie);
         avatar.on('position', this.onPosition);
+        avatar.on('angle', this.onAngle);
         avatar.on('angularVelocity', this.onAngularVelocity);
         avatar.on('point', this.onPoint);
         avatar.on('score', this.onScore);
@@ -343,13 +345,23 @@ GameController.prototype.onPosition = function(data)
 };
 
 /**
+ * On angle
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onAngle = function(data)
+{
+    this.socketGroup.addEvent('angle', [data.avatar.id, data.angle]);
+};
+
+/**
  * On angular velocity
  *
  * @param {Object} data
  */
 GameController.prototype.onAngularVelocity = function(data)
 {
-    this.socketGroup.addEvent('angularVelocity', [data.avatar.id, data.value, data.angle]);
+    this.socketGroup.addEvent('angularVelocity', [data.avatar.id, data.angularVelocity]);
 };
 
 /**
@@ -414,8 +426,6 @@ GameController.prototype.onRoundScore = function(data)
  */
 GameController.prototype.onProperty = function(data)
 {
-    if (data.property === 'angle' && this.game.frame && data.avatar.alive) { return; }
-
     this.socketGroup.addEvent('property', {avatar: data.avatar.id, property: data.property, value: data.value});
 };
 

@@ -24,6 +24,7 @@ function GameRepository(client, parent, sound, notifier)
     this.onBonusClear      = this.onBonusClear.bind(this);
     this.onBonusStack      = this.onBonusStack.bind(this);
     this.onPosition        = this.onPosition.bind(this);
+    this.onAngle           = this.onAngle.bind(this);
     this.onAngularVelocity = this.onAngularVelocity.bind(this);
     this.onPoint           = this.onPoint.bind(this);
     this.onDie             = this.onDie.bind(this);
@@ -69,6 +70,7 @@ GameRepository.prototype.attachEvents = function()
     this.client.on('game:stop', this.onGameStop);
     this.client.on('property', this.onProperty);
     this.client.on('position', this.onPosition);
+    this.client.on('angle', this.onAngle);
     this.client.on('angularVelocity', this.onAngularVelocity);
     this.client.on('point', this.onPoint);
     this.client.on('die', this.onDie);
@@ -93,6 +95,7 @@ GameRepository.prototype.detachEvents = function()
     this.client.off('game:stop', this.onGameStop);
     this.client.off('property', this.onProperty);
     this.client.off('position', this.onPosition);
+    this.client.off('angle', this.onAngle);
     this.client.off('angularVelocity', this.onAngularVelocity);
     this.client.off('point', this.onPoint);
     this.client.off('die', this.onDie);
@@ -178,6 +181,20 @@ GameRepository.prototype.onPoint = function(e)
 };
 
 /**
+ * On angle
+ *
+ * @param {Event} e
+ */
+GameRepository.prototype.onAngle = function(e)
+{
+    var avatar = this.game.avatars.getById(e.detail[0]);
+
+    if (avatar) {
+        avatar.setAngle(e.detail[1]);
+    }
+};
+
+/**
  * On angular velocity
  *
  * @param {Event} e
@@ -188,7 +205,6 @@ GameRepository.prototype.onAngularVelocity = function(e)
 
     if (avatar) {
         avatar.setAngularVelocity(e.detail[1]);
-        avatar.setAngle(e.detail[2]);
     }
 };
 
