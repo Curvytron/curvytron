@@ -227,7 +227,7 @@ GameController.prototype.attachSpectator = function(client)
         }
 
         if (!avatar.alive) {
-            events.push(['die', {avatar: avatar.id, angle: avatar.angle}]);
+            events.push(['die', {avatar: avatar.id}]);
         }
     }
 
@@ -373,7 +373,6 @@ GameController.prototype.onDie = function(data)
 {
     this.socketGroup.addEvent('die', {
         avatar: data.avatar.id,
-        angle: data.avatar.angle,
         killer: data.killer ? data.killer.id : null,
         old: data.old
     });

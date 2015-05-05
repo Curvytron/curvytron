@@ -70,7 +70,7 @@ GameController.prototype.confirmation = 'Are you sure you want to leave the game
  */
 GameController.prototype.attachEvents = function()
 {
-    //Close on end?
+    // Close on end?
     this.repository.on('borderless', this.onBorderless);
     this.repository.on('spectate', this.onSpectate);
 };

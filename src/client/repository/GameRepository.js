@@ -252,7 +252,6 @@ GameRepository.prototype.onDie = function(e)
     var avatar = this.game.avatars.getById(e.detail.avatar);
 
     if (avatar) {
-        avatar.setAngle(e.detail.angle);
         avatar.die();
         this.sound.play('death');
     }
