@@ -85,6 +85,7 @@ Game.prototype.onFrame = function(step)
 Game.prototype.onRoundNew = function()
 {
     BaseGame.prototype.onRoundNew.call(this);
+    this.animations.length = 0;
     this.clearBackground();
     this.effect.clear();
     this.canvas.clear();
@@ -96,20 +97,8 @@ Game.prototype.onRoundNew = function()
  */
 Game.prototype.onStart = function()
 {
-    this.fps.start();
     this.effect.clear();
     BaseGame.prototype.onStart.call(this);
-};
-
-/**
- * On stop
- */
-Game.prototype.onStop = function()
-{
-    BaseGame.prototype.onStop.call(this);
-    this.clearBackground();
-    this.fps.stop();
-    this.draw();
 };
 
 /**
@@ -147,16 +136,9 @@ Game.prototype.clearTrails = function()
  */
 Game.prototype.end = function()
 {
-    if (this.started) {
-        this.started = false;
-
+    if (BaseGame.prototype.end.call(this)) {
         window.removeEventListener('error', this.stop);
         window.removeEventListener('resize', this.onResize);
-
-        this.stop();
-        this.fps.stop();
-        this.canvas.clear();
-        this.effect.clear();
     }
 };
 

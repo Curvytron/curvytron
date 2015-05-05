@@ -300,13 +300,14 @@ Game.prototype.setBorderless = function(borderless)
  */
 Game.prototype.end = function()
 {
-    BaseGame.prototype.end.call(this);
+    if (BaseGame.prototype.end.call(this)) {
+        this.avatars.clear();
+        this.world.clear();
 
-    this.world.clear();
-
-    delete this.world;
-    delete this.avatars;
-    delete this.deaths;
-    delete this.bonusManager;
-    delete this.controller;
+        delete this.world;
+        delete this.avatars;
+        delete this.deaths;
+        delete this.bonusManager;
+        delete this.controller;
+    }
 };

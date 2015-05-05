@@ -71,7 +71,7 @@ Avatar.prototype.setAngle = function(angle)
 {
     if (this.angle !== angle) {
         BaseAvatar.prototype.setAngle.call(this, angle);
-        this.emit('property', {avatar: this, property: 'angle', value: this.angle});
+        this.emit('angle', {avatar: this, angle: this.angle});
     }
 };
 
@@ -84,7 +84,6 @@ Avatar.prototype.setAngularVelocity = function(angularVelocity)
 {
     if (this.angularVelocity !== angularVelocity) {
         BaseAvatar.prototype.setAngularVelocity.call(this, angularVelocity);
-        this.emit('property', {avatar: this, property: 'angularVelocity', value: this.angularVelocity});
     }
 };
 

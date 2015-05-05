@@ -100,7 +100,6 @@ BasePlayer.prototype.getAvatar = function()
 BasePlayer.prototype.reset = function()
 {
     this.avatar.destroy();
-
     this.avatar = null;
     this.ready  = false;
 };

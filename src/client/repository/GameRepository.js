@@ -16,24 +16,27 @@ function GameRepository(client, parent, sound, notifier)
     this.compressor = new Compressor();
     this.game       = null;
 
-    this.start          = this.start.bind(this);
-    this.stop           = this.stop.bind(this);
-    this.onGameStart    = this.onGameStart.bind(this);
-    this.onGameStop     = this.onGameStop.bind(this);
-    this.onBonusPop     = this.onBonusPop.bind(this);
-    this.onBonusClear   = this.onBonusClear.bind(this);
-    this.onBonusStack   = this.onBonusStack.bind(this);
-    this.onPosition     = this.onPosition.bind(this);
-    this.onPoint        = this.onPoint.bind(this);
-    this.onDie          = this.onDie.bind(this);
-    this.onProperty     = this.onProperty.bind(this);
-    this.onRoundNew     = this.onRoundNew.bind(this);
-    this.onRoundEnd     = this.onRoundEnd.bind(this);
-    this.onClear        = this.onClear.bind(this);
-    this.onBorderless   = this.onBorderless.bind(this);
-    this.onEnd          = this.onEnd.bind(this);
-    this.onLeave        = this.onLeave.bind(this);
-    this.onSpectate     = this.onSpectate.bind(this);
+    this.start             = this.start.bind(this);
+    this.stop              = this.stop.bind(this);
+    this.draw              = this.draw.bind(this);
+    this.onGameStart       = this.onGameStart.bind(this);
+    this.onGameStop        = this.onGameStop.bind(this);
+    this.onBonusPop        = this.onBonusPop.bind(this);
+    this.onBonusClear      = this.onBonusClear.bind(this);
+    this.onBonusStack      = this.onBonusStack.bind(this);
+    this.onPosition        = this.onPosition.bind(this);
+    this.onAngle           = this.onAngle.bind(this);
+    this.onAngularVelocity = this.onAngularVelocity.bind(this);
+    this.onPoint           = this.onPoint.bind(this);
+    this.onDie             = this.onDie.bind(this);
+    this.onProperty        = this.onProperty.bind(this);
+    this.onRoundNew        = this.onRoundNew.bind(this);
+    this.onRoundEnd        = this.onRoundEnd.bind(this);
+    this.onClear           = this.onClear.bind(this);
+    this.onBorderless      = this.onBorderless.bind(this);
+    this.onEnd             = this.onEnd.bind(this);
+    this.onLeave           = this.onLeave.bind(this);
+    this.onSpectate        = this.onSpectate.bind(this);
 }
 
 GameRepository.prototype = Object.create(EventEmitter.prototype);
@@ -47,6 +50,7 @@ GameRepository.prototype.start = function()
     if (this.parent.room) {
         this.game = this.parent.room.game;
         this.attachEvents();
+        this.attachIdleEvents();
     }
 };
 
@@ -56,6 +60,7 @@ GameRepository.prototype.start = function()
 GameRepository.prototype.stop = function()
 {
     this.detachEvents();
+    this.detachIdleEvents();
     this.game = null;
 };
 
@@ -68,6 +73,8 @@ GameRepository.prototype.attachEvents = function()
     this.client.on('game:stop', this.onGameStop);
     this.client.on('property', this.onProperty);
     this.client.on('position', this.onPosition);
+    this.client.on('angle', this.onAngle);
+    this.client.on('angularVelocity', this.onAngularVelocity);
     this.client.on('point', this.onPoint);
     this.client.on('die', this.onDie);
     this.client.on('bonus:pop', this.onBonusPop);
@@ -91,6 +98,8 @@ GameRepository.prototype.detachEvents = function()
     this.client.off('game:stop', this.onGameStop);
     this.client.off('property', this.onProperty);
     this.client.off('position', this.onPosition);
+    this.client.off('angle', this.onAngle);
+    this.client.off('angularVelocity', this.onAngularVelocity);
     this.client.off('point', this.onPoint);
     this.client.off('die', this.onDie);
     this.client.off('bonus:pop', this.onBonusPop);
@@ -106,6 +115,39 @@ GameRepository.prototype.detachEvents = function()
 };
 
 /**
+ * Attach idle events
+ */
+GameRepository.prototype.attachIdleEvents = function()
+{
+    this.client.on('property', this.draw);
+    this.client.on('position', this.draw);
+    this.client.on('angle', this.draw);
+};
+
+
+/**
+ * Detach idle events
+ */
+GameRepository.prototype.detachIdleEvents = function()
+{
+    this.client.off('property', this.draw);
+    this.client.off('position', this.draw);
+    this.client.off('angle', this.draw);
+};
+
+/**
+ * Draw
+ *
+ * @return {[type]}
+ */
+GameRepository.prototype.draw = function()
+{
+    if (!this.game.frame) {
+        this.game.draw();
+    }
+};
+
+/**
  * On game start
  *
  * @param {Event} e
@@ -113,6 +155,7 @@ GameRepository.prototype.detachEvents = function()
 GameRepository.prototype.onGameStart = function(e)
 {
     this.game.start();
+    this.detachIdleEvents();
     this.emit('game:start');
 };
 
@@ -124,6 +167,7 @@ GameRepository.prototype.onGameStart = function(e)
 GameRepository.prototype.onGameStop = function(e)
 {
     this.game.stop();
+    this.attachIdleEvents();
     this.emit('game:stop');
 };
 
@@ -139,10 +183,6 @@ GameRepository.prototype.onProperty = function(e)
 
     if (avatar) {
         avatar.set(data.property, data.value);
-
-        if (!this.game.frame) {
-            this.game.draw();
-        }
     }
 };
 
@@ -153,10 +193,10 @@ GameRepository.prototype.onProperty = function(e)
  */
 GameRepository.prototype.onPosition = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail[0]);
+    var avatar = this.game.avatars.getById(e.detail[2]);
 
     if (avatar) {
-        avatar.setPositionFromServer(this.compressor.decompressPosition(e.detail[1][0], e.detail[1][1]));
+        avatar.setPositionFromServer(this.compressor.decompressPosition(e.detail[0], e.detail[1]));
     }
 };
 
@@ -175,6 +215,34 @@ GameRepository.prototype.onPoint = function(e)
 };
 
 /**
+ * On angle
+ *
+ * @param {Event} e
+ */
+GameRepository.prototype.onAngle = function(e)
+{
+    var avatar = this.game.avatars.getById(e.detail[0]);
+
+    if (avatar) {
+        avatar.setAngle(e.detail[1]);
+    }
+};
+
+/**
+ * On angular velocity
+ *
+ * @param {Event} e
+ */
+GameRepository.prototype.onAngularVelocity = function(e)
+{
+    var avatar = this.game.avatars.getById(e.detail[0]);
+
+    if (avatar) {
+        avatar.setAngularVelocity(e.detail[1]);
+    }
+};
+
+/**
  * On die
  *
  * @param {Event} e
@@ -184,7 +252,6 @@ GameRepository.prototype.onDie = function(e)
     var avatar = this.game.avatars.getById(e.detail.avatar);
 
     if (avatar) {
-        avatar.setAngle(e.detail.angle);
         avatar.die();
         this.sound.play('death');
     }

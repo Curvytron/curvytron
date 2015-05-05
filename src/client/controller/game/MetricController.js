@@ -24,7 +24,7 @@ function MetricController($scope, client)
     this.$scope.fps          = 0;
     this.$scope.fpsColor     = 'gray';
     this.$scope.latency      = 0;
-    this.$scope.latencyColor = 'white';
+    this.$scope.latencyColor = 'gray';
     this.$scope.spectators   = 0;
 
     this.$scope.$on('$destroy', this.detachEvents);

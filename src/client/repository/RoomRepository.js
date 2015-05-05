@@ -20,7 +20,6 @@ function RoomRepository(client)
     this.onJoinRoom       = this.onJoinRoom.bind(this);
     this.onLeaveRoom      = this.onLeaveRoom.bind(this);
     this.onGameStart      = this.onGameStart.bind(this);
-    this.onGameEnd        = this.onGameEnd.bind(this);
     this.onPlayerReady    = this.onPlayerReady.bind(this);
     this.onPlayerColor    = this.onPlayerColor.bind(this);
     this.onPlayerName     = this.onPlayerName.bind(this);
@@ -46,7 +45,6 @@ RoomRepository.prototype.attachEvents = function()
     this.client.on('room:join', this.onJoinRoom);
     this.client.on('room:leave', this.onLeaveRoom);
     this.client.on('room:game:start', this.onGameStart);
-    this.client.on('room:game:end', this.onGameEnd);
     this.client.on('player:ready', this.onPlayerReady);
     this.client.on('player:color', this.onPlayerColor);
     this.client.on('player:name', this.onPlayerName);
@@ -70,7 +68,6 @@ RoomRepository.prototype.detachEvents = function()
     this.client.off('room:join', this.onJoinRoom);
     this.client.off('room:leave', this.onLeaveRoom);
     this.client.off('room:game:start', this.onGameStart);
-    this.client.off('room:game:end', this.onGameEnd);
     this.client.off('player:ready', this.onPlayerReady);
     this.client.off('player:color', this.onPlayerColor);
     this.client.off('player:name', this.onPlayerName);
@@ -546,17 +543,6 @@ RoomRepository.prototype.onGameStart = function(e)
 {
     this.room.newGame();
     this.emit('room:game:start');
-};
-
-/**
- * On room game end
- *
- * @param {Event} e
- */
-RoomRepository.prototype.onGameEnd = function(e)
-{
-    this.emit('room:game:end');
-    this.room.closeGame();
 };
 
 /**
