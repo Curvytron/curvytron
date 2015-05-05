@@ -85,11 +85,7 @@ Game.prototype.onFrame = function(step)
 Game.prototype.onRoundNew = function()
 {
     BaseGame.prototype.onRoundNew.call(this);
-    this.animations.length = 0;
-    this.clearBackground();
-    this.effect.clear();
-    this.canvas.clear();
-    this.draw();
+    this.repaint();
 };
 
 /**
@@ -152,16 +148,25 @@ Game.prototype.setSize = function()
 };
 
 /**
+ * Repaint
+ */
+Game.prototype.repaint = function()
+{
+    this.animations.length = 0;
+    this.clearBackground();
+    this.effect.clear();
+    this.canvas.clear();
+    this.draw();
+};
+
+
+/**
  * Draw
  *
  * @param {Number} step
  */
 Game.prototype.draw = function(step)
 {
-    if (!this.frame) {
-        this.effect.clear();
-    }
-
     for (var animation, a = this.animations.length - 1; a >= 0; a--) {
         animation = this.animations[a];
         animation.draw();

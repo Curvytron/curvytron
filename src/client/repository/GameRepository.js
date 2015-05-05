@@ -143,7 +143,7 @@ GameRepository.prototype.detachIdleEvents = function()
 GameRepository.prototype.draw = function()
 {
     if (!this.game.frame) {
-        this.game.draw();
+        this.game.repaint();
     }
 };
 
