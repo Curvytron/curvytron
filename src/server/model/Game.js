@@ -15,7 +15,6 @@ function Game(room)
     this.gameWinner  = null;
 
     this.addPoint = this.addPoint.bind(this);
-    this.onDie    = this.onDie.bind(this);
 
     var avatar, i;
 
@@ -23,7 +22,6 @@ function Game(room)
         avatar = this.avatars.items[i];
         avatar.clear();
         avatar.on('point', this.addPoint);
-        avatar.on('die', this.onDie);
     }
 }
 
@@ -39,10 +37,12 @@ Game.prototype.update = function(step)
 {
     BaseGame.prototype.update.call(this, step);
 
-    var avatar, border, i;
+    var score = this.deaths.count(),
+        avatar, border, i;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
+        dead   = false;
 
         if (avatar.alive) {
             avatar.update(step);
@@ -55,13 +55,13 @@ Game.prototype.update = function(step)
                         avatar.setPosition(this.world.getOposite(border));
                     }
                 } else {
-                    avatar.die(null);
+                    this.kill(avatar, null, score);
                 }
             } else if (!avatar.invincible) {
                 var killer = this.world.getBody(avatar.body);
 
                 if (null !== killer) {
-                    avatar.die(killer);
+                    this.kill(avatar, killer, score);
                 }
             }
 
@@ -71,6 +71,21 @@ Game.prototype.update = function(step)
             }
         }
     }
+
+    this.checkRoundEnd();
+};
+
+/**
+ * Kill an avatar
+ *
+ * @param {Avatar} avatar
+ * @param {Body|null} killer
+ * @param {Number} score
+ */
+Game.prototype.kill = function(avatar, killer, score) {
+    avatar.die(killer);
+    avatar.addScore(score);
+    this.deaths.add(avatar);
 };
 
 /**
@@ -123,18 +138,6 @@ Game.prototype.isWon = function()
     this.sortAvatars(players);
 
     return players.items[0].score === players.items[1].score ? null : players.getFirst();
-};
-
-/**
- * On die
- *
- * @param {Object} data
- */
-Game.prototype.onDie = function(data)
-{
-    this.deaths.add(data.avatar);
-    data.avatar.addScore(this.deaths.count() - 1);
-    this.checkRoundEnd();
 };
 
 /**
