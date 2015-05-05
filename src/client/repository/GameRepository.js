@@ -18,6 +18,7 @@ function GameRepository(client, parent, sound, notifier)
 
     this.start             = this.start.bind(this);
     this.stop              = this.stop.bind(this);
+    this.draw              = this.draw.bind(this);
     this.onGameStart       = this.onGameStart.bind(this);
     this.onGameStop        = this.onGameStop.bind(this);
     this.onBonusPop        = this.onBonusPop.bind(this);
@@ -48,7 +49,12 @@ GameRepository.prototype.start = function()
 {
     if (this.parent.room) {
         this.game = this.parent.room.game;
+
         this.attachEvents();
+
+        this.client.on('property', this.draw);
+        this.client.on('position', this.draw);
+        this.client.on('angle', this.draw);
     }
 };
 
@@ -112,6 +118,18 @@ GameRepository.prototype.detachEvents = function()
 };
 
 /**
+ * Draw
+ *
+ * @return {[type]}
+ */
+GameRepository.prototype.draw = function()
+{
+    if (!this.game.frame) {
+        this.game.draw();
+    }
+};
+
+/**
  * On game start
  *
  * @param {Event} e
@@ -120,6 +138,10 @@ GameRepository.prototype.onGameStart = function(e)
 {
     this.game.start();
     this.emit('game:start');
+
+    this.client.off('property', this.draw);
+    this.client.off('position', this.draw);
+    this.client.off('angle', this.draw);
 };
 
 /**
@@ -145,10 +167,6 @@ GameRepository.prototype.onProperty = function(e)
 
     if (avatar) {
         avatar.set(data.property, data.value);
-
-        if (!this.game.frame) {
-            this.game.draw();
-        }
     }
 };
 
