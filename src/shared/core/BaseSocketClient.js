@@ -253,7 +253,7 @@ BaseSocketClient.prototype.createCallback = function(id)
 };
 
 /**
- * Object version of the lcient
+ * Object version of the client
  *
  * @return {Object}
  */

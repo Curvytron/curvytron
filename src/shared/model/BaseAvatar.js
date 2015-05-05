@@ -38,7 +38,7 @@ BaseAvatar.prototype.constructor = BaseAvatar;
 BaseAvatar.prototype.velocity = 16;
 
 /**
- * Turn velicity
+ * Turn velocity
  *
  * @type {Float}
  */

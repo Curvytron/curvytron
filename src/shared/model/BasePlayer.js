@@ -138,7 +138,7 @@ BasePlayer.prototype.getRandomColor = function()
 };
 
 /**
- * Validatre color
+ * Validate color
  *
  * @param {String} color
  *

@@ -57,7 +57,7 @@ Bonus.prototype.clear = function()
 };
 
 /**
- * Set ending timeoute
+ * Set ending timeout
  *
  * @param {Number} warning
  */

@@ -36,7 +36,7 @@ MessageTip.prototype.tips = [
     'Yes, you can play Curvytron on your smartphone ;)',
     'You can add multiple players on the same computer.',
     'Green bonuses apply only to you.',
-    'Red bonuses target your ennemies.',
+    'Red bonuses target your enemies.',
     'White bonuses affect everyone.',
     'Making a Snail™ is a sure way to win, but other players might hate you for it.',
     'The Enrichment Center regrets to inform you that this next test is impossible. Make no attempt to solve it.'

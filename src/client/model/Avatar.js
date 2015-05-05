@@ -26,7 +26,7 @@ Avatar.prototype = Object.create(BaseAvatar.prototype);
 Avatar.prototype.constructor = Avatar;
 
 /**
- * Arrao width
+ * Array width
  *
  * @type {Number}
  */

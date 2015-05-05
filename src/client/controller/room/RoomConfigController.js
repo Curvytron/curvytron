@@ -19,7 +19,7 @@ function RoomConfigController($scope, repository)
     this.applyScope   = this.applyScope.bind(this);
     this.digestScope  = this.digestScope.bind(this);
 
-    // Hydratign scope
+    // Hydrating scope
     this.$scope.toggleBonus  = this.toggleBonus;
     this.$scope.togglePreset = this.togglePreset;
     this.$scope.setMaxScore  = this.setMaxScore;

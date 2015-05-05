@@ -104,7 +104,7 @@ Player.prototype.getBinding = function()
 };
 
 /**
- * Should this player be considered madter?
+ * Should this player be considered master?
  *
  * @return {Boolean}
  */
