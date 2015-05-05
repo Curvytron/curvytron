@@ -471,24 +471,26 @@
             overflow-y: auto;
 
             .victory {
-
                 font-size: 40px;
                 font-weight: 300;
                 line-height: 110px;
-                display: inline-block;
+                width: 100%;
+                padding: 0 50px;
+                text-align: center;
+                margin: 0 auto;
 
                 &:after {
                     content: '';
                     display: block;
                     height: 2px;
-                    width: 40%;
+                    width: 140px;
                     margin: 0 auto;
                     background-color: #FFF;
                     margin-top: 15px;
                 }
 
                 .icon-trophy {
-                    display: block;
+                    display: inline-block;
                     font-size: 100px;
                 }
             }
@@ -508,8 +510,8 @@
                     padding: 60px 0 40px 0;
 
                     .victory .icon-trophy {
-                        float: left;
                         margin-right: 20px;
+                        vertical-align: middle;
                     }
 
                     table.recap {
