@@ -117,7 +117,9 @@ GameController.prototype.detach = function(client)
 
     if (this.clients.remove(client)) {
         for (var i = client.players.items.length - 1; i >= 0; i--) {
-            this.game.removeAvatar(client.players.items[i].avatar);
+            if (client.players.items[i].avatar) {
+                this.game.removeAvatar(client.players.items[i].avatar);
+            }
         }
         this.socketGroup.addEvent('game:spectators', this.countSpectators());
         client.pingLogger.stop();
