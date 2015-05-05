@@ -111,10 +111,8 @@ Canvas.prototype.clear = function()
  */
 Canvas.prototype.color = function(color)
 {
-    this.context.beginPath();
-    this.context.rect(0, 0, this.element.width, this.element.height);
     this.context.fillStyle = color;
-    this.context.fill();
+    this.context.fillRect(0, 0, this.element.width, this.element.height);
 };
 
 /**
