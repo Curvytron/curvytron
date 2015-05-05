@@ -147,14 +147,17 @@ RoomRepository.prototype.createRoom = function(data, clients)
     var room = new Room(data.name),
         length = data.players.length;
 
-    for (var i =  0; i < length; i++) {
-        room.addPlayer(new Player(
-            data.players[i].id,
-            clients.getById(data.players[i].client),
-            data.players[i].name,
-            data.players[i].color,
-            data.players[i].ready
-        ));
+    for (var client, i =  0; i < length; i++) {
+        client = clients.getById(data.players[i].client);
+        if (client) {
+            room.addPlayer(new Player(
+                data.players[i].id,
+                client,
+                data.players[i].name,
+                data.players[i].color,
+                data.players[i].ready
+            ));
+        }
     }
 
     room.config.setMaxScore(data.config.maxScore);
