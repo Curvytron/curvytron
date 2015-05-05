@@ -197,7 +197,7 @@ World.prototype.getRandomDirection = function(point, tolerance)
 };
 
 /**
- * Is directino valid
+ * Is direction valid
  *
  * @param {Float} angle
  * @param {Array} point
@@ -230,7 +230,7 @@ World.prototype.isDirectionValid = function(angle, point, margin)
 };
 
 /**
- * Get hypostenuse from adjacent side
+ * Get hypotenuse from adjacent side
  *
  * @param {Float} angle
  * @param {Number} adjacent

@@ -1,5 +1,5 @@
 /**
- * Room master mmessage
+ * Room master message
  *
  * @param {SocketClient} client
  */

@@ -16,7 +16,7 @@ Bonus.prototype = Object.create(BaseBonus.prototype);
 Bonus.prototype.constructor = Bonus;
 
 /**
- * Aplly bonus callback
+ * Apply bonus callback
  */
 Bonus.prototype.applyTo = function(avatar, game)
 {

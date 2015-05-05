@@ -1,7 +1,7 @@
 /**
  * GameRepository
  *
- * @param {SocketCLient} client
+ * @param {SocketClient} client
  * @param {RoomRepository} parent
  * @param {SoundManager} sound
  * @param {Notifier} notifier

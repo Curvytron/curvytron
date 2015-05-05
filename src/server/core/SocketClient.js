@@ -96,7 +96,7 @@ SocketClient.prototype.stop = function()
 };
 
 /**
- * Object version of the lcient
+ * Object version of the client
  *
  * @return {Object}
  */
