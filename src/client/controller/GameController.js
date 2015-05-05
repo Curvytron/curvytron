@@ -229,7 +229,7 @@ GameController.prototype.onUnload = function(e)
  */
 GameController.prototype.needConfirmation = function()
 {
-    return !this.$scope.spectating && !this.$scope.end;
+    return !this.$scope.spectating && this.game.started;
 };
 
 /**

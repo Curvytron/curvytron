@@ -49,12 +49,8 @@ GameRepository.prototype.start = function()
 {
     if (this.parent.room) {
         this.game = this.parent.room.game;
-
         this.attachEvents();
-
-        this.client.on('property', this.draw);
-        this.client.on('position', this.draw);
-        this.client.on('angle', this.draw);
+        this.attachIdleEvents();
     }
 };
 
@@ -64,6 +60,7 @@ GameRepository.prototype.start = function()
 GameRepository.prototype.stop = function()
 {
     this.detachEvents();
+    this.detachIdleEvents();
     this.game = null;
 };
 
@@ -118,6 +115,27 @@ GameRepository.prototype.detachEvents = function()
 };
 
 /**
+ * Attach idle events
+ */
+GameRepository.prototype.attachIdleEvents = function()
+{
+    this.client.on('property', this.draw);
+    this.client.on('position', this.draw);
+    this.client.on('angle', this.draw);
+};
+
+
+/**
+ * Detach idle events
+ */
+GameRepository.prototype.detachIdleEvents = function()
+{
+    this.client.off('property', this.draw);
+    this.client.off('position', this.draw);
+    this.client.off('angle', this.draw);
+};
+
+/**
  * Draw
  *
  * @return {[type]}
@@ -137,11 +155,8 @@ GameRepository.prototype.draw = function()
 GameRepository.prototype.onGameStart = function(e)
 {
     this.game.start();
+    this.detachIdleEvents();
     this.emit('game:start');
-
-    this.client.off('property', this.draw);
-    this.client.off('position', this.draw);
-    this.client.off('angle', this.draw);
 };
 
 /**
@@ -152,6 +167,7 @@ GameRepository.prototype.onGameStart = function(e)
 GameRepository.prototype.onGameStop = function(e)
 {
     this.game.stop();
+    this.attachIdleEvents();
     this.emit('game:stop');
 };
 

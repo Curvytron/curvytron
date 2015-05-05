@@ -29,7 +29,6 @@ function RoundController($scope, repository, notifier)
     this.applyScope   = this.applyScope.bind(this);
     this.digestScope  = this.digestScope.bind(this);
 
-    this.$scope.end         = false;
     this.$scope.roundWinner = null;
     this.$scope.gameWinner  = null;
 
