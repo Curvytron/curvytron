@@ -135,6 +135,7 @@ BaseGame.prototype.loop = function()
     this.rendered = now;
 
     this.onFrame(step);
+    this.fps.onFrame();
 };
 
 /**
@@ -144,6 +145,7 @@ BaseGame.prototype.onStart = function()
 {
     this.rendered = new Date().getTime();
     this.bonusManager.start();
+    this.fps.start();
 };
 
 /**
@@ -153,6 +155,7 @@ BaseGame.prototype.onStop = function()
 {
     this.rendered = null;
     this.bonusManager.stop();
+    this.fps.stop();
 
     var size = this.getSize(this.getPresentAvatars().count());
 
@@ -207,7 +210,6 @@ BaseGame.prototype.clearFrame = function()
 BaseGame.prototype.onFrame = function(step)
 {
     this.update(step);
-    this.fps.update(step);
 };
 
 /**
@@ -345,12 +347,11 @@ BaseGame.prototype.end = function()
 {
     if (this.started) {
         this.started = false;
-
         this.stop();
-        this.fps.stop();
-        this.bonusManager.stop();
-        this.avatars.clear();
-
         this.emit('end', {game: this});
+
+        return true;
     }
+
+    return false;
 };

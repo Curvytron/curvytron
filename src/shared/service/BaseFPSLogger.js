@@ -3,25 +3,27 @@
  */
 function BaseFPSLogger()
 {
-    this.value    = 0;
-    this.interval = null;
+    EventEmitter.call(this);
 
-    this.update = this.update.bind(this);
-    this.log    = this.log.bind(this);
+    this.interval  = null;
+    this.frames    = 0;
+    this.frequency = 0;
+
+    this.onFrame = this.onFrame.bind(this);
+    this.log     = this.log.bind(this);
 
     this.start();
 }
 
-/**
- * Update
- *
- * @param {Number} step
- */
-BaseFPSLogger.prototype.update = function(step)
-{
-    var fps = step > 0 ? 1000/step : 60;
+BaseFPSLogger.prototype = Object.create(EventEmitter.prototype);
+BaseFPSLogger.prototype.constructor = BaseFPSLogger;
 
-    this.value = ~~ (0.5 + (this.value ? (this.value + fps)/2 : fps));
+/**
+ * End frame
+ */
+BaseFPSLogger.prototype.onFrame = function ()
+{
+    this.frames++;
 };
 
 /**
@@ -29,7 +31,8 @@ BaseFPSLogger.prototype.update = function(step)
  */
 BaseFPSLogger.prototype.log = function()
 {
-    this.value = 0;
+    this.frequency = this.frames;
+    this.frames    = 0;
 };
 
 /**
@@ -38,6 +41,7 @@ BaseFPSLogger.prototype.log = function()
 BaseFPSLogger.prototype.start = function()
 {
     if (!this.interval) {
+        this.frames   = 0;
         this.interval = setInterval(this.log, 1000);
     }
 };
@@ -49,6 +53,7 @@ BaseFPSLogger.prototype.stop = function()
 {
     if (this.interval) {
         clearInterval(this.interval);
-        this.interval = null;
+        this.interval  = null;
+        this.frequency = 0;
     }
 };

@@ -1,10 +1,8 @@
 /**
  * FPS Logger
  */
-function FPSLogger(element)
+function FPSLogger()
 {
-    this.element = element;
-
     BaseFPSLogger.call(this);
 }
 
@@ -12,29 +10,10 @@ FPSLogger.prototype = Object.create(BaseFPSLogger.prototype);
 FPSLogger.prototype.constructor = FPSLogger;
 
 /**
- * Set element
- *
- * @param {DOMElement} element
- */
-FPSLogger.prototype.setElement = function(element)
-{
-    this.element = element;
-};
-
-/**
- * Log
+ * Load FPS
  */
 FPSLogger.prototype.log = function()
 {
-    this.draw();
-
     BaseFPSLogger.prototype.log.call(this);
-};
-
-/**
- * Draw FPS
- */
-FPSLogger.prototype.draw = function()
-{
-    this.element.innerHTML = this.value + 'fps';
+    this.emit('fps', this.frequency);
 };

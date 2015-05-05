@@ -164,9 +164,8 @@ Game.prototype.resolveScores = function()
     }
 
     if (winner) {
-        this.roundWinner = winner;
         winner.addScore(Math.max(this.avatars.count() - 1, 1));
-        this.emit('round:winner', {game: this, winner: winner});
+        this.roundWinner = winner;
     }
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
@@ -218,9 +217,8 @@ Game.prototype.setSize = function()
  */
 Game.prototype.onRoundEnd = function()
 {
-    this.emit('round:end', {game: this});
-    BaseGame.prototype.onRoundEnd.call(this);
     this.resolveScores();
+    this.emit('round:end', {game: this, winner: this.roundWinner});
 };
 
 /**
@@ -305,13 +303,14 @@ Game.prototype.setBorderless = function(borderless)
  */
 Game.prototype.end = function()
 {
-    BaseGame.prototype.end.call(this);
+    if (BaseGame.prototype.end.call(this)) {
+        this.avatars.clear();
+        this.world.clear();
 
-    this.world.clear();
-
-    delete this.world;
-    delete this.avatars;
-    delete this.deaths;
-    delete this.bonusManager;
-    delete this.controller;
+        delete this.world;
+        delete this.avatars;
+        delete this.deaths;
+        delete this.bonusManager;
+        delete this.controller;
+    }
 };

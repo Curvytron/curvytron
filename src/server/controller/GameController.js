@@ -11,23 +11,26 @@ function GameController(game)
     this.compressor  = new Compressor();
     this.waiting     = null;
 
-    this.onGameStart   = this.onGameStart.bind(this);
-    this.onGameStop    = this.onGameStop.bind(this);
-    this.onDie         = this.onDie.bind(this);
-    this.onPosition    = this.onPosition.bind(this);
-    this.onPoint       = this.onPoint.bind(this);
-    this.onProperty    = this.onProperty.bind(this);
-    this.onBonusStack  = this.onBonusStack.bind(this);
-    this.onBonusPop    = this.onBonusPop.bind(this);
-    this.onBonusClear  = this.onBonusClear.bind(this);
-    this.onRoundNew    = this.onRoundNew.bind(this);
-    this.onRoundEnd    = this.onRoundEnd.bind(this);
-    this.onRoundWinner = this.onRoundWinner.bind(this);
-    this.onPlayerLeave = this.onPlayerLeave.bind(this);
-    this.onClear       = this.onClear.bind(this);
-    this.onBorderless  = this.onBorderless.bind(this);
-    this.onEnd         = this.onEnd.bind(this);
-    this.stopWaiting   = this.stopWaiting.bind(this);
+    this.onGameStart       = this.onGameStart.bind(this);
+    this.onGameStop        = this.onGameStop.bind(this);
+    this.onDie             = this.onDie.bind(this);
+    this.onPosition        = this.onPosition.bind(this);
+    this.onAngle           = this.onAngle.bind(this);
+    this.onAngularVelocity = this.onAngularVelocity.bind(this);
+    this.onPoint           = this.onPoint.bind(this);
+    this.onScore           = this.onScore.bind(this);
+    this.onRoundScore      = this.onRoundScore.bind(this);
+    this.onProperty        = this.onProperty.bind(this);
+    this.onBonusStack      = this.onBonusStack.bind(this);
+    this.onBonusPop        = this.onBonusPop.bind(this);
+    this.onBonusClear      = this.onBonusClear.bind(this);
+    this.onRoundNew        = this.onRoundNew.bind(this);
+    this.onRoundEnd        = this.onRoundEnd.bind(this);
+    this.onPlayerLeave     = this.onPlayerLeave.bind(this);
+    this.onClear           = this.onClear.bind(this);
+    this.onBorderless      = this.onBorderless.bind(this);
+    this.onEnd             = this.onEnd.bind(this);
+    this.stopWaiting       = this.stopWaiting.bind(this);
 
     this.callbacks = {
         onReady: function () { controller.onReady(this); },
@@ -56,7 +59,6 @@ GameController.prototype.loadGame = function()
     this.game.on('player:leave', this.onPlayerLeave);
     this.game.on('round:new', this.onRoundNew);
     this.game.on('round:end', this.onRoundEnd);
-    this.game.on('round:winner', this.onRoundWinner);
     this.game.on('borderless', this.onBorderless);
     this.game.bonusManager.on('bonus:pop', this.onBonusPop);
     this.game.bonusManager.on('bonus:clear', this.onBonusClear);
@@ -82,7 +84,6 @@ GameController.prototype.unloadGame = function()
     this.game.removeListener('player:leave', this.onPlayerLeave);
     this.game.removeListener('round:new', this.onRoundNew);
     this.game.removeListener('round:end', this.onRoundEnd);
-    this.game.removeListener('round:winner', this.onRoundWinner);
     this.game.removeListener('borderless', this.onBorderless);
     this.game.bonusManager.removeListener('bonus:pop', this.onBonusPop);
     this.game.bonusManager.removeListener('bonus:clear', this.onBonusClear);
@@ -154,7 +155,11 @@ GameController.prototype.attachEvents = function(client)
 
         avatar.on('die', this.onDie);
         avatar.on('position', this.onPosition);
+        avatar.on('angle', this.onAngle);
+        avatar.on('angularVelocity', this.onAngularVelocity);
         avatar.on('point', this.onPoint);
+        avatar.on('score', this.onScore);
+        avatar.on('score:round', this.onRoundScore);
         avatar.on('property', this.onProperty);
         avatar.bonusStack.on('change', this.onBonusStack);
     }
@@ -181,7 +186,10 @@ GameController.prototype.detachEvents = function(client)
         if (avatar) {
             avatar.removeListener('die', this.onDie);
             avatar.removeListener('position', this.onPosition);
+            avatar.removeListener('angularVelocity', this.onAngularVelocity);
             avatar.removeListener('point', this.onPoint);
+            avatar.removeListener('score', this.onScore);
+            avatar.removeListener('score:round', this.onRoundScore);
             avatar.removeListener('property', this.onProperty);
             avatar.bonusStack.removeListener('change', this.onBonusStack);
         }
@@ -221,7 +229,7 @@ GameController.prototype.attachSpectator = function(client)
         }
 
         if (!avatar.alive) {
-            events.push(['die', {avatar: avatar.id, angle: avatar.angle}]);
+            events.push(['die', {avatar: avatar.id}]);
         }
     }
 
@@ -229,8 +237,8 @@ GameController.prototype.attachSpectator = function(client)
         for (i = this.game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
             events.push(['bonus:pop', this.game.bonusManager.bonuses.items[i].serialize()]);
         }
-    } else if(this.game.roundWinner) {
-        this.socketGroup.addEvent('round:winner', {winner: this.game.roundWinner.id});
+    } else {
+        this.socketGroup.addEvent('round:end', {winner: this.game.roundWinner ? this.game.roundWinner.id : null});
     }
 
     events.push(['game:spectators', this.countSpectators()]);
@@ -308,7 +316,7 @@ GameController.prototype.onMove = function(client, data)
     var player = client.players.getById(data.avatar);
 
     if (player && player.avatar) {
-        player.avatar.setAngularVelocity(data.move);
+        player.avatar.updateAngularVelocity(data.move);
     }
 };
 
@@ -319,10 +327,11 @@ GameController.prototype.onMove = function(client, data)
  */
 GameController.prototype.onPoint = function(data)
 {
-    this.socketGroup.addEvent('point', [
-        data.avatar.id,
-        this.compressor.compressPosition(data.point[0], data.point[1])
-    ]);
+    if (data.important) {
+        var point = this.compressor.compressPosition(data.point[0], data.point[1]);
+        point.push(data.avatar.id);
+        this.socketGroup.addEvent('point', point);
+    }
 };
 
 /**
@@ -332,10 +341,29 @@ GameController.prototype.onPoint = function(data)
  */
 GameController.prototype.onPosition = function(data)
 {
-    this.socketGroup.addEvent('position', [
-        data.avatar.id,
-        this.compressor.compressPosition(data.value[0], data.value[1])
-    ]);
+    var point = this.compressor.compressPosition(data.value[0], data.value[1]);
+    point.push(data.avatar.id);
+    this.socketGroup.addEvent('position', point);
+};
+
+/**
+ * On angle
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onAngle = function(data)
+{
+    this.socketGroup.addEvent('angle', [data.avatar.id, data.angle]);
+};
+
+/**
+ * On angular velocity
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onAngularVelocity = function(data)
+{
+    this.socketGroup.addEvent('angularVelocity', [data.avatar.id, data.angularVelocity]);
 };
 
 /**
@@ -347,7 +375,6 @@ GameController.prototype.onDie = function(data)
 {
     this.socketGroup.addEvent('die', {
         avatar: data.avatar.id,
-        angle: data.avatar.angle,
         killer: data.killer ? data.killer.id : null,
         old: data.old
     });
@@ -374,14 +401,32 @@ GameController.prototype.onBonusClear = function(data)
 };
 
 /**
+ * On score
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onScore = function(data)
+{
+    this.socketGroup.addEvent('score', {avatar: data.avatar.id, score: data.score});
+};
+
+/**
+ * On round score
+ *
+ * @param {Object} data
+ */
+GameController.prototype.onRoundScore = function(data)
+{
+    this.socketGroup.addEvent('score:round', {avatar: data.avatar.id, score: data.score});
+};
+
+/**
  * On property
  *
  * @param {Object} data
  */
 GameController.prototype.onProperty = function(data)
 {
-    if (data.property === 'angle' && this.game.frame && data.avatar.alive) { return; }
-
     this.socketGroup.addEvent('property', {avatar: data.avatar.id, property: data.property, value: data.value});
 };
 
@@ -434,17 +479,7 @@ GameController.prototype.onRoundNew = function(data)
  */
 GameController.prototype.onRoundEnd = function(data)
 {
-    this.socketGroup.addEvent('round:end');
-};
-
-/**
- * On round winner
- *
- * @param {Object} data
- */
-GameController.prototype.onRoundWinner = function(data)
-{
-    this.socketGroup.addEvent('round:winner', {winner: data.winner.id});
+    this.socketGroup.addEvent('round:end', {winner: data.winner ? data.winner.id : null});
 };
 
 /**

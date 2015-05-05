@@ -34,7 +34,7 @@ Trail.prototype.getLastSegment = function()
 
         if (this.clearAsked) {
             this.points = this.queue;
-            this.queue  = [];
+            this.queue.length = 0;
         } else {
             this.points = [points[length - 1]];
         }

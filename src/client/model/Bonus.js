@@ -20,6 +20,7 @@ function Bonus(id, position, type, affect, radius, duration)
     this.asset     = this.assets[this.type];
     this.animation = new BounceIn(300);
     this.width     = this.radius * 2;
+    this.changed   = true;
 
     this.setEnding     = this.setEnding.bind(this);
     this.toggleOpacity = this.toggleOpacity.bind(this);
@@ -51,10 +52,18 @@ Bonus.prototype.getDrawWidth = function()
 Bonus.prototype.clear = function()
 {
     if (this.timeout) {
-        clearInterval(this.timeout);
+        this.timeout = clearInterval(this.timeout);
     }
+};
 
-    BaseBonus.prototype.clear.call(this);
+/**
+ * Set ending timeoute
+ *
+ * @param {Number} warning
+ */
+Bonus.prototype.setEndingTimeout = function(warning)
+{
+    this.timeout = setTimeout(this.setEnding, this.duration - warning);
 };
 
 /**
@@ -71,5 +80,6 @@ Bonus.prototype.setEnding = function()
 Bonus.prototype.toggleOpacity = function()
 {
     this.opacity = this.opacity === 1 ? 0.5 : 1;
+    this.changed = true;
     this.emit('change');
 };

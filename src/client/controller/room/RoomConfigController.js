@@ -17,6 +17,7 @@ function RoomConfigController($scope, repository)
     this.setMaxScore  = this.setMaxScore.bind(this);
     this.setVariable  = this.setVariable.bind(this);
     this.applyScope   = this.applyScope.bind(this);
+    this.digestScope  = this.digestScope.bind(this);
 
     // Hydratign scope
     this.$scope.toggleBonus  = this.toggleBonus;
@@ -24,9 +25,9 @@ function RoomConfigController($scope, repository)
     this.$scope.setMaxScore  = this.setMaxScore;
     this.$scope.setVariable  = this.setVariable;
 
-    this.repository.on('config:max-score', this.applyScope);
-    this.repository.on('config:variable', this.applyScope);
-    this.repository.on('config:bonus', this.applyScope);
+    this.repository.on('config:max-score', this.digestScope);
+    this.repository.on('config:variable', this.digestScope);
+    this.repository.on('config:bonus', this.digestScope);
 
     this.$scope.$parent.$watch('room', this.onJoined);
 }
@@ -128,3 +129,8 @@ RoomConfigController.prototype.setVariable = function(variable)
  * Apply scope
  */
 RoomConfigController.prototype.applyScope = CurvytronController.prototype.applyScope;
+
+/**
+ * Digest scope
+ */
+RoomConfigController.prototype.digestScope = CurvytronController.prototype.digestScope;

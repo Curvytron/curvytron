@@ -12,6 +12,8 @@
  */
 function RoomController($scope, $routeParams, $location, client, repository, profile, chat, notifier)
 {
+    document.body.classList.remove('game-mode');
+
     this.$scope         = $scope;
     this.$location      = $location;
     this.client         = client;
@@ -30,6 +32,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.removePlayer     = this.removePlayer.bind(this);
     this.kickPlayer       = this.kickPlayer.bind(this);
     this.applyScope       = this.applyScope.bind(this);
+    this.digestScope      = this.digestScope.bind(this);
     this.onJoin           = this.onJoin.bind(this);
     this.onJoined         = this.onJoined.bind(this);
     this.onControlChange  = this.onControlChange.bind(this);
@@ -47,23 +50,23 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.$scope.$on('$destroy', this.leaveRoom);
 
     // Hydrating scope:
-    this.$scope.submitAddPlayer     = this.addPlayer;
-    this.$scope.removePlayer        = this.removePlayer;
-    this.$scope.kickPlayer          = this.kickPlayer;
-    this.$scope.setColor            = this.setColor;
-    this.$scope.setReady            = this.setReady;
-    this.$scope.setName             = this.setName;
-    this.$scope.setTouch            = this.setTouch;
-    this.$scope.toggleParameters    = this.toggleParameters;
-    this.$scope.nameMaxLength       = Player.prototype.maxLength;
-    this.$scope.colorMaxLength      = Player.prototype.colorMaxLength;
-    this.$scope.hasTouch            = this.hasTouch;
-    this.$scope.master              = this.repository.amIMaster();
-    this.$scope.curvytron.bodyClass = null;
-    this.$scope.displayParameters   = false;
-    this.$scope.$parent.profile     = true;
+    this.$scope.submitAddPlayer   = this.addPlayer;
+    this.$scope.removePlayer      = this.removePlayer;
+    this.$scope.kickPlayer        = this.kickPlayer;
+    this.$scope.setColor          = this.setColor;
+    this.$scope.setReady          = this.setReady;
+    this.$scope.setName           = this.setName;
+    this.$scope.setTouch          = this.setTouch;
+    this.$scope.toggleParameters  = this.toggleParameters;
+    this.$scope.nameMaxLength     = Player.prototype.maxLength;
+    this.$scope.colorMaxLength    = Player.prototype.colorMaxLength;
+    this.$scope.hasTouch          = this.hasTouch;
+    this.$scope.master            = this.repository.amIMaster();
+    this.$scope.displayParameters = false;
+    this.$scope.$parent.profile   = true;
 
     this.repository.start();
+    gamepadListener.start();
 
     if (!this.profile.isComplete()) {
         this.profile.on('close', this.joinRoom);
@@ -99,12 +102,12 @@ RoomController.prototype.onJoined = function(result)
 
         this.attachEvents();
         this.addProfileUser();
+        this.digestScope();
     } else {
         console.error('Could not join room %s', result.name);
         this.goHome();
+        this.applyScope();
     }
-
-    this.applyScope();
 };
 
 /**
@@ -126,11 +129,11 @@ RoomController.prototype.attachEvents = function()
 {
     this.repository.on('room:close', this.goHome);
     this.repository.on('player:join', this.onJoin);
-    this.repository.on('player:leave', this.applyScope);
-    this.repository.on('player:ready', this.applyScope);
-    this.repository.on('player:color', this.applyScope);
-    this.repository.on('player:name', this.applyScope);
-    this.repository.on('client:activity', this.applyScope);
+    this.repository.on('player:leave', this.digestScope);
+    this.repository.on('player:ready', this.digestScope);
+    this.repository.on('player:color', this.digestScope);
+    this.repository.on('player:name', this.digestScope);
+    this.repository.on('client:activity', this.digestScope);
     this.repository.on('room:master', this.onRoomMaster);
     this.repository.on('room:game:start', this.start);
 
@@ -146,11 +149,11 @@ RoomController.prototype.detachEvents = function()
 {
     this.repository.off('room:close', this.goHome);
     this.repository.off('player:join', this.onJoin);
-    this.repository.off('player:leave', this.applyScope);
-    this.repository.off('player:ready', this.applyScope);
-    this.repository.off('player:color', this.applyScope);
-    this.repository.off('player:name', this.applyScope);
-    this.repository.off('client:activity', this.applyScope);
+    this.repository.off('player:leave', this.digestScope);
+    this.repository.off('player:ready', this.digestScope);
+    this.repository.off('player:color', this.digestScope);
+    this.repository.off('player:name', this.digestScope);
+    this.repository.off('client:activity', this.digestScope);
     this.repository.off('room:master', this.onRoomMaster);
     this.repository.off('room:game:start', this.start);
 
@@ -224,7 +227,7 @@ RoomController.prototype.kickPlayer = function(player)
         if (!result.success) {
             console.error('Could not kick player %s', player.name);
         }
-        repository.applyScope();
+        repository.digestScope();
     });
 };
 
@@ -256,7 +259,7 @@ RoomController.prototype.onJoin = function(e)
         this.notifier.notify('New player joined!');
     }
 
-    this.applyScope();
+    this.digestScope();
 };
 
 /**
@@ -280,8 +283,7 @@ RoomController.prototype.setColor = function(player)
             } else if (player.profile) {
                 controller.profile.setColor(player.color);
             }
-
-            controller.applyScope();
+            controller.digestScope();
         }
     );
 };
@@ -316,7 +318,7 @@ RoomController.prototype.setName = function(player)
                 controller.profile.setName(player.name);
             }
 
-            controller.applyScope();
+            controller.digestScope();
         }
     );
 };
@@ -411,7 +413,7 @@ RoomController.prototype.updateCurrentMessage = function()
 RoomController.prototype.onControlChange = function(e)
 {
     this.saveProfileControls();
-    this.applyScope();
+    this.digestScope();
 };
 
 /**
@@ -441,8 +443,7 @@ RoomController.prototype.setProfileControls = function(player)
         }
 
         this.controlSynchro = false;
-
-        this.applyScope();
+        this.digestScope();
     }
 };
 
@@ -474,7 +475,7 @@ RoomController.prototype.setProfileColor = function(player)
 RoomController.prototype.onRoomMaster = function(e)
 {
     this.$scope.master = this.repository.amIMaster();
-    this.applyScope();
+    this.digestScope();
 };
 
 /**
@@ -489,3 +490,8 @@ RoomController.prototype.toggleParameters = function()
  * Apply scope
  */
 RoomController.prototype.applyScope = CurvytronController.prototype.applyScope;
+
+/**
+ * Digest scope
+ */
+RoomController.prototype.digestScope = CurvytronController.prototype.digestScope;

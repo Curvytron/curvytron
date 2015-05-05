@@ -33,7 +33,7 @@ Room.prototype.getLocalPlayers = function()
  */
 Room.prototype.getPlayerByClient = function(client)
 {
-    return this.players.match(function () { return this.client === client; });
+    return this.players.match(function () { return this.client.id === client; });
 };
 
 /**

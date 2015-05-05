@@ -54,7 +54,7 @@ RoomController.prototype.constructor = RoomController;
  *
  * @type {Number}
  */
-RoomController.prototype.timeToClose = 5000;
+RoomController.prototype.timeToClose = 10000;
 
 /**
  * Load room
@@ -377,12 +377,12 @@ RoomController.prototype.onPlayerRemove = function(client, data, callback)
  * On talk
  *
  * @param {SocketClient} client
- * @param {Object} data
+ * @param {String} content
  * @param {Function} callback
  */
-RoomController.prototype.onTalk = function(client, data, callback)
+RoomController.prototype.onTalk = function(client, content, callback)
 {
-    var message = new Message(data.content, client),
+    var message = new Message(client, content),
         success = this.chat.addMessage(message);
 
     callback({success: success});
