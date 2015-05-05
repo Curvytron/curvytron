@@ -72,7 +72,6 @@ RoundController.prototype.onRoundNew = function(e)
     }
 
     this.displayWarmup(this.game.warmupTime);
-    this.digestScope();
 };
 
 /**
@@ -84,7 +83,7 @@ RoundController.prototype.onRoundEnd = function(e)
 {
     if (this.game.roundWinner) {
         this.notifier.notifyInactive(this.game.roundWinner.name + ' won round!');
-        this.$scope.winner = this.game.avatars.getFirst();
+        this.$scope.winner = this.game.roundWinner;
         this.digestScope();
         this.endElement.style.display = 'block';
     }
@@ -132,7 +131,6 @@ RoundController.prototype.endWarmup = function()
     this.clearWarmup();
     this.warmupElement.style.display = 'none';
     this.notifier.notify('Go!', 1000);
-    this.digestScope();
 };
 
 /**
