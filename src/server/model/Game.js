@@ -72,7 +72,9 @@ Game.prototype.update = function(step)
         }
     }
 
-    this.checkRoundEnd();
+    if (!this.deaths.isEmpty()) {
+        this.checkRoundEnd();
+    }
 };
 
 /**
