@@ -51,7 +51,7 @@ curvytronApp.controller(
 );
 curvytronApp.controller(
     'WaitingController',
-    ['$scope', 'RoomRepository', 'SocketClient', WaitingController]
+    ['$scope', 'SocketClient', WaitingController]
 );
 curvytronApp.controller(
     'KillLogController',

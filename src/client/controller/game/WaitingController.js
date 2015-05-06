@@ -18,9 +18,9 @@ function WaitingController($scope, client)
     this.detachEvents = this.detachEvents.bind(this);
 
     // Hydrate scope
-    this.$scope.waitingList = this.game.avatars.items.slice(0);
+    this.$scope.list = this.game.avatars.items.slice(0);
 
-    this.$scope.$on('$destroy', this.detachEvents);
+    this.$scope.$on('$destroy', this.onStart);
 
     this.attachEvents();
 }
@@ -31,7 +31,6 @@ function WaitingController($scope, client)
 WaitingController.prototype.attachEvents = function()
 {
     this.client.on('ready', this.onReady);
-    this.client.on('round:new', this.onStart);
 };
 
 /**
@@ -40,7 +39,6 @@ WaitingController.prototype.attachEvents = function()
 WaitingController.prototype.detachEvents = function()
 {
     this.client.off('ready', this.onReady);
-    this.client.off('round:new', this.onStart);
 };
 
 /**
@@ -66,7 +64,7 @@ WaitingController.prototype.onReady = function(e)
  */
 WaitingController.prototype.onStart = function(e)
 {
-    delete this.$scope.list;
+    this.$scope.list.length = 0;
     this.detachEvents();
 };
 
