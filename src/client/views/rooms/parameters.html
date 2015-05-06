@@ -20,7 +20,7 @@
             <span ng-repeat="preset in ::config.presets" ng-click="togglePreset(preset)" class="preset" ng-class="{ 'active': preset == config.preset, 'disabled': !master }">
                 {{ ::preset.name }}
             </span>
-            <span ng-if="config.preset == config.customPreset" ng-click="togglePreset(preset)" class="preset active" ng-class="{'disabled': !master}">
+            <span ng-if="config.preset == config.customPreset" ng-click="togglePreset(config.customPreset)" class="preset active" ng-class="{'disabled': !master}">
                 {{ ::config.customPreset.name }}
             </span>
         </div>
