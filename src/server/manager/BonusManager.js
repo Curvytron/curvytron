@@ -67,7 +67,9 @@ BonusManager.prototype.popBonus = function ()
             var position = this.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
                 bonus    = this.getRandomBonus(position);
 
-            this.add(bonus);
+            if (bonus) {
+                this.add(bonus);
+            }
         }
 
         this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
@@ -119,7 +121,7 @@ BonusManager.prototype.testCatch = function(avatar)
  */
 BonusManager.prototype.add = function (bonus)
 {
-    if (bonus && BaseBonusManager.prototype.add.call(this, bonus)) {
+    if (BaseBonusManager.prototype.add.call(this, bonus)) {
         this.world.addBody(bonus.body);
         this.emit('bonus:pop', { game: this.game, bonus: bonus });
 
@@ -165,16 +167,16 @@ BonusManager.prototype.getRandomPopingTime  = function()
  */
 BonusManager.prototype.getRandomBonus = function(position)
 {
-    if (!this.bonusTypes.length) { return; }
+    if (!this.bonusTypes.length) { return null; }
 
-    var total = this.bonusTypes.length,
-        pot = [],
+    var total   = this.bonusTypes.length,
+        pot     = [],
         bonuses = [],
         bonus,
         probability;
 
     for (var i = 0; i < total; i++) {
-        bonus = new (this.bonusTypes[i])(position);
+        bonus       = new (this.bonusTypes[i])(position);
         probability = bonus.getProbability(this.game);
 
         if (probability > 0) {
@@ -182,6 +184,7 @@ BonusManager.prototype.getRandomBonus = function(position)
             pot.push(probability + (i > 0 ? pot[pot.length-1] : 0));
         }
     }
+
     var value = Math.random() * pot[pot.length - 1];
 
     for (i = 0; i < total; i++) {
@@ -190,7 +193,7 @@ BonusManager.prototype.getRandomBonus = function(position)
         }
     }
 
-    return bonuses[bonuses.length-1];
+    return null;
 };
 
 /**

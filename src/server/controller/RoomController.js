@@ -179,7 +179,7 @@ RoomController.prototype.removePlayer = function(player)
         if (!client.isPlaying()) {
             this.kickManager.removeClient(client);
 
-            if (this.roomMaster.id === client.id) {
+            if (this.roomMaster && this.roomMaster.id === client.id) {
                 this.removeRoomMaster();
             }
         }
@@ -347,11 +347,14 @@ RoomController.prototype.onPlayerAdd = function(client, data, callback)
 
     var player = new Player(client, name, color);
 
-    this.room.addPlayer(player);
-    client.players.add(player);
-    this.emit('player:add', { room: this.room, player: player});
-    callback({success: true});
-    this.nominateRoomMaster();
+    if (this.room.addPlayer(player)) {
+        client.players.add(player);
+        this.emit('player:add', { room: this.room, player: player});
+        callback({success: true});
+        this.nominateRoomMaster();
+    } else {
+        return callback({success: false, error: 'Could not add player.'});
+    }
 };
 
 /**

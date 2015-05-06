@@ -149,6 +149,7 @@ RoomRepository.prototype.createRoom = function(data, clients)
 
     for (var client, i =  0; i < length; i++) {
         client = clients.getById(data.players[i].client);
+
         if (client) {
             room.addPlayer(new Player(
                 data.players[i].id,
@@ -157,6 +158,8 @@ RoomRepository.prototype.createRoom = function(data, clients)
                 data.players[i].color,
                 data.players[i].ready
             ));
+        } else {
+            console.error('Could not find a client with id "%s" in ids: "%s"', data.players[i].client, clients.toString());
         }
     }
 
