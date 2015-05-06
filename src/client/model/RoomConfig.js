@@ -57,6 +57,26 @@ RoomConfig.prototype.presets = [
 ];
 
 /**
+ * Set open
+ *
+ * @param {String} open
+ */
+RoomConfig.prototype.setOpen = function(open)
+{
+    this.open = open;
+};
+
+/**
+ * Set password
+ *
+ * @param {String} password
+ */
+RoomConfig.prototype.setPassword = function(password)
+{
+    this.password = password;
+};
+
+/**
  * Get available bonuses
  *
  * @return {Array}

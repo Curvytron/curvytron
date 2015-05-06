@@ -355,14 +355,39 @@
                 width: 200px;
                 margin: 0 auto;
                 padding: 0;
-                line-height: 100px;
+                line-height: 96px;
                 vertical-align: middle;
                 text-align: center;
                 border-color: transparent;
+                margin-bottom: 35px;
                 @include transition(border-color 0.2s linear);
 
                 &:focus {
                     border-color: $text-color;
+                }
+            }
+        }
+
+        .public-room {
+            h2 {
+                margin-bottom: 20px;
+            }
+
+            #open {
+                margin-left: 5px;
+            }
+
+            .password-container {
+                margin-top: 20px;
+
+                label, input {
+                    display: inline-block;
+                    width: auto;
+                }
+                input {
+                    width: 90px;
+                    margin-left: 10px;
+                    text-align: center;
                 }
             }
         }

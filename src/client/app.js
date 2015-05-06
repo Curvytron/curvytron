@@ -74,7 +74,8 @@ curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvi
         })
         .when('/room/:name', {
             templateUrl: 'js/views/rooms/detail.html',
-            controller: 'RoomController'
+            controller: 'RoomController',
+            reloadOnSearch: false
         })
         .when('/game/:name', {
             templateUrl: 'js/views/game/play.html',

@@ -14,6 +14,7 @@ function RoomConfigController($scope, repository)
     this.onJoined     = this.onJoined.bind(this);
     this.toggleBonus  = this.toggleBonus.bind(this);
     this.togglePreset = this.togglePreset.bind(this);
+    this.setOpen      = this.setOpen.bind(this);
     this.setMaxScore  = this.setMaxScore.bind(this);
     this.setVariable  = this.setVariable.bind(this);
     this.applyScope   = this.applyScope.bind(this);
@@ -22,9 +23,11 @@ function RoomConfigController($scope, repository)
     // Hydrating scope
     this.$scope.toggleBonus  = this.toggleBonus;
     this.$scope.togglePreset = this.togglePreset;
+    this.$scope.setOpen      = this.setOpen;
     this.$scope.setMaxScore  = this.setMaxScore;
     this.$scope.setVariable  = this.setVariable;
 
+    this.repository.on('config:open', this.digestScope);
     this.repository.on('config:max-score', this.digestScope);
     this.repository.on('config:variable', this.digestScope);
     this.repository.on('config:bonus', this.digestScope);
@@ -94,6 +97,21 @@ RoomConfigController.prototype.applyPreset = function(preset)
         }
 
         this.config.preset = preset;
+    }
+};
+
+/**
+ * Set open
+ */
+RoomConfigController.prototype.setOpen = function(open)
+{
+    if (this.repository.amIMaster()) {
+        var config = this.config;
+
+        this.repository.setConfigOpen(open, function (result) {
+            config.setOpen(result.open);
+            config.setPassword(result.password);
+        });
     }
 };
 
