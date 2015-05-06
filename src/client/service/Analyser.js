@@ -26,7 +26,7 @@ function Analyser($rootScope)
  */
 Analyser.prototype.onRouteChange = function(event, currentScope, previousScope)
 {
-    var path = this.getPath(currentScope.originalPath, currentScope.pathParams),
+    var path  = this.getPath(currentScope.originalPath, currentScope.pathParams),
         title = this.getTitle(currentScope.$$route.controller, currentScope.params);
 
     this.sendPageView(path, title);
@@ -81,8 +81,5 @@ Analyser.prototype.getTitle = function(controller, params)
  */
 Analyser.prototype.sendPageView = function(page, title)
 {
-    ga('send', 'pageview', {
-        page: page,
-        title: title
-    });
+    ga('send', 'pageview', {page: page, title: title});
 };

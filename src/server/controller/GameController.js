@@ -45,7 +45,7 @@ function GameController(game)
  *
  * @type {Number}
  */
-GameController.prototype.waitingTime = 5000;
+GameController.prototype.waitingTime = 10000;
 
 /**
  * Load game

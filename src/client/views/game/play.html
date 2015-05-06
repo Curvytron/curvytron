@@ -2,7 +2,7 @@
     <section id="game-wrapper">
         <aside id="game-infos">
             <header><a href="/#/" class="logo"><img src="images/logo.svg" alt="Curvytron" id="logo" /> Curvytron</a></header>
-            <div class="maxScore"><i class="icon-trophy"></i><span>{{ ::game.maxScore }}</span></div>
+            <div class="maxScore"><i class="icon-trophy"></i><span>{{ game.maxScore }}</span></div>
             <h3 title="{{ ::game.name }}">{{ ::game.name }}</h3>
 
             <span id="sound" class="btn-toggle sound pull-right" ng-class="{ active: sound.active }" ng-click="toggleSound()">

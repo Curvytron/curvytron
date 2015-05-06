@@ -70,7 +70,11 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
 
     if (!this.profile.isComplete()) {
         this.profile.on('close', this.joinRoom);
-        this.profile.controller.openProfile();
+        if (this.profile.controller.loaded) {
+            this.profile.controller.openProfile();
+        } else {
+            this.profile.controller.on('loaded', this.profile.controller.openProfile);
+        }
     } else {
         this.joinRoom();
     }
