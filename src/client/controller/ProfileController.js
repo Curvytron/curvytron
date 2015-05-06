@@ -10,11 +10,14 @@
  */
 function ProfileController($scope, profile, radio, sound)
 {
+    EventEmitter.call(this);
+
     this.$scope   = $scope;
     this.profile  = profile;
     this.radio    = radio;
     this.sound    = sound;
     this.open     = false;
+    this.loaded   = false;
     this.tuto     = null;
     this.panel    = null;
     this.controls = null;
@@ -44,13 +47,18 @@ function ProfileController($scope, profile, radio, sound)
     this.profile.on('change', this.digestScope);
 }
 
+ProfileController.prototype = Object.create(EventEmitter.prototype);
+ProfileController.prototype.constructor = ProfileController;
+
 /**
  * On dom loaded
  */
 ProfileController.prototype.onLoaded = function()
 {
-    this.panel = document.querySelector('.panel');
-    this.tuto  = this.panel.querySelector('.profile-tuto');
+    this.panel  = document.querySelector('.panel');
+    this.tuto   = this.panel.querySelector('.profile-tuto');
+    this.loaded = true;
+    this.emit('loaded');
 };
 
 /**
