@@ -12,30 +12,28 @@ function GameController($scope, $routeParams, $location, client, repository, cha
 {
     document.body.classList.add('game-mode');
 
-    this.$scope          = $scope;
-    this.$location       = $location;
-    this.client          = client;
-    this.repository      = repository;
-    this.radio           = radio;
-    this.chat            = chat;
-    this.sound           = sound;
-    this.room            = null;
-    this.game            = null;
-    this.assetsLoaded    = false;
-    this.setup           = false;
-    this.renderElement   = null;
+    this.$scope       = $scope;
+    this.$location    = $location;
+    this.client       = client;
+    this.repository   = repository;
+    this.radio        = radio;
+    this.chat         = chat;
+    this.sound        = sound;
+    this.room         = null;
+    this.game         = null;
+    this.assetsLoaded = false;
+    this.setup        = false;
 
     // Binding
-    this.onAssetsLoaded = this.onAssetsLoaded.bind(this);
-    this.onMove         = this.onMove.bind(this);
-    this.onBorderless   = this.onBorderless.bind(this);
-    this.onSpectate     = this.onSpectate.bind(this);
-    this.onUnload       = this.onUnload.bind(this);
-    this.onExit         = this.onExit.bind(this);
-    this.onFirstRound   = this.onFirstRound.bind(this);
-    this.backToRoom     = this.backToRoom.bind(this);
-    this.applyScope     = this.applyScope.bind(this);
-    this.digestScope    = this.digestScope.bind(this);
+    this.checkReady   = this.checkReady.bind(this);
+    this.onMove       = this.onMove.bind(this);
+    this.onSpectate   = this.onSpectate.bind(this);
+    this.onUnload     = this.onUnload.bind(this);
+    this.onExit       = this.onExit.bind(this);
+    this.onFirstRound = this.onFirstRound.bind(this);
+    this.backToRoom   = this.backToRoom.bind(this);
+    this.applyScope   = this.applyScope.bind(this);
+    this.digestScope  = this.digestScope.bind(this);
 
     // Hydrate scope:
     this.$scope.radio           = this.radio;
@@ -71,7 +69,6 @@ GameController.prototype.confirmation = 'Are you sure you want to leave the game
 GameController.prototype.attachEvents = function()
 {
     // Close on end?
-    this.repository.on('borderless', this.onBorderless);
     this.repository.on('spectate', this.onSpectate);
 };
 
@@ -80,7 +77,6 @@ GameController.prototype.attachEvents = function()
  */
 GameController.prototype.detachEvents = function()
 {
-    this.repository.off('borderless', this.onBorderless);
     this.repository.off('spectate', this.onSpectate);
 };
 
@@ -96,10 +92,8 @@ GameController.prototype.loadGame = function(game)
     this.game = game;
     this.room = game.room;
 
-    this.renderElement = document.getElementById('render');
-
     this.game.loadDOM();
-    this.game.bonusManager.on('load', this.onAssetsLoaded);
+    this.game.bonusManager.on('load', this.checkReady);
 
     gamepadListener.stop();
 
@@ -128,21 +122,12 @@ GameController.prototype.loadGame = function(game)
 };
 
 /**
- * On assets loaded
- */
-GameController.prototype.onAssetsLoaded = function()
-{
-    this.assetsLoaded = true;
-    this.game.bonusManager.off('load', this.onAssetsLoaded);
-    this.checkReady();
-};
-
-/**
  * Check loading is done
  */
 GameController.prototype.checkReady = function()
 {
-    if (this.assetsLoaded && this.setup) {
+    if (this.game.bonusManager.loaded && this.setup) {
+        this.game.bonusManager.off('load', this.checkReady);
         this.client.addEvent('ready');
     }
 };
@@ -166,16 +151,6 @@ GameController.prototype.onFirstRound = function(e)
 GameController.prototype.onMove = function(e)
 {
     this.client.addEvent('player:move', {avatar: e.detail.avatar.id, move: e.detail.move ? e.detail.move : 0});
-};
-
-/**
- * On borderless
- *
- * @param {Event} e
- */
-GameController.prototype.onBorderless = function(e)
-{
-    this.renderElement.classList.toggle('borderless', this.game.borderless);
 };
 
 /**

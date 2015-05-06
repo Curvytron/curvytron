@@ -142,15 +142,13 @@ GameController.prototype.onPlayerLeave = function(data)
  */
 GameController.prototype.attachEvents = function(client)
 {
-    var avatar;
-
     client.on('ready', this.callbacks.onReady);
 
     if (!client.players.isEmpty()) {
         client.on('player:move', this.callbacks.onMove);
     }
 
-    for (var i = client.players.items.length - 1; i >= 0; i--) {
+    for (var avatar, i = client.players.items.length - 1; i >= 0; i--) {
         avatar = client.players.items[i].getAvatar();
 
         avatar.on('die', this.onDie);
@@ -263,12 +261,10 @@ GameController.prototype.countSpectators = function()
  */
 GameController.prototype.onReady = function(client)
 {
-    var avatar;
-
     if (this.game.started) {
         this.attachSpectator(client);
     } else {
-        for (var i = client.players.items.length - 1; i >= 0; i--) {
+        for (var avatar, i = client.players.items.length - 1; i >= 0; i--) {
             avatar = client.players.items[i].getAvatar();
             avatar.ready = true;
             this.socketGroup.addEvent('ready', {avatar: avatar.id});
@@ -294,15 +290,17 @@ GameController.prototype.checkReady = function()
  */
 GameController.prototype.stopWaiting = function()
 {
-    this.waiting = clearTimeout(this.waiting);
+    if (this.waiting && !this.game.isReady()) {
+        this.waiting = clearTimeout(this.waiting);
 
-    var avatars = this.game.getLoadingAvatars();
+        var avatars = this.game.getLoadingAvatars();
 
-    for (var i = avatars.items.length - 1; i >= 0; i--) {
-        this.detach(avatars.items[i].player.client);
+        for (var i = avatars.items.length - 1; i >= 0; i--) {
+            this.detach(avatars.items[i].player.client);
+        }
+
+        this.checkReady();
     }
-
-    this.checkReady();
 };
 
 /**

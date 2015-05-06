@@ -11,6 +11,7 @@ function BonusManager(game)
 
     this.onLoad = this.onLoad.bind(this);
 
+    this.loaded = false;
     this.sprite = new SpriteAsset('images/bonus.png', 3, 4, this.onLoad, true);
     this.assets = {};
 }
@@ -59,6 +60,7 @@ BonusManager.prototype.onLoad = function()
 
     Bonus.prototype.assets = this.assets;
 
+    this.loaded = true;
     this.emit('load');
 };
 
