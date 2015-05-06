@@ -274,13 +274,10 @@ RoomController.prototype.setColor = function(player)
     var controller = this;
 
     this.repository.setColor(
-        player.id,
+        player,
         player.color,
         function (result) {
-            if (!result.success) {
-                console.error('Could not set color %s for player %s', player.color, player.name);
-                player.color = result.color;
-            } else if (player.profile) {
+            if (player.profile) {
                 controller.profile.setColor(player.color);
             }
             controller.digestScope();

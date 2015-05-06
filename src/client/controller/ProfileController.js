@@ -27,6 +27,7 @@ function ProfileController($scope, profile, radio, sound)
     this.onLoaded      = this.onLoaded.bind(this);
     this.onLoadControl = this.onLoadControl.bind(this);
     this.blurControls  = this.blurControls.bind(this);
+    this.digestScope   = this.digestScope.bind(this);
 
     this.$scope.profile       = this.profile;
     this.$scope.radio         = this.radio;
@@ -39,6 +40,8 @@ function ProfileController($scope, profile, radio, sound)
     this.$scope.onLoaded      = this.onLoaded;
     this.$scope.onLoadControl = this.onLoadControl;
     this.$scope.blurControls  = this.blurControls;
+
+    this.profile.on('change', this.digestScope);
 }
 
 /**

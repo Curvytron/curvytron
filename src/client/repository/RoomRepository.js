@@ -287,9 +287,15 @@ RoomRepository.prototype.leave = function()
 RoomRepository.prototype.setColor = function(player, color, callback)
 {
     this.client.addEvent('room:color', {
-        player: player,
+        player: player.id,
         color: color.substr(0, Player.prototype.colorMaxLength)
-    }, callback);
+    }, function (result) {
+        if (!result.success) {
+            console.error('Could not set color %s for player %s', player.color, player.name);
+        }
+        player.color = result.color;
+        callback(result);
+    });
 };
 
 /**

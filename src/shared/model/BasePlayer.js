@@ -51,7 +51,7 @@ BasePlayer.prototype.setName = function(name)
  */
 BasePlayer.prototype.setColor = function(color)
 {
-    if (!this.validateColor(color)) { return false; }
+    if (!this.validateColor(color, true)) { return false; }
 
     this.color = color;
 
