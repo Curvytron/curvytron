@@ -159,7 +159,7 @@ RoomRepository.prototype.createRoom = function(data, clients)
                 data.players[i].ready
             ));
         } else {
-            console.error('Could not find a client with id "%s" in ids: "%s"', data.players[i].client, clients.toString());
+            console.error('Could not find a client:', data.players[i].client, clients);
         }
     }
 
