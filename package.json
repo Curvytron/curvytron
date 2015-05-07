@@ -43,7 +43,8 @@
   },
   "dependencies": {
     "express": "~4.11.*",
-    "faye-websocket": "^0.9.*"
+    "faye-websocket": "^0.9.*",
+    "gulp-wrap": "^0.11.0"
   },
   "optionalDependencies": {
     "influx": "^3.2.*",
