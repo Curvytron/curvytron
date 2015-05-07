@@ -112,6 +112,7 @@ RoomController.prototype.attach = function(client, callback)
     } else {
         callback({success: false, error: 'Client ' + client.id + ' already in the room.'});
     }
+    this.checkIntegrity();
 };
 
 /**
@@ -132,6 +133,7 @@ RoomController.prototype.detach = function(client)
         this.socketGroup.addEvent('client:remove', client.id);
         this.emit('client:remove', { room: this.room, client: client});
     }
+    this.checkIntegrity();
 };
 
 /**
@@ -290,6 +292,20 @@ RoomController.prototype.checkForClose = function()
 {
     if (this.clients.isEmpty()) {
         this.room.close();
+    }
+};
+
+/**
+ * Check integrity
+ */
+RoomController.prototype.checkIntegrity = function()
+{
+    for (var player, i = this.room.players.items.length - 1; i >= 0; i--) {
+        player = this.room.players.items[i];
+        if (!player.client || !this.clients.exists(player.client)) {
+            console.error('Debug player:', this.clients.ids, player);
+            this.removePlayer(player);
+        }
     }
 };
 
