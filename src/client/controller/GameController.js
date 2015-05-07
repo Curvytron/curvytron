@@ -169,7 +169,6 @@ GameController.prototype.onExit = function()
 {
     if ((this.room && this.$location.path() !== this.room.getUrl()) || (this.game && this.game.started)) {
         this.repository.parent.leave();
-        this.repository.leave();
         this.chat.clear();
     }
 
