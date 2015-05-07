@@ -26,6 +26,7 @@ function RoomController(room)
     this.onKick           = this.onKick.bind(this);
     this.checkForClose    = this.checkForClose.bind(this);
     this.removeRoomMaster = this.removeRoomMaster.bind(this);
+    this.onPlayersClear   = this.onPlayersClear.bind(this);
 
     this.callbacks = {
         onTalk: function (data) { controller.onTalk(this, data[0], data[1]); },
@@ -144,6 +145,7 @@ RoomController.prototype.attachEvents = function(client)
     client.on('room:ready', this.callbacks.onReady);
     client.on('room:color', this.callbacks.onColor);
     client.on('room:name', this.callbacks.onName);
+    client.on('players:clear', this.onPlayersClear);
 };
 
 /**
@@ -163,6 +165,7 @@ RoomController.prototype.detachEvents = function(client)
     client.removeListener('room:ready', this.callbacks.onReady);
     client.removeListener('room:color', this.callbacks.onColor);
     client.removeListener('room:name', this.callbacks.onName);
+    client.removeListener('players:clear', this.onPlayersClear);
 };
 
 /**
@@ -254,7 +257,7 @@ RoomController.prototype.isRoomMaster = function(client)
  */
 RoomController.prototype.onClientAdd = function(client)
 {
-    client.players.clear();
+    client.clearPlayers();
 
     if (this.room.game) {
         this.room.game.controller.attach(client);
@@ -276,11 +279,7 @@ RoomController.prototype.onClientRemove = function(client)
         this.room.game.controller.detach(client);
     }
 
-    for (var i = client.players.items.length - 1; i >= 0; i--) {
-        this.room.removePlayer(client.players.items[i]);
-    }
-
-    client.players.clear();
+    client.clearPlayers();
 
     if (this.room.players.isEmpty()) {
         setTimeout(this.checkForClose, this.timeToClose);
@@ -309,6 +308,18 @@ RoomController.prototype.checkForClose = function()
 RoomController.prototype.onLeave = function(client)
 {
     this.detach(client);
+};
+
+/**
+ * On client clear players
+ *
+ * @param {SocketClient} client
+ */
+RoomController.prototype.onPlayersClear = function(client)
+{
+    for (var i = client.players.items.length - 1; i >= 0; i--) {
+        this.removePlayer(client.players.items[i]);
+    }
 };
 
 /**

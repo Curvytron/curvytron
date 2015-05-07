@@ -56,6 +56,15 @@ SocketClient.prototype.isPlaying = function()
 };
 
 /**
+ * Clear players
+ */
+SocketClient.prototype.clearPlayers = function()
+{
+    this.emit('players:clear', this);
+    this.players.clear();
+};
+
+/**
  * Who am I?
  */
 SocketClient.prototype.identify = function(event)
