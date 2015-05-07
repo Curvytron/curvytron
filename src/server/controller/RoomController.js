@@ -410,7 +410,11 @@ RoomController.prototype.onColor = function(client, data, callback)
     var player = client.players.getById(data.player),
         color = data.color;
 
-    if (player && player.setColor(color)) {
+    if (!player) {
+        return callback({success: false});
+    }
+
+    if (player.setColor(color)) {
         callback({success: true, color: player.color});
         this.socketGroup.addEvent('player:color', { player: player.id, color: player.color });
     } else {
