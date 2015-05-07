@@ -96,6 +96,8 @@ RoomController.prototype.unloadRoom = function()
 RoomController.prototype.attach = function(client, callback)
 {
     if (this.clients.add(client)) {
+        this.attachEvents(client);
+        this.onClientAdd(client);
         callback({
             success: true,
             room: this.room.serialize(),
@@ -104,8 +106,6 @@ RoomController.prototype.attach = function(client, callback)
             messages: this.chat.serialize(100),
             votes: this.kickManager.votes.map(function () { return this.serialize(); }).items
         });
-        this.attachEvents(client);
-        this.onClientAdd(client);
         this.socketGroup.addEvent('client:add', client.id);
         this.emit('client:add', { room: this.room, client: client});
     } else {
@@ -121,8 +121,13 @@ RoomController.prototype.attach = function(client, callback)
 RoomController.prototype.detach = function(client)
 {
     if (this.clients.remove(client)) {
+        if (this.room.game) {
+            this.room.game.controller.detach(client);
+        }
+
+        client.clearPlayers();
         this.detachEvents(client);
-        this.onClientRemove(client);
+        this.promptCheckForClose();
         this.socketGroup.addEvent('client:remove', client.id);
         this.emit('client:remove', { room: this.room, client: client});
     }
@@ -269,23 +274,12 @@ RoomController.prototype.onClientAdd = function(client)
 };
 
 /**
- * On leave room
- *
- * @param {SocketClient} client
+ * Prompt a check for close
  */
-RoomController.prototype.onClientRemove = function(client)
-{
-    if (this.room.game) {
-        this.room.game.controller.detach(client);
-    }
-
-    client.clearPlayers();
-
-    if (this.room.players.isEmpty()) {
+RoomController.prototype.promptCheckForClose = function() {
+    if (this.clients.isEmpty()) {
         setTimeout(this.checkForClose, this.timeToClose);
     }
-
-    this.socketGroup.addEvent('client:remove', {client: client.id});
 };
 
 /**
@@ -293,7 +287,7 @@ RoomController.prototype.onClientRemove = function(client)
  */
 RoomController.prototype.checkForClose = function()
 {
-    if (this.room.players.isEmpty()) {
+    if (this.clients.isEmpty()) {
         this.room.close();
     }
 };

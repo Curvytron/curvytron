@@ -13,6 +13,7 @@ function BaseSocketClient(socket, interval)
     this.events    = [];
     this.callbacks = [];
     this.loop      = null;
+    this.connected = true;
 
     this.flush     = this.flush.bind(this);
     this.onMessage = this.onMessage.bind(this);
@@ -30,6 +31,7 @@ BaseSocketClient.prototype.constructor = BaseSocketClient;
  */
 BaseSocketClient.prototype.onClose = function()
 {
+    this.connected = false;
     this.emit('close', this);
     this.stop();
     this.detachEvents();
