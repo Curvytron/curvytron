@@ -273,50 +273,33 @@ li.player-row {
     }
 }
 
-.social-container {
+
+.reddit-link, .twitter-link {
+    position: absolute;
     text-align: center;
-    padding: 40px 0 30px 0;
+    right: 25px;
+    top: 80px;
+    font-size: 18px;
+    padding: 0 0 10px 10px;
+    @include transition(all 0.1s linear);
 
-    a {
-        display: inline-block;
-        text-align: center;
-        margin: 0 30px;
-        font-size: 20px;
-        position: relative;
-        padding: 0 0 10px 10px;
-
-        &::after {
-            height: 2px;
-            bottom: 0;
-            position: absolute;
-        }
-
-        &.reddit-link {
-            color: #ff4500;
-
-            &::after {
-                background: #ff4500;
-            }
-        }
-
-        &.twitter-link {
-            color: #55acee;
-
-            &::after {
-                background: #55acee;
-            }
-        }
-
-        i {
-            font-size: 30px;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-
-        span {
-            display: inline-block;
-            vertical-align: middle;
-            font-weight: 400;
-        }
+    &, &:visited {
+        color: #FFF;
     }
+
+    &:hover {
+        opacity: 0.7;
+        text-decoration: none;
+    }
+
+    &.reddit-link {
+        top: 120px;
+    }
+
+    i {
+        font-size: 24px;
+        margin-left: 5px;
+        vertical-align: middle;
+    }
+
 }
