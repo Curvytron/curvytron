@@ -348,6 +348,11 @@ RoomController.prototype.onPlayerAdd = function(client, data, callback)
         return callback({success: false, error: 'This username is already used.'});
     }
 
+    if (!this.clients.exists(client)) {
+        console.error('Unknown client.');
+        return callback({success: false, error: 'Unknown client'});
+    }
+
     var player = new Player(client, name, color);
 
     if (this.room.addPlayer(player)) {
