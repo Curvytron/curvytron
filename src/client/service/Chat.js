@@ -126,7 +126,7 @@ Chat.prototype.talk = function()
     if (this.message.content.length) {
         this.client.addEvent(
             'room:talk',
-            this.message.content.substr(0, this.message.maxLength),
+            this.message.content.substr(0, Message.prototype.maxLength),
             function (result) {
                 if (result.success) {
                     chat.message.clear();

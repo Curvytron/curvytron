@@ -38,6 +38,13 @@ Message.prototype.name = 'Anonymous';
 Message.prototype.icon = null;
 
 /**
+ * Message max length
+ *
+ * @type {Number}
+ */
+Message.prototype.maxLength = 140;
+
+/**
  * Get date to text
  *
  * @return {String}

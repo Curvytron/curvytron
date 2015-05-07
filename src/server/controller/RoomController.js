@@ -388,7 +388,7 @@ RoomController.prototype.onPlayerRemove = function(client, data, callback)
  */
 RoomController.prototype.onTalk = function(client, content, callback)
 {
-    var message = new Message(client, content),
+    var message = new Message(client, content.substr(0, Message.prototype.maxLength)),
         success = this.chat.addMessage(message);
 
     callback({success: success});
