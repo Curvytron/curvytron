@@ -48,7 +48,7 @@
         width: $profile-width;
         border-left: $profile-border-size solid #444;
         background: $profile-background;
-        z-index: 30;
+        z-index: 100;
         @include transition(right 0.25s ease);
 
         .title {

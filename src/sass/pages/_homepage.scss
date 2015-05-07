@@ -231,6 +231,14 @@ li.player-row {
                     }
                 }
 
+                .icon-lock {
+                    position: absolute;
+                    top: 30px;
+                    left: -80px;
+                    font-size: 40px;
+                    color: #999;
+                }
+
                 .room-password-col {
                     position: absolute;
                     width: 150px;
@@ -265,3 +273,33 @@ li.player-row {
     }
 }
 
+
+.reddit-link, .twitter-link {
+    position: absolute;
+    text-align: center;
+    right: 25px;
+    top: 80px;
+    font-size: 18px;
+    padding: 0 0 10px 10px;
+    @include transition(all 0.1s linear);
+
+    &, &:visited {
+        color: #FFF;
+    }
+
+    &:hover {
+        opacity: 0.7;
+        text-decoration: none;
+    }
+
+    &.reddit-link {
+        top: 120px;
+    }
+
+    i {
+        font-size: 24px;
+        margin-left: 5px;
+        vertical-align: middle;
+    }
+
+}
