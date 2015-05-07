@@ -40,6 +40,7 @@
             <tbody>
                 <tr ng-repeat="room in rooms.items" ng-if="!room.game" ng-click="join(room)" class="room" ng-class="{private: !room.open}">
                     <td class="room-name">{{ ::room.name }}</td>
+                    <td class="room-nb-players">
                         <ng-pluralize count="room.players" when="{
                             '0': 'No player',
                             'one': '1 player',
