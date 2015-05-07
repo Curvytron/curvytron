@@ -46,6 +46,7 @@ function RoomController(room)
     };
 
     this.loadRoom();
+    this.promptCheckForClose();
 }
 
 RoomController.prototype = Object.create(EventEmitter.prototype);
