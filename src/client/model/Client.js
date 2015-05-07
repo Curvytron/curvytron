@@ -1,11 +1,11 @@
 /**
  * Distant client
  */
-function Client(id)
+function Client(id, active)
 {
     this.id      = id;
     this.players = new Collection();
-    this.active  = true;
+    this.active  = typeof(active) === 'undefined' || active;
     this.master  = false;
 }
 
