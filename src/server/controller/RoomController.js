@@ -303,7 +303,7 @@ RoomController.prototype.checkIntegrity = function()
     for (var player, i = this.room.players.items.length - 1; i >= 0; i--) {
         player = this.room.players.items[i];
         if (!player.client || !this.clients.exists(player.client)) {
-            console.error('Debug player:', this.clients.ids, player);
+            console.error('"Lost" player removed.');
             this.removePlayer(player);
         }
     }
