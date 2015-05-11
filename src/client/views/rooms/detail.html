@@ -9,12 +9,13 @@
             <ng-include src="'js/views/rooms/parameters.html'"></ng-include>
         </div>
 
+        <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
+            <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
+            <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ ::nameMaxLength }}" />
+            <div class="clearfix"></div>
+        </form>
+
         <h3>
-            <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
-                <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
-                <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ ::nameMaxLength }}" />
-                <div class="clearfix"></div>
-            </form>
             <p class="count">
                 <ng-pluralize count="room.players.items.length" when="{
                     '0': 'No player',
@@ -22,8 +23,8 @@
                     'other': '{} players'}"
                 />
             </p>
-            <div class="clearfix"></div>
         </h3>
+        <div class="clearfix"></div>
 
         <div class="room-details">
 

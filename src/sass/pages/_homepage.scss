@@ -42,16 +42,24 @@ li.player-row {
         float: left;
 
         img {
-            width: 90%;
-            max-width: 100px;
+            max-width: 120px;
             height: auto;
-            background-color: $game-background;
-            opacity: 0.15;
+            border-radius: 100px;
         }
 
         .content {
-            font-style: italic;
-            padding: 0 40px;
+            padding: 10px 50px;
+            line-height: 28px;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transition: all 0.2s ease;
+        }
+
+        &:hover {
+            .content {
+                transform: translateY(-5px);
+                color: #444;
+            }
         }
     }
 }
