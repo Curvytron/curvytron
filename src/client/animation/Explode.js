@@ -74,9 +74,9 @@ Explode.prototype.randomize = function(value, factor)
  */
 Explode.prototype.draw = function ()
 {
-    this.clear();
-
     if (this.done) { return; }
+
+    this.clear();
 
     this.lastRender = new Date().getTime();
     this.cleared    = false;
@@ -96,6 +96,7 @@ Explode.prototype.draw = function ()
 
         this.effect.setOpacity(1);
     } else {
+        this.clear();
         this.done = true;
     }
 };
