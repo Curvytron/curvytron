@@ -67,20 +67,21 @@
             background: $aside-background;
             position: fixed;
             z-index: 100;
+            width: 50px;
 
             &.sound {
-                left: $aside-width - $aside-border-size - 80px;
+                left: $aside-width - $aside-border-size - 50px;
                 top: $game-header-height + 80px;
             }
 
             &.radio-sound {
-                left: $aside-width - $aside-border-size - 160px;
+                left: $aside-width - $aside-border-size - 100px;
                 top: $game-header-height + 80px;
             }
 
             &::after {
                 top: 40px;
-                left: 22px;
+                left: 7px;
             }
         }
 
@@ -120,8 +121,8 @@
         h3 {
             margin: 0;
             color: #FFF;
-            padding: 0 20px;
-            font-size: 30px;
+            padding: 0 15px;
+            font-size: 24px;
             font-weight: 400;
             height: 80px;
             line-height: 80px;
@@ -261,15 +262,17 @@
         }
 
         .fps {
-            width: 50px;
+            width: 45px;
             text-align: right;
             margin-left: 5px;
+            font-size: 14px;
         }
 
         .ping {
             width: 52px;
             text-align: right;
             margin-left: 5px;
+            font-size: 14px;
         }
 
         footer {
