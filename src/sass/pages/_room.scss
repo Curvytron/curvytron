@@ -100,6 +100,58 @@
         }
     }
 
+    .start-now {
+        float: right;
+        margin-right: 25px;
+        height: 60px;
+        width: 180px;
+        font-size: 20px;
+        text-align: center;
+        line-height: 56px;
+        border: 2px solid $header-background-from;
+        @include horizontal-gradient($header-background-from, $header-background-to);
+        color: #FFF;
+        font-weight: 300;
+        padding: 0;
+        text-transform: uppercase;
+        @include transition(all 0.15s linear);
+        position: relative;
+
+        &:hover {
+            border-color: $header-background-to;
+
+            span.label {
+                @include opacity(75);
+            }
+
+            &::after {
+                @include opacity(100);
+            }
+        }
+
+        span {
+            position: relative;
+            z-index: 100;
+
+            &.label {
+                @include transition(all 0.15s linear);
+            }
+        }
+
+        &::after {
+            content: '';
+            @include opacity(0);
+            z-index: 80;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            @include horizontal-gradient($header-background-to, $header-background-from);
+            @include transition(all 0.15s linear);
+        }
+    }
+
     .room-players {
         width: 68%;
         float: right;

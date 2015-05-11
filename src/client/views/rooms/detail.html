@@ -15,6 +15,11 @@
             <div class="clearfix"></div>
         </form>
 
+        <button type="button" class="btn start-now" ng-if="master">
+            <span class="label">Start now!</span>
+            <span id="starter-count"></span>
+        </button>
+
         <h3>
             <p class="count">
                 <ng-pluralize count="room.players.items.length" when="{
