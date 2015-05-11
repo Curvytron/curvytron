@@ -224,7 +224,7 @@ GameRepository.prototype.onAngle = function(e)
     var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
-        avatar.setAngle(e.detail[1]);
+        avatar.setAngle(this.compressor.decompress(e.detail[1]));
     }
 };
 

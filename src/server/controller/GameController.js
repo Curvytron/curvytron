@@ -351,7 +351,7 @@ GameController.prototype.onPosition = function(data)
  */
 GameController.prototype.onAngle = function(data)
 {
-    this.socketGroup.addEvent('angle', [data.avatar.id, data.angle]);
+    this.socketGroup.addEvent('angle', [data.avatar.id, this.compressor.compress(data.angle)]);
 };
 
 /**
