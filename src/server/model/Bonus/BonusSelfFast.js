@@ -1,11 +1,12 @@
 /**
  * Fast Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusSelfFast(position)
+function BonusSelfFast(x, y)
 {
-    BonusSelf.call(this, position);
+    BonusSelf.call(this, x, y);
 }
 
 BonusSelfFast.prototype = Object.create(BonusSelf.prototype);

@@ -129,7 +129,7 @@ BaseGame.prototype.loop = function()
 {
     this.newFrame();
 
-    var now = new Date().getTime(),
+    var now  = new Date().getTime(),
         step = now - this.rendered;
 
     this.rendered = now;

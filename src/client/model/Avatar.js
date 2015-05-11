@@ -14,6 +14,8 @@ function Avatar(player)
     this.clearWidth = this.canvas.element.width;
     this.startX     = 0;
     this.startY     = 0;
+    this.clearX     = 0;
+    this.clearY     = 0;
 
     if (this.local) {
         this.input = new PlayerInput(this, player.getBinding());
@@ -46,7 +48,7 @@ Avatar.prototype.arrowSize = 200;
  */
 Avatar.prototype.update = function(step)
 {
-    if (!this.changed) {
+    if (!this.changed && this.alive) {
         this.updateAngle(step);
         this.updatePosition(step);
     }
@@ -85,7 +87,6 @@ Avatar.prototype.setScale = function(scale)
 
     if (width !== this.canvas.element.width) {
         this.canvas.setDimension(width, width, scale);
-        this.clearWidth = this.canvas.element.width;
         this.changed    = true;
         this.drawHead();
     }

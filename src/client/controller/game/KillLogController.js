@@ -62,6 +62,13 @@ KillLogController.prototype.onDie = function(e)
     }
 };
 
+/**
+ * Get element
+ *
+ * @param {Message} message
+ *
+ * @return {Element}
+ */
 KillLogController.prototype.getElement = function(message) {
     var element = document.createElement('div');
 
@@ -79,7 +86,7 @@ KillLogController.prototype.getElement = function(message) {
 KillLogController.prototype.add = function(message)
 {
     var controller = this,
-        element = this.getElement(message);
+        element    = this.getElement(message);
 
     this.logs.push(element);
 

@@ -33,7 +33,7 @@ function Explode(avatar, effect)
  *
  * @type {Number}
  */
-Explode.prototype.width = 20;
+Explode.prototype.width = 10;
 
 /**
  * Angle variation
@@ -91,7 +91,7 @@ Explode.prototype.draw = function ()
         for (var particle, i = this.particles.length - 1; i >= 0; i--) {
             particle = this.particles[i];
             particle.update(age);
-            this.effect.drawImage(this.canvas.element, this.effect.round(particle.x), this.effect.round(particle.y), particle.radius, particle.radius);
+            this.effect.drawImage(this.canvas.element, particle.x, particle.y, particle.radius, particle.radius);
         }
 
         this.effect.setOpacity(1);
@@ -110,7 +110,7 @@ Explode.prototype.clear = function ()
 
     for (var particle, width, i = this.particles.length - 1; i >= 0; i--) {
         particle = this.particles[i];
-        this.effect.clearZone(particle.x - 1, particle.y - 1, particle.radius + 2, particle.radius + 2);
+        this.effect.clearZone(particle.x, particle.y, particle.radius, particle.radius);
     }
 
     this.cleared = true;

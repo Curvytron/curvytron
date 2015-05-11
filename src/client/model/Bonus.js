@@ -2,28 +2,34 @@
  * Bonus
  *
  * @param {Number} id
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  * @param {String} type
  * @param {String} affect
  * @param {Number} radius
  * @param {Number} duration
  */
-function Bonus(id, position, type, affect, radius, duration)
+function Bonus(id, x, y, type, affect, radius, duration)
 {
-    BaseBonus.call(this, position);
+    BaseBonus.call(this, x, y);
 
-    this.id        = id;
-    this.type      = type;
-    this.affect    = affect;
-    this.radius    = radius;
-    this.duration  = duration;
-    this.asset     = this.assets[this.type];
-    this.animation = new BounceIn(300);
-    this.width     = this.radius * 2;
-    this.changed   = true;
+    this.id         = id;
+    this.type       = type;
+    this.affect     = affect;
+    this.radius     = radius;
+    this.duration   = duration;
+    this.asset      = this.assets[this.type];
+    this.animation  = new BounceIn(300);
+    this.changed    = true;
+    this.drawRadius = 0;
+    this.drawWidth  = 0;
+    this.drawX      = 0;
+    this.drawY      = 0;
 
     this.setEnding     = this.setEnding.bind(this);
     this.toggleOpacity = this.toggleOpacity.bind(this);
+
+    this.update();
 }
 
 Bonus.prototype = Object.create(BaseBonus.prototype);
@@ -37,13 +43,14 @@ Bonus.prototype.constructor = Bonus;
 Bonus.prototype.opacity = 1;
 
 /**
- * Get drawing width
- *
- * @return {Float}
+ * Update bonus for drawing
  */
-Bonus.prototype.getDrawWidth = function()
+Bonus.prototype.update = function()
 {
-    return this.width * this.animation.getValue();
+    this.drawRadius = this.radius * this.animation.getValue();
+    this.drawWidth  = this.drawRadius * 2;
+    this.drawX      = this.x - this.drawRadius,
+    this.drawY      = this.y - this.drawRadius;
 };
 
 /**

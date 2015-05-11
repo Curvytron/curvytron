@@ -1,11 +1,12 @@
 /**
  * Inverse Enemy Straight Angle
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusEnemyStraightAngle(position)
+function BonusEnemyStraightAngle(x, y)
 {
-    BonusEnemy.call(this, position);
+    BonusEnemy.call(this, x, y);
 }
 
 BonusEnemyStraightAngle.prototype = Object.create(BonusEnemy.prototype);

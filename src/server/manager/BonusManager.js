@@ -65,7 +65,7 @@ BonusManager.prototype.popBonus = function ()
 
         if (this.bonuses.count() < this.bonusCap) {
             var position = this.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
-                bonus    = this.getRandomBonus(position);
+                bonus    = this.getRandomBonus(position[0], position[1]);
 
             if (bonus) {
                 this.add(bonus);
@@ -87,7 +87,7 @@ BonusManager.prototype.popBonus = function ()
 BonusManager.prototype.getRandomPosition = function(radius, border)
 {
     var margin = radius + border * this.game.world.size,
-        point = this.game.world.getRandomPoint(margin);
+        point  = this.game.world.getRandomPoint(margin);
 
     while (!this.game.world.testBody(new Body(point, margin)) || !this.world.testBody(new Body(point, margin))) {
         point = this.game.world.getRandomPoint(margin);
@@ -106,7 +106,7 @@ BonusManager.prototype.testCatch = function(avatar)
     if (!avatar.body) {
         throw avatar;
     }
-    var body = this.world.getBody(avatar.body),
+    var body  = this.world.getBody(avatar.body),
         bonus = body ? body.data : null;
 
     if (bonus && this.remove(bonus)) {
@@ -161,11 +161,12 @@ BonusManager.prototype.getRandomPopingTime  = function()
 /**
  * Get random bonus
  *
- * @param {Array} position
+ * @param {Float} x
+ * @param {Float} y
  *
  * @return {Bonus}
  */
-BonusManager.prototype.getRandomBonus = function(position)
+BonusManager.prototype.getRandomBonus = function(x, y)
 {
     if (!this.bonusTypes.length) { return null; }
 
@@ -176,7 +177,7 @@ BonusManager.prototype.getRandomBonus = function(position)
         probability;
 
     for (var i = 0; i < total; i++) {
-        bonus       = new (this.bonusTypes[i])(position);
+        bonus       = new (this.bonusTypes[i])(x, y);
         probability = bonus.getProbability(this.game);
 
         if (probability > 0) {

@@ -265,7 +265,7 @@ GameRepository.prototype.onDie = function(e)
 GameRepository.prototype.onBonusPop = function(e)
 {
     var data  = e.detail,
-        bonus = new Bonus(data.id, data.position, data.type, data.affect, data.radius, data.duration);
+        bonus = new Bonus(data.id, data.x, data.y, data.type, data.affect, data.radius, data.duration);
 
     this.game.bonusManager.add(bonus);
     this.sound.play('bonus-pop');
@@ -297,8 +297,15 @@ GameRepository.prototype.onBonusStack = function(e)
         avatar = this.game.avatars.getById(data.avatar);
 
     if (avatar && avatar.local) {
-        var bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration);
-        avatar.bonusStack[data.method](bonus);
+        avatar.bonusStack[data.method](new Bonus(
+            data.bonus.id,
+            data.bonus.x,
+            data.bonus.y,
+            data.bonus.type,
+            data.bonus.affect,
+            data.bonus.radius,
+            data.bonus.duration
+        ));
     }
 };
 

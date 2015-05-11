@@ -225,6 +225,9 @@ Game.prototype.drawTail = function(avatar)
 Game.prototype.drawAvatar = function(avatar)
 {
     this.canvas.drawImageTo(avatar.canvas.element, avatar.startX, avatar.startY);
+    avatar.clearX     = avatar.startX;
+    avatar.clearY     = avatar.startY;
+    avatar.clearWidth = avatar.canvas.element.width;
 };
 
 /**
@@ -234,7 +237,7 @@ Game.prototype.drawAvatar = function(avatar)
  */
 Game.prototype.clearAvatar = function(avatar)
 {
-    this.canvas.clearZone(avatar.startX, avatar.startY, avatar.clearWidth, avatar.clearWidth);
+    this.canvas.clearZone(avatar.clearX, avatar.clearY, avatar.clearWidth, avatar.clearWidth);
 };
 
 /**

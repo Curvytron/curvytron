@@ -1,11 +1,12 @@
 /**
  * Small Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusSelfSmall(position)
+function BonusSelfSmall(x, y)
 {
-    BonusSelf.call(this, position);
+    BonusSelf.call(this, x, y);
 }
 
 BonusSelfSmall.prototype = Object.create(BonusSelf.prototype);
