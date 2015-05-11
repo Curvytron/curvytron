@@ -42,7 +42,8 @@ li.player-row {
         float: left;
 
         img {
-            max-width: 120px;
+            width: 120px;
+            max-width: 100%;
             height: auto;
             border-radius: 100px;
         }

@@ -3,11 +3,16 @@
     header {
         padding: 10px 20px;
         margin: 0;
+        text-align: left;
 
         .logo {
 
             &, &:visited {
                 font-size: 20px;
+            }
+
+            &::after {
+                display: none;
             }
 
             img {
@@ -21,6 +26,10 @@
                 margin-left: 10px;
             }
         }
+    }
+
+    .reddit-link, .twitter-link {
+        display: none;
     }
 
     .profile-link {
@@ -51,19 +60,16 @@
     .intro {
         .quote {
             text-align: center;
-            font-size: $font-size-h3;
+            font-size: 20px;
+            line-height: 28px;
             margin: 20px 0 20px;
         }
         .tuto {
             padding: 0 10px;
 
-            .circle {
-                width: 100px;
-                height: auto;
-            }
-
             .content {
                 padding: 0;
+                line-height: 20px;
             }
         }
     }
@@ -83,26 +89,93 @@
         }
     }
 
-    .rooms, .room {
-        margin-top: 0;
 
-        tr {
-            td {
-                height: 50px;
+    .rooms {
+        > tbody {
+            > tr {
+                > td {
+                    border: 0;
+                    height: auto;
 
-                &.room-enter-col {
+                    &.room-name, &.room-nb-players {
+                        padding: 5px 12px;
+                        font-size: 18px;
+                    }
 
-                    width: auto;
+                    &.room-name {
+                        border-top: 10px solid $background-color;
+                        padding-top: 10px;
+                        display: block;
+                        width: 100%;
+                    }
 
-                    .room-enter {
-                        line-height: 65px;
-                        span {
-                            font-size: 0;
+                    &.room-nb-players {
+                        display: block;
+                        width: 100%;
+                    }
+                    &.room-nb-players, &.room-enter-col {
+                        height: 50px;
+                        line-height: 40px;
+                    }
+
+                    &.room-enter-col {
+                        width: 64%;
+                        max-width: 180px;
+                        float: right;
+                        margin-top: -50px;
+
+                        i.icon-lock {
+                            left: -12px;
+                            top: 4px;
+                            font-size: 20px;
+                        }
+
+                        p.room-enter {
+                            // margin: 0;
+                            padding-left: 20px;
+                            border: 0;
+
+                            span {
+                                font-size: 18px;
+                                line-height: 50px;
+
+                                i {
+                                    font-size: 22px;
+                                }
+                            }
+                        }
+
+
+                        .room-password-col {
+                            width: 110px;
+                            height: 50px;
+                            line-height: 50px;
+                            padding: 0 20px 0 15px;
+                            border-left: 0;
+
+                            input {
+                                height: 50px;
+                                line-height: 50px;
+                                font-size: 18px;
+                            }
+                        }
+                    }
+                }
+
+                &:hover {
+                    > td.room-enter-col {
+                        .room-password-col {
+                            left: -110px;
                         }
                     }
                 }
             }
         }
+    }
+
+
+    .rooms, .room {
+        margin-top: 0;
 
         .room-details {
             margin-top: 10px;
