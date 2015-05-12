@@ -34,7 +34,7 @@ BonusGameClear.prototype.getProbability = function (game)
         return this.probability;
     }
 
-    return Math.round((this.probability - ratio) * 10) / 10;
+    return Math.round((BaseBonus.prototype.probability - ratio) * 10) / 10;
 };
 
 /**

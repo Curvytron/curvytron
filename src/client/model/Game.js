@@ -284,7 +284,7 @@ Game.prototype.drawBonusStack = function(avatar)
  */
 Game.prototype.drawArrow = function(avatar)
 {
-    this.effect.drawImageScaledAngle(avatar.arrow.element, avatar.head[0] - 5, avatar.head[1] - 5, 10, 10, avatar.angle);
+    this.effect.drawImageScaledAngle(avatar.arrow.element, avatar.x - 5, avatar.y - 5, 10, 10, avatar.angle);
 };
 
 /**

@@ -8,7 +8,7 @@ function Bonus(x, y)
 {
     BaseBonus.call(this, x, y);
 
-    this.body    = new Body([x, y], this.radius, this);
+    this.body    = new Body(this.x, this.y, this.radius, this);
     this.target  = null;
     this.timeout = null;
 }

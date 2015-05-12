@@ -2,19 +2,21 @@
 /**
  * Island
  */
-function Island(id,  size, from)
+function Island(id, size, x, y)
 {
     this.id     = id;
     this.size   = size;
-    this.from   = [from[0], from[1]];
-    this.to     = [this.from[0] + size, this.from[1] + size];
+    this.fromX  = x;
+    this.fromY  = y;
+    this.toX    = x + size;
+    this.toY    = y + size;
     this.bodies = new Collection([], 'id', true);
 }
 
 /**
  * Add body
  *
- * @param {Array} body
+ * @param {Body} body
  */
 Island.prototype.addBody = function(body)
 {
@@ -25,7 +27,7 @@ Island.prototype.addBody = function(body)
 /**
  * Remove body
  *
- * @param {Array} body
+ * @param {Body} body
  */
 Island.prototype.removeBody = function(body)
 {
@@ -34,9 +36,9 @@ Island.prototype.removeBody = function(body)
 };
 
 /**
- * Add body
+ * Test body
  *
- * @param {Array} body
+ * @param {Body} body
  */
 Island.prototype.testBody = function(body)
 {
@@ -50,7 +52,7 @@ Island.prototype.testBody = function(body)
  */
 Island.prototype.getBody = function(body)
 {
-    if (this.bodyInBound(body, this.from, this.to)) {
+    if (this.bodyInBound(body, this.fromX, this.fromY, this.toX, this.toX)) {
         for (var i = this.bodies.items.length - 1; i >= 0; i--) {
             if (this.bodiesTouch(this.bodies.items[i], body)) {
                 return this.bodies.items[i];
@@ -71,37 +73,41 @@ Island.prototype.getBody = function(body)
  */
 Island.prototype.bodiesTouch = function(bodyA, bodyB)
 {
-    return (this.getDistance(bodyA.position, bodyB.position) < (bodyA.radius + bodyB.radius)) && bodyA.match(bodyB);
+    return (this.getDistance(bodyA.x, bodyA.y, bodyB.x, bodyB.y) < (bodyA.radius + bodyB.radius)) && bodyA.match(bodyB);
 };
 
 /**
  * Is point in bound?
  *
  * @param {Body} body
- * @param {Array} from
- * @param {Array} to
+ * @param {Number} fromX
+ * @param {Number} fromY
+ * @param {Number} toX
+ * @param {Number} toY
  *
  * @return {Boolean}
  */
-Island.prototype.bodyInBound = function(body, from, to)
+Island.prototype.bodyInBound = function(body, fromX, fromY, toX, toY)
 {
-    return body.position[0] + body.radius > from[0] &&
-           body.position[0] - body.radius < to[0]   &&
-           body.position[1] + body.radius > from[1] &&
-           body.position[1] - body.radius < to[1];
+    return body.x + body.radius > fromX &&
+           body.x - body.radius < toX   &&
+           body.y + body.radius > fromY &&
+           body.y - body.radius < toY;
 };
 
 /**
  * Get distance
  *
- * @param {Array} from
- * @param {Array} to
+ * @param {Number} fromX
+ * @param {Number} fromY
+ * @param {Number} toX
+ * @param {Number} toY
  *
  * @return {Number}
  */
-Island.prototype.getDistance = function(from, to)
+Island.prototype.getDistance = function(fromX, fromY, toX, toY)
 {
-    return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
+    return Math.sqrt(Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2));
 };
 
 /**
@@ -112,17 +118,17 @@ Island.prototype.getDistance = function(from, to)
  *
  * @return {Array}
  */
-Island.prototype.getRandomPosition = function(radius, border)
+/*Island.prototype.getRandomPosition = function(radius, border)
 {
     var margin = radius + border * this.size,
-        point = this.getRandomPoint(margin);
+        point  = this.getRandomPoint(margin);
 
-    while (!this.testBody(point, margin)) {
+    while (!this.testBody(point)) {
         point = this.getRandomPoint(margin);
     }
 
     return point;
-};
+};*/
 
 /**
  * Get random point
@@ -131,13 +137,13 @@ Island.prototype.getRandomPosition = function(radius, border)
  *
  * @return {Array}
  */
-Island.prototype.getRandomPoint = function(margin)
+/*Island.prototype.getRandomPoint = function(margin)
 {
     return [
         margin + Math.random() * (this.size - margin * 2),
         margin + Math.random() * (this.size - margin * 2)
     ];
-};
+};*/
 
 /**
  * Clear the world

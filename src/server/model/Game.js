@@ -35,10 +35,8 @@ Game.prototype.constructor = Game;
  */
 Game.prototype.update = function(step)
 {
-    BaseGame.prototype.update.call(this, step);
-
     var score = this.deaths.count(),
-        avatar, border, i;
+        avatar, border, i, borderX, borderY, borderAxis, position, killer;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
@@ -50,17 +48,22 @@ Game.prototype.update = function(step)
             border = this.world.getBoundIntersect(avatar.body, this.borderless ? 0 : avatar.radius);
 
             if (border) {
+                borderX    = border[0];
+                borderY    = border[1];
+                borderAxis = border[2];
+
                 if (this.borderless) {
-                    if (this.testBorder(avatar.head, avatar.velocities, border)) {
-                        avatar.setPosition(this.world.getOposite(border));
+                    if (this.testBorder(avatar.x, avatar.y, avatar.velocityX, avatar.velocityY, borderX, borderY, borderAxis)) {
+                        position = this.world.getOposite(borderX, borderY);
+                        avatar.setPosition(position[0], position[1]);
                     }
                 } else {
                     this.kill(avatar, null, score);
                 }
             } else if (!avatar.invincible) {
-                var killer = this.world.getBody(avatar.body);
+                killer = this.world.getBody(avatar.body);
 
-                if (null !== killer) {
+                if (killer) {
                     this.kill(avatar, killer, score);
                 }
             }
@@ -110,7 +113,7 @@ Game.prototype.removeAvatar = function(avatar)
 Game.prototype.addPoint = function(data)
 {
     if (this.started && this.world.active) {
-        this.world.addBody(new AvatarBody(data.point, data.avatar));
+        this.world.addBody(new AvatarBody(data.x, data.y, data.avatar));
     }
 };
 
@@ -178,17 +181,33 @@ Game.prototype.resolveScores = function()
 /**
  * Test border
  *
- * @param {Array} position
- * @param {Array} velocities
- * @param {Array} border
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} vX
+ * @param {Number} vY
+ * @param {Number} borderX
+ * @param {Number} borderY
+ * @param {Number} axis
  *
  * @return {Boolean}
  */
-Game.prototype.testBorder = function(position, velocities, border)
+Game.prototype.testBorder = function(x, y, vX, vY, borderX, borderY, axis)
 {
-    var axis = border[2];
+    return axis ? this.testBorderAxis(y, vY, borderY) : this.testBorderAxis(x, vX, borderX);
+};
 
-    return (position[axis] > border[axis]) === (velocities[axis] < 0);
+/**
+ * Test border axis
+ *
+ * @param {Number} position
+ * @param {Number} velocity
+ * @param {Number} border
+ *
+ * @return {Boolean}
+ */
+Game.prototype.testBorderAxis = function(position, velocity, border)
+{
+    return (position > border) === (velocity < 0);
 };
 
 /**
@@ -231,7 +250,7 @@ Game.prototype.onRoundNew = function()
     this.emit('round:new', {game: this});
     BaseGame.prototype.onRoundNew.call(this);
 
-    var avatar, i;
+    var avatar, position, i;
 
     this.roundWinner = null;
     this.world.clear();
@@ -241,8 +260,9 @@ Game.prototype.onRoundNew = function()
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         if (avatar.present) {
-            avatar.setPosition(this.world.getRandomPosition(avatar.radius, this.spawnMargin));
-            avatar.setAngle(this.world.getRandomDirection(avatar.head, this.spawnAngleMargin));
+            position = this.world.getRandomPosition(avatar.radius, this.spawnMargin);
+            avatar.setPosition(position[0], position[1]);
+            avatar.setAngle(this.world.getRandomDirection(avatar.x, avatar.y, this.spawnAngleMargin));
         } else {
             this.deaths.add(avatar);
         }

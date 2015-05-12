@@ -55,24 +55,25 @@ Avatar.prototype.update = function(step)
 
     var width = this.canvas.element.width/2;
 
-    this.startX  = this.canvas.round(this.head[0] * this.canvas.scale - width);
-    this.startY  = this.canvas.round(this.head[1] * this.canvas.scale - width);
+    this.startX  = this.canvas.round(this.x * this.canvas.scale - width);
+    this.startY  = this.canvas.round(this.y * this.canvas.scale - width);
     this.changed = false;
 };
 
 /**
  * Set position (from server)
  *
- * @param {Array} point
+ * @param {Number} x
+ * @param {Number} y
  */
-Avatar.prototype.setPositionFromServer = function(point)
+Avatar.prototype.setPositionFromServer = function(x, y)
 {
-    BaseAvatar.prototype.setPosition.call(this, point);
+    BaseAvatar.prototype.setPosition.call(this, x, y);
 
     this.changed = true;
 
     if (this.printing) {
-        this.addPoint(point);
+        this.addPoint(x, y);
     }
 };
 
@@ -135,7 +136,6 @@ Avatar.prototype.setScore = function(score)
 Avatar.prototype.die = function()
 {
     BaseAvatar.prototype.die.call(this);
-    this.addPoint(this.head);
     this.emit('die', this);
 };
 

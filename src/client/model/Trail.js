@@ -6,7 +6,8 @@ function Trail(avatar)
     BaseTrail.call(this, avatar);
 
     this.clearAsked = false;
-    this.queue      = [];
+    this.queueX     = null;
+    this.queueY     = null;
 }
 
 Trail.prototype = Object.create(BaseTrail.prototype);
@@ -30,16 +31,20 @@ Trail.prototype.getLastSegment = function()
         points = null;
 
     if (length) {
-        points = this.points;
+        points = this.points.slice(0);
 
         if (this.clearAsked) {
-            this.points = this.queue;
-            this.queue.length = 0;
-        } else {
-            this.points = [points[length - 1]];
-        }
+            BaseTrail.prototype.clear.call(this);
+            if (this.queueX !== null) {
+                BaseTrail.prototype.addPoint.call(this, this.queueX, this.queueY);
+                this.queueX = null;
+                this.queueY = null;
+            }
 
-        this.clearAsked = false;
+            this.clearAsked = false;
+        } else {
+            this.points.splice(0, length - 1);
+        }
     }
 
     return points;
@@ -48,17 +53,17 @@ Trail.prototype.getLastSegment = function()
 /**
  * Add point
  *
- * @param {Array} point
+ * @param {Number} x
+ * @param {Number} y
  */
-Trail.prototype.addPoint = function(point)
+Trail.prototype.addPoint = function(x, y)
 {
-    var last = this.getLast();
-
-    if (last && (Math.abs(last[0] - point[0]) > this.tolerance || Math.abs(last[1] - point[1]) > this.tolerance)) {
+    if (this.lastX !== null && (Math.abs(this.lastX - x) > this.tolerance || Math.abs(this.lastY - y) > this.tolerance)) {
         this.clear();
-        this.queue.push(point);
+        this.queueX = x;
+        this.queueY = y;
     } else {
-        this.points.push(point);
+        BaseTrail.prototype.addPoint.call(this, x, y);
     }
 };
 

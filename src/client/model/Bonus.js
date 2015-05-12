@@ -49,7 +49,7 @@ Bonus.prototype.update = function()
 {
     this.drawRadius = this.radius * this.animation.getValue();
     this.drawWidth  = this.drawRadius * 2;
-    this.drawX      = this.x - this.drawRadius,
+    this.drawX      = this.x - this.drawRadius;
     this.drawY      = this.y - this.drawRadius;
 };
 

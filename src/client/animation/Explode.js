@@ -1,7 +1,7 @@
 /**
  * Explosion animation
  *
- * @param {Array} position
+ * @param {Avatar} avatar
  * @param {Canvas} effect
  */
 function Explode(avatar, effect)
@@ -19,8 +19,8 @@ function Explode(avatar, effect)
 
     for (var i = this.particles.length - 1; i >= 0; i--) {
         this.particles[i] = new ExplodeParticle(
-            avatar.head[0] * this.effect.scale,
-            avatar.head[1] * this.effect.scale,
+            avatar.x * this.effect.scale,
+            avatar.y * this.effect.scale,
             this.randomize(avatar.velocity / 750 * this.effect.scale, 0.1),
             avatar.angle + this.angleVariation * (Math.random() * 2 - 1),
             this.effect.round(this.randomize(avatar.radius, 0.5) * this.effect.scale)
