@@ -11,7 +11,7 @@ function Tracker (inspector, id)
     this.inspector = inspector;
     this.id        = id;
     this.creation  = new Date().getTime();
-    this.uniqId    = md5(this.creation.getTime() + '-' + this.id);
+    this.uniqId    = md5(this.creation + '-' + this.id);
 }
 
 Tracker.prototype = Object.create(EventEmitter.prototype);
