@@ -174,10 +174,10 @@ GameRepository.prototype.onGameStop = function(e)
 GameRepository.prototype.onProperty = function(e)
 {
     var data   = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
+        avatar = this.game.avatars.getById(data[0]);
 
     if (avatar) {
-        avatar.set(data.property, data.value);
+        avatar.set(data[1], data[2]);
     }
 };
 
@@ -233,7 +233,7 @@ GameRepository.prototype.onAngle = function(e)
  */
 GameRepository.prototype.onDie = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail.avatar);
+    var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
         avatar.die();
@@ -278,17 +278,18 @@ GameRepository.prototype.onBonusClear = function(e)
 GameRepository.prototype.onBonusStack = function(e)
 {
     var data   = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
+        bonus  = data[2],
+        avatar = this.game.avatars.getById(data[0]);
 
     if (avatar && avatar.local) {
-        avatar.bonusStack[data.method](new Bonus(
-            data.bonus.id,
-            data.bonus.x,
-            data.bonus.y,
-            data.bonus.type,
-            data.bonus.affect,
-            data.bonus.radius,
-            data.bonus.duration
+        avatar.bonusStack[data[1]](new Bonus(
+            bonus.id,
+            bonus.x,
+            bonus.y,
+            bonus.type,
+            bonus.affect,
+            bonus.radius,
+            bonus.duration
         ));
     }
 };
@@ -312,7 +313,7 @@ GameRepository.prototype.onRoundNew = function(e)
 GameRepository.prototype.onRoundEnd = function(e)
 {
     this.game.endRound();
-    this.game.roundWinner = this.game.avatars.getById(e.detail.winner);
+    this.game.roundWinner = this.game.avatars.getById(e.detail);
     this.emit('round:end');
 };
 
@@ -356,7 +357,7 @@ GameRepository.prototype.onEnd = function(e)
  */
 GameRepository.prototype.onLeave = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail.avatar);
+    var avatar = this.game.avatars.getById(e.detail);
 
     if (avatar) {
         this.game.removeAvatar(avatar);

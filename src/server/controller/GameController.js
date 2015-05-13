@@ -131,7 +131,7 @@ GameController.prototype.detach = function(client)
  */
 GameController.prototype.onPlayerLeave = function(data)
 {
-    this.socketGroup.addEvent('game:leave', {avatar: data.player.id});
+    this.socketGroup.addEvent('game:leave', data.player.id);
 };
 
 /**
@@ -232,7 +232,7 @@ GameController.prototype.attachSpectator = function(client)
             events.push(['bonus:pop', this.game.bonusManager.bonuses.items[i].serialize()]);
         }
     } else {
-        this.socketGroup.addEvent('round:end', {winner: this.game.roundWinner ? this.game.roundWinner.id : null});
+        this.socketGroup.addEvent('round:end', this.game.roundWinner ? this.game.roundWinner.id : null);
     }
 
     events.push(['game:spectators', this.countSpectators()]);
@@ -360,11 +360,11 @@ GameController.prototype.onAngle = function(avatar)
  */
 GameController.prototype.onDie = function(data)
 {
-    this.socketGroup.addEvent('die', {
-        avatar: data.avatar.id,
-        killer: data.killer ? data.killer.id : null,
-        old: data.old
-    });
+    this.socketGroup.addEvent('die', [
+        data.avatar.id,
+        data.killer ? data.killer.id : null,
+        data.old
+    ]);
 };
 
 /**
@@ -414,7 +414,11 @@ GameController.prototype.onRoundScore = function(avatar)
  */
 GameController.prototype.onProperty = function(data)
 {
-    this.socketGroup.addEvent('property', {avatar: data.avatar.id, property: data.property, value: data.value});
+    this.socketGroup.addEvent('property', [
+        data.avatar.id,
+        data.property,
+        data.value
+    ]);
 };
 
 /**
@@ -424,7 +428,11 @@ GameController.prototype.onProperty = function(data)
  */
 GameController.prototype.onBonusStack = function(data)
 {
-    this.socketGroup.addEvent('bonus:stack', {avatar: data.avatar.id, method: data.method, bonus: data.bonus.serialize()});
+    this.socketGroup.addEvent('bonus:stack', [
+        data.avatar.id,
+        data.method,
+        data.bonus.serialize()
+    ]);
 };
 
 // Game events:
@@ -466,7 +474,7 @@ GameController.prototype.onRoundNew = function(data)
  */
 GameController.prototype.onRoundEnd = function(data)
 {
-    this.socketGroup.addEvent('round:end', {winner: data.winner ? data.winner.id : null});
+    this.socketGroup.addEvent('round:end', data.winner ? data.winner.id : null);
 };
 
 /**

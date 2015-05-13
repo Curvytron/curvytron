@@ -54,11 +54,11 @@ KillLogController.prototype.maxLogs = 5;
 KillLogController.prototype.onDie = function(e)
 {
     var data   = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
+        avatar = this.game.avatars.getById(data[0]);
 
     if (avatar) {
-        var killer = data.killer ? this.game.avatars.getById(data.killer) : null;
-        this.add(new MessageDie(avatar, killer, data.old));
+        var killer = data[1] ? this.game.avatars.getById(data[1]) : null;
+        this.add(new MessageDie(avatar, killer, data[2]));
     }
 };
 
