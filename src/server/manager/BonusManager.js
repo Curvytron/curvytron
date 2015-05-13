@@ -37,12 +37,11 @@ BonusManager.prototype.start = function()
  */
 BonusManager.prototype.stop = function()
 {
-    BaseBonusManager.prototype.stop.call(this);
-
-    if (this.bonusTypes.length) {
-        clearTimeout(this.popingTimeout);
-        this.popingTimeout = null;
+    if (this.popingTimeout) {
+        this.popingTimeout = clearTimeout(this.popingTimeout);
     }
+
+    BaseBonusManager.prototype.stop.call(this);
 };
 
 /**
@@ -60,19 +59,17 @@ BonusManager.prototype.clear = function()
 BonusManager.prototype.popBonus = function ()
 {
     if (this.bonusTypes.length) {
-        clearTimeout(this.popingTimeout);
-        this.popingTimeout = null;
+        this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
 
         if (this.bonuses.count() < this.bonusCap) {
-            var position  = this.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
-                bonusType = this.getRandomBonusType();
+            var bonusType = this.getRandomBonusType();
 
             if (bonusType) {
-                this.add(new bonusType(position[0], position[1]));
+                var position = this.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
+                    bonus    = new (bonusType)(position[0], position[1]);
+                this.add(bonus);
             }
         }
-
-        this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
     }
 };
 

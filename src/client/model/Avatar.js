@@ -84,7 +84,7 @@ Avatar.prototype.setPositionFromServer = function(x, y)
  */
 Avatar.prototype.setScale = function(scale)
 {
-    var width = this.width * scale;
+    var width = Math.ceil(this.width * scale);
 
     if (width !== this.canvas.element.width) {
         this.canvas.setDimension(width, width, scale);

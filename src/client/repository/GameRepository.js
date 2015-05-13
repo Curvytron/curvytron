@@ -208,6 +208,13 @@ GameRepository.prototype.onPoint = function(e)
     var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
+        console.log(
+            'onPoint',
+            this.compressor.decompress(e.detail[1]),
+            this.compressor.decompress(e.detail[2]),
+            avatar.x,
+            avatar.y
+        );
         avatar.addPoint(
             this.compressor.decompress(e.detail[1]),
             this.compressor.decompress(e.detail[2])

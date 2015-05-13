@@ -40,10 +40,9 @@ Trail.prototype.getLastSegment = function()
                 this.queueX = null;
                 this.queueY = null;
             }
-
             this.clearAsked = false;
         } else {
-            this.points.splice(0, length - 1);
+            this.points.splice(0, length - 2);
         }
     }
 

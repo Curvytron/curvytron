@@ -14,14 +14,14 @@ function Game(room)
     this.roundWinner = null;
     this.gameWinner  = null;
 
-    this.addPoint = this.addPoint.bind(this);
+    this.onPoint = this.onPoint.bind(this);
 
     var avatar, i;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.clear();
-        avatar.on('point', this.addPoint);
+        avatar.on('point', this.onPoint);
     }
 }
 
@@ -48,23 +48,19 @@ Game.prototype.update = function(step)
             border = this.world.getBoundIntersect(avatar.body, this.borderless ? 0 : avatar.radius);
 
             if (border) {
-                borderX    = border[0];
-                borderY    = border[1];
-                borderAxis = border[2];
-
                 if (this.borderless) {
-                    if (this.testBorder(avatar.x, avatar.y, avatar.velocityX, avatar.velocityY, borderX, borderY, borderAxis)) {
-                        position = this.world.getOposite(borderX, borderY);
-                        avatar.setPosition(position[0], position[1]);
-                    }
+                    position = this.world.getOposite(border[0], border[1]);
+                    avatar.setPosition(position[0], position[1]);
                 } else {
                     this.kill(avatar, null, score);
                 }
-            } else if (!avatar.invincible) {
-                killer = this.world.getBody(avatar.body);
+            } else {
+                if (!avatar.invincible) {
+                    killer = this.world.getBody(avatar.body);
 
-                if (killer) {
-                    this.kill(avatar, killer, score);
+                    if (killer) {
+                        this.kill(avatar, killer, score);
+                    }
                 }
             }
 
@@ -106,11 +102,11 @@ Game.prototype.removeAvatar = function(avatar)
 };
 
 /**
- * Add point
+ * On avatar add point
  *
  * @param {Object} data
  */
-Game.prototype.addPoint = function(data)
+Game.prototype.onPoint = function(data)
 {
     if (this.started && this.world.active) {
         this.world.addBody(new AvatarBody(data.x, data.y, data.avatar));
@@ -176,38 +172,6 @@ Game.prototype.resolveScores = function()
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         this.avatars.items[i].resolveScore();
     }
-};
-
-/**
- * Test border
- *
- * @param {Number} x
- * @param {Number} y
- * @param {Number} vX
- * @param {Number} vY
- * @param {Number} borderX
- * @param {Number} borderY
- * @param {Number} axis
- *
- * @return {Boolean}
- */
-Game.prototype.testBorder = function(x, y, vX, vY, borderX, borderY, axis)
-{
-    return axis ? this.testBorderAxis(y, vY, borderY) : this.testBorderAxis(x, vX, borderX);
-};
-
-/**
- * Test border axis
- *
- * @param {Number} position
- * @param {Number} velocity
- * @param {Number} border
- *
- * @return {Boolean}
- */
-Game.prototype.testBorderAxis = function(position, velocity, border)
-{
-    return (position > border) === (velocity < 0);
 };
 
 /**

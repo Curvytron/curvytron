@@ -26,13 +26,24 @@ Avatar.prototype.update = function(step)
         this.updateAngle(step);
         this.updatePosition(step);
 
-        var lastX = this.trail.lastX,
-            lastY = this.trail.lastY;
-
-        if (this.printing && (lastX === null || this.getDistance(lastX, lastY, this.x, this.y) > this.radius)) {
+        if (this.printing && this.isTimeToDraw()) {
             this.addPoint(this.x, this.y);
         }
     }
+};
+
+/**
+ * Is time to draw?
+ *
+ * @return {Boolean}
+ */
+Avatar.prototype.isTimeToDraw = function()
+{
+    if (this.trail.lastX === null) {
+        return true;
+    }
+
+    return this.getDistance(this.trail.lastX, this.trail.lastY, this.x, this.y) > this.radius;
 };
 
 /**
@@ -147,7 +158,7 @@ Avatar.prototype.setColor = function(color)
 Avatar.prototype.addPoint = function(x, y, important)
 {
     BaseAvatar.prototype.addPoint.call(this, x, y);
-    this.emit('point', {avatar: this, x: x, y: y, important: important || this.angularVelocity});
+    this.emit('point', {avatar: this, x: x, y: y, important: important/* || this.angularVelocity*/});
 };
 
 /**
