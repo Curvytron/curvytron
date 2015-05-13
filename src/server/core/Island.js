@@ -1,6 +1,10 @@
-
 /**
  * Island
+ *
+ * @param {Number} id
+ * @param {Number} size
+ * @param {Number} x
+ * @param {Number} y
  */
 function Island(id, size, x, y)
 {
@@ -14,7 +18,7 @@ function Island(id, size, x, y)
 }
 
 /**
- * Add body
+ * Add a body
  *
  * @param {Body} body
  */
@@ -26,7 +30,7 @@ Island.prototype.addBody = function(body)
 };
 
 /**
- * Remove body
+ * Remove a body
  *
  * @param {Body} body
  */
@@ -37,9 +41,11 @@ Island.prototype.removeBody = function(body)
 };
 
 /**
- * Test body
+ * Test if the given body position is free (doesn't collide with any other)
  *
  * @param {Body} body
+ *
+ * @return {Boolean}
  */
 Island.prototype.testBody = function(body)
 {
@@ -47,9 +53,11 @@ Island.prototype.testBody = function(body)
 };
 
 /**
- * Add body
+ * Get collinding body for the given body
  *
  * @param {Body} body
+ *
+ * @return {Body|null}
  */
 Island.prototype.getBody = function(body)
 {
@@ -65,7 +73,7 @@ Island.prototype.getBody = function(body)
 };
 
 /**
- * Bodies touch
+ * Does the given bodies touch each other?
  *
  * @param {Body} bodyA
  * @param {Body} bodyB
@@ -101,7 +109,7 @@ Island.prototype.bodyInBound = function(body, fromX, fromY, toX, toY)
 };
 
 /**
- * Get distance
+ * Get distance between two points
  *
  * @param {Number} fromX
  * @param {Number} fromY
@@ -116,7 +124,7 @@ Island.prototype.getDistance = function(fromX, fromY, toX, toY)
 };
 
 /**
- * Clear the world
+ * Clear the island
  */
 Island.prototype.clear = function()
 {

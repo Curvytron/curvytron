@@ -205,20 +205,10 @@ GameRepository.prototype.onPosition = function(e)
  */
 GameRepository.prototype.onPoint = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail[0]);
+    var avatar = this.game.avatars.getById(e.detail);
 
     if (avatar) {
-        console.log(
-            'onPoint',
-            this.compressor.decompress(e.detail[1]),
-            this.compressor.decompress(e.detail[2]),
-            avatar.x,
-            avatar.y
-        );
-        avatar.addPoint(
-            this.compressor.decompress(e.detail[1]),
-            this.compressor.decompress(e.detail[2])
-        );
+        avatar.addPoint(avatar.x, avatar.y);
     }
 };
 

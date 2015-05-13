@@ -20,14 +20,14 @@ function World(size, islands)
 }
 
 /**
- * Island grid size
+ * Island grid size (width of the island)
  *
  * @type {Number}
  */
 World.prototype.islandGridSize = 40;
 
 /**
- * Get island by point
+ * Get the island responsible for the given point
  *
  * @param {Number} x
  * @param {Number} y
@@ -44,7 +44,7 @@ World.prototype.getIslandByPoint = function(pX, pY)
 };
 
 /**
- * Add body
+ * Add a body to all concerned islands
  *
  * @param {Body} body
  */
@@ -63,7 +63,7 @@ World.prototype.addBody = function(body)
 };
 
 /**
- * Add body to island by point
+ * Add a body to an island if it's concerned by the given point
  *
  * @param {Body} body
  * @param {Number} x
@@ -79,7 +79,7 @@ World.prototype.addBodyByPoint = function(body, x, y)
 };
 
 /**
- * Remove body
+ * Remove a body from islands
  *
  * @param {Body} body
  */
@@ -95,9 +95,11 @@ World.prototype.removeBody = function(body)
 };
 
 /**
- * Get body
+ * Get one or no body coliding with the given body
  *
  * @param {Body} body
+ *
+ * @return {Body|null}
  */
 World.prototype.getBody = function(body)
 {
@@ -108,11 +110,13 @@ World.prototype.getBody = function(body)
 };
 
 /**
- * Get body by point
+ * Get one or no body coliding with the given body for the given point
  *
  * @param {Body} body
  * @param {Number} x
  * @param {Number} y
+ *
+ * @return {Body|null}
  */
 World.prototype.getBodyByPoint = function(body, x, y)
 {
@@ -122,7 +126,7 @@ World.prototype.getBodyByPoint = function(body, x, y)
 };
 
 /**
- * Test body
+ * Test if the body position is free (there are no bodies for this position)
  *
  * @param {Body} body
  *
@@ -137,7 +141,7 @@ World.prototype.testBody = function(body)
 };
 
 /**
- * Test body by point
+ * Test if the body position is free for the given point
  *
  * @param {Body} Body
  * @param {Number} x
@@ -151,7 +155,7 @@ World.prototype.testBodyByPoint = function(body, x, y)
 };
 
 /**
- * Random random position
+ * Random a random, free of bodies, position
  *
  * @param {Number} radius
  * @param {Number} border
@@ -262,7 +266,7 @@ World.prototype.getRandomPoint = function(margin)
 };
 
 /**
- * Get intersection between giver body and the map borders
+ * Get intersection between given body and the map borders
  *
  * @param {Body} body
  * @param {Number} margin
@@ -291,7 +295,7 @@ World.prototype.getBoundIntersect = function(body, margin)
 };
 
 /**
- * Get oposite
+ * Get oposite point
  *
  * @param {Number} x
  * @param {Number} y

@@ -158,7 +158,7 @@ Avatar.prototype.setColor = function(color)
 Avatar.prototype.addPoint = function(x, y, important)
 {
     BaseAvatar.prototype.addPoint.call(this, x, y);
-    this.emit('point', {avatar: this, x: x, y: y, important: important/* || this.angularVelocity*/});
+    this.emit('point', {avatar: this, x: x, y: y, important: important});
 };
 
 /**
