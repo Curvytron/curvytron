@@ -21,13 +21,6 @@ Trail.prototype.constructor = Trail;
 Trail.prototype.tolerance = 1;
 
 /**
- * Number of trail point to redraw
- *
- * @type {Number}
- */
-Trail.prototype.overlap = 1;
-
-/**
  * Get last segment
  *
  * @return {Array}
@@ -48,8 +41,8 @@ Trail.prototype.getLastSegment = function()
                 this.queueY = null;
             }
             this.clearAsked = false;
-        } else if(length > this.overlap) {
-            this.points.splice(0, length - this.overlap);
+        } else if(length > 1) {
+            this.points.splice(0, length - 1);
         }
     }
 
