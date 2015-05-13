@@ -1,11 +1,12 @@
 /**
  * All Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusAll(position)
+function BonusAll(x, y)
 {
-    Bonus.call(this, position);
+    Bonus.call(this, x, y);
 
     this.off = this.off.bind(this);
 }

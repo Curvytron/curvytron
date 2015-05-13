@@ -10,8 +10,8 @@ function Tracker (inspector, id)
 
     this.inspector = inspector;
     this.id        = id;
-    this.creation  = new Date();
-    this.uniqId    = md5(this.creation.getTime() + '-' + this.id);
+    this.creation  = new Date().getTime();
+    this.uniqId    = md5(this.creation + '-' + this.id);
 }
 
 Tracker.prototype = Object.create(EventEmitter.prototype);
@@ -34,7 +34,7 @@ Tracker.prototype.destroy = function()
  */
 Tracker.prototype.getDuration = function()
 {
-    return new Date() - this.creation;
+    return new Date().getTime() - this.creation;
 };
 
 /**

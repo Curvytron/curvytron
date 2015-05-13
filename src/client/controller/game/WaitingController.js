@@ -48,7 +48,7 @@ WaitingController.prototype.detachEvents = function()
  */
 WaitingController.prototype.onReady = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail.avatar),
+    var avatar = this.game.avatars.getById(e.detail),
         index  = this.$scope.list.indexOf(avatar);
 
     if (avatar && index) {

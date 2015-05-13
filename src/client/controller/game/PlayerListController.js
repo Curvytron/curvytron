@@ -53,10 +53,10 @@ PlayerListController.prototype.detachEvents = function()
  */
 PlayerListController.prototype.onScore = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail.avatar);
+    var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
-        avatar.setScore(e.detail.score);
+        avatar.setScore(e.detail[1]);
         this.game.sortAvatars();
         this.digestScope();
     }
@@ -69,10 +69,10 @@ PlayerListController.prototype.onScore = function(e)
  */
 PlayerListController.prototype.onRoundScore = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail.avatar);
+    var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
-        avatar.setRoundScore(e.detail.score);
+        avatar.setRoundScore(e.detail[1]);
         this.game.sortAvatars();
         this.digestScope();
     }

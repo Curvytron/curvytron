@@ -1,14 +1,16 @@
 /**
  * BaseBonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BaseBonus(position)
+function BaseBonus(x, y)
 {
     EventEmitter.call(this);
 
-    this.position = position;
-    this.id       = null;
+    this.x  = x;
+    this.y  = y;
+    this.id = null;
 }
 
 BaseBonus.prototype = Object.create(EventEmitter.prototype);
@@ -68,7 +70,7 @@ BaseBonus.prototype.applyTo = function (avatar, game) {};
  */
 BaseBonus.prototype.getProbability = function (game)
 {
-    return this.probability;
+    return BaseBonus.prototype.probability;
 };
 
 /**
@@ -82,7 +84,8 @@ BaseBonus.prototype.serialize = function ()
         id: this.id,
         type: this.constructor.name,
         radius: this.radius,
-        position: this.position,
+        x: this.x,
+        y: this.y,
         affect: this.affect,
         duration: this.duration
     };

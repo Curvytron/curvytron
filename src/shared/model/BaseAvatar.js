@@ -11,11 +11,13 @@ function BaseAvatar(player)
     this.name            = player.name;
     this.color           = player.color;
     this.player          = player;
-    this.head            = new Array(2);
+    this.x               = 0;
+    this.y               = 0;
     this.trail           = new Trail(this);
     this.bonusStack      = new BonusStack(this);
     this.angle           = 0;
-    this.velocities      = [0,0];
+    this.velocityX       = 0;
+    this.velocityY       = 0;
     this.angularVelocity = 0;
     this.alive           = true;
     this.printing        = false;
@@ -24,7 +26,7 @@ function BaseAvatar(player)
     this.ready           = false;
     this.present         = true;
 
-    this.updateVelocities();
+    // useless too? this.updateVelocities();
 }
 
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
@@ -94,23 +96,24 @@ BaseAvatar.prototype.equal = function(avatar)
 /**
  * Set Point
  *
- * @param {Array} point
+ * @param {Float} x
+ * @param {Float} y
  */
-
-BaseAvatar.prototype.setPosition = function(point)
+BaseAvatar.prototype.setPosition = function(x, y)
 {
-    this.head[0] = point[0];
-    this.head[1] = point[1];
+    this.x = x;
+    this.y = y;
 };
 
 /**
- * Add Point
+ * Add point
  *
- * @param {Array} point
+ * @param {Float} x
+ * @param {Float} y
  */
-BaseAvatar.prototype.addPoint = function(point)
+BaseAvatar.prototype.addPoint = function(x, y)
 {
-    this.trail.addPoint(point);
+    this.trail.addPoint(x, y);
 };
 
 /**
@@ -182,10 +185,10 @@ BaseAvatar.prototype.updateAngle = function(step)
  */
 BaseAvatar.prototype.updatePosition = function(step)
 {
-    this.setPosition([
-        this.head[0] + this.velocities[0] * step,
-        this.head[1] + this.velocities[1] * step
-    ]);
+    this.setPosition(
+        this.x + this.velocityX * step,
+        this.y + this.velocityY * step
+    );
 };
 
 /**
@@ -208,10 +211,10 @@ BaseAvatar.prototype.setVelocity = function(velocity)
  */
 BaseAvatar.prototype.updateVelocities = function()
 {
-    this.velocities = [
-        Math.cos(this.angle) * this.velocity/1000,
-        Math.sin(this.angle) * this.velocity/1000
-    ];
+    var velocity = this.velocity/1000;
+
+    this.velocityX = Math.cos(this.angle) * velocity;
+    this.velocityY = Math.sin(this.angle) * velocity;
 
     this.updateBaseAngularVelocity();
 };
@@ -264,14 +267,16 @@ BaseAvatar.prototype.setInvincible = function(invincible)
 /**
  * Get distance
  *
- * @param {Array} from
- * @param {Array} to
+ * @param {Number} fromX
+ * @param {Number} fromY
+ * @param {Number} toX
+ * @param {Number} toY
  *
  * @return {Number}
  */
-BaseAvatar.prototype.getDistance = function(from, to)
+BaseAvatar.prototype.getDistance = function(fromX, fromY, toX, toY)
 {
-    return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
+    return Math.sqrt(Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2));
 };
 
 /**
@@ -281,6 +286,7 @@ BaseAvatar.prototype.die = function()
 {
     this.bonusStack.clear();
     this.alive = false;
+    this.addPoint(this.x, this.y);
 };
 
 /**
@@ -295,7 +301,7 @@ BaseAvatar.prototype.setPrinting = function(printing)
     if (this.printing !== printing) {
         this.printing = printing;
 
-        this.addPoint(this.head.slice(0), true);
+        this.addPoint(this.x, this.y, true);
 
         if (!this.printing) {
             this.trail.clear();
@@ -361,9 +367,11 @@ BaseAvatar.prototype.clear = function()
 {
     this.bonusStack.clear();
 
-    this.head                = [this.radius, this.radius];
-    this.angle               = Math.random() * Math.PI;
-    this.velocities          = [0,0];
+    this.x                   = this.radius;
+    this.y                   = this.radius;
+    this.angle               = 0;
+    this.velocityX           = 0;
+    this.velocityY           = 0;
     this.angularVelocity     = 0;
     this.roundScore          = 0;
     this.velocity            = BaseAvatar.prototype.velocity;
@@ -380,7 +388,7 @@ BaseAvatar.prototype.clear = function()
         this.body.radius = BaseAvatar.prototype.radius;
     }
 
-    this.updateVelocities();
+    // useless? this.updateVelocities();
 };
 
 /**

@@ -225,6 +225,9 @@ Game.prototype.drawTail = function(avatar)
 Game.prototype.drawAvatar = function(avatar)
 {
     this.canvas.drawImageTo(avatar.canvas.element, avatar.startX, avatar.startY);
+    avatar.clearX     = avatar.startX;
+    avatar.clearY     = avatar.startY;
+    avatar.clearWidth = avatar.canvas.element.width;
 };
 
 /**
@@ -234,7 +237,7 @@ Game.prototype.drawAvatar = function(avatar)
  */
 Game.prototype.clearAvatar = function(avatar)
 {
-    this.canvas.clearZone(avatar.startX, avatar.startY, avatar.clearWidth, avatar.clearWidth);
+    this.canvas.clearZone(avatar.clearX, avatar.clearY, avatar.clearWidth, avatar.clearWidth);
 };
 
 /**
@@ -281,7 +284,7 @@ Game.prototype.drawBonusStack = function(avatar)
  */
 Game.prototype.drawArrow = function(avatar)
 {
-    this.effect.drawImageScaledAngle(avatar.arrow.element, avatar.head[0] - 5, avatar.head[1] - 5, 10, 10, avatar.angle);
+    this.effect.drawImageScaledAngle(avatar.arrow.element, avatar.x - 5, avatar.y - 5, 10, 10, avatar.angle);
 };
 
 /**

@@ -1,11 +1,12 @@
 /**
  * Borderless Game Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusGameBorderless(position)
+function BonusGameBorderless(x, y)
 {
-    BonusGame.call(this, position);
+    BonusGame.call(this, x, y);
 }
 
 BonusGameBorderless.prototype = Object.create(BonusGame.prototype);

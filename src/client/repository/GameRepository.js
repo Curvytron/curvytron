@@ -16,27 +16,26 @@ function GameRepository(client, parent, sound, notifier)
     this.compressor = new Compressor();
     this.game       = null;
 
-    this.start             = this.start.bind(this);
-    this.stop              = this.stop.bind(this);
-    this.draw              = this.draw.bind(this);
-    this.onGameStart       = this.onGameStart.bind(this);
-    this.onGameStop        = this.onGameStop.bind(this);
-    this.onBonusPop        = this.onBonusPop.bind(this);
-    this.onBonusClear      = this.onBonusClear.bind(this);
-    this.onBonusStack      = this.onBonusStack.bind(this);
-    this.onPosition        = this.onPosition.bind(this);
-    this.onAngle           = this.onAngle.bind(this);
-    this.onAngularVelocity = this.onAngularVelocity.bind(this);
-    this.onPoint           = this.onPoint.bind(this);
-    this.onDie             = this.onDie.bind(this);
-    this.onProperty        = this.onProperty.bind(this);
-    this.onRoundNew        = this.onRoundNew.bind(this);
-    this.onRoundEnd        = this.onRoundEnd.bind(this);
-    this.onClear           = this.onClear.bind(this);
-    this.onBorderless      = this.onBorderless.bind(this);
-    this.onEnd             = this.onEnd.bind(this);
-    this.onLeave           = this.onLeave.bind(this);
-    this.onSpectate        = this.onSpectate.bind(this);
+    this.start        = this.start.bind(this);
+    this.stop         = this.stop.bind(this);
+    this.draw         = this.draw.bind(this);
+    this.onGameStart  = this.onGameStart.bind(this);
+    this.onGameStop   = this.onGameStop.bind(this);
+    this.onBonusPop   = this.onBonusPop.bind(this);
+    this.onBonusClear = this.onBonusClear.bind(this);
+    this.onBonusStack = this.onBonusStack.bind(this);
+    this.onPosition   = this.onPosition.bind(this);
+    this.onAngle      = this.onAngle.bind(this);
+    this.onPoint      = this.onPoint.bind(this);
+    this.onDie        = this.onDie.bind(this);
+    this.onProperty   = this.onProperty.bind(this);
+    this.onRoundNew   = this.onRoundNew.bind(this);
+    this.onRoundEnd   = this.onRoundEnd.bind(this);
+    this.onClear      = this.onClear.bind(this);
+    this.onBorderless = this.onBorderless.bind(this);
+    this.onEnd        = this.onEnd.bind(this);
+    this.onLeave      = this.onLeave.bind(this);
+    this.onSpectate   = this.onSpectate.bind(this);
 }
 
 GameRepository.prototype = Object.create(EventEmitter.prototype);
@@ -74,7 +73,6 @@ GameRepository.prototype.attachEvents = function()
     this.client.on('property', this.onProperty);
     this.client.on('position', this.onPosition);
     this.client.on('angle', this.onAngle);
-    this.client.on('angularVelocity', this.onAngularVelocity);
     this.client.on('point', this.onPoint);
     this.client.on('die', this.onDie);
     this.client.on('bonus:pop', this.onBonusPop);
@@ -99,7 +97,6 @@ GameRepository.prototype.detachEvents = function()
     this.client.off('property', this.onProperty);
     this.client.off('position', this.onPosition);
     this.client.off('angle', this.onAngle);
-    this.client.off('angularVelocity', this.onAngularVelocity);
     this.client.off('point', this.onPoint);
     this.client.off('die', this.onDie);
     this.client.off('bonus:pop', this.onBonusPop);
@@ -137,8 +134,6 @@ GameRepository.prototype.detachIdleEvents = function()
 
 /**
  * Draw
- *
- * @return {[type]}
  */
 GameRepository.prototype.draw = function()
 {
@@ -179,10 +174,10 @@ GameRepository.prototype.onGameStop = function(e)
 GameRepository.prototype.onProperty = function(e)
 {
     var data   = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
+        avatar = this.game.avatars.getById(data[0]);
 
     if (avatar) {
-        avatar.set(data.property, data.value);
+        avatar.set(data[1], data[2]);
     }
 };
 
@@ -193,10 +188,13 @@ GameRepository.prototype.onProperty = function(e)
  */
 GameRepository.prototype.onPosition = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail[2]);
+    var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
-        avatar.setPositionFromServer(this.compressor.decompressPosition(e.detail[0], e.detail[1]));
+        avatar.setPositionFromServer(
+            this.compressor.decompress(e.detail[1]),
+            this.compressor.decompress(e.detail[2])
+        );
     }
 };
 
@@ -207,10 +205,10 @@ GameRepository.prototype.onPosition = function(e)
  */
 GameRepository.prototype.onPoint = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail[2]);
+    var avatar = this.game.avatars.getById(e.detail);
 
     if (avatar) {
-        avatar.addPoint(this.compressor.decompressPosition(e.detail[0], e.detail[1]));
+        avatar.addPoint(avatar.x, avatar.y);
     }
 };
 
@@ -229,27 +227,13 @@ GameRepository.prototype.onAngle = function(e)
 };
 
 /**
- * On angular velocity
- *
- * @param {Event} e
- */
-GameRepository.prototype.onAngularVelocity = function(e)
-{
-    var avatar = this.game.avatars.getById(e.detail[0]);
-
-    if (avatar) {
-        avatar.setAngularVelocity(e.detail[1]);
-    }
-};
-
-/**
  * On die
  *
  * @param {Event} e
  */
 GameRepository.prototype.onDie = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail.avatar);
+    var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
         avatar.die();
@@ -265,7 +249,7 @@ GameRepository.prototype.onDie = function(e)
 GameRepository.prototype.onBonusPop = function(e)
 {
     var data  = e.detail,
-        bonus = new Bonus(data.id, data.position, data.type, data.affect, data.radius, data.duration);
+        bonus = new Bonus(data.id, data.x, data.y, data.type, data.affect, data.radius, data.duration);
 
     this.game.bonusManager.add(bonus);
     this.sound.play('bonus-pop');
@@ -278,7 +262,7 @@ GameRepository.prototype.onBonusPop = function(e)
  */
 GameRepository.prototype.onBonusClear = function(e)
 {
-    var bonus = this.game.bonusManager.bonuses.getById(e.detail.bonus);
+    var bonus = this.game.bonusManager.bonuses.getById(e.detail);
 
     if (bonus) {
         this.game.bonusManager.remove(bonus);
@@ -294,11 +278,19 @@ GameRepository.prototype.onBonusClear = function(e)
 GameRepository.prototype.onBonusStack = function(e)
 {
     var data   = e.detail,
-        avatar = this.game.avatars.getById(data.avatar);
+        bonus  = data[2],
+        avatar = this.game.avatars.getById(data[0]);
 
     if (avatar && avatar.local) {
-        var bonus = new Bonus(data.bonus.id, data.bonus.position, data.bonus.type, data.bonus.affect, data.bonus.radius, data.bonus.duration);
-        avatar.bonusStack[data.method](bonus);
+        avatar.bonusStack[data[1]](new Bonus(
+            bonus.id,
+            bonus.x,
+            bonus.y,
+            bonus.type,
+            bonus.affect,
+            bonus.radius,
+            bonus.duration
+        ));
     }
 };
 
@@ -321,7 +313,7 @@ GameRepository.prototype.onRoundNew = function(e)
 GameRepository.prototype.onRoundEnd = function(e)
 {
     this.game.endRound();
-    this.game.roundWinner = this.game.avatars.getById(e.detail.winner);
+    this.game.roundWinner = this.game.avatars.getById(e.detail);
     this.emit('round:end');
 };
 
@@ -365,7 +357,7 @@ GameRepository.prototype.onEnd = function(e)
  */
 GameRepository.prototype.onLeave = function(e)
 {
-    var avatar = this.game.avatars.getById(e.detail.avatar);
+    var avatar = this.game.avatars.getById(e.detail);
 
     if (avatar) {
         this.game.removeAvatar(avatar);

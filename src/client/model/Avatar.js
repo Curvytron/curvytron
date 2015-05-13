@@ -14,6 +14,8 @@ function Avatar(player)
     this.clearWidth = this.canvas.element.width;
     this.startX     = 0;
     this.startY     = 0;
+    this.clearX     = 0;
+    this.clearY     = 0;
 
     if (this.local) {
         this.input = new PlayerInput(this, player.getBinding());
@@ -46,31 +48,32 @@ Avatar.prototype.arrowSize = 200;
  */
 Avatar.prototype.update = function(step)
 {
-    if (!this.changed) {
+    if (!this.changed && this.alive) {
         this.updateAngle(step);
         this.updatePosition(step);
     }
 
     var width = this.canvas.element.width/2;
 
-    this.startX  = this.canvas.round(this.head[0] * this.canvas.scale - width);
-    this.startY  = this.canvas.round(this.head[1] * this.canvas.scale - width);
+    this.startX  = this.canvas.round(this.x * this.canvas.scale - width);
+    this.startY  = this.canvas.round(this.y * this.canvas.scale - width);
     this.changed = false;
 };
 
 /**
  * Set position (from server)
  *
- * @param {Array} point
+ * @param {Number} x
+ * @param {Number} y
  */
-Avatar.prototype.setPositionFromServer = function(point)
+Avatar.prototype.setPositionFromServer = function(x, y)
 {
-    BaseAvatar.prototype.setPosition.call(this, point);
+    BaseAvatar.prototype.setPosition.call(this, x, y);
 
     this.changed = true;
 
     if (this.printing) {
-        this.addPoint(point);
+        this.addPoint(x, y);
     }
 };
 
@@ -81,11 +84,10 @@ Avatar.prototype.setPositionFromServer = function(point)
  */
 Avatar.prototype.setScale = function(scale)
 {
-    var width = this.width * scale;
+    var width = Math.ceil(this.width * scale);
 
     if (width !== this.canvas.element.width) {
         this.canvas.setDimension(width, width, scale);
-        this.clearWidth = this.canvas.element.width;
         this.changed    = true;
         this.drawHead();
     }
@@ -134,7 +136,6 @@ Avatar.prototype.setScore = function(score)
 Avatar.prototype.die = function()
 {
     BaseAvatar.prototype.die.call(this);
-    this.addPoint(this.head);
     this.emit('die', this);
 };
 

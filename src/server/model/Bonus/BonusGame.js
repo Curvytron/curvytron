@@ -1,11 +1,12 @@
 /**
  * Game Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusGame(position)
+function BonusGame(x, y)
 {
-    Bonus.call(this, position);
+    Bonus.call(this, x, y);
 
     this.off = this.off.bind(this);
 }

@@ -1,13 +1,14 @@
 /**
  * Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function Bonus(position)
+function Bonus(x, y)
 {
-    BaseBonus.call(this, position);
+    BaseBonus.call(this, x, y);
 
-    this.body    = new Body(this.position, this.radius, this);
+    this.body    = new Body(this.x, this.y, this.radius, this);
     this.target  = null;
     this.timeout = null;
 }

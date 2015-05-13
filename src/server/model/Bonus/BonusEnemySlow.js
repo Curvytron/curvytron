@@ -1,11 +1,12 @@
 /**
  * Slow Enemy Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusEnemySlow(position)
+function BonusEnemySlow(x, y)
 {
-    BonusEnemy.call(this, position);
+    BonusEnemy.call(this, x, y);
 }
 
 BonusEnemySlow.prototype = Object.create(BonusEnemy.prototype);

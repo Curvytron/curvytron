@@ -8,7 +8,7 @@ function Avatar(player)
     BaseAvatar.call(this, player);
 
     this.bodyCount    = 0;
-    this.body         = new AvatarBody(this.head, this);
+    this.body         = new AvatarBody(this.x, this.y, this);
     this.printManager = new PrintManager(this);
 }
 
@@ -26,27 +26,41 @@ Avatar.prototype.update = function(step)
         this.updateAngle(step);
         this.updatePosition(step);
 
-        var last = this.trail.getLast();
-
-        if (this.printing && (!last || this.getDistance(last, this.head) > this.radius)) {
-            this.addPoint(this.head.slice(0));
+        if (this.printing && this.isTimeToDraw()) {
+            this.addPoint(this.x, this.y);
         }
     }
 };
 
 /**
+ * Is time to draw?
+ *
+ * @return {Boolean}
+ */
+Avatar.prototype.isTimeToDraw = function()
+{
+    if (this.trail.lastX === null) {
+        return true;
+    }
+
+    return this.getDistance(this.trail.lastX, this.trail.lastY, this.x, this.y) > this.radius;
+};
+
+/**
  * Set position
  *
- * @param {Array} point
+ * @param {Number} x
+ * @param {Number} y
  */
-Avatar.prototype.setPosition = function(point)
+Avatar.prototype.setPosition = function(x, y)
 {
-    BaseAvatar.prototype.setPosition.call(this, point);
+    BaseAvatar.prototype.setPosition.call(this, x, y);
 
-    this.body.position = this.head;
-    this.body.num      = this.bodyCount;
+    this.body.x   = this.x;
+    this.body.y   = this.y;
+    this.body.num = this.bodyCount;
 
-    this.emit('position', {avatar: this, value: this.head});
+    this.emit('position', this);
 };
 
 /**
@@ -71,7 +85,7 @@ Avatar.prototype.setAngle = function(angle)
 {
     if (this.angle !== angle) {
         BaseAvatar.prototype.setAngle.call(this, angle);
-        this.emit('angle', {avatar: this, angle: this.angle});
+        this.emit('angle', this);
     }
 };
 
@@ -137,12 +151,14 @@ Avatar.prototype.setColor = function(color)
 /**
  * Add point
  *
- * @param {Array} point
+ * @param {Float} x
+ * @param {Float} y
+ * @param {Boolean} important
  */
-Avatar.prototype.addPoint = function(point, important)
+Avatar.prototype.addPoint = function(x, y, important)
 {
-    BaseAvatar.prototype.addPoint.call(this, point);
-    this.emit('point', { avatar: this, point: point, important: important || this.angularVelocity });
+    BaseAvatar.prototype.addPoint.call(this, x, y);
+    this.emit('point', {avatar: this, x: x, y: y, important: important});
 };
 
 /**
@@ -164,12 +180,10 @@ Avatar.prototype.setPrinting = function(printing)
 Avatar.prototype.die = function(body)
 {
     BaseAvatar.prototype.die.call(this);
-
     this.printManager.stop();
-    this.addPoint(this.head.slice(0));
     this.emit('die', {
         avatar: this,
-        killer: body ? body.avatar : null,
+        killer: body ? body.data : null,
         old: body ? body.isOld() : null
     });
 };
@@ -182,7 +196,7 @@ Avatar.prototype.die = function(body)
 Avatar.prototype.setScore = function(score)
 {
     BaseAvatar.prototype.setScore.call(this, score);
-    this.emit('score', {avatar: this, score: this.score});
+    this.emit('score', this);
 };
 
 /**
@@ -193,7 +207,7 @@ Avatar.prototype.setScore = function(score)
 Avatar.prototype.setRoundScore = function(score)
 {
     BaseAvatar.prototype.setRoundScore.call(this, score);
-    this.emit('score:round', {avatar: this, score: this.roundScore});
+    this.emit('score:round', this);
 };
 
 /**
