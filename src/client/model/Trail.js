@@ -25,7 +25,7 @@ Trail.prototype.tolerance = 1;
  *
  * @type {Number}
  */
-Trail.prototype.overlap = 2;
+Trail.prototype.overlap = 1;
 
 /**
  * Get last segment
