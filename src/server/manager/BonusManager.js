@@ -124,7 +124,7 @@ BonusManager.prototype.add = function (bonus)
 {
     if (BaseBonusManager.prototype.add.call(this, bonus)) {
         this.world.addBody(bonus.body);
-        this.emit('bonus:pop', { game: this.game, bonus: bonus });
+        this.emit('bonus:pop', bonus);
 
         return true;
     }
@@ -141,7 +141,7 @@ BonusManager.prototype.remove = function(bonus)
 {
     if (BaseBonusManager.prototype.remove.call(this, bonus)) {
         this.world.removeBody(bonus.body);
-        this.emit('bonus:clear', {game: this.game, bonus: bonus});
+        this.emit('bonus:clear', bonus);
 
         return true;
     }

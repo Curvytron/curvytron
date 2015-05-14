@@ -72,21 +72,3 @@ BaseBonus.prototype.getProbability = function (game)
 {
     return BaseBonus.prototype.probability;
 };
-
-/**
- * Serialize
- *
- * @return {Object}
- */
-BaseBonus.prototype.serialize = function ()
-{
-    return {
-        id: this.id,
-        type: this.constructor.name,
-        radius: this.radius,
-        x: this.x,
-        y: this.y,
-        affect: this.affect,
-        duration: this.duration
-    };
-};

@@ -210,7 +210,7 @@ GameController.prototype.attachSpectator = function(client)
             rendered: this.game.rendered ? true : false,
             maxScore: this.game.maxScore
         }]],
-        avatar, data, i;
+        avatar, data, bonus, i;
 
     for (i = this.game.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.game.avatars.items[i];
@@ -229,7 +229,13 @@ GameController.prototype.attachSpectator = function(client)
 
     if (this.game.inRound) {
         for (i = this.game.bonusManager.bonuses.items.length - 1; i >= 0; i--) {
-            events.push(['bonus:pop', this.game.bonusManager.bonuses.items[i].serialize()]);
+            bonus = this.game.bonusManager.bonuses.items[i];
+            events.push(['bonus:pop', [
+                bonus.id,
+                this.compressor.compress(bonus.x),
+                this.compressor.compress(bonus.y),
+                bonus.constructor.name
+            ]]);
         }
     } else {
         this.socketGroup.addEvent('round:end', this.game.roundWinner ? this.game.roundWinner.id : null);
@@ -370,21 +376,26 @@ GameController.prototype.onDie = function(data)
 /**
  * On bonus pop
  *
- * @param {Object} data
+ * @param {Bonus} bonus
  */
-GameController.prototype.onBonusPop = function(data)
+GameController.prototype.onBonusPop = function(bonus)
 {
-    this.socketGroup.addEvent('bonus:pop', data.bonus.serialize());
+    this.socketGroup.addEvent('bonus:pop', [
+        bonus.id,
+        this.compressor.compress(bonus.x),
+        this.compressor.compress(bonus.y),
+        bonus.constructor.name
+    ]);
 };
 
 /**
  * On bonus clear
  *
- * @param {Object} data
+ * @param {Bonus} bonus
  */
-GameController.prototype.onBonusClear = function(data)
+GameController.prototype.onBonusClear = function(bonus)
 {
-    this.socketGroup.addEvent('bonus:clear', data.bonus.id);
+    this.socketGroup.addEvent('bonus:clear', bonus.id);
 };
 
 /**
@@ -431,7 +442,9 @@ GameController.prototype.onBonusStack = function(data)
     this.socketGroup.addEvent('bonus:stack', [
         data.avatar.id,
         data.method,
-        data.bonus.serialize()
+        data.bonus.id,
+        data.bonus.constructor.name,
+        data.bonus.duration
     ]);
 };
 

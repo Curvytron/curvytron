@@ -13,11 +13,17 @@ function BonusManager(game)
 
     this.loaded = false;
     this.sprite = new SpriteAsset('images/bonus.png', 3, 4, this.onLoad, true);
-    this.assets = {};
 }
 
 BonusManager.prototype = Object.create(BaseBonusManager.prototype);
 BonusManager.prototype.constructor = BonusManager;
+
+/**
+ * Assets
+ *
+ * @type {Object}
+ */
+BonusManager.prototype.assets = {};
 
 /**
  * Bonuses position on the sprite
@@ -57,8 +63,6 @@ BonusManager.prototype.onLoad = function()
     for (var i = this.spritePosition.length - 1; i >= 0; i--) {
         this.assets[this.spritePosition[i]] = images[i];
     }
-
-    Bonus.prototype.assets = this.assets;
 
     this.loaded = true;
     this.emit('load');

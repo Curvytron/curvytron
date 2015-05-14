@@ -4,6 +4,7 @@
     "files": [
         "src/shared/**/*.js",
         "src/client/controller/CurvytronController.js",
+        "src/client/manager/BonusManager.js",
         "src/client/*/**/*.js",
         "src/client/*.js",
         "!src/client/stressTest.js"

@@ -248,8 +248,12 @@ GameRepository.prototype.onDie = function(e)
  */
 GameRepository.prototype.onBonusPop = function(e)
 {
-    var data  = e.detail,
-        bonus = new Bonus(data.id, data.x, data.y, data.type, data.affect, data.radius, data.duration);
+    var bonus = new MapBonus(
+        e.detail[0],
+        this.compressor.decompress(e.detail[1]),
+        this.compressor.decompress(e.detail[2]),
+        e.detail[3]
+    );
 
     this.game.bonusManager.add(bonus);
     this.sound.play('bonus-pop');
@@ -277,20 +281,10 @@ GameRepository.prototype.onBonusClear = function(e)
  */
 GameRepository.prototype.onBonusStack = function(e)
 {
-    var data   = e.detail,
-        bonus  = data[2],
-        avatar = this.game.avatars.getById(data[0]);
+    var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar && avatar.local) {
-        avatar.bonusStack[data[1]](new Bonus(
-            bonus.id,
-            bonus.x,
-            bonus.y,
-            bonus.type,
-            bonus.affect,
-            bonus.radius,
-            bonus.duration
-        ));
+        avatar.bonusStack[e.detail[1]](new StackedBonus(e.detail[2], e.detail[3], e.detail[4]));
     }
 };
 
