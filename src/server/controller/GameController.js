@@ -214,7 +214,7 @@ GameController.prototype.attachSpectator = function(client)
 
     for (i = this.game.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.game.avatars.items[i];
-        events.push(['position', [avatar.id, this.compress(avatar.x), this.compress(avatar.y)]]);
+        events.push(['position', [avatar.id, this.compressor.compress(avatar.x), this.compressor.compress(avatar.y)]]);
 
         for (var property in properties) {
             if (properties.hasOwnProperty(property)) {
