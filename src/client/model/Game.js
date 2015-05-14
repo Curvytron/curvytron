@@ -316,6 +316,13 @@ Game.prototype.onResize = function()
         scale = width / this.size,
         avatar;
 
+    this.render.style.width  = (width + 8) + 'px';
+    this.render.style.height = (width + 8) + 'px';
+    this.canvas.setDimension(width, width, scale);
+    this.effect.setDimension(width, width, scale);
+    this.background.setDimension(width, width, scale, true);
+    this.bonusManager.setDimension(width, scale);
+
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
 
@@ -325,12 +332,4 @@ Game.prototype.onResize = function()
             avatar.input.setWidth(x);
         }
     }
-
-    this.render.style.width  = (width + 8) + 'px';
-    this.render.style.height = (width + 8) + 'px';
-    this.canvas.setDimension(width, width, scale);
-    this.effect.setDimension(width, width, scale);
-    this.background.setDimension(width, width, scale, true);
-    this.bonusManager.setDimension(width, scale);
-    this.draw();
 };

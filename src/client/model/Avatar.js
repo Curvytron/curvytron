@@ -7,15 +7,17 @@ function Avatar(player)
 {
     BaseAvatar.call(this, player);
 
-    this.local      = player.local;
-    this.canvas     = new Canvas(100, 100);
-    this.arrow      = new Canvas(this.arrowSize, this.arrowSize);
-    this.width      = this.radius * 2;
-    this.clearWidth = this.canvas.element.width;
-    this.startX     = 0;
-    this.startY     = 0;
-    this.clearX     = 0;
-    this.clearY     = 0;
+    this.local        = player.local;
+    this.canvas       = new Canvas(100, 100);
+    this.arrow        = new Canvas(this.arrowSize, this.arrowSize);
+    this.width        = this.radius * 2;
+    this.canvasWidth  = this.canvas.element.width;
+    this.canvasRadius = this.canvasWidth/2;
+    this.clearWidth   = this.canvasWidth;
+    this.startX       = 0;
+    this.startY       = 0;
+    this.clearX       = 0;
+    this.clearY       = 0;
 
     if (this.local) {
         this.input = new PlayerInput(this, player.getBinding());
@@ -53,10 +55,8 @@ Avatar.prototype.update = function(step)
         this.updatePosition(step);
     }
 
-    var width = this.canvas.element.width/2;
-
-    this.startX  = this.canvas.round(this.x * this.canvas.scale - width);
-    this.startY  = this.canvas.round(this.y * this.canvas.scale - width);
+    this.startX  = this.canvas.round(this.x * this.canvas.scale - this.canvasRadius);
+    this.startY  = this.canvas.round(this.y * this.canvas.scale - this.canvasRadius);
     this.changed = false;
 };
 
@@ -85,12 +85,11 @@ Avatar.prototype.setPositionFromServer = function(x, y)
 Avatar.prototype.setScale = function(scale)
 {
     var width = Math.ceil(this.width * scale);
-
-    if (width !== this.canvas.element.width) {
-        this.canvas.setDimension(width, width, scale);
-        this.changed    = true;
-        this.drawHead();
-    }
+    this.canvas.setDimension(width, width, scale);
+    this.changed      = true;
+    this.canvasWidth  = this.canvas.element.width;
+    this.canvasRadius = this.canvas.element.width/2;
+    this.drawHead();
 };
 
 /**
@@ -144,10 +143,13 @@ Avatar.prototype.die = function()
  */
 Avatar.prototype.drawHead = function()
 {
-    var middle = this.canvas.element.width/2;
-
     this.canvas.clear();
-    this.canvas.drawCircle(middle, middle, this.radius * this.canvas.scale, this.color);
+    this.canvas.drawCircle(
+        this.canvasRadius,
+        this.canvasRadius,
+        this.radius * this.canvas.scale,
+        this.color
+    );
 };
 
 /**
