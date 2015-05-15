@@ -1,17 +1,19 @@
 /**
  * Body
  *
- * @param {Array} position
+ * @param {Float} x
+ * @param {Float} y
  * @param {Number} radius
  * @param {Object} data
  */
-function Body (position, radius, data)
+function Body (x, y, radius, data)
 {
-    this.position = position;
-    this.radius   = radius;
-    this.data     = data;
-    this.islands  = new Collection();
-    this.id       = null;
+    this.x       = x;
+    this.y       = y;
+    this.radius  = radius;
+    this.data    = data;
+    this.islands = new Collection();
+    this.id      = null;
 }
 
 /**

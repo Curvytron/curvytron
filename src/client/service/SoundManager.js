@@ -49,7 +49,9 @@ SoundManager.prototype.directory = 'sounds/';
  */
 SoundManager.prototype.play = function(sound)
 {
-    createjs.Sound.play(sound);
+    if (this.active) {
+        createjs.Sound.play(sound);
+    }
 };
 
 /**

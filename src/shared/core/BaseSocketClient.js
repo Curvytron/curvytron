@@ -193,7 +193,7 @@ BaseSocketClient.prototype.flush = function ()
 {
     if (this.events.length > 0) {
         this.sendEvents(this.events);
-        this.events = [];
+        this.events.length = 0;
     }
 };
 
@@ -253,7 +253,7 @@ BaseSocketClient.prototype.createCallback = function(id)
 };
 
 /**
- * Object version of the lcient
+ * Object version of the client
  *
  * @return {Object}
  */

@@ -24,7 +24,7 @@
         <link rel="alternate" href="http://www.curvytron.com" hreflang="en" />
         <!-- Google Analytics -->
     </head>
-    <body ng-app="curvytronApp" ng-controller="CurvytronController" class="{{ curvytron.bodyClass }}">
+    <body ng-app="curvytronApp" ng-controller="CurvytronController">
         <!--[if lt IE 8]>
             <div id="browsehappy">
                 <div id="browsehappy-inner">
@@ -33,15 +33,24 @@
             </div>
         <![endif]-->
         <header>
+            <a href="http://www.reddit.com/r/curvytron/" target="_blank" class="reddit-link">Talk to us on reddit <i class="icon-reddit"></i></a>
+            <a href="http://www.twitter.com/curvytron" target="_blank" class="twitter-link">Follow us on twitter <i class="icon-twitter"></i></a>
             <a href="/#/" class="logo animated">
                 <img src="images/logo.svg" alt="Curvytron" id="logo" />
-                <span class="brand">Curvytron</span>
+                <span class="brand">curvytron</span>
             </a>
         </header>
+
+        <div ng-controller="ProfileController" ng-if="profile">
+            <ng-include src="'js/views/profile/link.html'"></ng-include>
+            <div id="profile" class="panel" ng-include="'js/views/profile/profile.html'" onload="onLoaded()"></div>
+        </div>
 
         <div id="connecting" ng-if="status === 'connecting'" class="container text-center">
             <h3>Connecting...</h3>
         </div>
+
+        <div id="main" ng-if="status === 'online'" ng-view></div>
 
         <div id="error" ng-if="status === 'disconnected'" class="container text-center">
             <section class="centered">
@@ -52,8 +61,6 @@
                 </button>
             </section>
         </div>
-
-        <div id="main" ng-if="status === 'online'" ng-view></div>
 
         <footer>
             <div class="container">
@@ -67,14 +74,6 @@
                 </div>
             </div>
         </footer>
-
-        <div ng-controller="ProfileController" ng-if="profile">
-            <ng-include src="'js/views/profile/link.html'"></ng-include>
-            <div id="profile" ng-class="{ 'active': profileOpen }">
-                <ng-include src="'js/views/profile/tuto.html'"></ng-include>
-                <ng-include src="'js/views/profile/profile.html'"></ng-include>
-            </div>
-        </div>
 
         <script src="js/dependencies.js"></script>
         <script src="js/curvytron.js"></script>

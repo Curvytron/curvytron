@@ -1,7 +1,7 @@
 (function(){
     'use strict';
 
-    var nbPlayers = 150;
+    var nbPlayers = 20;
 
     function getCurrentController() {
         return angular.element(document.getElementsByTagName('section')[0]).scope();

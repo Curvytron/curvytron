@@ -1,36 +1,24 @@
 /**
  * Die message
  *
- * @param {Player} curvyBot
  * @param {Player} deadPlayer
  * @param {Player} killerPlayer
+ * @param {Boolean} old
  */
-function DieMessage (curvyBot, deadPlayer, killerPlayer, old)
+function MessageDie(deadPlayer, killerPlayer, old)
 {
-    Message.call(this, null, null, curvyBot);
-
     this.deadPlayer   = deadPlayer;
     this.killerPlayer = killerPlayer;
     this.old          = old;
-    this.deathType    = this.resolveDeathType();
+    this.type         = this.resolveType();
 }
 
-DieMessage.prototype = Object.create(Message.prototype);
-DieMessage.prototype.constructor = DieMessage;
-
 /**
- * Message type
- *
- * @type {String}
- */
-DieMessage.prototype.type = 'die';
-
-/**
- * Resolve death type
+ * Resolve type
  *
  * @return {String}
  */
-DieMessage.prototype.resolveDeathType = function()
+MessageDie.prototype.resolveType = function()
 {
     if (!this.killerPlayer) {
         return 'wall';

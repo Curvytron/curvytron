@@ -29,7 +29,7 @@ RoomConfig.prototype.bonusClasses = {
     BonusEnemyBig: 'bonus-enemy-big',
     BonusEnemyInverse: 'bonus-enemy-inverse',
     BonusEnemyStraightAngle: 'bonus-enemy-straight-angle',
-    BonusAllBorderless: 'bonus-all-borderless',
+    BonusGameBorderless: 'bonus-game-borderless',
     BonusAllColor:'bonus-all-color',
     BonusGameClear: 'bonus-all-clear'
 };
@@ -55,6 +55,26 @@ RoomConfig.prototype.presets = [
     new SoloPreset(),
     new EmptyPreset()
 ];
+
+/**
+ * Set open
+ *
+ * @param {String} open
+ */
+RoomConfig.prototype.setOpen = function(open)
+{
+    this.open = open;
+};
+
+/**
+ * Set password
+ *
+ * @param {String} password
+ */
+RoomConfig.prototype.setPassword = function(password)
+{
+    this.password = password;
+};
 
 /**
  * Get available bonuses

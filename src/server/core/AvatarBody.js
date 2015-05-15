@@ -1,15 +1,16 @@
 /**
  * Avatar body
+ *
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Avatar} avatar
  */
-function AvatarBody(point, avatar)
+function AvatarBody(x, y, avatar)
 {
-    Body.call(this, point, avatar.radius);
+    Body.call(this, x, y, avatar.radius, avatar);
 
-    avatar.bodyCount++;
-
-    this.num    = avatar.bodyCount;
-    this.avatar = avatar;
-    this.birth  = new Date().getTime();
+    this.num   = avatar.bodyCount++;
+    this.birth = new Date().getTime();
 }
 
 AvatarBody.prototype = Object.create(Body.prototype);
@@ -31,11 +32,11 @@ AvatarBody.prototype.oldAge = 2000;
  */
 AvatarBody.prototype.match = function(body)
 {
-    if ((body instanceof AvatarBody) && this.avatar.equal(body.avatar)) {
-        return body.num - this.num > this.avatar.trailLatency;
+    if ((body instanceof AvatarBody) && this.data.equal(body.data)) {
+        return body.num - this.num > this.data.trailLatency;
     }
 
-    return Body.prototype.match.call(this, body);
+    return true;
 };
 
 /**

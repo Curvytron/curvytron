@@ -10,7 +10,7 @@ function Chat(client, repository)
 
     this.client     = client;
     this.repository = repository;
-    this.message    = new Message(null, this.client);
+    this.message    = new MessagePlayer(this.client);
     this.room       = null;
     this.element    = null;
     this.auto       = true;
@@ -29,34 +29,6 @@ function Chat(client, repository)
 
 Chat.prototype = Object.create(BaseChat.prototype);
 Chat.prototype.constructor = Chat;
-
-/**
- * Tips
- *
- * @type {Array}
- */
-Chat.prototype.tips = [
-    'To customize your left/right controls, click the [←]/[→] buttons and press any key.',
-    'Curvytron supports gamepads! Connect it, press A, then setup your controls.',
-    'Yes, you can play Curvytron on your smartphone ;)',
-    'You can add multiple players on the same computer.',
-    'Green bonuses apply only to you.',
-    'Red bonuses target your ennemies.',
-    'White bonuses affect everyone.',
-    'Making a Snail™ is a sure way to win, but other players might hate you for it.',
-    'The Enrichment Center regrets to inform you that this next test is impossible. Make no attempt to solve it.'
-];
-
-/**
- * Curvybot profile
- *
- * @type {Object}
- */
-Chat.prototype.curvybot = {
-    name: 'Curvybot',
-    color: '#ff8069',
-    icon: 'icon-megaphone'
-};
 
 /**
  * Attach events
@@ -154,7 +126,7 @@ Chat.prototype.talk = function()
     if (this.message.content.length) {
         this.client.addEvent(
             'room:talk',
-            this.message.serialize(),
+            this.message.content.substr(0, Message.prototype.maxLength),
             function (result) {
                 if (result.success) {
                     chat.message.clear();
@@ -175,11 +147,32 @@ Chat.prototype.onTalk = function(e)
 {
     if (typeof(e.detail) !== 'undefined' && e.detail) {
         var data    = e.detail,
-            player  = this.room.getPlayerByClient(data.client),
-            message = new Message(data.content, data.client, player ? player : {name: data.name, color: data.color}, data.creation);
+            player  = this.getPlayer(data),
+            message = new MessagePlayer(data.client, data.content, player, data.creation);
 
         this.addMessage(message);
     }
+};
+
+/**
+ * Get player from message data
+ *
+ * @param {Object} data
+ *
+ * @return {Player}
+ */
+Chat.prototype.getPlayer = function(data)
+{
+    var player = this.room.getPlayerByClient(data.client);
+
+    if (player) {
+        return player;
+    }
+
+    return {
+        name: typeof(data.name) === 'string' ? data.name : Message.prototype.name,
+        color: typeof(data.color) === 'string' ? data.color : Message.prototype.color
+    };
 };
 
 /**
@@ -189,7 +182,7 @@ Chat.prototype.onTalk = function(e)
  */
 Chat.prototype.onVoteNew = function(e)
 {
-    this.addMessage(new VoteKickMessage(this.curvybot, e.detail.target));
+    this.addMessage(new MessageVoteKick(e.detail.target));
 };
 
 /**
@@ -199,7 +192,7 @@ Chat.prototype.onVoteNew = function(e)
  */
 Chat.prototype.onKick = function(e)
 {
-    this.addMessage(new KickMessage(this.curvybot, e.detail));
+    this.addMessage(new MessageKick(e.detail));
 };
 
 /**
@@ -210,7 +203,7 @@ Chat.prototype.onKick = function(e)
 Chat.prototype.onRoomMaster = function(e)
 {
     if (e.detail.master) {
-        this.addMessage(new RoomMasterMessage(this.curvybot, e.detail.master));
+        this.addMessage(new MessageRoomMaster(e.detail.master));
     }
 };
 
@@ -231,11 +224,7 @@ Chat.prototype.onActivity = function(e)
  */
 Chat.prototype.addTip = function()
 {
-    this.addMessage(new Message(
-        this.tips[Math.floor(Math.random() * this.tips.length)],
-        null,
-        this.curvybot
-    ));
+    this.addMessage(new MessageTip());
 };
 
 /**
@@ -258,7 +247,7 @@ Chat.prototype.clear = function()
         this.element.removeEventListener('scroll', this.onActivity);
     }
 
-    this.message = new Message(null, this.client);
+    this.message.clear();
     this.room    = null;
     this.element = null;
 };

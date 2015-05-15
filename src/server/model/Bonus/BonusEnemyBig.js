@@ -1,11 +1,12 @@
 /**
  * Big Enemy Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusEnemyBig(position)
+function BonusEnemyBig(x, y)
 {
-    BonusEnemy.call(this, position);
+    BonusEnemy.call(this, x, y);
 }
 
 BonusEnemyBig.prototype = Object.create(BonusEnemy.prototype);

@@ -5,15 +5,27 @@
  */
 function PrintManager(avatar)
 {
-    this.avatar    = avatar;
-    this.active    = false;
-    this.lastPoint = new Array(2);
-    this.distance  = 0;
+    this.avatar   = avatar;
+    this.active   = false;
+    this.lastX    = 0;
+    this.lastY    = 0;
+    this.distance = 0;
 
     this.start = this.start.bind(this);
 }
 
+/**
+ * Hole distance
+ *
+ * @type {Number}
+ */
 PrintManager.prototype.holeDistance  = 5;
+
+/**
+ * Print distance
+ *
+ * @type {Number}
+ */
 PrintManager.prototype.printDistance = 60;
 
 /**
@@ -53,9 +65,9 @@ PrintManager.prototype.getRandomDistance = function()
 PrintManager.prototype.start = function()
 {
     if (!this.active) {
-        this.active    = true;
-        this.lastPoint = this.avatar.head.slice(0);
-
+        this.active = true;
+        this.lastX  = this.avatar.x;
+        this.lastY  = this.avatar.y;
         this.setPrinting(true);
     }
 };
@@ -78,11 +90,10 @@ PrintManager.prototype.stop = function()
 PrintManager.prototype.test = function()
 {
     if (this.active) {
+        this.distance -= this.getDistance(this.lastX, this.lastY, this.avatar.x, this.avatar.y);
 
-        var diff = this.getDistance(this.lastPoint, this.avatar.head);
-
-        this.distance -= diff;
-        this.lastPoint = this.avatar.head.slice(0);
+        this.lastX = this.avatar.x;
+        this.lastY = this.avatar.y;
 
         if (this.distance <= 0) {
             this.togglePrinting();
@@ -92,16 +103,18 @@ PrintManager.prototype.test = function()
 };
 
 /**
- * Get Distance
+ * Get distance
  *
- * @param {Array} from
- * @param {Array} to
+ * @param {Number} fromX
+ * @param {Number} fromY
+ * @param {Number} toX
+ * @param {Number} toY
  *
  * @return {Number}
  */
-PrintManager.prototype.getDistance = function(from, to)
+PrintManager.prototype.getDistance = function(fromX, fromY, toX, toY)
 {
-    return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
+    return Math.sqrt(Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2));
 };
 
 /**
@@ -109,7 +122,8 @@ PrintManager.prototype.getDistance = function(from, to)
  */
 PrintManager.prototype.clear = function()
 {
-    this.active    = false;
-    this.distance  = 0;
-    this.lastPoint = new Array(2);
+    this.active   = false;
+    this.distance = 0;
+    this.lastX    = 0;
+    this.lastY    = 0;
 };

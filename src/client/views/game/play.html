@@ -3,106 +3,101 @@
         <aside id="game-infos">
             <header><a href="/#/" class="logo"><img src="images/logo.svg" alt="Curvytron" id="logo" /> Curvytron</a></header>
             <div class="maxScore"><i class="icon-trophy"></i><span>{{ game.maxScore }}</span></div>
-            <h3 title="{{ game.name }}">{{ game.name }}</h3>
+            <h3 title="{{ ::game.name }}">{{ ::game.name }}</h3>
 
-            <span id="sound" class="btn-toogle sound pull-right" ng-class="{ active: sound.active }" ng-click="toggleSound()">
+            <span id="sound" class="btn-toggle sound pull-right" ng-class="{ active: sound.active }" ng-click="toggleSound()">
                 <i class="icon-volume"></i>
             </span>
-            <span id="radio-sound" class="btn-toogle radio-sound pull-right" ng-class="{ active: radio.enabled }" ng-click="toggleRadio()">
+            <span id="radio-sound" class="btn-toggle radio-sound pull-right" ng-class="{ active: radio.enabled }" ng-click="toggleRadio()">
                 <i class="icon-radio"></i>
             </span>
 
-            <ul id="game-players">
-                <li ng-repeat="avatar in avatars | orderBy:sortorder" ng-class="{ dead: avatar.alive == false }">
-                    <span class="line-color-preview" style="background-color: {{ avatar.player.color }};"></span>
-                    <span class="local-avatar" style="border-left-color: {{ avatar.player.color }};" ng-if="avatar.local"></span>
+            <div class="game-players" ng-controller="PlayerListController">
+                <div ng-repeat="avatar in avatars" class="player" ng-class="{ dead: avatar.alive == false, local: avatar.local && !spectating }">
+                    <span class="line-color-preview" style="background-color: {{ ::avatar.player.color }};"></span>
+                    <span class="arrow" style="border-left-color: {{ ::avatar.player.color }};" ng-if="avatar.local && !spectating"></span>
                     <span class="round-points" ng-if="avatar.roundScore && (!avatar.alive || !game.inRound)">+{{ avatar.roundScore }}</span>
-                    <span class="player-name" title="{{ avatar.name }}">{{ avatar.name }}</span>
+                    <span class="player-name" title="{{ avatar.name }}">{{ ::avatar.name }}</span>
                     <span class="score">{{ avatar.score }}</span>
-                </li>
-            </ul>
-            <footer>
-                <span id="fps" class="pull-right">0</span>
-                <span id="ping" class="pull-right" style="color: {{ latency <= 100 ? 'green' : (latency <= 300 ? 'orange' : 'red') }}">{{ latency }}ms</span>
+                </div>
+            </div>
+
+            <footer ng-controller="MetricController">
+                <span class="fps pull-right" style="color: {{ fpsColor }}">
+                    {{ fps }} fps
+                </span>
+                <span class="ping pull-right" style="color: {{ latencyColor }}">
+                    {{ latency }}ms
+                </span>
                 <span id="spectators" ng-if="spectators" class="pull-right">
                     {{ spectators }} <span class="icon-viewer"></span>
                 </span>
                 <a href="http://www.elao.com" class="game-copy pull-left" target="_blank">Handmade by Elao with <i class="icon-love"></i></a>
             </footer>
+
             <div class="room-chat" ng-controller="ChatController">
-                <div class="chat-wrapper" ng-include="'js/views/chat/chat.html'" onload="chatLoaded()"></div>
+                <div class="chat-wrapper" ng-include="'js/views/chat/chat.html'"></div>
             </div>
         </aside>
         <div id="col-right">
-            <div class="game-kill-log" ng-controller="KillLogController">
-                <div class="kill-log-wrapper" ng-include="'js/views/game/kill_log.html'" onload="killLogLoaded()"></div>
+            <div class="kill-log-wrapper" ng-controller="KillLogController">
+                <div id="kill-log-feed" class="feed"></div>
             </div>
-            <div class="spectating" ng-if="spectating">
+
+            <div class="spectating" ng-if="::spectating">
                 <h2><i class="icon-viewer"></i> You are in spectator mode</h2>
                 <p>You must wait for the game to finish before you can play.</p>
             </div>
-            <div class="waiting" ng-if="!game.isReady()">
+            <div class="waiting" ng-if="!spectating && !game.isReady()" ng-controller="WaitingController">
                 <p>Waiting for players...</p>
                 <ul>
-                    <li ng-repeat="avatar in game.avatars.items" ng-if="!avatar.ready">
-                        <span style="color: {{ avatar.player.color }}">{{ avatar.name }}</span>
+                    <li ng-repeat="avatar in list">
+                        <span style="color: {{ ::avatar.player.color }}">{{ ::avatar.name }}</span>
                     </li>
                 </ul>
             </div>
-            <div ng-if="warmup">
-                <p class="tie-break" ng-if="tieBreak">
-                    Tie break
-                </p>
-                <section class="countdown">
-                    <div class="count">
-                        {{ count }}
+            <div ng-controller="RoundController">
+                <div id="warmup" style="display: none;">
+                    <p id="tie-break" class="tie-break" style="display: none;">Tie break</p>
+                    <section class="countdown">
+                        <div id="count" class="count"></div>
+                    </section>
+                    <div class="countdown-anim"></div>
+                </div>
+                <div id="end" style="display: none;">
+                    <div id="game-view" class="recap-view {{ game.started ? 'round' : 'game' }}">
+                        <p class="victory">
+                            <i class="icon-trophy"></i>
+                            <span class="strong" style="color: {{ winner.color }}">
+                                {{ winner.name }}
+                            </span>
+                            won the {{ game.started ? 'round' : 'game' }} !
+                        </p>
+                        <div ng-if="!game.started">
+                            <button ng-click="backToRoom()" type="button" class="btn btn-hero btn-back-to-room">
+                                Back to the room
+                            </button>
+                            <table class="table table-hover recap">
+                                <tbody>
+                                    <tr ng-repeat="avatar in ::avatars">
+                                        <td class="rank">{{ ::($index+1) }}</td>
+                                        <td class="name"><span style="color: {{ ::avatar.player.color }}">{{ ::avatar.name }}</span></td>
+                                        <td class="points"><strong>{{ ::avatar.score }}</strong> points</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button ng-click="backToRoom()" type="button" class="btn btn-hero btn-back-to-room">
+                                Back to the room
+                            </button>
+                        </div>
                     </div>
-                </section>
-                <div class="countdown-anim"></div>
+                </div>
             </div>
-            <section id="end" ng-if="end">
-                <section ng-if="phase == 'round'" id="round-view">
-                    <p class="victory">
-                        <i class="icon-trophy"></i>
-                        <span class="strong" style="color: {{ roundWinner.player.color }}">
-                            {{ roundWinner.name }}
-                        </span>
-                        won the round !
-                    </p>
-                </section>
-                <section ng-if="phase == 'game'" id="game-view">
-                    <p class="victory">
-                        <i class="icon-trophy"></i>
-                        <span class="strong" style="color: {{ gameWinner.color }}">
-                            {{ gameWinner.name }}
-                        </span>
-                        won the game !
-                    </p>
-
-                    <div>
-                        <button ng-click="backToRoom()" type="button" class="btn btn-hero btn-back-to-room">
-                            Back to the room
-                        </button>
-                    </div>
-                    <table class="table table-hover recap">
-                        <tbody>
-                            <tr ng-repeat="avatar in game.avatars.items | orderBy:sortorder">
-                                <td class="rank">{{ $index + 1 }}</td>
-                                <td class="name"><span style="color: {{ avatar.player.color }}">{{ avatar.name }}</span></td>
-                                <td class="points"><strong>{{ avatar.score }}</strong> points</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div>
-                        <button ng-click="backToRoom()" type="button" class="btn btn-hero btn-back-to-room">
-                            Back to the room
-                        </button>
-                    </div>
-                </section>
-            </section>
-            <div id="render" class="game-render {{ borderless ? 'borderless' : '' }}">
-                <canvas id="game" class="game-front"></canvas>
+            <div id="render" class="game-render">
                 <canvas id="background" class="game-background"></canvas>
+                <canvas id="bonus" class="game-bonus"></canvas>
+                <canvas id="game" class="game-front"></canvas>
+                <canvas id="effect" class="game-effect"></canvas>
             </div>
         </div>
     </section>

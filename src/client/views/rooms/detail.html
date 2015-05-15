@@ -1,7 +1,7 @@
 <section>
     <div class="container room">
         <h2 class="header">
-            {{ room.name }}
+            {{ ::room.name }}
             <i class="icon-params" ng-click="toggleParameters()" ng-class="{'active': displayParameters}"></i>
         </h2>
 
@@ -12,7 +12,7 @@
         <h3>
             <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
                 <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
-                <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ nameMaxLength }}" />
+                <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ ::nameMaxLength }}" />
                 <div class="clearfix"></div>
             </form>
             <p class="count">
@@ -60,14 +60,14 @@
                             <span ng-if="player.isMaster()" class="icon icon-crown pull-left"></span>
                         </td>
                         <td class="col-player">
-                            <input type="text" ng-model="player.name" ng-blur="setName(player)" class="form-control player-name" name="name" maxlength="{{ nameMaxLength }}" />
+                            <input type="text" ng-model="player.name" ng-blur="setName(player)" class="form-control player-name" name="name" maxlength="{{ ::nameMaxLength }}" />
                         </td>
                         <td class="col-color">
-                            <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-blur="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ colorMaxLength }}" />
+                            <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-blur="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ ::colorMaxLength }}" />
                         </td>
                         <td class="col-keys">
                             <button class="btn btn-default control"
-                                ng-repeat="control in player.controls"
+                                ng-repeat="control in ::player.controls"
                                 ng-click="control.toggle()"
                                 ng-class="{ 'active': control.mapper.listening }"
                             >

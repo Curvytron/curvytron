@@ -1,11 +1,12 @@
 /**
  * Slow Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusSelfSlow(position)
+function BonusSelfSlow(x, y)
 {
-    BonusSelf.call(this, position);
+    BonusSelf.call(this, x, y);
 }
 
 BonusSelfSlow.prototype = Object.create(BonusSelf.prototype);

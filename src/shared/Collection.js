@@ -25,9 +25,9 @@ function Collection(items, key, index)
  */
 Collection.prototype.clear = function()
 {
-    this.ids   = [];
-    this.items = [];
-    this.id    = 0;
+    this.ids.length   = 0;
+    this.items.length = 0;
+    this.id           = 0;
 };
 
 /**

@@ -107,7 +107,7 @@ KickVote.prototype.close = function ()
 };
 
 /**
- * Hase vote
+ * Has vote
  *
  * @param {SocketClient} client
  *

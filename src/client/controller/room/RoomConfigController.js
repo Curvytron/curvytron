@@ -14,19 +14,23 @@ function RoomConfigController($scope, repository)
     this.onJoined     = this.onJoined.bind(this);
     this.toggleBonus  = this.toggleBonus.bind(this);
     this.togglePreset = this.togglePreset.bind(this);
+    this.setOpen      = this.setOpen.bind(this);
     this.setMaxScore  = this.setMaxScore.bind(this);
     this.setVariable  = this.setVariable.bind(this);
     this.applyScope   = this.applyScope.bind(this);
+    this.digestScope  = this.digestScope.bind(this);
 
-    // Hydratign scope
+    // Hydrating scope
     this.$scope.toggleBonus  = this.toggleBonus;
     this.$scope.togglePreset = this.togglePreset;
+    this.$scope.setOpen      = this.setOpen;
     this.$scope.setMaxScore  = this.setMaxScore;
     this.$scope.setVariable  = this.setVariable;
 
-    this.repository.on('config:max-score', this.applyScope);
-    this.repository.on('config:variable', this.applyScope);
-    this.repository.on('config:bonus', this.applyScope);
+    this.repository.on('config:open', this.digestScope);
+    this.repository.on('config:max-score', this.digestScope);
+    this.repository.on('config:variable', this.digestScope);
+    this.repository.on('config:bonus', this.digestScope);
 
     this.$scope.$parent.$watch('room', this.onJoined);
 }
@@ -97,6 +101,21 @@ RoomConfigController.prototype.applyPreset = function(preset)
 };
 
 /**
+ * Set open
+ */
+RoomConfigController.prototype.setOpen = function(open)
+{
+    if (this.repository.amIMaster()) {
+        var config = this.config;
+
+        this.repository.setConfigOpen(open, function (result) {
+            config.setOpen(result.open);
+            config.setPassword(result.password);
+        });
+    }
+};
+
+/**
  * Set max score
  */
 RoomConfigController.prototype.setMaxScore = function(maxScore)
@@ -128,3 +147,8 @@ RoomConfigController.prototype.setVariable = function(variable)
  * Apply scope
  */
 RoomConfigController.prototype.applyScope = CurvytronController.prototype.applyScope;
+
+/**
+ * Digest scope
+ */
+RoomConfigController.prototype.digestScope = CurvytronController.prototype.digestScope;

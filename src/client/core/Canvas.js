@@ -21,6 +21,13 @@ function Canvas(width, height, element)
 }
 
 /**
+ * Two pi
+ *
+ * @type {Number}
+ */
+Canvas.prototype.twoPi = 2 * Math.PI;
+
+/**
  * Set width
  *
  * @param {Number} width
@@ -66,7 +73,7 @@ Canvas.prototype.setDimension = function(width, height, scale, update)
 
     if (update) {
         save = new Canvas(this.element.width, this.element.height);
-        save.drawImage(this.element, [0,0]);
+        save.pastImage(this.element);
     }
 
     this.element.width  = width;
@@ -77,9 +84,18 @@ Canvas.prototype.setDimension = function(width, height, scale, update)
     }
 
     if (update) {
-        this.drawImage(save.element, [0,0], this.element.width, this.element.height);
+        this.drawImage(save.element, 0, 0, this.element.width, this.element.height);
         save = null;
     }
+};
+
+/**
+ * Set opacity
+ *
+ * @param {Float} opacity
+ */
+Canvas.prototype.setOpacity = function(opacity) {
+    this.context.globalAlpha = opacity;
 };
 
 /**
@@ -95,10 +111,29 @@ Canvas.prototype.clear = function()
  */
 Canvas.prototype.color = function(color)
 {
-    this.context.beginPath();
-    this.context.rect(0, 0, this.element.width, this.element.height);
     this.context.fillStyle = color;
-    this.context.fill();
+    this.context.fillRect(0, 0, this.element.width, this.element.height);
+};
+
+/**
+ * Clear rectangular zone
+ */
+Canvas.prototype.clearZone = function(x, y, width, height)
+{
+    this.context.clearRect(x, y, width, height);
+};
+
+/**
+ * Clear rectangular zone scaled
+ */
+Canvas.prototype.clearZoneScaled = function(x, y, width, height)
+{
+    this.clearZone(
+        this.round(x * this.scale),
+        this.round(y * this.scale),
+        this.round(width * this.scale),
+        this.round(height * this.scale)
+    );
 };
 
 /**
@@ -131,108 +166,104 @@ Canvas.prototype.reverse = function()
  * Draw image to scale
  *
  * @param {Resource} image
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  * @param {Number} width
  * @param {Number} height
- * @param {Number} angle
  */
-Canvas.prototype.drawImageScaled = function(image, position, width, height, angle, opacity)
+Canvas.prototype.drawImageScaled = function(image, x, y, width, height)
 {
-    this.drawImage(image, [position[0] * this.scale, position[1] * this.scale], width * this.scale, height * this.scale, angle, opacity);
+    this.context.drawImage(
+        image,
+        this.round(x * this.scale),
+        this.round(y * this.scale),
+        this.round(width * this.scale),
+        this.round(height * this.scale)
+    );
+};
+
+/**
+ * Draw image to scale
+ *
+ * @param {Resource} image
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ * @param {Float} angle
+ */
+Canvas.prototype.drawImageScaledAngle = function(image, x, y, width, height, angle)
+{
+    x      = this.round(x * this.scale);
+    y      = this.round(y * this.scale);
+    width  = this.round(width / 2 * this.scale);
+    height = this.round(height / 2 * this.scale);
+
+    var centerX = x + width,
+        centerY = y + height;
+
+    x = -width;
+    y = -height;
+
+    this.context.save();
+    this.context.translate(centerX, centerY);
+    this.context.rotate(angle);
+    this.context.drawImage(image, x, y, width * 2, height * 2);
+    this.context.restore();
 };
 
 /**
  * Draw image to size
  *
  * @param {Resource} image
- * @param {Aray} position
+ * @param {Number} x
+ * @param {Number} y
  * @param {Number} width
  * @param {Number} height
- * @param {Number} angle
  */
-Canvas.prototype.drawImage = function(image, position, width, height, angle, opacity)
+Canvas.prototype.drawImage = function(image, x, y, width, height)
 {
-    position = typeof(position) !== 'undefined' && position ? position : [0, 0];
-    angle = typeof(angle) !== 'undefined' && angle ? angle : false;
-    opacity = typeof(opacity) !== 'undefined' && opacity ? opacity : 1;
+    this.context.drawImage(image, x, y, width, height);
+};
 
-    if (angle) {
-        var centerX = position[0] + width/2,
-            centerY = position[1] + height/2;
+/**
+ * Draw image to size
+ *
+ * @param {Resource} image
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} width
+ * @param {Number} height
+ */
+Canvas.prototype.drawImageTo = function(image, x, y)
+{
+    this.context.drawImage(image, x, y);
+};
 
-        position[0] = -width/2;
-        position[1] = -height/2;
-
-        this.context.save();
-        this.context.translate(centerX, centerY);
-        this.context.rotate(angle);
-    }
-
-    this.context.globalAlpha = opacity;
-
-    if (typeof(width) === 'number' && typeof(height) === 'number') {
-        this.context.drawImage(image, this.round(position[0]), this.round(position[1]), this.round(width), this.round(height));
-    } else {
-        this.context.drawImage(image, this.round(position[0]), this.round(position[1]));
-    }
-
-    if (angle) {
-        this.context.restore();
-    }
+/**
+ * Past image
+ *
+ * @param {Resource} image
+ */
+Canvas.prototype.pastImage = function(image)
+{
+    this.context.drawImage(image, 0, 0);
 };
 
 /**
  * Draw circle
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  * @param {Number} radius
- * @param {String} fill
- * @param {String} stroke
- * @param {Number} alpha
+ * @param {String} color
  */
-Canvas.prototype.drawCircle = function(position, radius, fill, stroke, alpha)
+Canvas.prototype.drawCircle = function(x, y, radius, color)
 {
-    var previous;
-
-    if (typeof(alpha) !== 'undefined') {
-        previous = this.context.globalAlpha;
-        this.context.globalAlpha = alpha;
-    }
-
     this.context.beginPath();
-    this.context.arc(position[0], position[1], radius, 0, 2 * Math.PI, false);
-
-    if (typeof(fill) !== 'undefined' && fill !== null) {
-        this.context.fillStyle = fill;
-        this.context.fill();
-    }
-
-    if (typeof(stroke) !== 'undefined' && stroke !== null) {
-        this.context.lineWidth = 1;
-        this.context.strokeStyle = stroke;
-        this.context.stroke();
-    }
-
-    if (typeof(alpha) !== 'undefined' && alpha !== null) {
-        this.context.globalAlpha = previous;
-    }
-};
-
-/**
- * Draw circle scaled
- *
- * @param {Array} position
- * @param {Number} radius
- * @param {String} fill
- * @param {String} stroke
- * @param {Number} alpha
- */
-Canvas.prototype.drawCircleScaled = function(position, radius, fill, stroke, alpha)
-{
-    position = [position[0] * this.scale, position[1] * this.scale];
-    radius   = radius * this.scale;
-
-    this.drawCircle(position, radius, fill, stroke, alpha);
+    this.context.arc(x, y, radius, 0, this.twoPi, false);
+    this.context.fillStyle = color;
+    this.context.fill();
 };
 
 /**
@@ -241,25 +272,16 @@ Canvas.prototype.drawCircleScaled = function(position, radius, fill, stroke, alp
  * @param {Array} points
  * @param {Number} width
  * @param {String} color
- * @param {Number} alpha
+ * @param {String} style
  */
-Canvas.prototype.drawLine = function(points, width, color, alpha)
+Canvas.prototype.drawLine = function(points, width, color, style)
 {
-    var length = points.length,
-        previous;
+    var length = points.length;
 
     if (length > 1) {
-        if (typeof(alpha) !== 'undefined') {
-            previous = this.context.globalAlpha;
-            this.context.globalAlpha = alpha;
-        }
-
-        if (typeof(color) !== 'undefined') {
-            this.context.strokeStyle = color;
-        }
-
-        this.context.lineWidth = typeof(width) !== 'undefined' ? width : 1;
-        this.context.lineCap = 'round';
+        this.context.lineCap     = style;
+        this.context.strokeStyle = color;
+        this.context.lineWidth   = width;
         this.context.beginPath();
         this.context.moveTo(points[0][0], points[0][1]);
 
@@ -268,10 +290,6 @@ Canvas.prototype.drawLine = function(points, width, color, alpha)
         }
 
         this.context.stroke();
-
-        if (typeof(alpha) !== 'undefined') {
-            this.context.globalAlpha = previous;
-        }
     }
 };
 
@@ -281,15 +299,25 @@ Canvas.prototype.drawLine = function(points, width, color, alpha)
  * @param {Array} points
  * @param {Number} width
  * @param {String} color
- * @param {Number} alpha
+ * @param {String} style
  */
-Canvas.prototype.drawLineScaled = function(points, width, color, alpha)
+Canvas.prototype.drawLineScaled = function(points, width, color, style)
 {
-    for (var i = points.length - 1; i >= 0; i--) {
-        points[i] = [points[i][0] * this.scale, points[i][1] * this.scale];
-    }
+    var length = points.length;
 
-    this.drawLine(points, width * this.scale, color, alpha);
+    if (length > 1) {
+        this.context.lineCap     = style;
+        this.context.strokeStyle = color;
+        this.context.lineWidth   = width * this.scale;
+        this.context.beginPath();
+        this.context.moveTo(points[0][0] * this.scale, points[0][1] * this.scale);
+
+        for (var i = 1; i < length; i++) {
+            this.context.lineTo(points[i][0] * this.scale, points[i][1] * this.scale);
+        }
+
+        this.context.stroke();
+    }
 };
 
 /**

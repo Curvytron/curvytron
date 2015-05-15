@@ -37,12 +37,11 @@ BonusManager.prototype.start = function()
  */
 BonusManager.prototype.stop = function()
 {
-    BaseBonusManager.prototype.stop.call(this);
-
-    if (this.bonusTypes.length) {
-        clearTimeout(this.popingTimeout);
-        this.popingTimeout = null;
+    if (this.popingTimeout) {
+        this.popingTimeout = clearTimeout(this.popingTimeout);
     }
+
+    BaseBonusManager.prototype.stop.call(this);
 };
 
 /**
@@ -60,17 +59,17 @@ BonusManager.prototype.clear = function()
 BonusManager.prototype.popBonus = function ()
 {
     if (this.bonusTypes.length) {
-        clearTimeout(this.popingTimeout);
-        this.popingTimeout = null;
+        this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
 
         if (this.bonuses.count() < this.bonusCap) {
-            var position = this.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
-                bonus    = this.getRandomBonus(position);
+            var bonusType = this.getRandomBonusType();
 
-            this.add(bonus);
+            if (bonusType) {
+                var position = this.getRandomPosition(BaseBonus.prototype.radius, this.bonusPopingMargin),
+                    bonus    = new (bonusType)(position[0], position[1]);
+                this.add(bonus);
+            }
         }
-
-        this.popingTimeout = setTimeout(this.popBonus, this.getRandomPopingTime());
     }
 };
 
@@ -85,13 +84,18 @@ BonusManager.prototype.popBonus = function ()
 BonusManager.prototype.getRandomPosition = function(radius, border)
 {
     var margin = radius + border * this.game.world.size,
-        point = this.game.world.getRandomPoint(margin);
+        body   = new Body(
+            this.game.world.getRandomPoint(margin),
+            this.game.world.getRandomPoint(margin),
+            margin
+        );
 
-    while (!this.game.world.testBody(new Body(point, margin)) || !this.world.testBody(new Body(point, margin))) {
-        point = this.game.world.getRandomPoint(margin);
+    while (!this.game.world.testBody(body) || !this.world.testBody(body)) {
+        body.x = this.game.world.getRandomPoint(margin);
+        body.y = this.game.world.getRandomPoint(margin);
     }
 
-    return point;
+    return [body.x, body.y];
 };
 
 /**
@@ -101,14 +105,13 @@ BonusManager.prototype.getRandomPosition = function(radius, border)
  */
 BonusManager.prototype.testCatch = function(avatar)
 {
-    if (!avatar.body) {
-        throw avatar;
-    }
-    var body = this.world.getBody(avatar.body),
-        bonus = body ? body.data : null;
+    if (avatar.body) {
+        var body  = this.world.getBody(avatar.body),
+            bonus = body ? body.data : null;
 
-    if (bonus && this.remove(bonus)) {
-        bonus.applyTo(avatar, this.game);
+        if (bonus && this.remove(bonus)) {
+            bonus.applyTo(avatar, this.game);
+        }
     }
 };
 
@@ -121,7 +124,7 @@ BonusManager.prototype.add = function (bonus)
 {
     if (BaseBonusManager.prototype.add.call(this, bonus)) {
         this.world.addBody(bonus.body);
-        this.emit('bonus:pop', { game: this.game, bonus: bonus });
+        this.emit('bonus:pop', bonus);
 
         return true;
     }
@@ -138,7 +141,7 @@ BonusManager.prototype.remove = function(bonus)
 {
     if (BaseBonusManager.prototype.remove.call(this, bonus)) {
         this.world.removeBody(bonus.body);
-        this.emit('bonus:clear', {game: this.game, bonus: bonus});
+        this.emit('bonus:clear', bonus);
 
         return true;
     }
@@ -157,31 +160,31 @@ BonusManager.prototype.getRandomPopingTime  = function()
 };
 
 /**
- * Get random bonus
- *
- * @param {Array} position
+ * Get random bonus type
  *
  * @return {Bonus}
  */
-BonusManager.prototype.getRandomBonus = function(position)
+BonusManager.prototype.getRandomBonusType = function()
 {
-    if (!this.bonusTypes.length) { return; }
+    if (!this.bonusTypes.length) { return null; }
 
-    var total = this.bonusTypes.length,
-        pot = [],
+    var total   = this.bonusTypes.length,
+        pot     = [],
         bonuses = [],
         bonus,
-        probability;
+        probability,
+        bonusType;
 
     for (var i = 0; i < total; i++) {
-        bonus = new (this.bonusTypes[i])(position);
-        probability = bonus.getProbability(this.game);
+        bonusType   = this.bonusTypes[i];
+        probability = bonusType.prototype.getProbability(this.game);
 
         if (probability > 0) {
-            bonuses.push(bonus);
+            bonuses.push(bonusType);
             pot.push(probability + (i > 0 ? pot[pot.length-1] : 0));
         }
     }
+
     var value = Math.random() * pot[pot.length - 1];
 
     for (i = 0; i < total; i++) {
@@ -190,7 +193,7 @@ BonusManager.prototype.getRandomBonus = function(position)
         }
     }
 
-    return bonuses[bonuses.length-1];
+    return null;
 };
 
 /**

@@ -1,11 +1,12 @@
 /**
  * Big All Color
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusAllColor(position)
+function BonusAllColor(x, y)
 {
-    BonusAll.call(this, position);
+    BonusAll.call(this, x, y);
 
     this.getColor = this.getColor.bind(this);
 }

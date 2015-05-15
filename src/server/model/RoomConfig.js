@@ -25,10 +25,29 @@ RoomConfig.prototype.bonusTypes = {
     BonusEnemyFast: BonusEnemyFast,
     BonusEnemyBig: BonusEnemyBig,
     BonusEnemyInverse: BonusEnemyInverse,
-    BonusAllBorderless: BonusAllBorderless,
+    BonusGameBorderless: BonusGameBorderless,
     BonusAllColor: BonusAllColor,
     BonusGameClear: BonusGameClear,
     BonusEnemyStraightAngle: BonusEnemyStraightAngle
+};
+
+/**
+ * Set open
+ *
+ * @param {Boolean} open
+ */
+RoomConfig.prototype.setOpen = function(open)
+{
+    if (this.open !== open) {
+        this.open     = open;
+        this.password = this.open ? null : this.generatePassword();
+
+        this.emit('room:config:open', {room: this.room, open: this.open});
+
+        return true;
+    }
+
+    return false;
 };
 
 /**

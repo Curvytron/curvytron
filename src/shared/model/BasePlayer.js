@@ -51,7 +51,7 @@ BasePlayer.prototype.setName = function(name)
  */
 BasePlayer.prototype.setColor = function(color)
 {
-    if (!this.validateColor(color)) { return false; }
+    if (!this.validateColor(color, true)) { return false; }
 
     this.color = color;
 
@@ -100,7 +100,6 @@ BasePlayer.prototype.getAvatar = function()
 BasePlayer.prototype.reset = function()
 {
     this.avatar.destroy();
-
     this.avatar = null;
     this.ready  = false;
 };
@@ -139,7 +138,7 @@ BasePlayer.prototype.getRandomColor = function()
 };
 
 /**
- * Validatre color
+ * Validate color
  *
  * @param {String} color
  *

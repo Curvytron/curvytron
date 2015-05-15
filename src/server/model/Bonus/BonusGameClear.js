@@ -1,11 +1,12 @@
 /**
  * Master Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusGameClear(position)
+function BonusGameClear(x, y)
 {
-    BonusGame.call(this, position);
+    BonusGame.call(this, x, y);
 }
 
 BonusGameClear.prototype = Object.create(BonusGame.prototype);
@@ -33,13 +34,13 @@ BonusGameClear.prototype.getProbability = function (game)
         return this.probability;
     }
 
-    return Math.round((this.probability - ratio) * 10) / 10;
+    return Math.round((BaseBonus.prototype.probability - ratio) * 10) / 10;
 };
 
 /**
  * Apply on
  */
-BonusGame.prototype.on = function()
+BonusGameClear.prototype.on = function()
 {
     this.target.clearTrails();
 };

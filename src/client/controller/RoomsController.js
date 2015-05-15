@@ -7,6 +7,8 @@
  */
 function RoomsController($scope, $location, client)
 {
+    document.body.classList.remove('game-mode');
+
     this.$scope     = $scope;
     this.$location  = $location;
     this.client     = client;
@@ -19,8 +21,10 @@ function RoomsController($scope, $location, client)
     this.quickPlay    = this.quickPlay.bind(this);
     this.detachEvents = this.detachEvents.bind(this);
     this.applyScope   = this.applyScope.bind(this);
+    this.digestScope  = this.digestScope.bind(this);
 
     this.$scope.$on('$destroy', this.detachEvents);
+    this.$location.search('password', null);
 
     // Hydrating the scope:
     this.$scope.rooms           = this.repository.rooms;
@@ -31,8 +35,6 @@ function RoomsController($scope, $location, client)
     this.$scope.roomName        = '';
     this.$scope.$parent.profile = true;
 
-    this.$scope.curvytron.bodyClass = null;
-
     this.attachEvents();
 }
 
@@ -41,10 +43,11 @@ function RoomsController($scope, $location, client)
  */
 RoomsController.prototype.attachEvents = function()
 {
-    this.repository.on('room:open', this.applyScope);
-    this.repository.on('room:close', this.applyScope);
-    this.repository.on('room:players', this.applyScope);
-    this.repository.on('room:game', this.applyScope);
+    this.repository.on('room:open', this.digestScope);
+    this.repository.on('room:close', this.digestScope);
+    this.repository.on('room:players', this.digestScope);
+    this.repository.on('room:game', this.digestScope);
+    this.repository.on('room:config:open', this.digestScope);
 
     this.repository.start();
 };
@@ -56,10 +59,11 @@ RoomsController.prototype.detachEvents = function()
 {
     this.repository.stop();
 
-    this.repository.off('room:open', this.applyScope);
-    this.repository.off('room:close', this.applyScope);
-    this.repository.off('room:players', this.applyScope);
-    this.repository.off('room:game', this.applyScope);
+    this.repository.off('room:open', this.digestScope);
+    this.repository.off('room:close', this.digestScope);
+    this.repository.off('room:players', this.digestScope);
+    this.repository.off('room:game', this.digestScope);
+    this.repository.off('room:config:open', this.digestScope);
 };
 
 /**
@@ -91,7 +95,11 @@ RoomsController.prototype.onCreateRoom = function(result)
  */
 RoomsController.prototype.joinRoom = function(room)
 {
-    this.$location.path(room.url);
+    if (room.open) {
+        this.$location.path(room.getUrl());
+    } else if (room.password && room.password.match(new RegExp('[0-9]{4}'))) {
+        this.$location.path(room.getUrl()).search('password', room.password);
+    }
 };
 
 /**
@@ -113,3 +121,8 @@ RoomsController.prototype.quickPlay = function()
  * Apply scope
  */
 RoomsController.prototype.applyScope = CurvytronController.prototype.applyScope;
+
+/**
+ * Digest scope
+ */
+RoomsController.prototype.digestScope = CurvytronController.prototype.digestScope;

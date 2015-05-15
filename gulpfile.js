@@ -11,6 +11,7 @@ var fs        = require('fs'),
     minifyCSS = require('gulp-minify-css'),
     htmlmin   = require('gulp-html-minifier'),
     replace   = require('gulp-replace'),
+    wrap      = require("gulp-wrap"),
     meta      = require('./package.json'),
     config;
 
@@ -74,6 +75,7 @@ gulp.task('front-expose', function() {
 gulp.task('front-full', function() {
     return gulp.src(recipes.client.files)
         .pipe(concat(recipes.client.name))
+        .pipe(wrap('(function(){\n"use strict";\n<%= contents %>\n})();'))
         .pipe(header(banner, meta))
         .pipe(gulp.dest(recipes.client.path));
 });
@@ -82,6 +84,7 @@ gulp.task('front-min', function(){
     return gulp.src(recipes.client.files)
         .pipe(concat(recipes.client.name))
         .pipe(uglify())
+        .pipe(wrap('(function(){\n"use strict";\n<%= contents %>\n})();'))
         .pipe(header(banner, meta))
         .pipe(gulp.dest(recipes.client.path));
 });
@@ -137,7 +140,8 @@ gulp.task('copy-stress-test', function() {
 
 gulp.task('watch', ['dev'], function () {
     gulp.watch('src/**/*.js', ['jshint', 'server', 'front-full']);
-    gulp.watch('src/client/views/**/*', ['views']);
+    gulp.watch('src/client/views/*/*.html', ['views']);
+    gulp.watch('src/client/views/*.html', ['ga']);
     gulp.watch('src/**/*.scss', ['sass-full']);
 });
 

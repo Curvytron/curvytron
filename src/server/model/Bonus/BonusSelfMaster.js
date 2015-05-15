@@ -1,11 +1,12 @@
 /**
  * Master Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusSelfMaster(position)
+function BonusSelfMaster(x, y)
 {
-    BonusSelf.call(this, position);
+    BonusSelf.call(this, x, y);
 }
 
 BonusSelfMaster.prototype = Object.create(BonusSelf.prototype);

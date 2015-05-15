@@ -3,88 +3,48 @@
  */
 function World(size, islands)
 {
-    islands = typeof(islands) === 'number' ? islands : this.islandGridSize;
+    islands = typeof(islands) === 'number' ? islands : Math.round(size / this.islandGridSize);
 
     this.size       = size;
     this.islands    = new Collection();
     this.islandSize = this.size / islands;
     this.active     = false;
+    this.bodyCount  = 0;
 
-    this.angles = {
-        topLeft: [0, 0],
-        topRight: [this.size, 0],
-        bottomRight: [this.size, this.size],
-        bottomLeft: [0, this.size]
-    };
-
-    this.borders = [
-        [this.angles.topLeft, this.angles.topRight],
-        [this.angles.topRight, this.angles.bottomRight],
-        [this.angles.bottomRight, this.angles.bottomLeft],
-        [this.angles.bottomLeft, this.angles.topLeft]
-    ];
-
-    var x, y, id;
-
-    for (y = this.islandGridSize - 1; y >= 0; y--) {
-        for (x = this.islandGridSize - 1; x >= 0; x--) {
+    for (var id, x, y = islands - 1; y >= 0; y--) {
+        for (x = islands- 1; x >= 0; x--) {
             id = x.toString() + ':' + y.toString();
-            this.islands.add(new Island(id, this.islandSize, [x * this.islandSize, y * this.islandSize]));
+            this.islands.add(new Island(id, this.islandSize, x * this.islandSize, y * this.islandSize));
         }
     }
 }
 
 /**
- * Island grid size
+ * Island grid size (width of the island)
  *
  * @type {Number}
  */
-World.prototype.islandGridSize = 5;
+World.prototype.islandGridSize = 40;
 
 /**
- * Get island by point
+ * Get the island responsible for the given point
  *
- * @param {Array} point
+ * @param {Number} x
+ * @param {Number} y
  *
  * @return {Island}
  */
-World.prototype.getIslandByPoint = function(point)
+World.prototype.getIslandByPoint = function(pX, pY)
 {
-    var x = Math.floor(point[0]/this.islandSize),
-        y = Math.floor(point[1]/this.islandSize),
+    var x  = Math.floor(pX/this.islandSize),
+        y  = Math.floor(pY/this.islandSize),
         id = x.toString() + ':' + y.toString();
 
     return this.islands.getById(id);
 };
 
 /**
- * Get island by body
- *
- * @param {Body} body
- *
- * @return {Island}
- */
-World.prototype.getIslandsByBody = function(body)
-{
-    var islands = new Collection(),
-        sources = [
-            this.getIslandByPoint([body.position[0] - body.radius, body.position[1] - body.radius]),
-            this.getIslandByPoint([body.position[0] + body.radius, body.position[1] - body.radius]),
-            this.getIslandByPoint([body.position[0] - body.radius, body.position[1] + body.radius]),
-            this.getIslandByPoint([body.position[0] + body.radius, body.position[1] + body.radius])
-        ];
-
-    for (var i = sources.length - 1; i >= 0; i--) {
-        if (sources[i]) {
-            islands.add(sources[i]);
-        }
-    }
-
-    return islands.items;
-};
-
-/**
- * Add body
+ * Add a body to all concerned islands
  *
  * @param {Body} body
  */
@@ -94,15 +54,32 @@ World.prototype.addBody = function(body)
         return;
     }
 
-    var islands = this.getIslandsByBody(body);
+    body.id = this.bodyCount++;
 
-    for (var i = islands.length - 1; i >= 0; i--) {
-        islands[i].addBody(body);
+    this.addBodyByPoint(body, body.x - body.radius, body.y - body.radius);
+    this.addBodyByPoint(body, body.x + body.radius, body.y - body.radius);
+    this.addBodyByPoint(body, body.x - body.radius, body.y + body.radius);
+    this.addBodyByPoint(body, body.x + body.radius, body.y + body.radius);
+};
+
+/**
+ * Add a body to an island if it's concerned by the given point
+ *
+ * @param {Body} body
+ * @param {Number} x
+ * @param {Number} y
+ */
+World.prototype.addBodyByPoint = function(body, x, y)
+{
+    var island = this.getIslandByPoint(x, y);
+
+    if (island) {
+        island.addBody(body);
     }
 };
 
 /**
- * Remove body
+ * Remove a body from islands
  *
  * @param {Body} body
  */
@@ -118,27 +95,38 @@ World.prototype.removeBody = function(body)
 };
 
 /**
- * Get body
+ * Get one or no body coliding with the given body
  *
  * @param {Body} body
+ *
+ * @return {Body|null}
  */
 World.prototype.getBody = function(body)
 {
-    var islands = this.getIslandsByBody(body),
-        match;
-
-    for (var i = islands.length - 1; i >= 0; i--) {
-        match = islands[i].getBody(body);
-        if (match) {
-            return match;
-        }
-    }
-
-    return null;
+    return this.getBodyByPoint(body, body.x - body.radius, body.y - body.radius) ||
+        this.getBodyByPoint(body, body.x + body.radius, body.y - body.radius) ||
+        this.getBodyByPoint(body, body.x - body.radius, body.y + body.radius) ||
+        this.getBodyByPoint(body, body.x + body.radius, body.y + body.radius);
 };
 
 /**
- * Add body
+ * Get one or no body coliding with the given body for the given point
+ *
+ * @param {Body} body
+ * @param {Number} x
+ * @param {Number} y
+ *
+ * @return {Body|null}
+ */
+World.prototype.getBodyByPoint = function(body, x, y)
+{
+    var island = this.getIslandByPoint(x, y);
+
+    return island ? island.getBody(body) : null;
+};
+
+/**
+ * Test if the body position is free (there are no bodies for this position)
  *
  * @param {Body} body
  *
@@ -146,19 +134,28 @@ World.prototype.getBody = function(body)
  */
 World.prototype.testBody = function(body)
 {
-    var islands = this.getIslandsByBody(body);
-
-    for (var i = islands.length - 1; i >= 0; i--) {
-        if (!islands[i].testBody(body)) {
-            return false;
-        }
-    }
-
-    return true;
+    return this.testBodyByPoint(body, body.x - body.radius, body.y - body.radius) &&
+        this.testBodyByPoint(body, body.x + body.radius, body.y - body.radius) &&
+        this.testBodyByPoint(body, body.x - body.radius, body.y + body.radius) &&
+        this.testBodyByPoint(body, body.x + body.radius, body.y + body.radius);
 };
 
 /**
- * Random random position
+ * Test if the body position is free for the given point
+ *
+ * @param {Body} Body
+ * @param {Number} x
+ * @param {Number} y
+ */
+World.prototype.testBodyByPoint = function(body, x, y)
+{
+    var island = this.getIslandByPoint(x, y);
+
+    return island ? island.testBody(body) : false;
+};
+
+/**
+ * Random a random, free of bodies, position
  *
  * @param {Number} radius
  * @param {Number} border
@@ -168,28 +165,31 @@ World.prototype.testBody = function(body)
 World.prototype.getRandomPosition = function(radius, border)
 {
     var margin = radius + border * this.size,
-        point = this.getRandomPoint(margin);
+        body   = new Body(this.getRandomPoint(margin), this.getRandomPoint(margin), margin);
 
-    while (!this.testBody(new Body(point, margin))) {
-        point = this.getRandomPoint(margin);
+    while (!this.testBody(body)) {
+        body.x = this.getRandomPoint(margin);
+        body.y = this.getRandomPoint(margin);
     }
 
-    return point;
+    return [body.x, body.y];
 };
 
 /**
  * Random random direction
  *
- * @param {Array} point
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} tolerance
  *
  * @return {Float}
  */
-World.prototype.getRandomDirection = function(point, tolerance)
+World.prototype.getRandomDirection = function(x, y, tolerance)
 {
     var direction = this.getRandomAngle(),
-        margin = tolerance * this.size;
+        margin    = tolerance * this.size;
 
-    while (!this.isDirectionValid(direction, point, margin)) {
+    while (!this.isDirectionValid(direction, x, y, margin)) {
         direction = this.getRandomAngle();
     }
 
@@ -197,15 +197,16 @@ World.prototype.getRandomDirection = function(point, tolerance)
 };
 
 /**
- * Is directino valid
+ * Is direction valid
  *
  * @param {Float} angle
- * @param {Array} point
+ * @param {Number} x
+ * @param {Number} y
  * @param {Float} margin
  *
  * @return {Boolean}
  */
-World.prototype.isDirectionValid = function(angle, point, margin)
+World.prototype.isDirectionValid = function(angle, x, y, margin)
 {
     var quarter = Math.PI/2,
         from,
@@ -216,11 +217,11 @@ World.prototype.isDirectionValid = function(angle, point, margin)
         to   = quarter * (i+1);
 
         if (angle >= from && angle < to) {
-            if (this.getHypotenuse(angle - from, this.getDistanceToBorder(i, point)) < margin) {
+            if (this.getHypotenuse(angle - from, this.getDistanceToBorder(i, x, y)) < margin) {
                 return false;
             }
 
-            if (this.getHypotenuse(to - angle, this.getDistanceToBorder(i < 3 ? i+1 : 0, point)) < margin) {
+            if (this.getHypotenuse(to - angle, this.getDistanceToBorder(i < 3 ? i+1 : 0, x, y)) < margin) {
                 return false;
             }
 
@@ -230,7 +231,7 @@ World.prototype.isDirectionValid = function(angle, point, margin)
 };
 
 /**
- * Get hypostenuse from adjacent side
+ * Get hypotenuse from adjacent side
  *
  * @param {Float} angle
  * @param {Number} adjacent
@@ -261,94 +262,92 @@ World.prototype.getRandomAngle = function()
  */
 World.prototype.getRandomPoint = function(margin)
 {
-    return [
-        margin + Math.random() * (this.size - margin * 2),
-        margin + Math.random() * (this.size - margin * 2)
-    ];
+    return margin + Math.random() * (this.size - margin * 2);
 };
 
 /**
- * Is point in bound?
+ * Get intersection between given body and the map borders
  *
  * @param {Body} body
+ * @param {Number} margin
  *
  * @return {Boolean}
  */
 World.prototype.getBoundIntersect = function(body, margin)
 {
-    margin = typeof(margin) !== 'undefined' ? margin : 0;
-
-    if (body.position[0] - margin < this.angles.topLeft[0]) {
-        return [this.angles.topLeft[0], body.position[1]];
+    if (body.x - margin < 0) {
+        return [0, body.y];
     }
 
-    if (body.position[0] + margin > this.angles.bottomRight[0]) {
-        return [this.angles.bottomRight[0], body.position[1]];
+    if (body.x + margin > this.size) {
+        return [this.size, body.y];
     }
 
-    if (body.position[1] - margin < this.angles.topLeft[1]) {
-        return [body.position[0], this.angles.topLeft[1]];
+    if (body.y - margin < 0) {
+        return [body.x, 0];
     }
 
-    if (body.position[1] + margin > this.angles.bottomRight[1]) {
-        return [body.position[0], this.angles.bottomRight[1]];
+    if (body.y + margin > this.size) {
+        return [body.x, this.size];
     }
 
     return null;
 };
 
 /**
- * Get oposite
+ * Get oposite point
  *
- * @param {Array} point
+ * @param {Number} x
+ * @param {Number} y
  *
  * @return {Array}
  */
-World.prototype.getOposite = function(point)
+World.prototype.getOposite = function(x, y)
 {
-    if (point[0] === this.angles.topLeft[0]) {
-        return [this.angles.bottomRight[0], point[1], 0];
+    if (x === 0) {
+        return [this.size, y];
     }
 
-    if (point[0] === this.angles.bottomRight[0]) {
-        return [this.angles.topLeft[0], point[1], 0];
+    if (x === this.size) {
+        return [0, y];
     }
 
-    if (point[1] === this.angles.topLeft[1]) {
-        return [point[0], this.angles.bottomRight[1], 1];
+    if (y === 0) {
+        return [x, this.size];
     }
 
-    if (point[1] === this.angles.bottomRight[1]) {
-        return [point[0], this.angles.topLeft[1], 1];
+    if (y === this.size) {
+        return [x, 0];
     }
 
-    return point;
+    return [x, y];
 };
 
 /**
  * Get the distance of a point to the border
  *
  * @param {Number} border
- * @param {Array} point
+ * @param {Number} x
+ * @param {Number} y
  *
  * @return {Float}
  */
-World.prototype.getDistanceToBorder = function(border, point)
+World.prototype.getDistanceToBorder = function(border, x, y)
 {
     if (border === 0) {
-        return this.size - point[0];
+        return this.size - x;
     }
 
     if (border === 1) {
-        return this.size - point[1];
+        return this.size - y;
     }
 
     if (border === 2) {
-        return point[0];
+        return x;
     }
 
     if (border === 3) {
-        return point[1];
+        return y;
     }
 };
 
@@ -357,7 +356,8 @@ World.prototype.getDistanceToBorder = function(border, point)
  */
 World.prototype.clear = function()
 {
-    this.active = false;
+    this.active    = false;
+    this.bodyCount = 0;
 
     for (var i = this.islands.items.length - 1; i >= 0; i--) {
         this.islands.items[i].clear();

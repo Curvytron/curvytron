@@ -1,11 +1,12 @@
 /**
  * Godzilla Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusSelfGodzilla(position)
+function BonusSelfGodzilla(x, y)
 {
-    BonusSelf.call(this, position);
+    BonusSelf.call(this, x, y);
 }
 
 BonusSelfGodzilla.prototype = Object.create(BonusSelf.prototype);

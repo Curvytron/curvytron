@@ -1,22 +1,28 @@
 /**
  * Kick message
  *
- * @param {Player} player
  * @param {Player} target
  */
-function KickMessage (player, target)
+function MessageKick (target)
 {
-    Message.call(this, null, null, player);
+    Message.call(this);
 
     this.target = target;
 }
 
-KickMessage.prototype = Object.create(Message.prototype);
-KickMessage.prototype.constructor = KickMessage;
+MessageKick.prototype = Object.create(Message.prototype);
+MessageKick.prototype.constructor = MessageKick;
 
 /**
  * Message type
  *
  * @type {String}
  */
-KickMessage.prototype.type = 'kick';
+MessageKick.prototype.type = 'kick';
+
+/**
+ * Default icon
+ *
+ * @type {String}
+ */
+MessageKick.prototype.icon = 'icon-megaphone';

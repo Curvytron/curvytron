@@ -1,11 +1,12 @@
 /**
  * Self Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusSelf(position)
+function BonusSelf(x, y)
 {
-    Bonus.call(this, position);
+    Bonus.call(this, x, y);
 
     this.off = this.off.bind(this);
 }
