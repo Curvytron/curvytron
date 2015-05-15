@@ -48,7 +48,7 @@
                     <tr ng-if="room.players.isEmpty()">
                         <td colspan="5" class="empty">
                             Waiting for players...
-                        </th>
+                        </td>
                     </tr>
                     <tr ng-repeat="player in room.players.items | orderBy:'position'" ng-if="player.local" class="local">
                         <td class="col-remove col-show-hover">
