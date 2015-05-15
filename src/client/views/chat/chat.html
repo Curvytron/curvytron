@@ -4,7 +4,10 @@
             <span class="time">{{ ::message.date }}</span>
         </div>
         <span ng-if="message.icon" class="message-icon {{ ::message.icon }}"></span>
-        <span ng-if="!message.icon" class="message-icon message-name" style="color: {{ message.player.color }};">{{ message.player.name }}:</span>
+        <span ng-if="!message.icon" class="message-icon message-name" style="color: {{ message.player.color }};">
+            <span class="mute icon-mute" title="Mute" ng-click="mute(message)"></span>
+            {{ message.player.name }}:
+        </span>
         <span class="message-content" ng-switch="message.type">
             <!-- Vote Kick -->
             <span ng-switch-when="vote-kick">
@@ -29,6 +32,12 @@
             <!-- Room master -->
             <span ng-switch-when="room-master">
                 <span style="color: {{ message.getTarget().color }}">{{ message.getTarget().name }}</span> is now the room master.
+            </span>
+
+            <!-- Mute -->
+            <span ng-switch-when="mute">
+                You muted <span style="color: {{ message.player.color }}">{{ message.player.name }}</span>.
+                <span class="action" ng-click="mute(message)">Cancel?</span>
             </span>
 
             <!-- Default -->
