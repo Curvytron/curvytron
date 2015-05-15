@@ -9,16 +9,16 @@
             <ng-include src="'js/views/rooms/parameters.html'"></ng-include>
         </div>
 
+        <button type="button" class="btn start-now" ng-click="launch()" ng-if="master">
+            <span class="label">Start now!</span>
+            <span id="starter-count"></span>
+        </button>
+
         <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
             <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
             <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ ::nameMaxLength }}" />
             <div class="clearfix"></div>
         </form>
-
-        <button type="button" class="btn start-now" ng-if="master">
-            <span class="label">Start now!</span>
-            <span id="starter-count"></span>
-        </button>
 
         <h3>
             <p class="count">
