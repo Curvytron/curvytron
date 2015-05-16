@@ -14,6 +14,8 @@ function Chat(client, repository)
     this.room       = null;
     this.element    = null;
     this.auto       = true;
+    this.sources    = [];
+    this.muted      = [];
 
     this.talk         = this.talk.bind(this);
     this.onTalk       = this.onTalk.bind(this);
@@ -101,8 +103,30 @@ Chat.prototype.setElement = function(element)
  */
 Chat.prototype.addMessage = function(message)
 {
+    this.sources.push(message);
+
     if (BaseChat.prototype.addMessage.call(this, message) && this.auto) {
         this.scrollDown();
+    }
+};
+
+/**
+ * Remove message
+ *
+ * @param {Message} message
+ */
+Chat.prototype.removeMessage = function(message)
+{
+    var index = this.sources.indexOf(message);
+
+    if (index >= 0) {
+        this.sources.splice(index, 1);
+    }
+
+    index = this.messages.indexOf(message);
+
+    if (index >= 0) {
+        this.messages.splice(index, 1);
     }
 };
 
@@ -146,11 +170,12 @@ Chat.prototype.talk = function()
 Chat.prototype.onTalk = function(e)
 {
     if (typeof(e.detail) !== 'undefined' && e.detail) {
-        var data    = e.detail,
-            player  = this.getPlayer(data),
-            message = new MessagePlayer(data.client, data.content, player, data.creation);
-
-        this.addMessage(message);
+        this.addMessage(new MessagePlayer(
+            e.detail.client,
+            e.detail.content,
+            this.getPlayer(e.detail),
+            e.detail.creation
+        ));
     }
 };
 
@@ -170,7 +195,7 @@ Chat.prototype.getPlayer = function(data)
     }
 
     return {
-        name: typeof(data.name) === 'string' ? data.name : Message.prototype.name,
+        name: typeof(data.name) === 'string' ? data.name : Message.prototype.name + ' ' + data.client,
         color: typeof(data.color) === 'string' ? data.color : Message.prototype.color
     };
 };
@@ -228,12 +253,79 @@ Chat.prototype.addTip = function()
 };
 
 /**
+ * Is message valid
+ *
+ * @param {Message} message
+ *
+ * @return {Boolean}
+ */
+Chat.prototype.isValid = function(message)
+{
+    if (!(message instanceof MessagePlayer)) {
+        return true;
+    }
+
+    return this.isAllowed(message.client);
+};
+
+/**
  * Clear messages
  */
 Chat.prototype.clearMessages = function()
 {
     BaseChat.prototype.clearMessages.call(this);
+    this.sources.length = 0;
     this.addTip();
+};
+
+/**
+ * Mute/Unmute a client
+ *
+ * @param {Number} clientId
+ */
+Chat.prototype.toggleMute = function(clientId)
+{
+    var index  = this.muted.indexOf(clientId),
+        exists = index >= 0;
+
+    if (exists) {
+        this.muted.splice(index, 1);
+    } else {
+        this.muted.push(clientId);
+    }
+
+    this.filterMessages();
+
+    return !exists;
+};
+
+/**
+ * Is this client allowed to talk?
+ *
+ * @param {Number} clientId
+ *
+ * @return {Boolean}
+ */
+Chat.prototype.isAllowed = function(clientId)
+{
+    return this.muted.indexOf(clientId) < 0;
+};
+
+/**
+ * Filter messages
+ */
+Chat.prototype.filterMessages = function()
+{
+    var length = this.sources.length;
+
+    this.messages.length = 0;
+
+    for (var message, i = 0; i < length; i++) {
+        message = this.sources[i];
+        if (!(message instanceof MessagePlayer) || this.isAllowed(message.client)) {
+            this.messages.push(message);
+        }
+    }
 };
 
 /**
@@ -248,6 +340,7 @@ Chat.prototype.clear = function()
     }
 
     this.message.clear();
-    this.room    = null;
-    this.element = null;
+    this.muted.length = 0;
+    this.room         = null;
+    this.element      = null;
 };
