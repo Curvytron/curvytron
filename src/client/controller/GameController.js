@@ -232,6 +232,10 @@ GameController.prototype.close = function()
 GameController.prototype.backToRoom = function()
 {
     this.$location.path(this.room.getUrl());
+
+    if (!this.room.config.open) {
+        this.$location.search('password', this.room.config.password)
+    }
 };
 
 /**

@@ -126,7 +126,7 @@ RoomController.prototype.leaveRoom = function()
 {
     var path = this.$location.path();
 
-    if (this.room && path !== this.room.getUrl()) {
+    if (this.room) {
         if (path !== this.room.getGameUrl()) {
             this.repository.leave();
         }
@@ -386,7 +386,12 @@ RoomController.prototype.setTouch = function()
  */
 RoomController.prototype.start = function(e)
 {
-    this.$location.path(this.room.getGameUrl());
+    this.$location.path(this.room.getGameUrl())
+
+    if (this.room.config.open) {
+        this.$location.search('password', this.room.config.password);
+    }
+
     this.applyScope();
 };
 

@@ -40,9 +40,7 @@ Room.prototype.getPlayerByClient = function(client)
  */
 Room.prototype.getUrl = function()
 {
-    var url = '/room/' + encodeURIComponent(this.name);
-
-    return this.config.open ? url : url + '?password=' + encodeURIComponent(this.config.password);
+    return '/room/' + encodeURIComponent(this.name);
 };
 
 /**
