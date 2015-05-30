@@ -45,11 +45,13 @@ RoomRepository.prototype.create = function(name)
  */
 RoomRepository.prototype.remove = function(room)
 {
-    if (!room.players.isEmpty() || !this.rooms.remove(room)) { return false; }
+    if (this.rooms.remove(room)) {
+        this.emit('room:close', {room: room});
 
-    this.emit('room:close', {room: room});
+        return true;
+    }
 
-    return true;
+    return false;
 };
 
 /**

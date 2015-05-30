@@ -91,7 +91,7 @@ MetricController.prototype.getFPSColor = function(fps)
  */
 MetricController.prototype.onLatency = function(event)
 {
-    var value = event.detail[0];
+    var value = event.detail;
 
     if (this.$scope.latency !== value) {
         this.$scope.latency      = value;
