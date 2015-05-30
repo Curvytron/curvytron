@@ -386,7 +386,7 @@ RoomController.prototype.setTouch = function()
  */
 RoomController.prototype.start = function(e)
 {
-    this.$location.path(this.room.getGameUrl())
+    this.$location.path(this.room.getGameUrl());
 
     if (this.room.config.open) {
         this.$location.search('password', this.room.config.password);
