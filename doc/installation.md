@@ -13,6 +13,7 @@ __Clone the repository__
 __Install dependencies__
 
     npm install
+    bower install
 
 __Build the game__
 
