@@ -63,7 +63,7 @@
                             <input type="text" ng-model="player.name" ng-blur="setName(player)" class="form-control player-name" name="name" maxlength="{{ ::nameMaxLength }}" />
                         </td>
                         <td class="col-color">
-                            <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-blur="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ ::colorMaxLength }}" />
+                            <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-blur="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" ng-style="{'border-color': player.color};" maxlength="{{ ::colorMaxLength }}" />
                         </td>
                         <td class="col-keys">
                             <button class="btn btn-default control"
@@ -97,7 +97,7 @@
                             <p class="player-name">{{ player.name }}</p>
                         </td>
                         <td class="col-color">
-                            <span class="line-color-preview" style="background-color: {{ player.color }};"></span>
+                            <span class="line-color-preview" ng-style="{'background-color': player.color};"></span>
                             <p>{{ player.color }}</p>
                         </td>
                         <td class="col-keys"></td>
