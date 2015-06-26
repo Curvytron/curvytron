@@ -8,13 +8,15 @@ function Chat(client, repository)
 {
     BaseChat.call(this);
 
+    this.messages.index = false;
+
     this.client     = client;
     this.repository = repository;
     this.message    = new MessagePlayer(this.client);
     this.room       = null;
     this.element    = null;
     this.auto       = true;
-    this.sources    = [];
+    this.sources    = new Collection([], 'id', true);
     this.muted      = [];
 
     this.talk         = this.talk.bind(this);
@@ -103,9 +105,12 @@ Chat.prototype.setElement = function(element)
  */
 Chat.prototype.addMessage = function(message)
 {
-    this.sources.push(message);
+    console.log('before add source: %s', message.id);
+    this.sources.add(message);
+    console.log('after add source: %s', message.id);
 
     if (BaseChat.prototype.addMessage.call(this, message) && this.auto) {
+        console.log('after add messages: %s', message.id);
         this.scrollDown();
     }
 };
@@ -117,17 +122,8 @@ Chat.prototype.addMessage = function(message)
  */
 Chat.prototype.removeMessage = function(message)
 {
-    var index = this.sources.indexOf(message);
-
-    if (index >= 0) {
-        this.sources.splice(index, 1);
-    }
-
-    index = this.messages.indexOf(message);
-
-    if (index >= 0) {
-        this.messages.splice(index, 1);
-    }
+    this.sources.remove(message);
+    this.messages.remove(message);
 };
 
 /**
@@ -274,7 +270,7 @@ Chat.prototype.isValid = function(message)
 Chat.prototype.clearMessages = function()
 {
     BaseChat.prototype.clearMessages.call(this);
-    this.sources.length = 0;
+    this.sources.clear();
     this.addTip();
 };
 
@@ -316,14 +312,14 @@ Chat.prototype.isAllowed = function(clientId)
  */
 Chat.prototype.filterMessages = function()
 {
-    var length = this.sources.length;
+    var length = this.sources.count();
 
-    this.messages.length = 0;
+    this.messages.clear();
 
     for (var message, i = 0; i < length; i++) {
-        message = this.sources[i];
+        message = this.sources.items[i];
         if (!(message instanceof MessagePlayer) || this.isAllowed(message.client)) {
-            this.messages.push(message);
+            this.messages.add(message);
         }
     }
 };

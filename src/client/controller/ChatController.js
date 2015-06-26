@@ -16,7 +16,7 @@ function ChatController($scope, chat)
 
     this.$scope.onLoaded       = this.onLoaded;
     this.$scope.mute           = this.mute;
-    this.$scope.messages       = this.chat.messages;
+    this.$scope.messages       = this.chat.messages.items;
     this.$scope.currentMessage = this.chat.message;
     this.$scope.submitTalk     = this.chat.talk;
 

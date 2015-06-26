@@ -58,7 +58,7 @@ PlayerListController.prototype.onScore = function(e)
     if (avatar) {
         avatar.setScore(e.detail[1]);
         this.game.sortAvatars();
-        this.digestScope();
+        //this.digestScope();
     }
 };
 
@@ -74,7 +74,7 @@ PlayerListController.prototype.onRoundScore = function(e)
     if (avatar) {
         avatar.setRoundScore(e.detail[1]);
         this.game.sortAvatars();
-        this.digestScope();
+        //this.digestScope();
     }
 };
 
@@ -87,3 +87,8 @@ PlayerListController.prototype.applyScope = CurvytronController.prototype.applyS
  * Digest scope
  */
 PlayerListController.prototype.digestScope = CurvytronController.prototype.digestScope;
+
+/**
+ * Digest scope
+ */
+PlayerListController.prototype.requestDigestScope = CurvytronController.prototype.requestDigestScope;
