@@ -20,7 +20,7 @@
     <div class="col-lg-8 bonus-list">
         <h2>Bonus</h2>
 
-        <div class="config-variables" ng-repeat="(variable, value) in ::config.variables">
+        <div class="config-variables" ng-repeat="(variable, value) in ::config.variables track by variable">
             <label for="config-{{ ::variable }}">{{ config.variablesNames[variable] }}:</label>
             <div class="input-range">
                 <span class="range-icon less-icon"><i class="icon-minus"></i></span>
@@ -31,7 +31,7 @@
 
         <label>Preset:</label>
         <div class="bonus-selection">
-            <span ng-repeat="preset in ::config.presets" ng-click="togglePreset(preset)" class="preset" ng-class="{ 'active': preset == config.preset, 'disabled': !master }">
+            <span ng-repeat="preset in ::config.presets track by $index" ng-click="togglePreset(preset)" class="preset" ng-class="{ 'active': preset == config.preset, 'disabled': !master }">
                 {{ ::preset.name }}
             </span>
             <span ng-if="config.preset == config.customPreset" ng-click="togglePreset(config.customPreset)" class="preset active" ng-class="{'disabled': !master}">
@@ -41,12 +41,12 @@
 
         <label>Include:</label>
         <div class="bonus-selection selected">
-            <span ng-repeat="(bonus, enabled) in config.bonuses" ng-click="toggleBonus(bonus)" class="bonus {{ ::config.bonusClasses[bonus] }}" ng-if="enabled" ng-class="{'disabled': !master}"></span>
+            <span ng-repeat="(bonus, enabled) in config.bonuses track by $index" ng-click="toggleBonus(bonus)" class="bonus {{ ::config.bonusClasses[bonus] }}" ng-if="enabled" ng-class="{'disabled': !master}"></span>
         </div>
 
         <label>Exclude:</label>
         <div class="bonus-selection available">
-            <span ng-repeat="(bonus, enabled) in config.bonuses" ng-click="toggleBonus(bonus)" class="bonus {{ ::config.bonusClasses[bonus] }}" ng-if="!enabled" ng-class="{'disabled': !master}"></span>
+            <span ng-repeat="(bonus, enabled) in config.bonuses track by $index" ng-click="toggleBonus(bonus)" class="bonus {{ ::config.bonusClasses[bonus] }}" ng-if="!enabled" ng-class="{'disabled': !master}"></span>
         </div>
     </div>
 </div>

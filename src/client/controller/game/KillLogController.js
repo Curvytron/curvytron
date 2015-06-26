@@ -28,8 +28,8 @@ function KillLogController($scope, $interpolate, client)
 
     this.$scope.onLoaded = this.onLoaded;
 
-    this.client.on('die', this.onDie);
-    this.client.on('round:new', this.clear);
+    //this.client.on('die', this.onDie);
+    //this.client.on('round:new', this.clear);
 }
 
 /**

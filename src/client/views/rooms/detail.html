@@ -50,7 +50,7 @@
                             Waiting for players...
                         </td>
                     </tr>
-                    <tr ng-repeat="player in room.players.items | orderBy:'position'" ng-if="player.local" class="local">
+                    <tr ng-repeat="player in room.players.items track by player.id | orderBy:'position'" ng-if="player.local" class="local">
                         <td class="col-remove col-show-hover">
                             <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="removePlayer(player)">
                                 <span class="icon-close"></span>
@@ -67,7 +67,7 @@
                         </td>
                         <td class="col-keys">
                             <button class="btn btn-default control"
-                                ng-repeat="control in ::player.controls"
+                                ng-repeat="control in ::player.controls track by $index"
                                 ng-click="control.toggle()"
                                 ng-class="{ 'active': control.mapper.listening }"
                             >
@@ -83,7 +83,7 @@
                             </div>
                         </td>
                     </tr>
-                    <tr ng-repeat="player in room.players.items | orderBy:'position'" ng-if="!player.local">
+                    <tr ng-repeat="player in room.players.items track by player.id | orderBy:'position'" ng-if="!player.local">
                         <td class="col-remove col-show-hover {{ player.vote ? 'active' : '' }}">
                             <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="kickPlayer(player)">
                                 <span class="icon-kick {{ player.kicked ? 'kicked' : '' }}"></span>

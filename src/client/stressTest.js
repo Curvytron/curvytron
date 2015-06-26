@@ -1,7 +1,7 @@
 (function(){
     'use strict';
 
-    var nbPlayers = 20;
+    var nbPlayers = 180;
 
     function getCurrentController() {
         return angular.element(document.getElementsByTagName('section')[0]).scope();
@@ -27,8 +27,8 @@
             return;
         }
 
-        for(i = 1; i <= nb; i++) {
-            roomController.submitAddPlayer('Slug #' + i);
+        for(i = 0; i < nb; i++) {
+            roomController.submitAddPlayer('Slug #' + (roomController.room.players.items.length + i));
         }
     }
 
@@ -58,11 +58,16 @@
 
     // Create n players
     setTimeout(function() {
-        createReadyPlayers(nbPlayers);
-
+        createReadyPlayers(nbPlayers/3);
         setTimeout(function() {
-            // Set all players ready
-            setPlayersReady();
+            createReadyPlayers(nbPlayers/3);
+            setTimeout(function() {
+                createReadyPlayers(nbPlayers/3);
+                setTimeout(function() {
+                    // Set all players ready
+                    setPlayersReady();
+                }, 10000);
+            }, 1000);
         }, 1000);
     }, 1000);
 }());
