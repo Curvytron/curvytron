@@ -30,6 +30,13 @@ BaseRoom.prototype.minPlayer = 1;
 BaseRoom.prototype.maxLength = 25;
 
 /**
+ * Launch time
+ *
+ * @type {Number}
+ */
+BaseRoom.prototype.launchTime = 5000;
+
+/**
  * Add player
  *
  * @param {Player} player

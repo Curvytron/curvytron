@@ -140,3 +140,22 @@
 
   background-position: $posX $posY;
 }
+
+@mixin readyAnim {
+  0%   { @include opacity(0); left: 0; }
+  5%   { @include opacity(100); }
+  15%  { @include opacity(0); left: 100%; }
+  100% { @include opacity(0); left: 100%; }
+}
+@-webkit-keyframes readyAnim {
+    @include readyAnim;
+}
+@-moz-keyframes readyAnim {
+    @include readyAnim;
+}
+@-o-keyframes readyAnim {
+    @include readyAnim;
+}
+@keyframes readyAnim {
+    @include readyAnim;
+}

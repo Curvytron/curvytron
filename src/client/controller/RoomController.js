@@ -29,6 +29,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.repository     = repository;
     this.controlSynchro = false;
     this.useTouch       = false;
+    this.launchInterval = null;
 
     // Binding:
     this.addPlayer        = this.addPlayer.bind(this);
@@ -50,11 +51,16 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.toggleParameters = this.toggleParameters.bind(this);
     this.onRoomMaster     = this.onRoomMaster.bind(this);
     this.onConfigOpen     = this.onConfigOpen.bind(this);
+    this.onLaunchStart    = this.onLaunchStart.bind(this);
+    this.onLaunchTimer    = this.onLaunchTimer.bind(this);
+    this.onLaunchCancel   = this.onLaunchCancel.bind(this);
+    this.launch           = this.launch.bind(this);
     this.start            = this.start.bind(this);
 
     this.$scope.$on('$destroy', this.leaveRoom);
 
     // Hydrating scope:
+    this.$scope.launch            = this.launch;
     this.$scope.submitAddPlayer   = this.addPlayer;
     this.$scope.removePlayer      = this.removePlayer;
     this.$scope.kickPlayer        = this.kickPlayer;
@@ -69,6 +75,7 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.$scope.master            = this.repository.amIMaster();
     this.$scope.displayParameters = false;
     this.$scope.$parent.profile   = true;
+    this.$scope.launching         = false;
 
     this.repository.start();
     gamepadListener.start();
@@ -150,6 +157,8 @@ RoomController.prototype.attachEvents = function()
     this.repository.on('room:master', this.onRoomMaster);
     this.repository.on('room:game:start', this.start);
     this.repository.on('room:config:open', this.onConfigOpen);
+    this.repository.on('room:launch:start', this.onLaunchStart);
+    this.repository.on('room:launch:cancel', this.onLaunchCancel);
 
     for (var i = this.room.players.items.length - 1; i >= 0; i--) {
         this.room.players.items[i].on('control:change', this.onControlChange);
@@ -171,6 +180,8 @@ RoomController.prototype.detachEvents = function()
     this.repository.off('room:master', this.onRoomMaster);
     this.repository.off('room:game:start', this.start);
     this.repository.off('room:config:open', this.onConfigOpen);
+    this.repository.off('room:launch:start', this.onLaunchStart);
+    this.repository.off('room:launch:cancel', this.onLaunchCancel);
 
     if (this.room) {
         for (var i = this.room.players.items.length - 1; i >= 0; i--) {
@@ -185,6 +196,16 @@ RoomController.prototype.detachEvents = function()
 RoomController.prototype.goHome = function()
 {
     this.$location.path('/');
+};
+
+/**
+ * Launch game
+ */
+RoomController.prototype.launch = function()
+{
+    if (this.repository.amIMaster()) {
+        this.repository.launch();
+    }
 };
 
 /**
@@ -505,12 +526,61 @@ RoomController.prototype.onRoomMaster = function(e)
 };
 
 /**
+ * On launch start
+ *
+ * @param {Event} e
+ */
+RoomController.prototype.onLaunchStart = function(e)
+{
+    this.clearLaunchInterval();
+    this.launchInterval   = setInterval(this.onLaunchTimer, 1000);
+    this.$scope.launching = this.repository.room.launchTime / 1000;
+    this.digestScope();
+};
+
+/**
+ * On launch cancel
+ *
+ * @param {Event} e
+ */
+RoomController.prototype.onLaunchCancel = function(e)
+{
+    this.clearLaunchInterval();
+    this.$scope.launching = false;
+    this.digestScope();
+};
+
+/**
+ * On launch timer
+ *
+ * @param {Event} e
+ */
+RoomController.prototype.onLaunchTimer = function(e)
+{
+    if (this.$scope.launching) {
+        this.$scope.launching--;
+        this.digestScope();
+    }
+};
+
+/**
+ * Clear launch interval
+ */
+RoomController.prototype.clearLaunchInterval = function()
+{
+    if (this.launchInterval) {
+        this.launchInterval = clearInterval(this.launchInterval);
+    }
+};
+
+/**
  * Toggle parameters
  */
 RoomController.prototype.toggleParameters = function()
 {
     this.$scope.displayParameters = !this.$scope.displayParameters;
 };
+
 
 /**
  * Apply scope
