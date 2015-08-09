@@ -9,7 +9,8 @@ function RoomsController($scope, $location, client)
 {
     document.body.classList.remove('game-mode');
 
-    this.$scope     = $scope;
+    AbstractController.call(this, $scope);
+
     this.$location  = $location;
     this.client     = client;
     this.repository = new RoomsRepository(this.client);
@@ -20,8 +21,6 @@ function RoomsController($scope, $location, client)
     this.joinRoom     = this.joinRoom.bind(this);
     this.quickPlay    = this.quickPlay.bind(this);
     this.detachEvents = this.detachEvents.bind(this);
-    this.applyScope   = this.applyScope.bind(this);
-    this.digestScope  = this.digestScope.bind(this);
 
     this.$scope.$on('$destroy', this.detachEvents);
     this.$location.search('password', null);
@@ -38,16 +37,19 @@ function RoomsController($scope, $location, client)
     this.attachEvents();
 }
 
+RoomsController.prototype = Object.create(AbstractController.prototype);
+RoomsController.prototype.constructor = RoomsController;
+
 /**
  * Attach Events
  */
 RoomsController.prototype.attachEvents = function()
 {
-    this.repository.on('room:open', this.digestScope);
-    this.repository.on('room:close', this.digestScope);
-    this.repository.on('room:players', this.digestScope);
-    this.repository.on('room:game', this.digestScope);
-    this.repository.on('room:config:open', this.digestScope);
+    this.repository.on('room:open', this.requestDigestScope);
+    this.repository.on('room:close', this.requestDigestScope);
+    this.repository.on('room:players', this.requestDigestScope);
+    this.repository.on('room:game', this.requestDigestScope);
+    this.repository.on('room:config:open', this.requestDigestScope);
 
     this.repository.start();
 };
@@ -59,11 +61,11 @@ RoomsController.prototype.detachEvents = function()
 {
     this.repository.stop();
 
-    this.repository.off('room:open', this.digestScope);
-    this.repository.off('room:close', this.digestScope);
-    this.repository.off('room:players', this.digestScope);
-    this.repository.off('room:game', this.digestScope);
-    this.repository.off('room:config:open', this.digestScope);
+    this.repository.off('room:open', this.requestDigestScope);
+    this.repository.off('room:close', this.requestDigestScope);
+    this.repository.off('room:players', this.requestDigestScope);
+    this.repository.off('room:game', this.requestDigestScope);
+    this.repository.off('room:config:open', this.requestDigestScope);
 };
 
 /**
@@ -116,13 +118,3 @@ RoomsController.prototype.quickPlay = function()
         this.createRoom();
     }
 };
-
-/**
- * Apply scope
- */
-RoomsController.prototype.applyScope = CurvytronController.prototype.applyScope;
-
-/**
- * Digest scope
- */
-RoomsController.prototype.digestScope = CurvytronController.prototype.digestScope;

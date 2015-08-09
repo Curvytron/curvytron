@@ -6,13 +6,13 @@
  */
 function ChatController($scope, chat)
 {
+    AbstractController.call(this, $scope);
+
     this.$scope = $scope;
     this.chat   = chat;
 
-    this.onLoaded    = this.onLoaded.bind(this);
-    this.mute        = this.mute.bind(this);
-    this.applyScope  = this.applyScope.bind(this);
-    this.digestScope = this.digestScope.bind(this);
+    this.onLoaded = this.onLoaded.bind(this);
+    this.mute     = this.mute.bind(this);
 
     this.$scope.onLoaded       = this.onLoaded;
     this.$scope.mute           = this.mute;
@@ -20,9 +20,12 @@ function ChatController($scope, chat)
     this.$scope.currentMessage = this.chat.message;
     this.$scope.submitTalk     = this.chat.talk;
 
-    this.chat.on('message', this.digestScope);
-    this.chat.on('filtered', this.digestScope);
+    this.chat.on('message', this.requestDigestScope);
+    this.chat.on('filtered', this.requestDigestScope);
 }
+
+ChatController.prototype = Object.create(AbstractController.prototype);
+ChatController.prototype.constructor = ChatController;
 
 /**
  * On chat DOM element loaded
@@ -47,13 +50,3 @@ ChatController.prototype.mute = function (message)
 
     this.digestScope();
 };
-
-/**
- * Apply scope
- */
-ChatController.prototype.applyScope = CurvytronController.prototype.applyScope;
-
-/**
- * Digest scope
- */
-ChatController.prototype.digestScope = CurvytronController.prototype.digestScope;

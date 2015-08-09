@@ -8,7 +8,8 @@ function MetricController($scope, client)
 {
     if (!$scope.game) { return; }
 
-    this.$scope = $scope;
+    AbstractController.call(this, $scope);
+
     this.client = client;
     this.game   = this.$scope.game;
 
@@ -17,8 +18,6 @@ function MetricController($scope, client)
     this.onLatency    = this.onLatency.bind(this);
     this.onSpectators = this.onSpectators.bind(this);
     this.detachEvents = this.detachEvents.bind(this);
-    this.applyScope   = this.applyScope.bind(this);
-    this.digestScope  = this.digestScope.bind(this);
 
     // Hydrate scope:
     this.$scope.fps          = 0;
@@ -31,6 +30,9 @@ function MetricController($scope, client)
 
     this.attachEvents();
 }
+
+MetricController.prototype = Object.create(AbstractController.prototype);
+MetricController.prototype.constructor = MetricController;
 
 /**
  * Attach events
@@ -125,13 +127,3 @@ MetricController.prototype.onSpectators = function(event)
     this.$scope.spectators = event.detail;
     this.digestScope();
 };
-
-/**
- * Apply scope
- */
-MetricController.prototype.applyScope = CurvytronController.prototype.applyScope;
-
-/**
- * Digest scope
- */
-MetricController.prototype.digestScope = CurvytronController.prototype.digestScope;

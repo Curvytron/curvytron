@@ -12,7 +12,8 @@ function GameController($scope, $routeParams, $location, client, repository, cha
 {
     document.body.classList.add('game-mode');
 
-    this.$scope       = $scope;
+    AbstractController.call(this, $scope);
+
     this.$location    = $location;
     this.client       = client;
     this.repository   = repository;
@@ -32,8 +33,6 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onExit       = this.onExit.bind(this);
     this.onFirstRound = this.onFirstRound.bind(this);
     this.backToRoom   = this.backToRoom.bind(this);
-    this.applyScope   = this.applyScope.bind(this);
-    this.digestScope  = this.digestScope.bind(this);
 
     // Hydrate scope:
     this.$scope.radio           = this.radio;
@@ -55,6 +54,9 @@ function GameController($scope, $routeParams, $location, client, repository, cha
         this.loadGame(this.repository.game);
     }
 }
+
+GameController.prototype = Object.create(AbstractController.prototype);
+GameController.prototype.constructor = GameController;
 
 /**
  * Confirmation message
@@ -237,13 +239,3 @@ GameController.prototype.backToRoom = function()
         this.$location.search('password', this.room.config.password);
     }
 };
-
-/**
- * Apply scope
- */
-GameController.prototype.applyScope = CurvytronController.prototype.applyScope;
-
-/**
- * Digest scope
- */
-GameController.prototype.digestScope = CurvytronController.prototype.digestScope;

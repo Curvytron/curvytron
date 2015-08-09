@@ -9,7 +9,8 @@ function KillLogController($scope, $interpolate, client)
 {
     if (!$scope.game) { return; }
 
-    this.$scope    = $scope;
+    AbstractController.call(this, $scope);
+
     this.client    = client;
     this.game      = $scope.game;
     this.element   = document.getElementById('kill-log-feed');
@@ -21,16 +22,17 @@ function KillLogController($scope, $interpolate, client)
         wall: $interpolate('<span style="color: {{ ::deadPlayer.color }}">{{ ::deadPlayer.name }}</span> crashed on the wall')
     };
 
-    this.clear       = this.clear.bind(this);
-    this.onDie       = this.onDie.bind(this);
-    this.applyScope  = this.applyScope.bind(this);
-    this.digestScope = this.digestScope.bind(this);
+    this.clear = this.clear.bind(this);
+    this.onDie = this.onDie.bind(this);
 
     this.$scope.onLoaded = this.onLoaded;
 
     //this.client.on('die', this.onDie);
     //this.client.on('round:new', this.clear);
 }
+
+KillLogController.prototype = Object.create(AbstractController.prototype);
+KillLogController.prototype.constructor = KillLogController;
 
 /**
  * Message display duration
@@ -124,13 +126,3 @@ KillLogController.prototype.clear = function()
     this.logs.length       = 0;
     this.element.innerHTML = '';
 };
-
-/**
- * Apply scope
- */
-KillLogController.prototype.applyScope = CurvytronController.prototype.applyScope;
-
-/**
- * Digest scope
- */
-KillLogController.prototype.digestScope = CurvytronController.prototype.digestScope;

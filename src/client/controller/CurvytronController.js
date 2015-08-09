@@ -10,13 +10,13 @@
  */
 function CurvytronController($scope, $window, $location, profile, analyser, watcher, client)
 {
-    this.$scope        = $scope;
+    AbstractController.call(this, $scope);
+
     this.$window       = $window;
     this.$location     = $location;
     this.analyser      = analyser;
     this.watcher       = watcher;
     this.client        = client;
-    this.digestTimeout = null;
 
     // Bind
     this.onConnect     = this.onConnect.bind(this);
@@ -31,6 +31,9 @@ function CurvytronController($scope, $window, $location, profile, analyser, watc
     this.client.on('connected', this.onConnect);
     this.client.on('disconnected', this.onDisconnect);
 }
+
+CurvytronController.prototype = Object.create(AbstractController.prototype);
+CurvytronController.prototype.constructor = CurvytronController;
 
 /**
  * On connect

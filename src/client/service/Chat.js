@@ -105,12 +105,9 @@ Chat.prototype.setElement = function(element)
  */
 Chat.prototype.addMessage = function(message)
 {
-    console.log('before add source: %s', message.id);
     this.sources.add(message);
-    console.log('after add source: %s', message.id);
 
     if (BaseChat.prototype.addMessage.call(this, message) && this.auto) {
-        console.log('after add messages: %s', message.id);
         this.scrollDown();
     }
 };
