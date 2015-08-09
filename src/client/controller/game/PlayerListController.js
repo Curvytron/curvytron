@@ -20,7 +20,7 @@ function PlayerListController($scope, client)
 
     this.$scope.$on('$destroy', this.detachEvents);
 
-    //this.attachEvents();
+    this.attachEvents();
 }
 
 PlayerListController.prototype = Object.create(AbstractController.prototype);
@@ -74,14 +74,8 @@ PlayerListController.prototype.onRoundScore = function(e)
     var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
-        var t = new StopWatch('setRoundScore');
         avatar.setRoundScore(e.detail[1]);
-        t.stop();
-        var t = new StopWatch('sortAvatars');
         this.game.sortAvatars();
-        t.stop();
-        var t = new StopWatch('requestDigestScope');
         this.requestDigestScope();
-        t.stop();
     }
 };

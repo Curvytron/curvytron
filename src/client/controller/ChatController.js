@@ -8,7 +8,6 @@ function ChatController($scope, chat)
 {
     AbstractController.call(this, $scope);
 
-    this.$scope = $scope;
     this.chat   = chat;
 
     this.onLoaded = this.onLoaded.bind(this);

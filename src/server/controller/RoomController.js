@@ -15,6 +15,7 @@ function RoomController(room)
     this.kickManager = new KickManager(this);
     this.chat        = new Chat();
     this.roomMaster  = null;
+    this.launching   = null;
 
     this.onPlayerJoin     = this.onPlayerJoin.bind(this);
     this.onPlayerLeave    = this.onPlayerLeave.bind(this);
@@ -27,6 +28,7 @@ function RoomController(room)
     this.checkForClose    = this.checkForClose.bind(this);
     this.removeRoomMaster = this.removeRoomMaster.bind(this);
     this.onPlayersClear   = this.onPlayersClear.bind(this);
+    this.launch           = this.launch.bind(this);
 
     this.callbacks = {
         onTalk: function (data) { controller.onTalk(this, data[0], data[1]); },
@@ -42,7 +44,8 @@ function RoomController(room)
         onConfigOpen: function (data) { controller.onConfigOpen(this, data[0], data[1]); },
         onConfigMaxScore: function (data) { controller.onConfigMaxScore(this, data[0], data[1]); },
         onConfigVariable: function (data) { controller.onConfigVariable(this, data[0], data[1]); },
-        onConfigBonus: function (data) { controller.onConfigBonus(this, data[0], data[1]); }
+        onConfigBonus: function (data) { controller.onConfigBonus(this, data[0], data[1]); },
+        onLaunch: function (data) { controller.onLaunch(this); }
     };
 
     this.loadRoom();
@@ -225,6 +228,7 @@ RoomController.prototype.setRoomMaster = function(client)
         this.roomMaster.on('room:config:max-score', this.callbacks.onConfigMaxScore);
         this.roomMaster.on('room:config:variable', this.callbacks.onConfigVariable);
         this.roomMaster.on('room:config:bonus', this.callbacks.onConfigBonus);
+        this.roomMaster.on('room:launch', this.callbacks.onLaunch);
         this.socketGroup.addEvent('room:master', {client: client.id});
     }
 };
@@ -241,6 +245,7 @@ RoomController.prototype.removeRoomMaster = function()
         this.roomMaster.removeListener('room:config:max-score', this.callbacks.onConfigMaxScore);
         this.roomMaster.removeListener('room:config:variable', this.callbacks.onConfigVariable);
         this.roomMaster.removeListener('room:config:bonus', this.callbacks.onConfigBonus);
+        this.roomMaster.removeListener('room:launch', this.callbacks.onLaunch);
         this.roomMaster = null;
         this.nominateRoomMaster();
     }
@@ -307,6 +312,40 @@ RoomController.prototype.checkIntegrity = function()
             this.removePlayer(player);
         }
     }
+};
+
+/**
+ * Start launch
+ */
+RoomController.prototype.startLaunch = function()
+{
+    if (!this.launching) {
+        this.launching = setTimeout(this.launch, this.room.launchTime);
+        this.socketGroup.addEvent('room:launch:start');
+    }
+};
+
+/**
+ * Cancel launch
+ */
+RoomController.prototype.cancelLaunch = function()
+{
+    if (this.launching) {
+        this.launching = clearTimeout(this.launching);
+        this.socketGroup.addEvent('room:launch:cancel');
+    }
+};
+
+/**
+ * Launch
+ */
+RoomController.prototype.launch = function()
+{
+    if (this.launching) {
+        this.launching = clearTimeout(this.launching);
+    }
+
+    this.room.newGame();
 };
 
 // Events:
@@ -496,7 +535,7 @@ RoomController.prototype.onReady = function(client, data, callback)
         this.socketGroup.addEvent('player:ready', { player: player.id, ready: player.ready });
 
         if (this.room.isReady()) {
-            this.room.newGame();
+            this.launch();
         }
     } else {
         callback({success: false, error: 'Player with id "' + data.player + '" not found'});
@@ -613,6 +652,22 @@ RoomController.prototype.onConfigBonus = function(client, data, callback)
             bonus: data.bonus,
             enabled: this.room.config.getBonus(data.bonus)
         });
+    }
+};
+
+/**
+ * On launch
+ *
+ * @param {SocketClient} client
+ */
+RoomController.prototype.onLaunch = function(client)
+{
+    if (this.isRoomMaster(client)) {
+        if (this.launching) {
+            this.cancelLaunch();
+        } else {
+            this.startLaunch();
+        }
     }
 };
 

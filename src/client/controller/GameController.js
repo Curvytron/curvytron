@@ -10,9 +10,9 @@
  */
 function GameController($scope, $routeParams, $location, client, repository, chat, radio, sound)
 {
-    document.body.classList.add('game-mode');
-
     AbstractController.call(this, $scope);
+
+    document.body.classList.add('game-mode');
 
     this.$location    = $location;
     this.client       = client;

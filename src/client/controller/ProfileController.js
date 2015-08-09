@@ -10,8 +10,6 @@
  */
 function ProfileController($scope, profile, radio, sound)
 {
-    EventEmitter.call(this);
-
     AbstractController.call(this, $scope);
 
     this.profile  = profile;

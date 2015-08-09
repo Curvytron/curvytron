@@ -30,6 +30,7 @@ function RoomRepository(client)
     this.onKick           = this.onKick.bind(this);
     this.onVote           = this.onVote.bind(this);
     this.onClientActivity = this.onClientActivity.bind(this);
+    this.forwardEvent     = this.forwardEvent.bind(this);
 }
 
 RoomRepository.prototype = Object.create(EventEmitter.prototype);
@@ -53,6 +54,8 @@ RoomRepository.prototype.attachEvents = function()
     this.client.on('room:config:max-score', this.onConfigMaxScore);
     this.client.on('room:config:variable', this.onConfigVariable);
     this.client.on('room:config:bonus', this.onConfigBonus);
+    this.client.on('room:launch:start', this.forwardEvent);
+    this.client.on('room:launch:cancel', this.forwardEvent);
     this.client.on('room:kick', this.onKick);
     this.client.on('vote:new', this.onVote);
     this.client.on('vote:close', this.onVote);
@@ -77,6 +80,8 @@ RoomRepository.prototype.detachEvents = function()
     this.client.off('room:config:max-score', this.onConfigMaxScore);
     this.client.off('room:config:variable', this.onConfigVariable);
     this.client.off('room:config:bonus', this.onConfigBonus);
+    this.client.off('room:launch:start', this.forwardEvent);
+    this.client.off('room:launch:cancel', this.forwardEvent);
     this.client.off('room:kick', this.onKick);
     this.client.off('vote:new', this.onVote);
     this.client.off('vote:close', this.onVote);
@@ -388,6 +393,14 @@ RoomRepository.prototype.setConfigBonus = function(bonus, callback)
     this.client.addEvent('room:config:bonus', {bonus: bonus}, callback);
 };
 
+/**
+ * Launch
+ */
+RoomRepository.prototype.launch = function()
+{
+    this.client.addEvent('room:launch');
+};
+
 // EVENTS:
 
 /**
@@ -629,6 +642,16 @@ RoomRepository.prototype.onKick = function(e)
     if (player) {
         this.emit(e.type, player);
     }
+};
+
+/**
+ * Forward event
+ *
+ * @param {Event} e
+ */
+RoomRepository.prototype.forwardEvent = function(e)
+{
+    this.emit(e.type, e.detail);
 };
 
 /**

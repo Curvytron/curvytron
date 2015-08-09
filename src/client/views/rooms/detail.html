@@ -9,12 +9,18 @@
             <ng-include src="'js/views/rooms/parameters.html'"></ng-include>
         </div>
 
+        <button type="button" class="btn start-now" ng-click="launch()" ng-if="master || launching">
+            <span class="label" ng-if="!launching">Start now!</span>
+            <span id="starter-count" ng-if="launching">{{ launching }}</span>
+        </button>
+
+        <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
+            <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
+            <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ ::nameMaxLength }}" />
+            <div class="clearfix"></div>
+        </form>
+
         <h3>
-            <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
-                <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
-                <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ ::nameMaxLength }}" />
-                <div class="clearfix"></div>
-            </form>
             <p class="count">
                 <ng-pluralize count="room.players.items.length" when="{
                     '0': 'No player',
@@ -22,8 +28,8 @@
                     'other': '{} players'}"
                 />
             </p>
-            <div class="clearfix"></div>
         </h3>
+        <div class="clearfix"></div>
 
         <div class="room-details">
 
@@ -75,7 +81,7 @@
                             </button>
                         </td>
                         <td class="col-ready">
-                            <div class="player-ready" ng-click="setReady(player)" ng-class="{ ready: player.ready }">
+                            <div class="player-ready local" ng-click="setReady(player)" ng-class="{ ready: player.ready }">
                                 <span>
                                     <span ng-if="!player.ready">Ready?</span>
                                     <span ng-if="player.ready" class="icon-check success"></span>

@@ -7,9 +7,9 @@
  */
 function RoomsController($scope, $location, client)
 {
-    document.body.classList.remove('game-mode');
-
     AbstractController.call(this, $scope);
+
+    document.body.classList.remove('game-mode');
 
     this.$location  = $location;
     this.client     = client;
