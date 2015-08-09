@@ -9,9 +9,9 @@
             <ng-include src="'js/views/rooms/parameters.html'"></ng-include>
         </div>
 
-        <button type="button" class="btn start-now" ng-click="launch()" ng-if="master">
-            <span class="label">Start now!</span>
-            <span id="starter-count"></span>
+        <button type="button" class="btn start-now" ng-click="launch()" ng-if="master || launching">
+            <span class="label" ng-if="!launching">Start now!</span>
+            <span id="starter-count" ng-if="launching">{{ launching }}</span>
         </button>
 
         <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
