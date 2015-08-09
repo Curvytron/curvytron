@@ -25,10 +25,8 @@ function KillLogController($scope, $interpolate, client)
     this.clear = this.clear.bind(this);
     this.onDie = this.onDie.bind(this);
 
-    this.$scope.onLoaded = this.onLoaded;
-
-    this.client.on('die', this.onDie);
-    this.client.on('round:new', this.clear);
+    //this.client.on('die', this.onDie);
+    //this.client.on('round:new', this.clear);
 }
 
 KillLogController.prototype = Object.create(AbstractController.prototype);

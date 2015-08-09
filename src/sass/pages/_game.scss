@@ -163,6 +163,14 @@
                 cursor: pointer;
             }
 
+            &.in-round {
+                .player:not(.dead) {
+                    .round-points {
+                        display: none;
+                    }
+                }
+            }
+
             .player {
                 border-bottom: 2px solid lighten($game-background, 10%);
                 padding: 10px 5px 10px 23px;
@@ -183,6 +191,7 @@
                 }
 
                 .round-points {
+                    display: block;
                     font-size: 18px;
                     margin-left: 10px;
                     font-weight: 300;

@@ -13,12 +13,12 @@
             </span>
 
             <div class="game-players" ng-controller="PlayerListController">
-                <div ng-repeat="avatar in avatars track by avatar.id" class="player" ng-class="{ dead: avatar.alive == false, local: avatar.local && !spectating }">
+                <div ng-repeat="avatar in ::avatars track by avatar.id" id="avatar-{{ ::avatar.id }}" class="player" ng-init="onLoad(avatar)">
                     <span class="line-color-preview" style="background-color: {{ ::avatar.player.color }};"></span>
-                    <span class="arrow" style="border-left-color: {{ ::avatar.player.color }};" ng-if="avatar.local && !spectating"></span>
-                    <span class="round-points" ng-if="avatar.roundScore && (!avatar.alive || !game.inRound)">+{{ avatar.roundScore }}</span>
-                    <span class="player-name" title="{{ avatar.name }}">{{ ::avatar.name }}</span>
-                    <span class="score">{{ avatar.score }}</span>
+                    <span class="arrow" style="border-left-color: {{ ::avatar.player.color }};" ng-if="avatar.local"></span>
+                    <span class="round-points" id="avatar-round-score-{{ ::avatar.id }}"></span>
+                    <span class="player-name" title="{{ ::avatar.name }}">{{ ::avatar.name }}</span>
+                    <span class="score" id="avatar-score-{{ ::avatar.id }}">0</span>
                 </div>
             </div>
 
@@ -49,7 +49,7 @@
                 <p>You must wait for the game to finish before you can play.</p>
             </div>
             <div class="waiting" ng-if="!spectating && !game.isReady()" ng-controller="WaitingController">
-                <p>Waiting for players...</p>
+                <p>Waiting for players...{{ true ? 'lol' : 'lul' }}</p>
                 <ul>
                     <li ng-repeat="avatar in list track by avatar.id">
                         <span style="color: {{ ::avatar.player.color }}">{{ ::avatar.name }}</span>

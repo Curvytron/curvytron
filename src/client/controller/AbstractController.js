@@ -23,14 +23,14 @@ AbstractController.prototype.constructor = AbstractController;
  *
  * @type {Number}
  */
-AbstractController.prototype.digestTimeoutValue = 100;
+AbstractController.prototype.digestTimeoutValue = 1000/25;
 
 /**
  * Apply scope
  */
 AbstractController.prototype.applyScope = function()
 {
-    console.time('applyScope');
+    //console.time('applyScope');
 
     var phase = this.$scope && this.$scope.$root ? this.$scope.$root.$$phase : null;
 
@@ -38,7 +38,7 @@ AbstractController.prototype.applyScope = function()
         this.$scope.$apply();
     }
 
-    console.timeEnd('applyScope');
+    //console.timeEnd('applyScope');
 };
 
 /**
@@ -46,7 +46,7 @@ AbstractController.prototype.applyScope = function()
  */
 AbstractController.prototype.digestScope = function()
 {
-    console.time('digestScope');
+    //console.time('digestScope');
     this.clearDigestTiemout();
 
     var phase = this.$scope && this.$scope.$root ? this.$scope.$root.$$phase : null;
@@ -55,7 +55,7 @@ AbstractController.prototype.digestScope = function()
         this.$scope.$digest();
     }
 
-    console.timeEnd('digestScope');
+    //console.timeEnd('digestScope');
 };
 
 /**

@@ -18,6 +18,11 @@ function Avatar(player)
     this.startY       = 0;
     this.clearX       = 0;
     this.clearY       = 0;
+    this.elements     = {
+        root: null,
+        roundScore: null,
+        score: null
+    };
 
     if (this.local) {
         this.input = new PlayerInput(this, player.getBinding());

@@ -18,24 +18,26 @@
         roomsController.createRoom();
     }
 
-    function createReadyPlayers(nb) {
+    function createPlayers() {
         var roomController = getCurrentController(),
-            i;
+            total = roomController.room.players.items.length;
 
         // Ensure it's the room controller
         if (!roomController.room) {
             return;
         }
 
-        for(i = 0; i < nb; i++) {
-            roomController.submitAddPlayer('Slug #' + (roomController.room.players.items.length + i));
+        roomController.submitAddPlayer('Slug #' + total);
+
+        if (total < nbPlayers) {
+            setTimeout(createPlayers, 50);
+        } else {
+            launch();
         }
     }
 
-    function setPlayersReady() {
-        var roomController = getCurrentController(),
-            players,
-            i;
+    function launch() {
+        var roomController = getCurrentController();
 
         // Ensure it's the room controller
         if (!roomController.room) {
@@ -43,31 +45,10 @@
         }
 
         // Set all players ready
-        players = roomController.room.players.items;
-        for (i in players) {
-            if (!players.hasOwnProperty(i)) {
-                continue;
-            }
-
-            roomController.setReady(players[i]);
-        }
+        roomController.launch();
     }
 
     // Create a room
     createRoom();
-
-    // Create n players
-    setTimeout(function() {
-        createReadyPlayers(nbPlayers/3);
-        setTimeout(function() {
-            createReadyPlayers(nbPlayers/3);
-            setTimeout(function() {
-                createReadyPlayers(nbPlayers/3);
-                setTimeout(function() {
-                    // Set all players ready
-                    setPlayersReady();
-                }, 10000);
-            }, 1000);
-        }, 1000);
-    }, 1000);
+    setTimeout(createPlayers, 500);
 }());
