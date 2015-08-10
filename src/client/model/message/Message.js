@@ -5,6 +5,7 @@
  */
 function Message (creation)
 {
+    this.id       = null;
     this.creation = typeof(creation) === 'number' ? new Date(creation) : new Date();
     this.date     = this.getDate();
 }

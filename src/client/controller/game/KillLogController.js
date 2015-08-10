@@ -9,11 +9,11 @@ function KillLogController($scope, $interpolate, client)
 {
     if (!$scope.game) { return; }
 
-    this.$scope    = $scope;
+    AbstractController.call(this, $scope);
+
     this.client    = client;
     this.game      = $scope.game;
     this.element   = document.getElementById('kill-log-feed');
-    this.logs      = [];
     this.templates = {
         suicide: $interpolate('<span style="color: {{ ::deadPlayer.color }}">{{ ::deadPlayer.name }}</span> committed suicide'),
         kill: $interpolate('<span style="color: {{ ::deadPlayer.color }}">{{ ::deadPlayer.name }}</span> was killed by <span style="color: {{ ::killerPlayer.color }}">{{ ::killerPlayer.name }}</span>'),
@@ -21,30 +21,15 @@ function KillLogController($scope, $interpolate, client)
         wall: $interpolate('<span style="color: {{ ::deadPlayer.color }}">{{ ::deadPlayer.name }}</span> crashed on the wall')
     };
 
-    this.clear       = this.clear.bind(this);
-    this.onDie       = this.onDie.bind(this);
-    this.applyScope  = this.applyScope.bind(this);
-    this.digestScope = this.digestScope.bind(this);
-
-    this.$scope.onLoaded = this.onLoaded;
+    this.clear = this.clear.bind(this);
+    this.onDie = this.onDie.bind(this);
 
     this.client.on('die', this.onDie);
     this.client.on('round:new', this.clear);
 }
 
-/**
- * Message display duration
- *
- * @type {Number}
- */
-KillLogController.prototype.display = 5000;
-
-/**
- * Maximum number of logs
- *
- * @type {Number}
- */
-KillLogController.prototype.maxLogs = 5;
+KillLogController.prototype = Object.create(AbstractController.prototype);
+KillLogController.prototype.constructor = KillLogController;
 
 /**
  * On die
@@ -53,67 +38,24 @@ KillLogController.prototype.maxLogs = 5;
  */
 KillLogController.prototype.onDie = function(e)
 {
-    var data   = e.detail,
-        avatar = this.game.avatars.getById(data[0]);
+    var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
-        var killer = data[1] ? this.game.avatars.getById(data[1]) : null;
-        this.add(new MessageDie(avatar, killer, data[2]));
+        this.display(new MessageDie(avatar, e.detail[1] ? this.game.avatars.getById(e.detail[1]) : null, e.detail[2]));
     }
 };
 
 /**
- * Get element
+ * Display the given message
  *
- * @param {Message} message
- *
- * @return {Element}
+ * @param {string} message
  */
-KillLogController.prototype.getElement = function(message) {
-    var element = document.createElement('div');
+KillLogController.prototype.display = function(message) {
+    var content = '<span class="message-icon icon-dead"></span>' + this.templates[message.type](message),
+        item    = this.element.children[0];
 
-    element.className = 'one-message';
-    element.innerHTML = '<span class="message-icon icon-dead"></span>' + this.templates[message.type](message);
-
-    return element;
-};
-
-/**
- * Kill log
- *
- * @param {MessageDie} message
- */
-KillLogController.prototype.add = function(message)
-{
-    var controller = this,
-        element    = this.getElement(message);
-
-    this.logs.push(element);
-
-    setTimeout(function () { controller.remove(element); }, this.display);
-
-    if (this.logs.length > this.maxLogs) {
-        for (var i = this.logs.length - this.maxLogs; i >= 0; i--) {
-            this.remove(this.logs[0]);
-        }
-    }
-
-    this.element.appendChild(element);
-};
-
-/**
- * Remove message
- *
- * @param {Element} element
- */
-KillLogController.prototype.remove = function (element)
-{
-    var index = this.logs.indexOf(element);
-
-    if (index >= 0) {
-        element.parentNode.removeChild(element);
-        this.logs.splice(index, 1);
-    }
+    item.innerHTML = content;
+    this.element.appendChild(item);
 };
 
 /**
@@ -121,16 +63,7 @@ KillLogController.prototype.remove = function (element)
  */
 KillLogController.prototype.clear = function()
 {
-    this.logs.length       = 0;
-    this.element.innerHTML = '';
+    for (var i = this.element.children.length - 1; i >= 0; i--) {
+        this.element.children[i].innerHTML = '';
+    }
 };
-
-/**
- * Apply scope
- */
-KillLogController.prototype.applyScope = CurvytronController.prototype.applyScope;
-
-/**
- * Digest scope
- */
-KillLogController.prototype.digestScope = CurvytronController.prototype.digestScope;

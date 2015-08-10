@@ -39,7 +39,7 @@ curvytronApp.controller(
 );
 curvytronApp.controller(
     'PlayerListController',
-    ['$scope', 'SocketClient', PlayerListController]
+    ['$scope', '$element', 'SocketClient', PlayerListController]
 );
 curvytronApp.controller(
     'RoundController',

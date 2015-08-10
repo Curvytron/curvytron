@@ -48,7 +48,7 @@
             <legend>Controls:</legend>
 
             <div class="form-row">
-                <div class="col" ng-repeat="control in profile.controls" ng-init="onLoadControl()">
+                <div class="col" ng-repeat="control in profile.controls track by $index" ng-init="onLoadControl()">
                     <label for="profile-controls-{{ ::$index }}">{{ ::control.label }}</label>
                     <input
                         id="profile-controls-{{ ::$index }}"

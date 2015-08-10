@@ -6,7 +6,8 @@
  */
 function RoomConfigController($scope, repository)
 {
-    this.$scope     = $scope;
+    AbstractController.call(this, $scope);
+
     this.repository = repository;
     this.config     = null;
 
@@ -17,8 +18,6 @@ function RoomConfigController($scope, repository)
     this.setOpen      = this.setOpen.bind(this);
     this.setMaxScore  = this.setMaxScore.bind(this);
     this.setVariable  = this.setVariable.bind(this);
-    this.applyScope   = this.applyScope.bind(this);
-    this.digestScope  = this.digestScope.bind(this);
 
     // Hydrating scope
     this.$scope.toggleBonus  = this.toggleBonus;
@@ -34,6 +33,9 @@ function RoomConfigController($scope, repository)
 
     this.$scope.$parent.$watch('room', this.onJoined);
 }
+
+RoomConfigController.prototype = Object.create(AbstractController.prototype);
+RoomConfigController.prototype.constructor = RoomConfigController;
 
 /**
  * On room joined
@@ -142,13 +144,3 @@ RoomConfigController.prototype.setVariable = function(variable)
         });
     }
 };
-
-/**
- * Apply scope
- */
-RoomConfigController.prototype.applyScope = CurvytronController.prototype.applyScope;
-
-/**
- * Digest scope
- */
-RoomConfigController.prototype.digestScope = CurvytronController.prototype.digestScope;

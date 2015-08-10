@@ -42,7 +42,7 @@
 
         <table id="rooms" class="rooms table table-hover v-align-middle" ng-if="!rooms.isEmpty()">
             <tbody>
-                <tr ng-repeat="room in rooms.items" ng-if="!room.game" ng-click="join(room)" class="room" ng-class="{private: !room.open}">
+                <tr ng-repeat="room in rooms.items track by room.name" ng-if="!room.game" ng-click="join(room)" class="room" ng-class="{private: !room.open}">
                     <td class="room-name">{{ ::room.name }}</td>
                     <td class="room-nb-players">
                         <ng-pluralize count="room.players" when="{
@@ -63,7 +63,7 @@
                         </div>
                     </td>
                 </tr>
-                <tr ng-repeat="room in rooms.items" ng-if="room.game" ng-click="join(room)" class="room in-game" ng-class="{private: !room.open}">
+                <tr ng-repeat="room in rooms.items track by room.name" ng-if="room.game" ng-click="join(room)" class="room in-game" ng-class="{private: !room.open}">
                     <td class="room-name">{{ ::room.name }}</td>
                     <td class="room-nb-players">
                         <ng-pluralize count="room.players" when="{

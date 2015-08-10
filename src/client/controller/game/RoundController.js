@@ -9,7 +9,8 @@ function RoundController($scope, repository, notifier)
 {
     if (!$scope.game) { return; }
 
-    this.$scope          = $scope;
+    AbstractController.call(this, $scope);
+
     this.repository      = repository;
     this.notifier        = notifier;
     this.game            = this.$scope.game;
@@ -28,8 +29,6 @@ function RoundController($scope, repository, notifier)
     this.onWarmup      = this.onWarmup.bind(this);
     this.endWarmup     = this.endWarmup.bind(this);
     this.detachEvents  = this.detachEvents.bind(this);
-    this.applyScope    = this.applyScope.bind(this);
-    this.digestScope   = this.digestScope.bind(this);
 
     this.$scope.roundWinner = null;
     this.$scope.gameWinner  = null;
@@ -38,6 +37,9 @@ function RoundController($scope, repository, notifier)
 
     this.attachEvents();
 }
+
+RoundController.prototype = Object.create(AbstractController.prototype);
+RoundController.prototype.constructor = RoundController;
 
 /**
  * Attach socket Events
@@ -86,12 +88,12 @@ RoundController.prototype.onRoundNew = function(e)
  */
 RoundController.prototype.onRoundEnd = function(e)
 {
-    if (this.game.roundWinner) {
-        this.notifier.notifyInactive(this.game.roundWinner.name + ' won round!');
-        this.$scope.winner = this.game.roundWinner;
-        this.digestScope();
-        this.endElement.style.display = 'block';
-    }
+    this.notifier.notifyInactive(this.game.roundWinner ? this.game.roundWinner.name + ' won round!' : 'Round end!');
+
+    this.$scope.winner = this.game.roundWinner ? this.game.roundWinner : false;
+    this.digestScope();
+
+    this.endElement.style.display = 'block';
 };
 
 /**
@@ -156,13 +158,3 @@ RoundController.prototype.clearWarmup = function()
         this.warmupInterval = null;
     }
 };
-
-/**
- * Apply scope
- */
-RoundController.prototype.applyScope = CurvytronController.prototype.applyScope;
-
-/**
- * Digest scope
- */
-RoundController.prototype.digestScope = CurvytronController.prototype.digestScope;

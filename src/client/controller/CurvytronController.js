@@ -10,12 +10,13 @@
  */
 function CurvytronController($scope, $window, $location, profile, analyser, watcher, client)
 {
-    this.$scope    = $scope;
-    this.$window   = $window;
-    this.$location = $location;
-    this.analyser  = analyser;
-    this.watcher   = watcher;
-    this.client    = client;
+    AbstractController.call(this, $scope);
+
+    this.$window       = $window;
+    this.$location     = $location;
+    this.analyser      = analyser;
+    this.watcher       = watcher;
+    this.client        = client;
 
     // Bind
     this.onConnect     = this.onConnect.bind(this);
@@ -30,6 +31,9 @@ function CurvytronController($scope, $window, $location, profile, analyser, watc
     this.client.on('connected', this.onConnect);
     this.client.on('disconnected', this.onDisconnect);
 }
+
+CurvytronController.prototype = Object.create(AbstractController.prototype);
+CurvytronController.prototype.constructor = CurvytronController;
 
 /**
  * On connect
@@ -61,28 +65,4 @@ CurvytronController.prototype.onDisconnect = function(e)
 CurvytronController.prototype.reload = function()
 {
     this.$window.location.href = '/';
-};
-
-/**
- * Apply scope
- */
-CurvytronController.prototype.applyScope = function()
-{
-    var phase = this.$scope && this.$scope.$root ? this.$scope.$root.$$phase : null;
-
-    if (phase !== '$apply' && phase !== '$digest') {
-        this.$scope.$apply();
-    }
-};
-
-/**
- * Digest scope
- */
-CurvytronController.prototype.digestScope = function()
-{
-    var phase = this.$scope && this.$scope.$root ? this.$scope.$root.$$phase : null;
-
-    if (phase !== '$apply' && phase !== '$digest') {
-        this.$scope.$digest();
-    }
 };

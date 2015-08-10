@@ -7,12 +7,13 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
-    this.world       = new World(this.size);
-    this.deaths      = new Collection([], 'id');
-    this.controller  = new GameController(this);
-    this.bonusStack  = new GameBonusStack(this);
-    this.roundWinner = null;
-    this.gameWinner  = null;
+    this.world        = new World(this.size);
+    this.deaths       = new Collection([], 'id');
+    this.controller   = new GameController(this);
+    this.bonusStack   = new GameBonusStack(this);
+    this.roundWinner  = null;
+    this.gameWinner   = null;
+    this.deathInFrame = false;
 
     this.onPoint = this.onPoint.bind(this);
 
@@ -37,6 +38,8 @@ Game.prototype.update = function(step)
 {
     var score = this.deaths.count(),
         avatar, border, i, borderX, borderY, borderAxis, position, killer;
+
+    this.deathInFrame = false;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
@@ -71,7 +74,7 @@ Game.prototype.update = function(step)
         }
     }
 
-    if (!this.deaths.isEmpty()) {
+    if (this.deathInFrame) {
         this.checkRoundEnd();
     }
 };
@@ -87,6 +90,7 @@ Game.prototype.kill = function(avatar, killer, score) {
     avatar.die(killer);
     avatar.addScore(score);
     this.deaths.add(avatar);
+    this.deathInFrame = true;
 };
 
 /**
@@ -146,9 +150,23 @@ Game.prototype.isWon = function()
  */
 Game.prototype.checkRoundEnd = function()
 {
-    if (this.inRound && this.getAliveAvatars().count() <= 1) {
-        this.endRound();
+    if (!this.inRound) {
+        return;
     }
+
+    var alive = false;
+
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        if (this.avatars.items[i].alive) {
+            if (!alive) {
+                alive = true;
+            } else {
+                return;
+            }
+        }
+    }
+
+    this.endRound();
 };
 
 /**
@@ -203,7 +221,7 @@ Game.prototype.setSize = function()
 Game.prototype.onRoundEnd = function()
 {
     this.resolveScores();
-    this.emit('round:end', {game: this, winner: this.roundWinner});
+    this.emit('round:end', {winner: this.roundWinner});
 };
 
 /**

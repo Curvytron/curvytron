@@ -10,9 +10,8 @@
  */
 function ProfileController($scope, profile, radio, sound)
 {
-    EventEmitter.call(this);
+    AbstractController.call(this, $scope);
 
-    this.$scope   = $scope;
     this.profile  = profile;
     this.radio    = radio;
     this.sound    = sound;
@@ -30,7 +29,6 @@ function ProfileController($scope, profile, radio, sound)
     this.onLoaded      = this.onLoaded.bind(this);
     this.onLoadControl = this.onLoadControl.bind(this);
     this.blurControls  = this.blurControls.bind(this);
-    this.digestScope   = this.digestScope.bind(this);
 
     this.$scope.profile       = this.profile;
     this.$scope.radio         = this.radio;
@@ -47,7 +45,7 @@ function ProfileController($scope, profile, radio, sound)
     this.profile.on('change', this.digestScope);
 }
 
-ProfileController.prototype = Object.create(EventEmitter.prototype);
+ProfileController.prototype = Object.create(AbstractController.prototype);
 ProfileController.prototype.constructor = ProfileController;
 
 /**
@@ -111,13 +109,3 @@ ProfileController.prototype.blurControls = function()
     this.controls[0].blur();
     this.controls[1].blur();
 };
-
-/**
- * Apply scope
- */
-ProfileController.prototype.applyScope = CurvytronController.prototype.applyScope;
-
-/**
- * Digest scope
- */
-ProfileController.prototype.digestScope = CurvytronController.prototype.digestScope;

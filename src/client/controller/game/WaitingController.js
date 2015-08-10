@@ -8,7 +8,8 @@ function WaitingController($scope, client)
 {
     if (!$scope.game) { return; }
 
-    this.$scope = $scope;
+    AbstractController.call(this, $scope);
+
     this.client = client;
     this.game   = $scope.game;
 
@@ -24,6 +25,9 @@ function WaitingController($scope, client)
 
     this.attachEvents();
 }
+
+WaitingController.prototype = Object.create(AbstractController.prototype);
+WaitingController.prototype.constructor = WaitingController;
 
 /**
  * Attach socket Events
@@ -67,13 +71,3 @@ WaitingController.prototype.onStart = function(e)
     this.$scope.list.length = 0;
     this.detachEvents();
 };
-
-/**
- * Apply scope
- */
-WaitingController.prototype.applyScope = CurvytronController.prototype.applyScope;
-
-/**
- * Digest scope
- */
-WaitingController.prototype.digestScope = CurvytronController.prototype.digestScope;

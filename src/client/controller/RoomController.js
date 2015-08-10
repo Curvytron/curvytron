@@ -12,11 +12,12 @@
  */
 function RoomController($scope, $routeParams, $location, client, repository, profile, chat, notifier)
 {
+    AbstractController.call(this, $scope);
+
     document.body.classList.remove('game-mode');
 
     var search = $location.search();
 
-    this.$scope         = $scope;
     this.$location      = $location;
     this.$routeParams   = $routeParams;
     this.client         = client;
@@ -36,8 +37,6 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     this.addProfileUser   = this.addProfileUser.bind(this);
     this.removePlayer     = this.removePlayer.bind(this);
     this.kickPlayer       = this.kickPlayer.bind(this);
-    this.applyScope       = this.applyScope.bind(this);
-    this.digestScope      = this.digestScope.bind(this);
     this.onJoin           = this.onJoin.bind(this);
     this.onJoined         = this.onJoined.bind(this);
     this.onControlChange  = this.onControlChange.bind(this);
@@ -92,6 +91,9 @@ function RoomController($scope, $routeParams, $location, client, repository, pro
     }
 }
 
+RoomController.prototype = Object.create(AbstractController.prototype);
+RoomController.prototype.constructor = RoomController;
+
 /**
  * Join room and load scope
  */
@@ -118,7 +120,7 @@ RoomController.prototype.onJoined = function(result)
 
         this.attachEvents();
         this.addProfileUser();
-        this.digestScope();
+        this.requestDigestScope();
     } else {
         console.error('Could not join room %s: %s', result.name, result.error);
         this.goHome();
@@ -149,11 +151,11 @@ RoomController.prototype.attachEvents = function()
 {
     this.repository.on('room:close', this.goHome);
     this.repository.on('player:join', this.onJoin);
-    this.repository.on('player:leave', this.digestScope);
-    this.repository.on('player:ready', this.digestScope);
-    this.repository.on('player:color', this.digestScope);
-    this.repository.on('player:name', this.digestScope);
-    this.repository.on('client:activity', this.digestScope);
+    this.repository.on('player:leave', this.requestDigestScope);
+    this.repository.on('player:ready', this.requestDigestScope);
+    this.repository.on('player:color', this.requestDigestScope);
+    this.repository.on('player:name', this.requestDigestScope);
+    this.repository.on('client:activity', this.requestDigestScope);
     this.repository.on('room:master', this.onRoomMaster);
     this.repository.on('room:game:start', this.start);
     this.repository.on('room:config:open', this.onConfigOpen);
@@ -172,11 +174,11 @@ RoomController.prototype.detachEvents = function()
 {
     this.repository.off('room:close', this.goHome);
     this.repository.off('player:join', this.onJoin);
-    this.repository.off('player:leave', this.digestScope);
-    this.repository.off('player:ready', this.digestScope);
-    this.repository.off('player:color', this.digestScope);
-    this.repository.off('player:name', this.digestScope);
-    this.repository.off('client:activity', this.digestScope);
+    this.repository.off('player:leave', this.requestDigestScope);
+    this.repository.off('player:ready', this.requestDigestScope);
+    this.repository.off('player:color', this.requestDigestScope);
+    this.repository.off('player:name', this.requestDigestScope);
+    this.repository.off('client:activity', this.requestDigestScope);
     this.repository.off('room:master', this.onRoomMaster);
     this.repository.off('room:game:start', this.start);
     this.repository.off('room:config:open', this.onConfigOpen);
@@ -304,7 +306,7 @@ RoomController.prototype.onJoin = function(e)
         this.notifier.notify('New player joined!');
     }
 
-    this.digestScope();
+    this.requestDigestScope();
 };
 
 /**
@@ -580,14 +582,3 @@ RoomController.prototype.toggleParameters = function()
 {
     this.$scope.displayParameters = !this.$scope.displayParameters;
 };
-
-
-/**
- * Apply scope
- */
-RoomController.prototype.applyScope = CurvytronController.prototype.applyScope;
-
-/**
- * Digest scope
- */
-RoomController.prototype.digestScope = CurvytronController.prototype.digestScope;
