@@ -23,7 +23,11 @@ RoomNameGenerator.prototype.adjectives = [
     'mighty',
     'outstanding',
     'splendid',
-    'wonderful'
+    'wonderful',
+    'big',
+    'super',
+    'smashing',
+    'sensational'
 ];
 
 RoomNameGenerator.prototype.nouns = [
@@ -36,7 +40,15 @@ RoomNameGenerator.prototype.nouns = [
     'league',
     'gala',
     'gathering',
-    'bunch'
+    'bunch',
+    'fight',
+    'battle',
+    'conflict',
+    'encounter',
+    'clash',
+    'combat',
+    'confrontation',
+    'challenge'
 ];
 
 /**

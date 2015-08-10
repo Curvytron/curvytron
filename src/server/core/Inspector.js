@@ -162,15 +162,17 @@ Inspector.prototype.onGameNew = function(data)
         client        = avatar.player.client;
         clientTracker = this.trackers.client.getById(client.id);
 
-        this.client.writePoint(
-            this.CLIENT_GAME_PLAYER,
-            {
-                game: tracker.uniqId,
-                client: clientTracker.uniqId,
-                player: md5(avatar.name),
-                color: avatar.color
-            }
-        );
+        if (clientTracker) {
+            this.client.writePoint(
+                this.CLIENT_GAME_PLAYER,
+                {
+                    game: tracker.uniqId,
+                    client: clientTracker.uniqId,
+                    player: md5(avatar.name),
+                    color: avatar.color
+                }
+            );
+        }
     }
 
     tracker.on('fps', this.onGameFPS);

@@ -103,7 +103,7 @@ $game-header-height: 120px;
 /// FOOTER
 ///////////////////////////
 $footer-background: darken($background-color, 7%);
-$footer-color: darken($footer-background, 20%);
+$footer-color: darken($footer-background, 33%);
 $game-footer-height: 40px;
 
 
@@ -141,7 +141,7 @@ $input-height-small: ceil($base-line-height*0.75 + ($padding-small-vertical * 2)
 $input-height-large: ceil($base-line-height*1.5 + ($padding-large-vertical * 2) + 2) !default;
 
 $input-color: $text-color;
-$input-color-placeholder: lighter($text-color, 40%);
+$input-color-placeholder: #999999;
 $input-bg: transparent;
 $input-border: $text-color;
 $input-border-focus: lighten($input-border, 10%);

@@ -1,7 +1,7 @@
 <section>
     <div class="container room">
         <h2 class="header">
-            {{ room.name }}
+            {{ ::room.name }}
             <i class="icon-params" ng-click="toggleParameters()" ng-class="{'active': displayParameters}"></i>
         </h2>
 
@@ -9,12 +9,18 @@
             <ng-include src="'js/views/rooms/parameters.html'"></ng-include>
         </div>
 
+        <button type="button" class="btn start-now" ng-click="launch()" ng-if="master || launching">
+            <span class="label" ng-if="!launching">Start now!</span>
+            <span id="starter-count" ng-if="launching">{{ launching }}</span>
+        </button>
+
+        <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
+            <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
+            <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ ::nameMaxLength }}" />
+            <div class="clearfix"></div>
+        </form>
+
         <h3>
-            <form ng-submit="submitAddPlayer()" class="top-right-form" name="addPlayer">
-                <button type="submit" id="submit"><span><i class="icon-plus"></i></span></button>
-                <input type="text" id="add-user-name" ng-model="username" class="form-control" name="username" placeholder="Add a local player" maxlength="{{ nameMaxLength }}" />
-                <div class="clearfix"></div>
-            </form>
             <p class="count">
                 <ng-pluralize count="room.players.items.length" when="{
                     '0': 'No player',
@@ -22,8 +28,8 @@
                     'other': '{} players'}"
                 />
             </p>
-            <div class="clearfix"></div>
         </h3>
+        <div class="clearfix"></div>
 
         <div class="room-details">
 
@@ -48,9 +54,9 @@
                     <tr ng-if="room.players.isEmpty()">
                         <td colspan="5" class="empty">
                             Waiting for players...
-                        </th>
+                        </td>
                     </tr>
-                    <tr ng-repeat="player in room.players.items | orderBy:'position'" ng-if="player.local" class="local">
+                    <tr ng-repeat="player in room.players.items track by player.id | orderBy:'position'" ng-if="player.local" class="local">
                         <td class="col-remove col-show-hover">
                             <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="removePlayer(player)">
                                 <span class="icon-close"></span>
@@ -60,14 +66,14 @@
                             <span ng-if="player.isMaster()" class="icon icon-crown pull-left"></span>
                         </td>
                         <td class="col-player">
-                            <input type="text" ng-model="player.name" ng-blur="setName(player)" class="form-control player-name" name="name" maxlength="{{ nameMaxLength }}" />
+                            <input type="text" ng-model="player.name" ng-blur="setName(player)" class="form-control player-name" name="name" maxlength="{{ ::nameMaxLength }}" />
                         </td>
                         <td class="col-color">
-                            <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-blur="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ colorMaxLength }}" />
+                            <input type="text" colorpicker="hex" colorpicker-position="right" ng-model="player.color" ng-blur="setColor(player)" class="form-control player-color" name="color" placeholder="#CCCCCC" style="border-color: {{ player.color }};" maxlength="{{ ::colorMaxLength }}" />
                         </td>
                         <td class="col-keys">
                             <button class="btn btn-default control"
-                                ng-repeat="control in player.controls"
+                                ng-repeat="control in ::player.controls track by $index"
                                 ng-click="control.toggle()"
                                 ng-class="{ 'active': control.mapper.listening }"
                             >
@@ -75,7 +81,7 @@
                             </button>
                         </td>
                         <td class="col-ready">
-                            <div class="player-ready" ng-click="setReady(player)" ng-class="{ ready: player.ready }">
+                            <div class="player-ready local" ng-click="setReady(player)" ng-class="{ ready: player.ready }">
                                 <span>
                                     <span ng-if="!player.ready">Ready?</span>
                                     <span ng-if="player.ready" class="icon-check success"></span>
@@ -83,7 +89,7 @@
                             </div>
                         </td>
                     </tr>
-                    <tr ng-repeat="player in room.players.items | orderBy:'position'" ng-if="!player.local">
+                    <tr ng-repeat="player in room.players.items track by player.id | orderBy:'position'" ng-if="!player.local">
                         <td class="col-remove col-show-hover {{ player.vote ? 'active' : '' }}">
                             <button type="button" class="btn btn-link btn-sm btn-remove pull-left" ng-click="kickPlayer(player)">
                                 <span class="icon-kick {{ player.kicked ? 'kicked' : '' }}"></span>

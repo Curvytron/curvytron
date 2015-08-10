@@ -1,12 +1,13 @@
-<div id="chat-feed" class="feed">
-    <div ng-repeat="message in messages" class="one-message">
+<div id="chat-feed" class="feed" ng-init="onLoaded()">
+    <div ng-repeat="message in messages track by message.id" class="one-message">
         <div class="details">
-            <span class="time">{{ message.getDate() }}</span>
+            <span class="time">{{ ::message.date }}</span>
         </div>
-        <strong style="color: {{ message.getPlayerColor() }};">
-            <span ng-if="message.getPlayerIcon()" class="message-icon {{ message.getPlayerIcon() }}"></span>
-            <span ng-if="!message.getPlayerIcon()">{{ message.getPlayerName() }}:</span>
-        </strong>
+        <span ng-if="message.icon" class="message-icon {{ ::message.icon }}"></span>
+        <span ng-if="!message.icon" class="message-icon message-name" style="color: {{ message.player.color }};">
+            <span class="mute icon-mute" title="Mute" ng-click="mute(message)"></span>
+            {{ message.player.name }}:
+        </span>
         <span class="message-content" ng-switch="message.type">
             <!-- Vote Kick -->
             <span ng-switch-when="vote-kick">
@@ -25,7 +26,7 @@
 
             <!-- Kick -->
             <span ng-switch-when="kick">
-                Farewell <span style="color: {{ message.target.color }}">{{ message.target.name }}</span>, you have been kicked.
+                Farewell <span style="color: {{ ::message.target.color }}">{{ ::message.target.name }}</span>, you have been kicked.
             </span>
 
             <!-- Room master -->
@@ -33,9 +34,15 @@
                 <span style="color: {{ message.getTarget().color }}">{{ message.getTarget().name }}</span> is now the room master.
             </span>
 
+            <!-- Mute -->
+            <span ng-switch-when="mute">
+                You muted <span style="color: {{ message.player.color }}">{{ message.player.name }}</span>.
+                <span class="action" ng-click="mute(message)">Cancel?</span>
+            </span>
+
             <!-- Default -->
             <span ng-switch-default>
-                {{ message.content }}
+                {{ ::message.content }}
             </span>
         </span>
     </div>
@@ -45,6 +52,6 @@
     <button type="submit" class="btn btn-default">
         <span><i class="icon-angle-right"></i></span>
     </button>
-    <input type="text" name="currentMessage" ng-model="currentMessage.content" class="sent-message form-control" placeholder="Enter message..." maxlength="{{ messageMaxLength }}" />
+    <input type="text" name="currentMessage" ng-model="currentMessage.content" class="sent-message form-control" placeholder="Enter message..." maxlength="{{ ::currentMessage.maxLength }}" />
     <div class="clearfix"></div>
 </form>

@@ -1,25 +1,14 @@
 /**
  * Message
  *
- * @param {String} content
- * @param {SocketClient} client
- * @param {Player} player
  * @param {Number} creation
  */
-function Message (content, client, player, creation)
+function Message (creation)
 {
-    BaseMessage.call(this, content);
-
-    this.client   = client;
-    this.player   = player;
-
-    if (typeof(creation) === 'number') {
-        this.creation = new Date(creation);
-    }
+    this.id       = null;
+    this.creation = typeof(creation) === 'number' ? new Date(creation) : new Date();
+    this.date     = this.getDate();
 }
-
-Message.prototype = Object.create(BaseMessage.prototype);
-Message.prototype.constructor = Message;
 
 /**
  * Message type
@@ -33,54 +22,28 @@ Message.prototype.type = 'default';
  *
  * @type {String}
  */
-Message.prototype.defaultColor = '#75858c';
+Message.prototype.color = '#75858c';
 
 /**
  * Default name
  *
  * @type {String}
  */
-Message.prototype.defaultName = 'Anonymous';
+Message.prototype.name = 'Anonymous';
 
 /**
- * Get player name
+ * Default icon
  *
- * @return {String}
+ * @type {String}
  */
-Message.prototype.getPlayerName = function()
-{
-    return typeof(this.player.name) === 'string' ? this.player.name : this.defaultName;
-};
+Message.prototype.icon = null;
 
 /**
- * Get player icon
+ * Message max length
  *
- * @return {String}
+ * @type {Number}
  */
-Message.prototype.getPlayerIcon = function()
-{
-    return typeof(this.player.icon) !== 'undefined' ? this.player.icon : null;
-};
-
-/**
- * Get player color
- *
- * @return {String}
- */
-Message.prototype.getPlayerColor = function()
-{
-    return typeof(this.player.color) === 'string' ? this.player.color : this.defaultColor;
-};
-
-/**
- * Serialize
- *
- * @return {Object}
- */
-Message.prototype.serialize = function()
-{
-    return {content: this.content};
-};
+Message.prototype.maxLength = 140;
 
 /**
  * Get date to text
@@ -89,9 +52,7 @@ Message.prototype.serialize = function()
  */
 Message.prototype.getDate = function()
 {
-    if (!this.creation) {
-        return null;
-    }
+    if (!this.creation) { return ''; }
 
     var hours = this.creation.getHours().toString(),
         minutes = this.creation.getMinutes().toString();

@@ -1,11 +1,12 @@
 /**
  * Game Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusGame(position)
+function BonusGame(x, y)
 {
-    Bonus.call(this, position);
+    Bonus.call(this, x, y);
 
     this.off = this.off.bind(this);
 }
@@ -36,9 +37,19 @@ BonusGame.prototype.getTarget = function(avatar, game)
 /**
  * Apply on
  */
-BonusGame.prototype.on = function() {};
+BonusGame.prototype.on = function()
+{
+    if (this.target) {
+        this.target.bonusStack.add(this);
+    }
+};
 
 /**
- * Apply off
+ * Apply on
  */
-BonusGame.prototype.off = function() {};
+BonusGame.prototype.off = function()
+{
+    if (this.target) {
+        this.target.bonusStack.remove(this);
+    }
+};

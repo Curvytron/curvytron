@@ -13,10 +13,14 @@
             <img src="images/tuto/death.gif" class="circle" alt="Turning" width="150" height="150">
             <p class="content">If you hit another player's line or your own: you're dead!</p>
         </div>
+
         <div class="tuto">
             <img src="images/tuto/bonus.gif" class="circle" alt="Turning" width="150" height="150">
             <p class="content">There are bonuses on the map that can help you.</p>
         </div>
+
+        <div class="clearfix"></div>
+
     </div>
 
     <div class="container room-list">
@@ -32,14 +36,14 @@
                 <button type="submit" id="submit">
                     <span><i class="icon-plus"></i></span>
                 </button>
-                <input type="text" ng-model="roomName" class="form-control clearfix" name="name" placeholder="Create a new room..." maxlength="{{ roomMaxLength }}" />
+                <input type="text" ng-model="roomName" class="form-control clearfix" name="name" placeholder="Create a new room..." maxlength="{{ ::roomMaxLength }}" />
             </form>
         </h2>
 
         <table id="rooms" class="rooms table table-hover v-align-middle" ng-if="!rooms.isEmpty()">
             <tbody>
-                <tr ng-repeat="room in rooms.items" ng-if="!room.game" ng-click="join(room)" class="room">
-                    <td class="room-name">{{ room.name }}</td>
+                <tr ng-repeat="room in rooms.items track by room.name" ng-if="!room.game" ng-click="join(room)" class="room" ng-class="{private: !room.open}">
+                    <td class="room-name">{{ ::room.name }}</td>
                     <td class="room-nb-players">
                         <ng-pluralize count="room.players" when="{
                             '0': 'No player',
@@ -48,13 +52,19 @@
                         />
                     </td>
                     <td class="room-enter-col">
-                        <p class="room-enter">
-                            <span><i class="icon-game"></i> Join</span>
-                        </p>
+                        <i class="icon-lock" ng-if="!room.open"></i>
+                        <form class="room-password-col" ng-if="!room.open" ng-submit="join(room)">
+                            <input type="text" class="form-control password" maxlength="4" ng-model="room.password" placeholder="••••"/>
+                        </form>
+                        <div class="room-enter-container">
+                            <p class="room-enter">
+                                <span><i class="icon-game"></i> Join</span>
+                            </p>
+                        </div>
                     </td>
                 </tr>
-                <tr ng-repeat="room in rooms.items" ng-if="room.game" ng-click="join(room)" class="room in-game">
-                    <td class="room-name">{{ room.name }}</td>
+                <tr ng-repeat="room in rooms.items track by room.name" ng-if="room.game" ng-click="join(room)" class="room in-game" ng-class="{private: !room.open}">
+                    <td class="room-name">{{ ::room.name }}</td>
                     <td class="room-nb-players">
                         <ng-pluralize count="room.players" when="{
                             '0': 'No player',
@@ -63,9 +73,15 @@
                         />
                     </td>
                     <td class="room-enter-col">
-                        <p class="room-enter">
-                            <span><i class="icon-spectate"></i> Spectate</span>
-                        </p>
+                        <i class="icon-lock" ng-if="!room.open"></i>
+                        <form class="room-password-col" ng-if="!room.open" ng-submit="join(room)">
+                            <input type="text" class="form-control password" maxlength="4" ng-model="room.password" placeholder="••••"/>
+                        </form>
+                        <div class="room-enter-container">
+                            <p class="room-enter">
+                                <span><i class="icon-spectate"></i> Spectate</span>
+                            </p>
+                        </div>
                     </td>
                 </tr>
             </tbody>

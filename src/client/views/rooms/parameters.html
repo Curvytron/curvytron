@@ -1,38 +1,52 @@
 <div class="row">
     <div class="col-lg-4 max-score">
         <h2>Victory score</h2>
-        <input type="text" class="form-control" id="max-score" ng-change="setMaxScore(config.maxScore)" ng-model="config.maxScore" placeholder="{{ config.getDefaultMaxScore() }}" maxlength="3" ng-disabled="!master" />
+        <input type="number" class="form-control" id="max-score" ng-change="setMaxScore(config.maxScore)" ng-model="config.maxScore" placeholder="{{ config.getDefaultMaxScore() }}" maxlength="3" ng-disabled="!master" />
+
+        <div class="public-room">
+            <h2>Your room is</h2>
+            <label class="toggler" ng-class="{ 'active': config.open == true }" id="is-open" ng-click="setOpen(true)">Public</label>
+            <div class="toggle" ng-class="{ 'active': config.open == false }">
+                <input type="checkbox" id="open" ng-model="config.open" ng-change="setOpen(config.open)" ng-disabled="!master" class="check">
+                <b class="b switch"></b>
+            </div>
+            <label class="toggler" ng-class="{ 'active': config.open == false }" id="is-private" ng-click="setOpen(false)">Private</label>
+            <div class="password-container" ng-if="!config.open">
+                <label for="password">Password:</label>
+                <input type="text" class="form-control" id="password" ng-model="config.password" readonly maxlength="4" />
+            </div>
+        </div>
     </div>
     <div class="col-lg-8 bonus-list">
         <h2>Bonus</h2>
 
-        <div class="config-variables" ng-repeat="(variable, value) in config.variables">
-            <label for="config-{{ variable }}">{{ config.variablesNames[variable] }}:</label>
+        <div class="config-variables" ng-repeat="(variable, value) in ::config.variables track by variable">
+            <label for="config-{{ ::variable }}">{{ config.variablesNames[variable] }}:</label>
             <div class="input-range">
                 <span class="range-icon less-icon"><i class="icon-minus"></i></span>
                 <span class="range-icon more-icon"><i class="icon-plus"></i></span>
-                <input id="config-{{ variable }}" type="range" min="-1" max="1" step="0.1" ng-model="config.variables[variable]" ng-change="setVariable(variable)" ng-disabled="!master"/>
+                <input id="config-{{ ::variable }}" type="range" min="-1" max="1" step="0.1" ng-model="config.variables[variable]" ng-change="setVariable(variable)" ng-disabled="!master"/>
             </div>
         </div>
 
         <label>Preset:</label>
         <div class="bonus-selection">
-            <span ng-repeat="preset in config.presets" ng-click="togglePreset(preset)" class="preset" ng-class="{ 'active': preset == config.preset, 'disabled': !master }">
-                {{ preset.name }}
+            <span ng-repeat="preset in ::config.presets track by $index" ng-click="togglePreset(preset)" class="preset" ng-class="{ 'active': preset == config.preset, 'disabled': !master }">
+                {{ ::preset.name }}
             </span>
-            <span ng-if="config.preset == config.customPreset" ng-click="togglePreset(preset)" class="preset active" ng-class="{'disabled': !master}">
-                {{ config.customPreset.name }}
+            <span ng-if="config.preset == config.customPreset" ng-click="togglePreset(config.customPreset)" class="preset active" ng-class="{'disabled': !master}">
+                {{ ::config.customPreset.name }}
             </span>
         </div>
 
         <label>Include:</label>
         <div class="bonus-selection selected">
-            <span ng-repeat="(bonus, enabled) in config.bonuses" ng-click="toggleBonus(bonus)" class="bonus {{ config.bonusClasses[bonus] }}" ng-if="enabled" ng-class="{'disabled': !master}"></span>
+            <span ng-repeat="(bonus, enabled) in config.bonuses track by $index" ng-click="toggleBonus(bonus)" class="bonus {{ ::config.bonusClasses[bonus] }}" ng-if="enabled" ng-class="{'disabled': !master}"></span>
         </div>
 
         <label>Exclude:</label>
         <div class="bonus-selection available">
-            <span ng-repeat="(bonus, enabled) in config.bonuses" ng-click="toggleBonus(bonus)" class="bonus {{ config.bonusClasses[bonus] }}" ng-if="!enabled" ng-class="{'disabled': !master}"></span>
+            <span ng-repeat="(bonus, enabled) in config.bonuses track by $index" ng-click="toggleBonus(bonus)" class="bonus {{ ::config.bonusClasses[bonus] }}" ng-if="!enabled" ng-class="{'disabled': !master}"></span>
         </div>
     </div>
 </div>

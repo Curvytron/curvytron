@@ -74,6 +74,13 @@ BaseGame.prototype.spawnMargin = 0.05;
 BaseGame.prototype.spawnAngleMargin = 0.3;
 
 /**
+ * Borderless
+ *
+ * @type {Boolean}
+ */
+BaseGame.prototype.borderless = false;
+
+/**
  * Update
  *
  * @param {Number} step
@@ -122,12 +129,13 @@ BaseGame.prototype.loop = function()
 {
     this.newFrame();
 
-    var now = new Date().getTime(),
+    var now  = new Date().getTime(),
         step = now - this.rendered;
 
     this.rendered = now;
 
     this.onFrame(step);
+    this.fps.onFrame();
 };
 
 /**
@@ -137,6 +145,7 @@ BaseGame.prototype.onStart = function()
 {
     this.rendered = new Date().getTime();
     this.bonusManager.start();
+    this.fps.start();
 };
 
 /**
@@ -146,6 +155,7 @@ BaseGame.prototype.onStop = function()
 {
     this.rendered = null;
     this.bonusManager.stop();
+    this.fps.stop();
 
     var size = this.getSize(this.getPresentAvatars().count());
 
@@ -159,6 +169,8 @@ BaseGame.prototype.onStop = function()
  */
 BaseGame.prototype.onRoundNew = function()
 {
+    this.borderless = BaseGame.prototype.borderless;
+
     this.bonusManager.clear();
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
@@ -171,10 +183,7 @@ BaseGame.prototype.onRoundNew = function()
 /**
  * On round end
  */
-BaseGame.prototype.onRoundEnd = function()
-{
-
-};
+BaseGame.prototype.onRoundEnd = function() {};
 
 /**
  * Get new frame
@@ -201,7 +210,6 @@ BaseGame.prototype.clearFrame = function()
 BaseGame.prototype.onFrame = function(step)
 {
     this.update(step);
-    this.fps.update(step);
 };
 
 /**
@@ -221,9 +229,10 @@ BaseGame.prototype.setSize = function()
  */
 BaseGame.prototype.getSize = function(players)
 {
-    var baseSquareSize = this.perPlayerSize * this.perPlayerSize;
+    var square = this.perPlayerSize * this.perPlayerSize,
+        size   = Math.sqrt(square + ((players - 1) * square / 5));
 
-    return Math.sqrt(baseSquareSize + ((players - 1) * baseSquareSize / 5));
+    return Math.round(size);
 };
 
 /**
@@ -282,6 +291,15 @@ BaseGame.prototype.sortAvatars = function(avatars)
     return avatars;
 };
 
+/**
+ * Set borderless
+ *
+ * @param {Boolean} borderless
+ */
+BaseGame.prototype.setBorderless = function(borderless)
+{
+    this.borderless = borderless ? true : false;
+};
 
 /**
  * Serialize
@@ -330,12 +348,11 @@ BaseGame.prototype.end = function()
 {
     if (this.started) {
         this.started = false;
-
         this.stop();
-        this.fps.stop();
-        this.bonusManager.stop();
-        this.avatars.clear();
-
         this.emit('end', {game: this});
+
+        return true;
     }
+
+    return false;
 };

@@ -8,7 +8,7 @@ function Avatar(player)
     BaseAvatar.call(this, player);
 
     this.bodyCount    = 0;
-    this.body         = new AvatarBody(this.head, this);
+    this.body         = new AvatarBody(this.x, this.y, this);
     this.printManager = new PrintManager(this);
 }
 
@@ -26,29 +26,54 @@ Avatar.prototype.update = function(step)
         this.updateAngle(step);
         this.updatePosition(step);
 
-        var last = this.trail.getLast();
-
-        if (this.printing && (!last || this.getDistance(last, this.head) > this.radius)) {
-            this.addPoint(this.head.slice(0));
+        if (this.printing && this.isTimeToDraw()) {
+            this.addPoint(this.x, this.y);
         }
     }
+};
 
-    BaseAvatar.prototype.update.call(this);
+/**
+ * Is time to draw?
+ *
+ * @return {Boolean}
+ */
+Avatar.prototype.isTimeToDraw = function()
+{
+    if (this.trail.lastX === null) {
+        return true;
+    }
+
+    return this.getDistance(this.trail.lastX, this.trail.lastY, this.x, this.y) > this.radius;
 };
 
 /**
  * Set position
  *
- * @param {Array} point
+ * @param {Number} x
+ * @param {Number} y
  */
-Avatar.prototype.setPosition = function(point)
+Avatar.prototype.setPosition = function(x, y)
 {
-    BaseAvatar.prototype.setPosition.call(this, point);
+    BaseAvatar.prototype.setPosition.call(this, x, y);
 
-    this.body.position = this.head;
-    this.body.num      = this.bodyCount;
+    this.body.x   = this.x;
+    this.body.y   = this.y;
+    this.body.num = this.bodyCount;
 
-    this.emit('position', {avatar: this, value: this.head});
+    this.emit('position', this);
+};
+
+/**
+ * Set velocity
+ *
+ * @param {Number} step
+ */
+Avatar.prototype.setVelocity = function(velocity)
+{
+    if (this.velocity !== velocity) {
+        BaseAvatar.prototype.setVelocity.call(this, velocity);
+        this.emit('property', {avatar: this, property: 'velocity', value: this.velocity});
+    }
 };
 
 /**
@@ -58,20 +83,36 @@ Avatar.prototype.setPosition = function(point)
  */
 Avatar.prototype.setAngle = function(angle)
 {
-    BaseAvatar.prototype.setAngle.call(this, angle);
-    this.emit('property', {avatar: this, property: 'angle', value: this.angle});
+    if (this.angle !== angle) {
+        BaseAvatar.prototype.setAngle.call(this, angle);
+        this.emit('angle', this);
+    }
 };
 
 /**
- * Set radius
+ * Set angular velocity
  *
- * @param {Number} radius
+ * @param {Number} velocity
+ */
+Avatar.prototype.setAngularVelocity = function(angularVelocity)
+{
+    if (this.angularVelocity !== angularVelocity) {
+        BaseAvatar.prototype.setAngularVelocity.call(this, angularVelocity);
+    }
+};
+
+/**
+ * Set angular velocity
+ *
+ * @param {Float} velocity
  */
 Avatar.prototype.setRadius = function(radius)
 {
-    BaseAvatar.prototype.setRadius.call(this, radius);
-    this.body.radius = this.radius;
-    this.emit('property', {avatar: this, property: 'radius', value: this.radius});
+    if (this.radius !== radius) {
+        BaseAvatar.prototype.setRadius.call(this, radius);
+        this.body.radius = this.radius;
+        this.emit('property', {avatar: this, property: 'radius', value: this.radius});
+    }
 };
 
 /**
@@ -83,17 +124,6 @@ Avatar.prototype.setInvincible = function(invincible)
 {
     BaseAvatar.prototype.setInvincible.call(this, invincible);
     this.emit('property', {avatar: this, property: 'invincible', value: this.invincible});
-};
-
-/**
- * Set borderless
- *
- * @param {Number} borderless
- */
-Avatar.prototype.setBorderless = function(borderless)
-{
-    BaseAvatar.prototype.setBorderless.call(this, borderless);
-    this.emit('property', {avatar: this, property: 'borderless', value: this.borderless});
 };
 
 /**
@@ -121,12 +151,14 @@ Avatar.prototype.setColor = function(color)
 /**
  * Add point
  *
- * @param {Array} point
+ * @param {Float} x
+ * @param {Float} y
+ * @param {Boolean} important
  */
-Avatar.prototype.addPoint = function(point, important)
+Avatar.prototype.addPoint = function(x, y, important)
 {
-    BaseAvatar.prototype.addPoint.call(this, point);
-    this.emit('point', { avatar: this, point: point, important: important || this.angularVelocity });
+    BaseAvatar.prototype.addPoint.call(this, x, y);
+    this.emit('point', {avatar: this, x: x, y: y, important: important});
 };
 
 /**
@@ -148,12 +180,10 @@ Avatar.prototype.setPrinting = function(printing)
 Avatar.prototype.die = function(body)
 {
     BaseAvatar.prototype.die.call(this);
-
     this.printManager.stop();
-    this.addPoint(this.head.slice(0));
     this.emit('die', {
         avatar: this,
-        killer: body ? body.avatar : null,
+        killer: body ? body.data : null,
         old: body ? body.isOld() : null
     });
 };
@@ -166,7 +196,7 @@ Avatar.prototype.die = function(body)
 Avatar.prototype.setScore = function(score)
 {
     BaseAvatar.prototype.setScore.call(this, score);
-    this.emit('property', {avatar: this, property: 'score', value: this.score});
+    this.emit('score', this);
 };
 
 /**
@@ -177,7 +207,7 @@ Avatar.prototype.setScore = function(score)
 Avatar.prototype.setRoundScore = function(score)
 {
     BaseAvatar.prototype.setRoundScore.call(this, score);
-    this.emit('property', {avatar: this, property: 'roundScore', value: this.roundScore});
+    this.emit('score:round', this);
 };
 
 /**

@@ -5,9 +5,6 @@ function Room(name)
 {
     BaseRoom.call(this, name);
 
-    this.url     = '/room/' + encodeURIComponent(this.name);
-    this.gameUrl = '/game/' + encodeURIComponent(this.name);
-
     this.players.index = false;
 }
 
@@ -33,7 +30,27 @@ Room.prototype.getLocalPlayers = function()
  */
 Room.prototype.getPlayerByClient = function(client)
 {
-    return this.players.match(function () { return this.client === client; });
+    return this.players.match(function () { return this.client.id === client; });
+};
+
+/**
+ * Get url
+ *
+ * @return {String}
+ */
+Room.prototype.getUrl = function()
+{
+    return '/room/' + encodeURIComponent(this.name);
+};
+
+/**
+ * Get game url
+ *
+ * @return {String}
+ */
+Room.prototype.getGameUrl = function()
+{
+    return '/game/' + encodeURIComponent(this.name);
 };
 
 /**

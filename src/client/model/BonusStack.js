@@ -7,7 +7,10 @@ function BonusStack(avatar)
 {
     BaseBonusStack.call(this, avatar);
 
-    this.canvas = new Canvas(this.width, this.width);
+    this.canvas     = new Canvas(this.width, this.width);
+    this.changed    = true;
+    this.lastWidth  = this.width;
+    this.lastHeight = this.width;
 
     this.draw = this.draw.bind(this);
 }
@@ -37,14 +40,9 @@ BonusStack.prototype.warning = 1000;
 BonusStack.prototype.add = function(bonus)
 {
     bonus.on('change', this.draw);
-    setTimeout(bonus.setEnding, bonus.duration - this.warning);
+    bonus.setEndingTimeout(this.warning);
     this.bonuses.add(bonus);
-
-    if (this.avatar.local) {
-        this.updateDimensions();
-    }
-
-    this.emit('change');
+    this.updateDimensions();
 };
 
 /**
@@ -57,12 +55,7 @@ BonusStack.prototype.remove = function(bonus)
     bonus.clear();
     bonus.off('change', this.draw);
     this.bonuses.remove(bonus);
-
-    if (this.avatar.local) {
-        this.updateDimensions();
-    }
-
-    this.emit('change');
+    this.updateDimensions();
 };
 
 /**
@@ -70,13 +63,12 @@ BonusStack.prototype.remove = function(bonus)
  */
 BonusStack.prototype.clear = function()
 {
-    BaseBonusStack.prototype.clear.call(this);
-
-    if (this.avatar.local) {
-        this.updateDimensions();
+    for (var i = this.bonuses.items.length - 1; i >= 0; i--) {
+        this.bonuses.items[i].clear();
     }
 
-    this.emit('change');
+    BaseBonusStack.prototype.clear.call(this);
+    this.updateDimensions();
 };
 
 /**
@@ -84,22 +76,32 @@ BonusStack.prototype.clear = function()
  */
 BonusStack.prototype.updateDimensions = function()
 {
-    this.drawWidth  = this.bonuses.items.length;
-    this.drawHeight = 1;
-
-    this.canvas.setDimension(this.drawWidth * this.bonusWidth, this.drawHeight * this.bonusWidth);
+    this.canvas.setDimension(this.bonuses.items.length * this.bonusWidth, this.bonusWidth);
+    this.changed = true;
     this.draw();
 };
 
 /**
  * Draw
  */
-BonusStack.prototype.draw = function()
+BonusStack.prototype.draw = function(e)
 {
-    this.canvas.clear();
-
-    for (var bonus, i = this.bonuses.items.length - 1; i >= 0; i--) {
-        bonus = this.bonuses.items[i];
-        this.canvas.drawImage(bonus.asset, [i * this.bonusWidth, 0], this.bonusWidth, this.bonusWidth, 0, bonus.opacity);
+    if (this.changed) {
+        this.canvas.clear();
     }
+
+    for (var bonus, x, i = this.bonuses.items.length - 1; i >= 0; i--) {
+        bonus = this.bonuses.items[i];
+        if (this.changed || bonus.changed) {
+            x = i * this.bonusWidth;
+            if (!this.changed) {
+                this.canvas.clearZone(x, 0, this.bonusWidth, this.bonusWidth);
+            }
+            this.canvas.setOpacity(bonus.opacity);
+            this.canvas.drawImage(bonus.asset, x, 0, this.bonusWidth, this.bonusWidth);
+            bonus.changed = false;
+        }
+    }
+
+    this.changed = false;
 };

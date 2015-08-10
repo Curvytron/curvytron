@@ -7,20 +7,28 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
-    this.render     = document.getElementById('render');
-    this.canvas     = new Canvas(0, 0, document.getElementById('game'));
-    this.background = new Canvas(0, 0, document.getElementById('background'));
+    this.animations = [];
 
     this.onResize = this.onResize.bind(this);
+    this.onDie    = this.onDie.bind(this);
 
     window.addEventListener('error', this.stop);
     window.addEventListener('resize', this.onResize);
 
-    this.onResize();
+    for (var avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
+        this.avatars.items[i].on('die', this.onDie);
+    }
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
 Game.prototype.constructor = Game;
+
+/**
+ * Margin between player an bonus stack
+ *
+ * @type {Number}
+ */
+Game.prototype.stackMargin = 15;
 
 /**
  * Background color
@@ -28,6 +36,21 @@ Game.prototype.constructor = Game;
  * @type {String}
  */
 Game.prototype.backgroundColor = '#222222';
+
+/**
+ * Load DOM
+ */
+Game.prototype.loadDOM = function()
+{
+    this.render     = document.getElementById('render');
+    this.gameInfos  = document.getElementById('game-infos');
+    this.canvas     = new Canvas(0, 0, document.getElementById('game'));
+    this.background = new Canvas(0, 0, document.getElementById('background'));
+    this.effect     = new Canvas(0, 0, document.getElementById('effect'));
+
+    this.bonusManager.loadDOM();
+    this.onResize();
+};
 
 /**
  * Get new frame
@@ -53,8 +76,7 @@ Game.prototype.clearFrame = function()
  */
 Game.prototype.onFrame = function(step)
 {
-    this.draw();
-    BaseGame.prototype.onFrame.call(this, step);
+    this.draw(step);
 };
 
 /**
@@ -63,18 +85,16 @@ Game.prototype.onFrame = function(step)
 Game.prototype.onRoundNew = function()
 {
     BaseGame.prototype.onRoundNew.call(this);
-    this.clearBackground();
-    this.draw();
+    this.repaint();
 };
 
 /**
- * On stop
+ * On start
  */
-Game.prototype.onStop = function()
+Game.prototype.onStart = function()
 {
-    BaseGame.prototype.onStop.call(this);
-    this.clearBackground();
-    this.draw();
+    this.effect.clear();
+    BaseGame.prototype.onStart.call(this);
 };
 
 /**
@@ -87,18 +107,6 @@ Game.prototype.isTieBreak = function()
     var maxScore = this.maxScore;
 
     return this.avatars.match(function () { return this.score >= maxScore; }) !== null;
-};
-
-/**
- * Is borderless?
- *
- * @return {Boolean}
- */
-Game.prototype.isBorderless = function()
-{
-    return this.avatars.match(function () {
-        return this.alive && this.borderless;
-    }) !== null;
 };
 
 /**
@@ -124,15 +132,9 @@ Game.prototype.clearTrails = function()
  */
 Game.prototype.end = function()
 {
-    if (this.started) {
-        this.started = false;
-
+    if (BaseGame.prototype.end.call(this)) {
         window.removeEventListener('error', this.stop);
         window.removeEventListener('resize', this.onResize);
-
-        this.stop();
-        this.fps.stop();
-        this.canvas.clear();
     }
 };
 
@@ -142,48 +144,63 @@ Game.prototype.end = function()
 Game.prototype.setSize = function()
 {
     BaseGame.prototype.setSize.call(this);
-
     this.onResize();
 };
+
+/**
+ * Repaint
+ */
+Game.prototype.repaint = function()
+{
+    this.animations.length = 0;
+    this.clearBackground();
+    this.effect.clear();
+    this.canvas.clear();
+    this.draw();
+};
+
 
 /**
  * Draw
  *
  * @param {Number} step
  */
-Game.prototype.draw = function()
+Game.prototype.draw = function(step)
 {
-    var i, avatar;
-
-    for (i = this.avatars.items.length - 1; i >= 0; i--) {
-        avatar = this.avatars.items[i];
-        if (avatar.present) {
-            this.drawTail(avatar);
+    for (var animation, a = this.animations.length - 1; a >= 0; a--) {
+        animation = this.animations[a];
+        animation.draw();
+        if (animation.done && animation.cleared) {
+            this.animations.splice(a, 1);
         }
     }
 
-    this.canvas.clear();
-
-    for (i = this.avatars.items.length - 1; i >= 0; i--) {
+    for (var avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
-        if (avatar.present) {
-            this.drawAvatar(avatar);
+        if (avatar.present && (avatar.alive || avatar.changed)) {
+            this.clearAvatar(avatar);
+            this.clearBonusStack(avatar);
+        }
+    }
 
-            if (avatar.alive && avatar.hasBonus()) {
-                this.drawBonusStack(avatar);
+    for (avatar, i = this.avatars.items.length - 1; i >= 0; i--) {
+        avatar = this.avatars.items[i];
+        if (avatar.present && (avatar.alive || avatar.changed)) {
+            if (avatar.alive) {
+                avatar.update(this.frame ? step : 0);
             }
+
+            this.drawTail(avatar);
+            this.drawAvatar(avatar);
+            this.drawBonusStack(avatar);
 
             if (!this.frame && avatar.local) {
                 this.drawArrow(avatar);
             }
-
-            if (avatar.animation) {
-                avatar.animation.draw(this.canvas);
-            }
         }
     }
 
-    this.drawBonuses();
+    this.bonusManager.draw();
 };
 
 /**
@@ -196,7 +213,7 @@ Game.prototype.drawTail = function(avatar)
     var points = avatar.trail.getLastSegment();
 
     if (points) {
-        this.background.drawLineScaled(points, avatar.width, avatar.color);
+        this.background.drawLineScaled(points, avatar.width, avatar.color, 'round');
     }
 };
 
@@ -207,9 +224,39 @@ Game.prototype.drawTail = function(avatar)
  */
 Game.prototype.drawAvatar = function(avatar)
 {
-    avatar.updateStart();
-    this.canvas.drawImage(avatar.canvas.element, avatar.start, avatar.angle);
+    this.canvas.drawImageTo(avatar.canvas.element, avatar.startX, avatar.startY);
+    avatar.clearX     = avatar.startX;
+    avatar.clearY     = avatar.startY;
+    avatar.clearWidth = avatar.canvas.element.width;
 };
+
+/**
+ * Clear bonus from the canvas
+ *
+ * @param {Bonus} bonus
+ */
+Game.prototype.clearAvatar = function(avatar)
+{
+    this.canvas.clearZone(avatar.clearX, avatar.clearY, avatar.clearWidth, avatar.clearWidth);
+};
+
+/**
+ * Clear bonus stack
+ *
+ * @param {Avatar} avatar
+ */
+Game.prototype.clearBonusStack = function(avatar)
+{
+    if (avatar.bonusStack.lastWidth) {
+        this.canvas.clearZone(
+            avatar.startX + this.stackMargin,
+            avatar.startY + this.stackMargin,
+            avatar.bonusStack.lastWidth,
+            avatar.bonusStack.lastHeight
+        );
+    }
+};
+
 
 /**
  * Draw bonus stack
@@ -218,7 +265,16 @@ Game.prototype.drawAvatar = function(avatar)
  */
 Game.prototype.drawBonusStack = function(avatar)
 {
-    this.canvas.drawImage(avatar.bonusStack.canvas.element, [avatar.start[0] + 15, avatar.start[1] + 15]);
+    if (avatar.hasBonus()) {
+        avatar.bonusStack.lastWidth  = avatar.bonusStack.canvas.element.width;
+        avatar.bonusStack.lastHeight = avatar.bonusStack.canvas.element.height;
+
+        this.canvas.drawImageTo(
+            avatar.bonusStack.canvas.element,
+            avatar.startX + this.stackMargin,
+            avatar.startY + this.stackMargin
+        );
+    }
 };
 
 /**
@@ -228,24 +284,7 @@ Game.prototype.drawBonusStack = function(avatar)
  */
 Game.prototype.drawArrow = function(avatar)
 {
-    this.canvas.drawImageScaled(
-        avatar.arrow.element,
-        [
-            avatar.head[0] - 5,
-            avatar.head[1] - 5
-        ],
-        10,
-        10,
-        avatar.angle
-    );
-};
-
-/**
- * Draw bonuses
- */
-Game.prototype.drawBonuses = function()
-{
-    this.bonusManager.draw(this.canvas);
+    this.effect.drawImageScaledAngle(avatar.arrow.element, avatar.x - 5, avatar.y - 5, 10, 10, avatar.angle);
 };
 
 /**
@@ -257,15 +296,32 @@ Game.prototype.clearBackground = function()
 };
 
 /**
+ * On die
+ *
+ * @param {Event} event
+ */
+Game.prototype.onDie = function(event)
+{
+    this.animations.push(new Explode(event.detail, this.effect));
+};
+
+/**
  * On resize
  */
 Game.prototype.onResize = function()
 {
-    var w=window,d=document,e=d.documentElement,g=d.getElementsByTagName('body')[0],x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
+    var w=window,d=document,e=d.documentElement,g=document.body,x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
 
-    var width = Math.min(x - document.getElementById('game-infos').clientWidth - 8, y - 8),
+    var width = Math.min(x - this.gameInfos.clientWidth - 8, y - 8),
         scale = width / this.size,
         avatar;
+
+    this.render.style.width  = (width + 8) + 'px';
+    this.render.style.height = (width + 8) + 'px';
+    this.canvas.setDimension(width, width, scale);
+    this.effect.setDimension(width, width, scale);
+    this.background.setDimension(width, width, scale, true);
+    this.bonusManager.setDimension(width, scale);
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
@@ -276,10 +332,4 @@ Game.prototype.onResize = function()
             avatar.input.setWidth(x);
         }
     }
-
-    this.render.style.width = (width + 8) + 'px';
-    this.render.style.height = (width + 8) + 'px';
-    this.canvas.setDimension(width, width, scale);
-    this.background.setDimension(width, width, scale, true);
-    this.draw();
 };

@@ -24,7 +24,7 @@ BaseBonusManager.prototype.constructor = BaseBonusManager;
 BaseBonusManager.prototype.bonusCap = 20;
 
 /**
- * Interval between two bons pop (will vary from a factor x1 to x3)
+ * Interval between two bonus pop (will vary from a factor x1 to x3)
  *
  * @type {Number}
  */

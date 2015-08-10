@@ -1,11 +1,12 @@
 /**
  * Fast Enemy Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusEnemyFast(position)
+function BonusEnemyFast(x, y)
 {
-    BonusEnemy.call(this, position);
+    BonusEnemy.call(this, x, y);
 }
 
 BonusEnemyFast.prototype = Object.create(BonusEnemy.prototype);

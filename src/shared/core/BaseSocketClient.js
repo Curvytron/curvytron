@@ -11,8 +11,10 @@ function BaseSocketClient(socket, interval)
     this.socket    = socket;
     this.interval  = typeof(interval) === 'number' ? interval : 0;
     this.events    = [];
-    this.callbacks = [];
+    this.callbacks = {};
     this.loop      = null;
+    this.connected = true;
+    this.callCount = 0;
 
     this.flush     = this.flush.bind(this);
     this.onMessage = this.onMessage.bind(this);
@@ -30,6 +32,7 @@ BaseSocketClient.prototype.constructor = BaseSocketClient;
  */
 BaseSocketClient.prototype.onClose = function()
 {
+    this.connected = false;
     this.emit('close', this);
     this.stop();
     this.detachEvents();
@@ -39,7 +42,7 @@ BaseSocketClient.prototype.onClose = function()
 /**
  * Set interval
  *
- * @param {[type]} interval
+ * @param {Number} interval
  */
 BaseSocketClient.prototype.setInterval = function(interval)
 {
@@ -107,7 +110,7 @@ BaseSocketClient.prototype.addEvent = function (name, data, callback, force)
         event[1] = data;
     }
 
-    if (typeof(callback) !== 'undefined') {
+    if (typeof(callback) === 'function') {
         event[2] = this.indexCallback(callback);
     }
 
@@ -151,7 +154,7 @@ BaseSocketClient.prototype.addEvents = function (sources, force)
  */
 BaseSocketClient.prototype.indexCallback = function(callback)
 {
-    var index = this.callbacks.length++;
+    var index = this.callCount++;
 
     this.callbacks[index] = callback;
 
@@ -193,7 +196,7 @@ BaseSocketClient.prototype.flush = function ()
 {
     if (this.events.length > 0) {
         this.sendEvents(this.events);
-        this.events = [];
+        this.events.length = 0;
     }
 };
 
@@ -253,7 +256,7 @@ BaseSocketClient.prototype.createCallback = function(id)
 };
 
 /**
- * Object version of the lcient
+ * Object version of the client
  *
  * @return {Object}
  */

@@ -30,6 +30,13 @@ BaseRoom.prototype.minPlayer = 1;
 BaseRoom.prototype.maxLength = 25;
 
 /**
+ * Launch time
+ *
+ * @type {Number}
+ */
+BaseRoom.prototype.launchTime = 5000;
+
+/**
  * Add player
  *
  * @param {Player} player
@@ -129,7 +136,8 @@ BaseRoom.prototype.serialize = function(full)
     var data = {
         name: this.name,
         players: full ? this.players.map(function () { return this.serialize(); }).items : this.players.count(),
-        game: this.game ? true : false
+        game: this.game ? true : false,
+        open: this.config.open
     };
 
     if (full) {

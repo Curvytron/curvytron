@@ -8,12 +8,16 @@ function Chat(client, repository)
 {
     BaseChat.call(this);
 
+    this.messages.index = false;
+
     this.client     = client;
     this.repository = repository;
-    this.message    = new Message(null, this.client);
+    this.message    = new MessagePlayer(this.client);
     this.room       = null;
     this.element    = null;
     this.auto       = true;
+    this.sources    = new Collection([], 'id', true);
+    this.muted      = [];
 
     this.talk         = this.talk.bind(this);
     this.onTalk       = this.onTalk.bind(this);
@@ -29,34 +33,6 @@ function Chat(client, repository)
 
 Chat.prototype = Object.create(BaseChat.prototype);
 Chat.prototype.constructor = Chat;
-
-/**
- * Tips
- *
- * @type {Array}
- */
-Chat.prototype.tips = [
-    'To customize your left/right controls, click the [←]/[→] buttons and press any key.',
-    'Curvytron supports gamepads! Connect it, press A, then setup your controls.',
-    'Yes, you can play Curvytron on your smartphone ;)',
-    'You can add multiple players on the same computer.',
-    'Green bonuses apply only to you.',
-    'Red bonuses target your ennemies.',
-    'White bonuses affect everyone.',
-    'Making a Snail™ is a sure way to win, but other players might hate you for it.',
-    'The Enrichment Center regrets to inform you that this next test is impossible. Make no attempt to solve it.'
-];
-
-/**
- * Curvybot profile
- *
- * @type {Object}
- */
-Chat.prototype.curvybot = {
-    name: 'Curvybot',
-    color: '#ff8069',
-    icon: 'icon-megaphone'
-};
 
 /**
  * Attach events
@@ -129,9 +105,22 @@ Chat.prototype.setElement = function(element)
  */
 Chat.prototype.addMessage = function(message)
 {
+    this.sources.add(message);
+
     if (BaseChat.prototype.addMessage.call(this, message) && this.auto) {
         this.scrollDown();
     }
+};
+
+/**
+ * Remove message
+ *
+ * @param {Message} message
+ */
+Chat.prototype.removeMessage = function(message)
+{
+    this.sources.remove(message);
+    this.messages.remove(message);
 };
 
 /**
@@ -154,7 +143,7 @@ Chat.prototype.talk = function()
     if (this.message.content.length) {
         this.client.addEvent(
             'room:talk',
-            this.message.serialize(),
+            this.message.content.substr(0, Message.prototype.maxLength),
             function (result) {
                 if (result.success) {
                     chat.message.clear();
@@ -174,12 +163,34 @@ Chat.prototype.talk = function()
 Chat.prototype.onTalk = function(e)
 {
     if (typeof(e.detail) !== 'undefined' && e.detail) {
-        var data    = e.detail,
-            player  = this.room.getPlayerByClient(data.client),
-            message = new Message(data.content, data.client, player ? player : {name: data.name, color: data.color}, data.creation);
-
-        this.addMessage(message);
+        this.addMessage(new MessagePlayer(
+            e.detail.client,
+            e.detail.content,
+            this.getPlayer(e.detail),
+            e.detail.creation
+        ));
     }
+};
+
+/**
+ * Get player from message data
+ *
+ * @param {Object} data
+ *
+ * @return {Player}
+ */
+Chat.prototype.getPlayer = function(data)
+{
+    var player = this.room.getPlayerByClient(data.client);
+
+    if (player) {
+        return player;
+    }
+
+    return {
+        name: typeof(data.name) === 'string' ? data.name : Message.prototype.name + ' ' + data.client,
+        color: typeof(data.color) === 'string' ? data.color : Message.prototype.color
+    };
 };
 
 /**
@@ -189,7 +200,7 @@ Chat.prototype.onTalk = function(e)
  */
 Chat.prototype.onVoteNew = function(e)
 {
-    this.addMessage(new VoteKickMessage(this.curvybot, e.detail.target));
+    this.addMessage(new MessageVoteKick(e.detail.target));
 };
 
 /**
@@ -199,7 +210,7 @@ Chat.prototype.onVoteNew = function(e)
  */
 Chat.prototype.onKick = function(e)
 {
-    this.addMessage(new KickMessage(this.curvybot, e.detail));
+    this.addMessage(new MessageKick(e.detail));
 };
 
 /**
@@ -210,7 +221,7 @@ Chat.prototype.onKick = function(e)
 Chat.prototype.onRoomMaster = function(e)
 {
     if (e.detail.master) {
-        this.addMessage(new RoomMasterMessage(this.curvybot, e.detail.master));
+        this.addMessage(new MessageRoomMaster(e.detail.master));
     }
 };
 
@@ -231,11 +242,23 @@ Chat.prototype.onActivity = function(e)
  */
 Chat.prototype.addTip = function()
 {
-    this.addMessage(new Message(
-        this.tips[Math.floor(Math.random() * this.tips.length)],
-        null,
-        this.curvybot
-    ));
+    this.addMessage(new MessageTip());
+};
+
+/**
+ * Is message valid
+ *
+ * @param {Message} message
+ *
+ * @return {Boolean}
+ */
+Chat.prototype.isValid = function(message)
+{
+    if (!(message instanceof MessagePlayer)) {
+        return true;
+    }
+
+    return this.isAllowed(message.client);
 };
 
 /**
@@ -244,7 +267,58 @@ Chat.prototype.addTip = function()
 Chat.prototype.clearMessages = function()
 {
     BaseChat.prototype.clearMessages.call(this);
+    this.sources.clear();
     this.addTip();
+};
+
+/**
+ * Mute/Unmute a client
+ *
+ * @param {Number} clientId
+ */
+Chat.prototype.toggleMute = function(clientId)
+{
+    var index  = this.muted.indexOf(clientId),
+        exists = index >= 0;
+
+    if (exists) {
+        this.muted.splice(index, 1);
+    } else {
+        this.muted.push(clientId);
+    }
+
+    this.filterMessages();
+
+    return !exists;
+};
+
+/**
+ * Is this client allowed to talk?
+ *
+ * @param {Number} clientId
+ *
+ * @return {Boolean}
+ */
+Chat.prototype.isAllowed = function(clientId)
+{
+    return this.muted.indexOf(clientId) < 0;
+};
+
+/**
+ * Filter messages
+ */
+Chat.prototype.filterMessages = function()
+{
+    var length = this.sources.count();
+
+    this.messages.clear();
+
+    for (var message, i = 0; i < length; i++) {
+        message = this.sources.items[i];
+        if (!(message instanceof MessagePlayer) || this.isAllowed(message.client)) {
+            this.messages.add(message);
+        }
+    }
 };
 
 /**
@@ -258,7 +332,8 @@ Chat.prototype.clear = function()
         this.element.removeEventListener('scroll', this.onActivity);
     }
 
-    this.message = new Message(null, this.client);
-    this.room    = null;
-    this.element = null;
+    this.message.clear();
+    this.muted.length = 0;
+    this.room         = null;
+    this.element      = null;
 };

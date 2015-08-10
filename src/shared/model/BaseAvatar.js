@@ -11,11 +11,13 @@ function BaseAvatar(player)
     this.name            = player.name;
     this.color           = player.color;
     this.player          = player;
-    this.head            = new Array(2);
+    this.x               = 0;
+    this.y               = 0;
     this.trail           = new Trail(this);
     this.bonusStack      = new BonusStack(this);
     this.angle           = 0;
-    this.velocities      = [0,0];
+    this.velocityX       = 0;
+    this.velocityY       = 0;
     this.angularVelocity = 0;
     this.alive           = true;
     this.printing        = false;
@@ -24,20 +26,60 @@ function BaseAvatar(player)
     this.ready           = false;
     this.present         = true;
 
-    this.updateVelocities();
+    // useless too? this.updateVelocities();
 }
 
 BaseAvatar.prototype = Object.create(EventEmitter.prototype);
 BaseAvatar.prototype.constructor = BaseAvatar;
 
-BaseAvatar.prototype.velocity            = 16;
+/**
+ * Movement velocity
+ *
+ * @type {Number}
+ */
+BaseAvatar.prototype.velocity = 16;
+
+/**
+ * Turn velocity
+ *
+ * @type {Float}
+ */
 BaseAvatar.prototype.angularVelocityBase = 2.8/1000;
-BaseAvatar.prototype.radius              = 0.6;
-BaseAvatar.prototype.trailLatency        = 3;
-BaseAvatar.prototype.inverse             = false;
-BaseAvatar.prototype.invincible          = false;
-BaseAvatar.prototype.borderless          = false;
-BaseAvatar.prototype.directionInLoop     = true;
+
+/**
+ * Radius
+ *
+ * @type {Number}
+ */
+BaseAvatar.prototype.radius = 0.6;
+
+/**
+ * Number of trail points that don't kill the player
+ *
+ * @type {Number}
+ */
+BaseAvatar.prototype.trailLatency = 3;
+
+/**
+ * Inverted controls
+ *
+ * @type {Boolean}
+ */
+BaseAvatar.prototype.inverse = false;
+
+/**
+ * Invincible
+ *
+ * @type {Boolean}
+ */
+BaseAvatar.prototype.invincible = false;
+
+/**
+ * Type of tunrn: round or straight
+ *
+ * @type {Boolean}
+ */
+BaseAvatar.prototype.directionInLoop = true;
 
 /**
  * Equal
@@ -54,38 +96,49 @@ BaseAvatar.prototype.equal = function(avatar)
 /**
  * Set Point
  *
- * @param {Array} point
+ * @param {Float} x
+ * @param {Float} y
  */
-
-BaseAvatar.prototype.setPosition = function(point)
+BaseAvatar.prototype.setPosition = function(x, y)
 {
-    this.head[0] = point[0];
-    this.head[1] = point[1];
+    this.x = x;
+    this.y = y;
 };
 
 /**
- * Add Point
+ * Add point
  *
- * @param {Array} point
+ * @param {Float} x
+ * @param {Float} y
  */
-BaseAvatar.prototype.addPoint = function(point)
+BaseAvatar.prototype.addPoint = function(x, y)
 {
-    this.trail.addPoint(point);
+    this.trail.addPoint(x, y);
 };
 
 /**
- * Set angular velocity
+ * Update angular velocity
  *
  * @param {Number} factor
  */
-BaseAvatar.prototype.setAngularVelocity = function(factor)
+BaseAvatar.prototype.updateAngularVelocity = function(factor)
 {
     if (typeof(factor) === 'undefined') {
         if (this.angularVelocity === 0) { return; }
         factor = (this.angularVelocity > 0 ? 1 : -1) * (this.inverse ? -1 : 1);
     }
 
-    this.angularVelocity = factor * this.angularVelocityBase * (this.inverse ? -1 : 1);
+    this.setAngularVelocity(factor * this.angularVelocityBase * (this.inverse ? -1 : 1));
+};
+
+/**
+ * Set angular velocity
+ *
+ * @param {Float} angularVelocity
+ */
+BaseAvatar.prototype.setAngularVelocity = function(angularVelocity)
+{
+    this.angularVelocity = angularVelocity;
 };
 
 /**
@@ -95,8 +148,10 @@ BaseAvatar.prototype.setAngularVelocity = function(factor)
  */
 BaseAvatar.prototype.setAngle = function(angle)
 {
-    this.angle = angle;
-    this.updateVelocities();
+    if (this.angle !== angle) {
+        this.angle = angle;
+        this.updateVelocities();
+    }
 };
 
 /**
@@ -118,7 +173,7 @@ BaseAvatar.prototype.updateAngle = function(step)
             this.setAngle(this.angle + this.angularVelocity * step);
         } else {
             this.setAngle(this.angle + this.angularVelocity);
-            this.setAngularVelocity(0);
+            this.updateAngularVelocity(0);
         }
     }
 };
@@ -130,10 +185,10 @@ BaseAvatar.prototype.updateAngle = function(step)
  */
 BaseAvatar.prototype.updatePosition = function(step)
 {
-    this.setPosition([
-        this.head[0] + this.velocities[0] * step,
-        this.head[1] + this.velocities[1] * step
-    ]);
+    this.setPosition(
+        this.x + this.velocityX * step,
+        this.y + this.velocityY * step
+    );
 };
 
 /**
@@ -143,8 +198,12 @@ BaseAvatar.prototype.updatePosition = function(step)
  */
 BaseAvatar.prototype.setVelocity = function(velocity)
 {
-    this.velocity = Math.max(velocity, BaseAvatar.prototype.velocity/2);
-    this.updateVelocities();
+    velocity = Math.max(velocity, BaseAvatar.prototype.velocity/2);
+
+    if (this.velocity !== velocity) {
+        this.velocity = velocity;
+        this.updateVelocities();
+    }
 };
 
 /**
@@ -152,24 +211,23 @@ BaseAvatar.prototype.setVelocity = function(velocity)
  */
 BaseAvatar.prototype.updateVelocities = function()
 {
-    this.velocities = [
-        Math.cos(this.angle) * this.velocity/1000,
-        Math.sin(this.angle) * this.velocity/1000
-    ];
+    var velocity = this.velocity/1000;
 
-    this.updateAngularVelocity();
+    this.velocityX = Math.cos(this.angle) * velocity;
+    this.velocityY = Math.sin(this.angle) * velocity;
+
+    this.updateBaseAngularVelocity();
 };
 
 /**
- * Update angular velocity
+ * Update base angular velocity
  */
-BaseAvatar.prototype.updateAngularVelocity = function()
+BaseAvatar.prototype.updateBaseAngularVelocity = function()
 {
     if (this.directionInLoop) {
         var ratio = this.velocity / BaseAvatar.prototype.velocity;
-
         this.angularVelocityBase = ratio * BaseAvatar.prototype.angularVelocityBase + Math.log(1/ratio)/1000;
-        this.setAngularVelocity();
+        this.updateAngularVelocity();
     }
 };
 
@@ -190,8 +248,10 @@ BaseAvatar.prototype.setRadius = function(radius)
  */
 BaseAvatar.prototype.setInverse = function(inverse)
 {
-    this.inverse = inverse ? true : false;
-    this.setAngularVelocity();
+    if (this.inverse !== inverse) {
+        this.inverse = inverse ? true : false;
+        this.updateAngularVelocity();
+    }
 };
 
 /**
@@ -205,26 +265,18 @@ BaseAvatar.prototype.setInvincible = function(invincible)
 };
 
 /**
- * Set borderless
- *
- * @param {Number} borderless
- */
-BaseAvatar.prototype.setBorderless = function(borderless)
-{
-    this.borderless = borderless ? true : false;
-};
-
-/**
  * Get distance
  *
- * @param {Array} from
- * @param {Array} to
+ * @param {Number} fromX
+ * @param {Number} fromY
+ * @param {Number} toX
+ * @param {Number} toY
  *
  * @return {Number}
  */
-BaseAvatar.prototype.getDistance = function(from, to)
+BaseAvatar.prototype.getDistance = function(fromX, fromY, toX, toY)
 {
-    return Math.sqrt(Math.pow(from[0] - to[0], 2) + Math.pow(from[1] - to[1], 2));
+    return Math.sqrt(Math.pow(fromX - toX, 2) + Math.pow(fromY - toY, 2));
 };
 
 /**
@@ -232,8 +284,9 @@ BaseAvatar.prototype.getDistance = function(from, to)
  */
 BaseAvatar.prototype.die = function()
 {
-    this.alive = false;
     this.bonusStack.clear();
+    this.alive = false;
+    this.addPoint(this.x, this.y);
 };
 
 /**
@@ -248,7 +301,7 @@ BaseAvatar.prototype.setPrinting = function(printing)
     if (this.printing !== printing) {
         this.printing = printing;
 
-        this.addPoint(this.head.slice(0), true);
+        this.addPoint(this.x, this.y, true);
 
         if (!this.printing) {
             this.trail.clear();
@@ -314,9 +367,11 @@ BaseAvatar.prototype.clear = function()
 {
     this.bonusStack.clear();
 
-    this.head                = [this.radius, this.radius];
-    this.angle               = Math.random() * Math.PI;
-    this.velocities          = [0,0];
+    this.x                   = this.radius;
+    this.y                   = this.radius;
+    this.angle               = 0;
+    this.velocityX           = 0;
+    this.velocityY           = 0;
     this.angularVelocity     = 0;
     this.roundScore          = 0;
     this.velocity            = BaseAvatar.prototype.velocity;
@@ -326,7 +381,6 @@ BaseAvatar.prototype.clear = function()
     this.radius              = BaseAvatar.prototype.radius;
     this.inverse             = BaseAvatar.prototype.inverse;
     this.invincible          = BaseAvatar.prototype.invincible;
-    this.borderless          = BaseAvatar.prototype.borderless;
     this.directionInLoop     = BaseAvatar.prototype.directionInLoop;
     this.angularVelocityBase = BaseAvatar.prototype.angularVelocityBase;
 
@@ -334,7 +388,7 @@ BaseAvatar.prototype.clear = function()
         this.body.radius = BaseAvatar.prototype.radius;
     }
 
-    this.updateVelocities();
+    // useless? this.updateVelocities();
 };
 
 /**

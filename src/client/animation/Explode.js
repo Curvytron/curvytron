@@ -1,35 +1,46 @@
 /**
  * Explosion animation
  *
- * @param {Array} position
- * @param {Float} velocity
- * @param {Float} angle
+ * @param {Avatar} avatar
+ * @param {Canvas} effect
  */
-function Explode(avatar)
+function Explode(avatar, effect)
 {
+    this.effect    = effect;
     this.particles = new Array(this.particleTotal);
     this.canvas    = new Canvas(this.width, this.width);
     this.created   = new Date().getTime();
     this.done      = false;
+    this.cleared   = false;
 
-    this.canvas.drawCircle([this.width/2,this.width/2], this.width/2, avatar.color);
+    var width = this.width/2;
+
+    this.canvas.drawCircle(width, width, width, avatar.color);
 
     for (var i = this.particles.length - 1; i >= 0; i--) {
         this.particles[i] = new ExplodeParticle(
-            avatar.head,
-            this.randomize(avatar.velocity/750, 0.2),
-            this.randomize(avatar.angle, 0.2),
-            this.randomize(avatar.radius * 1.3, 0.2)
+            avatar.x * this.effect.scale,
+            avatar.y * this.effect.scale,
+            this.randomize(avatar.velocity / 750 * this.effect.scale, 0.1),
+            avatar.angle + this.angleVariation * (Math.random() * 2 - 1),
+            this.effect.round(this.randomize(avatar.radius, 0.5) * this.effect.scale)
         );
     }
 }
 
 /**
- * Number of particles to generate
+ * Canvas width
  *
  * @type {Number}
  */
-Explode.prototype.width = 20;
+Explode.prototype.width = 10;
+
+/**
+ * Angle variation
+ *
+ * @type {Float}
+ */
+Explode.prototype.angleVariation = Math.PI / 8;
 
 /**
  * Number of particles to generate
@@ -59,21 +70,48 @@ Explode.prototype.randomize = function(value, factor)
 };
 
 /**
- * Update
+ * Draw particles
  */
-Explode.prototype.draw = function (canvas)
+Explode.prototype.draw = function ()
 {
     if (this.done) { return; }
 
-    var age = new Date().getTime() - this.created;
+    this.clear();
+
+    this.lastRender = new Date().getTime();
+    this.cleared    = false;
+
+    var age = this.lastRender - this.created;
 
     if (age <= this.duration) {
         var step = age / this.duration;
 
+        this.effect.setOpacity(ExplodeParticle.prototype.opacity * (1.2-step));
+
         for (var particle, i = this.particles.length - 1; i >= 0; i--) {
             particle = this.particles[i];
-            particle.update(age, step);
-            canvas.drawImageScaled(this.canvas.element, particle.position, particle.radius, particle.radius, 0, particle.opacity);
+            particle.update(age);
+            this.effect.drawImage(this.canvas.element, particle.x, particle.y, particle.radius, particle.radius);
         }
+
+        this.effect.setOpacity(1);
+    } else {
+        this.clear();
+        this.done = true;
     }
+};
+
+/**
+ * Clear particles from cache
+ */
+Explode.prototype.clear = function ()
+{
+    if (this.cleared) { return; }
+
+    for (var particle, width, i = this.particles.length - 1; i >= 0; i--) {
+        particle = this.particles[i];
+        this.effect.clearZone(particle.x, particle.y, particle.radius, particle.radius);
+    }
+
+    this.cleared = true;
 };

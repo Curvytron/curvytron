@@ -7,22 +7,22 @@ function Game(room)
 {
     BaseGame.call(this, room);
 
-    this.world       = new World(this.size);
-    this.deaths      = new Collection([], 'id');
-    this.controller  = new GameController(this);
-    this.roundWinner = null;
-    this.gameWinner  = null;
+    this.world        = new World(this.size);
+    this.deaths       = new Collection([], 'id');
+    this.controller   = new GameController(this);
+    this.bonusStack   = new GameBonusStack(this);
+    this.roundWinner  = null;
+    this.gameWinner   = null;
+    this.deathInFrame = false;
 
-    this.addPoint = this.addPoint.bind(this);
-    this.onDie    = this.onDie.bind(this);
+    this.onPoint = this.onPoint.bind(this);
 
     var avatar, i;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         avatar.clear();
-        avatar.on('point', this.addPoint);
-        avatar.on('die', this.onDie);
+        avatar.on('point', this.onPoint);
     }
 }
 
@@ -36,31 +36,34 @@ Game.prototype.constructor = Game;
  */
 Game.prototype.update = function(step)
 {
-    BaseGame.prototype.update.call(this, step);
+    var score = this.deaths.count(),
+        avatar, border, i, borderX, borderY, borderAxis, position, killer;
 
-    var avatar, border, i;
+    this.deathInFrame = false;
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
+        dead   = false;
 
         if (avatar.alive) {
             avatar.update(step);
 
-            border = this.world.getBoundIntersect(avatar.body, avatar.borderless ? 0 : avatar.radius);
+            border = this.world.getBoundIntersect(avatar.body, this.borderless ? 0 : avatar.radius);
 
             if (border) {
-                if (avatar.borderless) {
-                    if (this.testBorder(avatar.head, avatar.velocities, border)) {
-                        avatar.setPosition(this.world.getOposite(border));
-                    }
+                if (this.borderless) {
+                    position = this.world.getOposite(border[0], border[1]);
+                    avatar.setPosition(position[0], position[1]);
                 } else {
-                    avatar.die(null);
+                    this.kill(avatar, null, score);
                 }
-            } else if (!avatar.invincible) {
-                var killer = this.world.getBody(avatar.body);
+            } else {
+                if (!avatar.invincible) {
+                    killer = this.world.getBody(avatar.body);
 
-                if (null !== killer) {
-                    avatar.die(killer);
+                    if (killer) {
+                        this.kill(avatar, killer, score);
+                    }
                 }
             }
 
@@ -70,6 +73,24 @@ Game.prototype.update = function(step)
             }
         }
     }
+
+    if (this.deathInFrame) {
+        this.checkRoundEnd();
+    }
+};
+
+/**
+ * Kill an avatar
+ *
+ * @param {Avatar} avatar
+ * @param {Body|null} killer
+ * @param {Number} score
+ */
+Game.prototype.kill = function(avatar, killer, score) {
+    avatar.die(killer);
+    avatar.addScore(score);
+    this.deaths.add(avatar);
+    this.deathInFrame = true;
 };
 
 /**
@@ -85,14 +106,14 @@ Game.prototype.removeAvatar = function(avatar)
 };
 
 /**
- * Add point
+ * On avatar add point
  *
  * @param {Object} data
  */
-Game.prototype.addPoint = function(data)
+Game.prototype.onPoint = function(data)
 {
     if (this.started && this.world.active) {
-        this.world.addBody(new AvatarBody(data.point, data.avatar));
+        this.world.addBody(new AvatarBody(data.x, data.y, data.avatar));
     }
 };
 
@@ -125,25 +146,27 @@ Game.prototype.isWon = function()
 };
 
 /**
- * On die
- *
- * @param {Object} data
- */
-Game.prototype.onDie = function(data)
-{
-    this.deaths.add(data.avatar);
-    data.avatar.addScore(this.deaths.count() - 1);
-    this.checkRoundEnd();
-};
-
-/**
  * Check if the round should end
  */
 Game.prototype.checkRoundEnd = function()
 {
-    if (this.inRound && this.getAliveAvatars().count() <= 1) {
-        this.endRound();
+    if (!this.inRound) {
+        return;
     }
+
+    var alive = false;
+
+    for (var i = this.avatars.items.length - 1; i >= 0; i--) {
+        if (this.avatars.items[i].alive) {
+            if (!alive) {
+                alive = true;
+            } else {
+                return;
+            }
+        }
+    }
+
+    this.endRound();
 };
 
 /**
@@ -160,30 +183,13 @@ Game.prototype.resolveScores = function()
     }
 
     if (winner) {
-        this.roundWinner = winner;
         winner.addScore(Math.max(this.avatars.count() - 1, 1));
-        this.emit('round:winner', {game: this, winner: winner});
+        this.roundWinner = winner;
     }
 
     for (var i = this.avatars.items.length - 1; i >= 0; i--) {
         this.avatars.items[i].resolveScore();
     }
-};
-
-/**
- * Test border
- *
- * @param {Array} position
- * @param {Array} velocities
- * @param {Array} border
- *
- * @return {Boolean}
- */
-Game.prototype.testBorder = function(position, velocities, border)
-{
-    var axis = border[2];
-
-    return (position[axis] > border[axis]) === (velocities[axis] < 0);
 };
 
 /**
@@ -214,9 +220,8 @@ Game.prototype.setSize = function()
  */
 Game.prototype.onRoundEnd = function()
 {
-    this.emit('round:end', {game: this});
-    BaseGame.prototype.onRoundEnd.call(this);
     this.resolveScores();
+    this.emit('round:end', {winner: this.roundWinner});
 };
 
 /**
@@ -227,17 +232,19 @@ Game.prototype.onRoundNew = function()
     this.emit('round:new', {game: this});
     BaseGame.prototype.onRoundNew.call(this);
 
-    var avatar, i;
+    var avatar, position, i;
 
     this.roundWinner = null;
     this.world.clear();
     this.deaths.clear();
+    this.bonusStack.clear();
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
         avatar = this.avatars.items[i];
         if (avatar.present) {
-            avatar.setPosition(this.world.getRandomPosition(avatar.radius, this.spawnMargin));
-            avatar.setAngle(this.world.getRandomDirection(avatar.head, this.spawnAngleMargin));
+            position = this.world.getRandomPosition(avatar.radius, this.spawnMargin);
+            avatar.setPosition(position[0], position[1]);
+            avatar.setAngle(this.world.getRandomDirection(avatar.x, avatar.y, this.spawnAngleMargin));
         } else {
             this.deaths.add(avatar);
         }
@@ -283,17 +290,31 @@ Game.prototype.onStop = function()
 };
 
 /**
+ * Set borderless
+ *
+ * @param {Boolean} borderless
+ */
+Game.prototype.setBorderless = function(borderless)
+{
+    if (this.borderless !== borderless) {
+        BaseGame.prototype.setBorderless.call(this, borderless);
+        this.emit('borderless', this.borderless);
+    }
+};
+
+/**
  * FIN DU GAME
  */
 Game.prototype.end = function()
 {
-    BaseGame.prototype.end.call(this);
+    if (BaseGame.prototype.end.call(this)) {
+        this.avatars.clear();
+        this.world.clear();
 
-    this.world.clear();
-
-    delete this.world;
-    delete this.avatars;
-    delete this.deaths;
-    delete this.bonusManager;
-    delete this.controller;
+        delete this.world;
+        delete this.avatars;
+        delete this.deaths;
+        delete this.bonusManager;
+        delete this.controller;
+    }
 };

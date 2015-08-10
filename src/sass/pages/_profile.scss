@@ -10,6 +10,7 @@
     background-color: $game-background;
     border: none;
     border-radius: 40px;
+    cursor: pointer;
 
     &,&:visited {
         color: #ffffff;
@@ -36,10 +37,6 @@
         .profile-form {
             right: 0;
         }
-
-        .profile-tuto {
-            @include opacity(100);
-        }
     }
 
     .profile-form {
@@ -51,7 +48,7 @@
         width: $profile-width;
         border-left: $profile-border-size solid #444;
         background: $profile-background;
-        z-index: 30;
+        z-index: 100;
         @include transition(right 0.25s ease);
 
         .title {
@@ -143,6 +140,7 @@
 
         &.active {
             display: block;
+            @include opacity(100);
         }
 
         .content {
@@ -186,7 +184,7 @@
     }
 }
 
-.btn-toogle {
+.btn-toggle {
     width: 80px;
     height: 80px;
     line-height: 80px;

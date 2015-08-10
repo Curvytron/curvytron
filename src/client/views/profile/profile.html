@@ -20,7 +20,7 @@
                         class="form-control"
                         name="name"
                         placeholder="Choose a name"
-                        maxlength="{{ nameMaxLength }}"
+                        maxlength="{{ ::nameMaxLength }}"
                     />
                 </div>
 
@@ -37,7 +37,7 @@
                         name="color"
                         placeholder="#CCCCCC"
                         style="border-color: {{ profile.color }};"
-                        maxlength="{{ colorMaxLength }}"
+                        maxlength="{{ ::colorMaxLength }}"
                     />
                 </div>
                 <div class="clearfix"></div>
@@ -48,17 +48,17 @@
             <legend>Controls:</legend>
 
             <div class="form-row">
-                <div class="col" ng-repeat="control in profile.controls">
-                    <label for="profile-controls-{{ $index }}">{{ control.label }}</label>
+                <div class="col" ng-repeat="control in profile.controls track by $index" ng-init="onLoadControl()">
+                    <label for="profile-controls-{{ ::$index }}">{{ ::control.label }}</label>
                     <input
-                        id="profile-controls-{{ $index }}"
+                        id="profile-controls-{{ ::$index }}"
                         type="text"
                         value="{{ control.mapper.view }}"
                         class="form-control control"
-                        ng-name="control[{{ $index }}]"
+                        ng-name="control[{{ ::$index }}]"
                         ng-focus="control.start()"
                         ng-blur="control.stop()"
-                        ng-keyup="blurProfile()"
+                        ng-keyup="blurControls()"
                         ng-class="{ 'active': control.mapper.listening }"
                     />
                 </div>
@@ -73,13 +73,13 @@
             <div class="form-row clearfix">
                 <div class="col">
                     <label for="profile-radio">Radio:</label>
-                    <span id="profile-radio" class="btn-toogle radio-sound" ng-class="{ active: profile.radio }" ng-click="toggleRadio()">
+                    <span id="profile-radio" class="btn-toggle radio-sound" ng-class="{ active: profile.radio }" ng-click="toggleRadio()">
                         <i class="icon-radio"></i>
                     </span>
                 </div>
                 <div class="col">
                     <label for="profile-sound">Sound effects:</label>
-                    <span id="profile-sound" class="btn-toogle sound" ng-class="{ active: profile.sound }" ng-click="toggleSound()">
+                    <span id="profile-sound" class="btn-toggle sound" ng-class="{ active: profile.sound }" ng-click="toggleSound()">
                         <i class="icon-volume"></i>
                     </span>
                 </div>
@@ -89,5 +89,28 @@
         <div class="text-center">
             <button type="button" class="btn btn-save" ng-click="toggleProfile()"><span>I'm done</span></button>
         </div>
+    </div>
+</div>
+
+<div class="profile-tuto">
+    <div class="content">
+        <p>
+            Hi there!<br/>
+            We just need to know a few things before you start playing:
+        </p>
+        <ul class="list">
+            <li class="item first" ng-class="{ 'done': profile.name }">
+                Choose yourself player name.
+                <small>A name to find them, a name to rule them all...</small>
+            </li>
+            <li class="item" ng-class="{ 'done': profile.color }">
+                Pick a color that your like.
+                <small>Or one that you don't, why should I care...</small>
+            </li>
+            <li class="item final">
+                You can assign new controls if you're not happy with left and right arrows.
+                <small>Yep. Console controllers are supported.</small>
+            </li>
+        </ul>
     </div>
 </div>

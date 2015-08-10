@@ -6,7 +6,6 @@
     }
 
     .header {
-        margin-bottom: 25px;
         min-height: inherit;
 
         .count {
@@ -98,6 +97,58 @@
                     }
                 }
             }
+        }
+    }
+
+    .start-now {
+        float: right;
+        margin-left: 25px;
+        height: 60px;
+        width: 180px;
+        font-size: 20px;
+        text-align: center;
+        line-height: 56px;
+        border: 2px solid $header-background-from;
+        @include horizontal-gradient($header-background-from, $header-background-to);
+        color: #FFF;
+        font-weight: 300;
+        padding: 0;
+        text-transform: uppercase;
+        @include transition(all 0.15s linear);
+        position: relative;
+
+        &:hover {
+            border-color: $header-background-to;
+
+            span.label {
+                @include opacity(75);
+            }
+
+            &::after {
+                @include opacity(100);
+            }
+        }
+
+        span {
+            position: relative;
+            z-index: 100;
+
+            &.label {
+                @include transition(all 0.15s linear);
+            }
+        }
+
+        &::after {
+            content: '';
+            @include opacity(0);
+            z-index: 80;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            @include horizontal-gradient($header-background-to, $header-background-from);
+            @include transition(all 0.15s linear);
         }
     }
 
@@ -209,6 +260,22 @@
             content: '';
             @include transition(all 0.2s ease);
             -webkit-backface-visibility: hidden;
+        }
+
+        &.local {
+            &::before {
+                content: '';
+                position: absolute;
+                z-index: 40;
+                width: 1px;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                opacity: 0;
+                background: transparentize(#61ca61, 0.3);
+                box-shadow: 0 0 25px 5px transparentize(#61ca61, 0.3);
+                @include animation(readyAnim 5s infinite);
+            }
         }
 
         &.ready {
@@ -330,6 +397,7 @@
         background-color: #FFF;
         width: 100%;
         padding: 20px 30px;
+        margin-bottom: 20px;
 
         .row > div {
             padding-bottom: 0;
@@ -355,14 +423,39 @@
                 width: 200px;
                 margin: 0 auto;
                 padding: 0;
-                line-height: 100px;
+                line-height: 96px;
                 vertical-align: middle;
                 text-align: center;
                 border-color: transparent;
+                margin-bottom: 35px;
                 @include transition(border-color 0.2s linear);
 
                 &:focus {
                     border-color: $text-color;
+                }
+            }
+        }
+
+        .public-room {
+            h2 {
+                margin-bottom: 20px;
+            }
+
+            #open {
+                margin-left: 5px;
+            }
+
+            .password-container {
+                margin-top: 20px;
+
+                label, input {
+                    display: inline-block;
+                    width: auto;
+                }
+                input {
+                    width: 90px;
+                    margin-left: 10px;
+                    text-align: center;
                 }
             }
         }
@@ -519,7 +612,7 @@
                 &.bonus-enemy-slow {
                     @include bonus-sprite(0, 1);
                 }
-                &.bonus-all-borderless {
+                &.bonus-game-borderless {
                     @include bonus-sprite(1, 1);
                 }
                 &.bonus-self-master {

@@ -1,11 +1,12 @@
 /**
  * Inverse Enemy Bonus
  *
- * @param {Array} position
+ * @param {Number} x
+ * @param {Number} y
  */
-function BonusEnemyInverse(position)
+function BonusEnemyInverse(x, y)
 {
-    BonusEnemy.call(this, position);
+    BonusEnemy.call(this, x, y);
 }
 
 BonusEnemyInverse.prototype = Object.create(BonusEnemy.prototype);

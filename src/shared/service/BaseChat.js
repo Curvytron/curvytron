@@ -5,7 +5,7 @@ function BaseChat()
 {
     EventEmitter.call(this);
 
-    this.messages = [];
+    this.messages = new Collection([], 'id', true);
 }
 
 BaseChat.prototype = Object.create(EventEmitter.prototype);
@@ -22,7 +22,7 @@ BaseChat.prototype.addMessage = function(message)
         return false;
     }
 
-    this.messages.push(message);
+    this.messages.add(message);
     this.emit('message', message);
 
     return true;
@@ -45,7 +45,7 @@ BaseChat.prototype.isValid = function(message)
  */
 BaseChat.prototype.clearMessages = function()
 {
-    this.messages.length = 0;
+    this.messages.clear();
 };
 
 /**
@@ -55,13 +55,13 @@ BaseChat.prototype.clearMessages = function()
  */
 BaseChat.prototype.serialize = function(max)
 {
-    var length = this.messages.length,
-        limit = typeof(max) === 'number' ? Math.min(max, length) : length,
-        min = length - limit,
+    var length   = this.messages.items.length,
+        limit    = typeof(max) === 'number' ? Math.min(max, length) : length,
+        min      = length - limit,
         messages = new Array(length);
 
     for (var i = length - 1; i >= min; i--) {
-        messages[i] = this.messages[i].serialize();
+        messages[i] = this.messages.items[i].serialize();
     }
 
     return messages;

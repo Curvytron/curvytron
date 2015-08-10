@@ -1,13 +1,15 @@
 /**
  * Explode particle
  */
-function ExplodeParticle (position, velocity, angle, radius)
+function ExplodeParticle (x, y, velocity, angle, radius)
 {
-    this.origin   = position.slice(0);
-    this.position = position.slice(0);
-    this.velocity = velocity;
-    this.angle    = angle;
-    this.radius   = radius;
+    this.x         = this.round(x);
+    this.y         = this.round(y);
+    this.originX   = x;
+    this.originY   = y;
+    this.velocityX = Math.cos(angle) * velocity;
+    this.velocityY = Math.sin(angle) * velocity;
+    this.radius    = radius;
 }
 
 /**
@@ -22,12 +24,20 @@ ExplodeParticle.prototype.opacity = 1;
  *
  * @param {Number} step
  */
-ExplodeParticle.prototype.update = function (time, step)
+ExplodeParticle.prototype.update = function (time)
 {
-    this.position[0] = this.origin[0] + (Math.cos(this.angle) * this.velocity) * time;
-    this.position[1] = this.origin[1] + (Math.sin(this.angle) * this.velocity) * time;
+    this.x = this.round(this.originX + this.velocityX * time);
+    this.y = this.round(this.originY + this.velocityY * time);
+};
 
-    this.opacity = ExplodeParticle.prototype.opacity * (1.2-step);
-
-    return this.position;
+/**
+ * Round
+ *
+ * @param {Number} value
+ *
+ * @return {Number}
+ */
+ExplodeParticle.prototype.round = function (value)
+{
+    return (0.5 + value) | 0;
 };

@@ -14,6 +14,7 @@ function SocketClient(socket, interval, ip)
     this.active     = true;
     this.players    = new Collection([], 'id');
     this.pingLogger = new PingLogger(this.socket);
+    this.tickrate   = new BaseTickrateLogger();
 
     this.identify   = this.identify.bind(this);
     this.onActivity = this.onActivity.bind(this);
@@ -55,6 +56,15 @@ SocketClient.prototype.isPlaying = function()
 };
 
 /**
+ * Clear players
+ */
+SocketClient.prototype.clearPlayers = function()
+{
+    this.emit('players:clear', this);
+    this.players.clear();
+};
+
+/**
  * Who am I?
  */
 SocketClient.prototype.identify = function(event)
@@ -73,16 +83,29 @@ SocketClient.prototype.onActivity = function(active)
 };
 
 /**
+ * Send an event
+ *
+ * @param {String} name
+ * @param {String} data
+ */
+SocketClient.prototype.sendEvents = function (events)
+{
+    this.tickrate.tick(events);
+    BaseSocketClient.prototype.sendEvents.call(this, events);
+};
+
+/**
  * Stop
  */
 SocketClient.prototype.stop = function()
 {
     BaseSocketClient.prototype.stop.call(this);
     this.pingLogger.stop();
+    this.tickrate.stop();
 };
 
 /**
- * Object version of the lcient
+ * Object version of the client
  *
  * @return {Object}
  */

@@ -1,22 +1,20 @@
 var curvytronApp = angular.module('curvytronApp', ['ngRoute', 'ngCookies', 'colorpicker.module']),
     gamepadListener = new GamepadListener({analog: false, deadZone: 0.4});
 
-gamepadListener.start();
-
 curvytronApp.service('SocketClient', SocketClient);
+curvytronApp.service('Profile', ['$rootScope', Profile]);
+curvytronApp.service('SoundManager', ['Profile', SoundManager]);
 curvytronApp.service('ActivityWatcher', ['SocketClient', ActivityWatcher]);
 curvytronApp.service('RoomRepository', ['SocketClient', RoomRepository]);
+curvytronApp.service('GameRepository', ['SocketClient', 'RoomRepository', 'SoundManager', GameRepository]);
 curvytronApp.service('Chat', ['SocketClient', 'RoomRepository', Chat]);
-curvytronApp.service('Profile', ['$rootScope', Profile]);
 curvytronApp.service('Radio', ['Profile', Radio]);
-curvytronApp.service('SoundManager', ['Profile', SoundManager]);
 curvytronApp.service('Notifier', ['SoundManager', 'ActivityWatcher', Notifier]);
 curvytronApp.service('Analyser', ['$rootScope', Analyser]);
-curvytronApp.service('KillLog', KillLog);
 
 curvytronApp.controller(
     'CurvytronController',
-    ['$scope', '$window', 'Profile', 'Analyser', 'ActivityWatcher', 'SocketClient', CurvytronController]
+    ['$scope', '$window', '$location', 'Profile', 'Analyser', 'ActivityWatcher', 'SocketClient', CurvytronController]
 );
 
 curvytronApp.controller(
@@ -33,15 +31,31 @@ curvytronApp.controller(
 );
 curvytronApp.controller(
     'GameController',
-    ['$scope', '$routeParams', '$location', 'SocketClient', 'RoomRepository', 'Chat', 'Radio', 'Notifier', 'SoundManager', 'KillLog', GameController]
+    ['$scope', '$routeParams', '$location', 'SocketClient', 'GameRepository', 'Chat', 'Radio', 'SoundManager', GameController]
 );
 curvytronApp.controller(
     'ChatController',
     ['$scope', 'Chat', ChatController]
 );
 curvytronApp.controller(
+    'PlayerListController',
+    ['$scope', '$element', 'SocketClient', PlayerListController]
+);
+curvytronApp.controller(
+    'RoundController',
+    ['$scope', 'GameRepository', 'Notifier', RoundController]
+);
+curvytronApp.controller(
+    'MetricController',
+    ['$scope', 'SocketClient', MetricController]
+);
+curvytronApp.controller(
+    'WaitingController',
+    ['$scope', 'SocketClient', WaitingController]
+);
+curvytronApp.controller(
     'KillLogController',
-    ['$scope', 'KillLog', KillLogController]
+    ['$scope', '$interpolate', 'SocketClient', KillLogController]
 );
 curvytronApp.controller(
     'ProfileController',
@@ -60,7 +74,8 @@ curvytronApp.config(['$routeProvider', '$locationProvider', function($routeProvi
         })
         .when('/room/:name', {
             templateUrl: 'js/views/rooms/detail.html',
-            controller: 'RoomController'
+            controller: 'RoomController',
+            reloadOnSearch: false
         })
         .when('/game/:name', {
             templateUrl: 'js/views/game/play.html',

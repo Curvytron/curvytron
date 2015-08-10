@@ -78,7 +78,9 @@ GameTracker.prototype.onStop = function()
  */
 GameTracker.prototype.sendFPS = function()
 {
-    this.emit('fps', { tracker: this, fps: this.game.fps.value });
+    if (this.game.fps.frequency) {
+        this.emit('fps', { tracker: this, fps: this.game.fps.frequency });
+    }
 };
 
 /**
