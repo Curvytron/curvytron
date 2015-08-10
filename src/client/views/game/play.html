@@ -13,7 +13,7 @@
             </span>
 
             <div class="game-players" ng-controller="PlayerListController">
-                <div ng-repeat="avatar in ::avatars track by avatar.id" id="avatar-{{ ::avatar.id }}" class="player" ng-init="onLoad(avatar)">
+                <div ng-repeat="avatar in ::avatars track by avatar.id" id="avatar-{{ ::avatar.id }}" class="player">
                     <span class="line-color-preview" style="background-color: {{ ::avatar.player.color }};"></span>
                     <span class="arrow" style="border-left-color: {{ ::avatar.player.color }};" ng-if="avatar.local"></span>
                     <span class="round-points" id="avatar-round-score-{{ ::avatar.id }}"></span>
@@ -41,7 +41,13 @@
         </aside>
         <div id="col-right">
             <div class="kill-log-wrapper" ng-controller="KillLogController">
-                <div id="kill-log-feed" class="feed"></div>
+                <ul id="kill-log-feed" class="feed">
+                    <li class="one-message"></li>
+                    <li class="one-message"></li>
+                    <li class="one-message"></li>
+                    <li class="one-message"></li>
+                    <li class="one-message"></li>
+                </ul>
             </div>
 
             <div class="spectating" ng-if="::spectating">
@@ -66,12 +72,16 @@
                 </div>
                 <div id="end" style="display: none;">
                     <div id="game-view" class="recap-view {{ game.started ? 'round' : 'game' }}">
-                        <p class="victory">
+                        <p class="victory" ng-if="winner">
                             <i class="icon-trophy"></i>
                             <span class="strong" style="color: {{ winner.color }}">
                                 {{ winner.name }}
                             </span>
                             won the {{ game.started ? 'round' : 'game' }} !
+                        </p>
+                        <p class="victory" ng-if="!winner">
+                            <i class="icon-dead"></i>
+                            Oops, everybody died...
                         </p>
                         <div ng-if="!game.started">
                             <button ng-click="backToRoom()" type="button" class="btn btn-hero btn-back-to-room">

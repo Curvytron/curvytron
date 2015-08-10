@@ -307,7 +307,7 @@ GameRepository.prototype.onRoundNew = function(e)
 GameRepository.prototype.onRoundEnd = function(e)
 {
     this.game.endRound();
-    this.game.roundWinner = this.game.avatars.getById(e.detail);
+    this.game.roundWinner = e.detail ? this.game.avatars.getById(e.detail) : null;
     this.emit('round:end');
 };
 

@@ -55,11 +55,6 @@
                     display: inline-block;
                     margin-right: 10px;
                 }
-
-                // &:hover {
-                //     text-decoration: none;
-                //     @include opacity(70);
-                // }
             }
         }
 
@@ -218,25 +213,6 @@
                     padding-right: 115px;
                 }
 
-                &.dead {
-                    @include animation(deadAnim 1s forwards);
-                    @include transition(all 0.2s ease);
-
-                    .color-preview {
-                        @include transition(all 0.2s ease);
-                        @include opacity(50);
-                    }
-                }
-
-                .line-color-preview {
-                    width: 6px;
-                    height: 100%;
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    bottom: 0;
-                }
-
                 &.local {
 
                     background: lighten($aside-background, 5%);
@@ -255,6 +231,20 @@
                         border-width: 6px;
                         margin-top: -6px;
                     }
+                }
+
+                &.dead {
+                    background: none;
+                    color: transparentize(#EEE, 0.7);
+                }
+
+                .line-color-preview {
+                    width: 6px;
+                    height: 100%;
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    bottom: 0;
                 }
             }
         }
@@ -657,12 +647,18 @@
             text-align: right;
             max-height: 160px;
             overflow: hidden;
-            margin: 5px 0;
+            margin: 5px 10px;
             padding: 0;
 
             .one-message {
-                padding: 5px 0;
-                @include animation(newLog 300ms ease forwards);
+                list-style: none;
+                min-height: 0px;
+                padding: 0;
+                margin: 0;
+
+                span {
+                    line-height: 30px;
+                }
 
                 .icon-dead {
                     font-size: 18px;

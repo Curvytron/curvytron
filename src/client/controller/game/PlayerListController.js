@@ -11,10 +11,9 @@ function PlayerListController($scope, $element, client)
 
     AbstractController.call(this, $scope);
 
-    this.element  = $element;
-    this.client   = client;
-    this.game     = this.$scope.game;
-    this.elements = [];
+    this.element = $element[0];
+    this.client  = client;
+    this.game    = this.$scope.game;
 
     // Binding
     this.onScore      = this.onScore.bind(this);
@@ -23,10 +22,6 @@ function PlayerListController($scope, $element, client)
     this.onRoundEnd   = this.onRoundEnd.bind(this);
     this.onDie        = this.onDie.bind(this);
     this.detachEvents = this.detachEvents.bind(this);
-
-    this.$scope.onLoad = function (avatar) {
-        setTimeout(function () { this.onLoad(avatar); }.bind(this), 0);
-    }.bind(this);
 
     this.$scope.$on('$destroy', this.detachEvents);
 
@@ -63,18 +58,23 @@ PlayerListController.prototype.detachEvents = function()
 };
 
 /**
- * On load
+ * Get avatar related elements in DOM
  *
  * @param {Avatar} avatar
  */
-PlayerListController.prototype.onLoad = function(avatar) {
-    avatar.elements.root       = angular.element(document.getElementById('avatar-' + avatar.id));
-    avatar.elements.score      = angular.element(document.getElementById('avatar-score-' + avatar.id));
-    avatar.elements.roundScore = angular.element(document.getElementById('avatar-round-score-' + avatar.id));
+PlayerListController.prototype.getElements = function(avatar)
+{
+    if (!avatar.elements.root) {
+        avatar.elements.root       = document.getElementById('avatar-' + avatar.id);
+        avatar.elements.score      = document.getElementById('avatar-score-' + avatar.id);
+        avatar.elements.roundScore = document.getElementById('avatar-round-score-' + avatar.id);
 
-    if (avatar.local) {
-        avatar.elements.root.addClass('local');
+        if (avatar.local) {
+            avatar.elements.root.classList.add('local');
+        }
     }
+
+    return avatar.elements;
 };
 
 /**
@@ -114,12 +114,10 @@ PlayerListController.prototype.onRoundScore = function(e)
  */
 PlayerListController.prototype.onRoundNew = function(e)
 {
-    //this.requestDigestScope();
-
-    this.element.addClass('in-round');
+    this.element.classList.add('in-round');
 
     for (var i = this.game.avatars.items.length - 1; i >= 0; i--) {
-        this.updateClass(this.game.avatars.items[i], false);
+        this.getElements(this.game.avatars.items[i]).root.classList.remove('dead');
     }
 };
 
@@ -130,7 +128,7 @@ PlayerListController.prototype.onRoundNew = function(e)
  */
 PlayerListController.prototype.onRoundEnd = function(e)
 {
-    this.element.removeClass('in-round');
+    this.element.classList.remove('in-round');
     this.reorder();
 };
 
@@ -144,7 +142,7 @@ PlayerListController.prototype.onDie = function(e)
     var avatar = this.game.avatars.getById(e.detail[0]);
 
     if (avatar) {
-        this.updateClass(avatar, true);
+        this.getElements(avatar).root.classList.add('dead');
     }
 };
 
@@ -155,9 +153,7 @@ PlayerListController.prototype.onDie = function(e)
  */
 PlayerListController.prototype.updateScore = function(avatar)
 {
-    if (avatar.elements.score) {
-        avatar.elements.score.text(avatar.score);
-    }
+    this.getElements(avatar).score.innerHTML = avatar.score;
 };
 
 
@@ -168,21 +164,7 @@ PlayerListController.prototype.updateScore = function(avatar)
  */
 PlayerListController.prototype.updateRoundScore = function(avatar)
 {
-    if (avatar.elements.roundScore) {
-        avatar.elements.roundScore.text(avatar.roundScore ? '+' + avatar.roundScore : '');
-    }
-};
-
-/**
- * Update class
- *
- * @param {Avatar} avatar
- */
-PlayerListController.prototype.updateClass = function(avatar, dead)
-{
-    if (avatar.elements.root) {
-        avatar.elements.root.toggleClass('dead', dead);
-    }
+    this.getElements(avatar).roundScore.innerHTML = avatar.roundScore ? '+' + avatar.roundScore : '';
 };
 
 /**
@@ -191,8 +173,8 @@ PlayerListController.prototype.updateClass = function(avatar, dead)
 PlayerListController.prototype.reorder = function() {
     var length = this.game.sortAvatars().items.length;
 
-    for (var avatar, i = 0; i < length; i++) {
-        avatar = this.game.avatars.items[i];
-        avatar.elements.root.parent().append(avatar.elements.root);
+    for (var elements, i = 0; i < length; i++) {
+        elements = this.getElements(this.game.avatars.items[i]);
+        elements.root.parentNode.appendChild(elements.root);
     }
 };

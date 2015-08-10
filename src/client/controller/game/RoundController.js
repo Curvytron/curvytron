@@ -88,12 +88,12 @@ RoundController.prototype.onRoundNew = function(e)
  */
 RoundController.prototype.onRoundEnd = function(e)
 {
-    if (this.game.roundWinner) {
-        this.notifier.notifyInactive(this.game.roundWinner.name + ' won round!');
-        this.$scope.winner = this.game.roundWinner;
-        this.digestScope();
-        this.endElement.style.display = 'block';
-    }
+    this.notifier.notifyInactive(this.game.roundWinner ? this.game.roundWinner.name + ' won round!' : 'Round end!');
+
+    this.$scope.winner = this.game.roundWinner ? this.game.roundWinner : false;
+    this.digestScope();
+
+    this.endElement.style.display = 'block';
 };
 
 /**

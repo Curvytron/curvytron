@@ -30,15 +30,11 @@ AbstractController.prototype.digestTimeoutValue = 1000/25;
  */
 AbstractController.prototype.applyScope = function()
 {
-    //console.time('applyScope');
-
     var phase = this.$scope && this.$scope.$root ? this.$scope.$root.$$phase : null;
 
     if (phase !== '$apply' && phase !== '$digest') {
         this.$scope.$apply();
     }
-
-    //console.timeEnd('applyScope');
 };
 
 /**
@@ -46,7 +42,6 @@ AbstractController.prototype.applyScope = function()
  */
 AbstractController.prototype.digestScope = function()
 {
-    //console.time('digestScope');
     this.clearDigestTiemout();
 
     var phase = this.$scope && this.$scope.$root ? this.$scope.$root.$$phase : null;
@@ -54,8 +49,6 @@ AbstractController.prototype.digestScope = function()
     if (phase !== '$apply' && phase !== '$digest') {
         this.$scope.$digest();
     }
-
-    //console.timeEnd('digestScope');
 };
 
 /**
