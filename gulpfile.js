@@ -11,7 +11,7 @@ var fs        = require('fs'),
     minifyCSS = require('gulp-minify-css'),
     htmlmin   = require('gulp-html-minifier'),
     replace   = require('gulp-replace'),
-    wrap      = require("gulp-wrap"),
+    wrap      = require('gulp-wrap'),
     meta      = require('./package.json'),
     config;
 

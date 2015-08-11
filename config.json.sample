@@ -3,10 +3,9 @@
     "googleAnalyticsId": null,
     "inspector": {
         "enabled": false,
-        "host": "127.0.0.1",
-        "port": 8086,
-        "username": "root",
-        "password": "root",
+        "host": "localhost",
+        "username": "curvytron",
+        "password": "curvytron",
         "database": "curvytron"
     }
 }
