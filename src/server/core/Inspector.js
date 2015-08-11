@@ -14,7 +14,7 @@ function Inspector (server, config)
         database: config.database
     });
 
-    console.info('Inspector activated on %s:%s', config.host, config.port);
+    console.info('Inspector activated on %s', config.host);
 
     this.trackers = {
         client: new Collection(),
@@ -37,9 +37,9 @@ function Inspector (server, config)
     this.server.roomRepository.on('room:open', this.onRoomOpen);
     this.server.roomRepository.on('room:close', this.onRoomClose);
 
-    this.client.writePoint(this.DEPLOY, { version: packageInfo.version });
-    this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() });
-    this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() });
+    this.client.writePoint(this.DEPLOY, { version: packageInfo.version }, {}, {});
+    this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() }, {}, {});
+    this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() }, {}, {});
 
     this.logInterval = setInterval(this.onLog, this.logFrequency);
 }
@@ -78,7 +78,7 @@ Inspector.prototype.onClientOpen = function(client)
     tracker.on('latency', this.onClientLatency);
     client.on('close', this.onClientClose);
 
-    this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() });
+    this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() }, {}, {});
 };
 
 /**
@@ -90,12 +90,12 @@ Inspector.prototype.onClientClose = function(client)
 {
     var tracker = this.trackers.client.getById(client.id);
 
-    this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() });
+    this.client.writePoint(this.CLIENTS, { value: this.server.clients.count() }, {}, {});
 
     if (tracker) {
         client.removeListener('close', this.onClientClose);
         tracker.removeListener('latency', this.onClientLatency);
-        this.client.writePoint(this.CLIENT, tracker.serialize());
+        this.client.writePoint(this.CLIENT, tracker.serialize(), {}, {});
         this.trackers.client.remove(tracker.destroy());
     }
 };
@@ -110,7 +110,7 @@ Inspector.prototype.onClientLatency = function(data)
     this.client.writePoint(this.CLIENT_LATENCY, {
         value: data.latency,
         game: data.tracker.uniqId
-    });
+    }, {}, {});
 };
 
 /**
@@ -124,7 +124,7 @@ Inspector.prototype.onRoomOpen = function(data)
 
     this.trackers.room.add(new RoomTracker(this, room));
 
-    this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() });
+    this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() }, {}, {});
 
     room.on('game:new', this.onGameNew);
 };
@@ -141,10 +141,10 @@ Inspector.prototype.onRoomClose = function(data)
 
     room.removeListener('game:new', this.onGameNew);
 
-    this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() });
+    this.client.writePoint(this.ROOMS, { value: this.server.roomRepository.rooms.count() }, {}, {});
 
     if (tracker) {
-        this.client.writePoint(this.ROOM, tracker.serialize());
+        this.client.writePoint(this.ROOM, tracker.serialize(), {}, {});
         this.trackers.room.remove(tracker.destroy());
     }
 };
@@ -175,7 +175,9 @@ Inspector.prototype.onGameNew = function(data)
                     client: clientTracker.uniqId,
                     player: md5(avatar.name),
                     color: avatar.color
-                }
+                },
+                {},
+                {}
             );
         }
     }
@@ -212,7 +214,7 @@ Inspector.prototype.onGameFPS = function(data)
     this.client.writePoint(this.GAME_FPS, {
         value: data.fps,
         game: data.tracker.uniqId
-    });
+    }, {}, {});
 };
 
 /**
@@ -222,7 +224,7 @@ Inspector.prototype.onGameFPS = function(data)
  */
 Inspector.prototype.collectGameTrackerData = function(tracker)
 {
-    this.client.writePoint(this.GAME, tracker.serialize());
+    this.client.writePoint(this.GAME, tracker.serialize(), {}, {});
     this.trackers.game.remove(tracker.destroy());
 };
 
@@ -240,7 +242,7 @@ Inspector.prototype.onLog = function()
 Inspector.prototype.logUsage = function (err, result)
 {
     if (result) {
-        this.client.writePoint(this.USAGE_CPU, { value: result.cpu });
-        this.client.writePoint(this.USAGE_MEMORY, { value: result.memory });
+        this.client.writePoint(this.USAGE_CPU, { value: result.cpu }, {}, {});
+        this.client.writePoint(this.USAGE_MEMORY, { value: result.memory }, {}, {});
     }
 };
