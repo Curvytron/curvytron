@@ -36,7 +36,7 @@ ClientTracker.prototype.getValues = function()
 {
     var data = Tracker.prototype.getValues.call(this);
 
-    data['ip'] = md5(this.ip);
+    data.ip = md5(this.ip);
 
     return data;
 };

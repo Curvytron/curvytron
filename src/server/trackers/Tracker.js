@@ -45,8 +45,8 @@ Tracker.prototype.getDuration = function()
 Tracker.prototype.getValues = function()
 {
     return {
-        'mesured_duration': this.getDuration(),
-        'id': this.uniqId
+        mesuredDuration: this.getDuration(),
+        id: this.uniqId
     };
 };
 

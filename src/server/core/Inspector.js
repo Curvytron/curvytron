@@ -107,7 +107,7 @@ Inspector.prototype.onClientClose = function(client)
  */
 Inspector.prototype.onClientLatency = function(data)
 {
-    this.client.writePoint(this.CLIENT_LATENCY, data.latency, {'game': data.tracker.uniqId}, {});
+    this.client.writePoint(this.CLIENT_LATENCY, data.latency, {game: data.tracker.uniqId}, {});
 };
 
 /**
@@ -168,13 +168,12 @@ Inspector.prototype.onGameNew = function(data)
             this.client.writePoint(
                 this.CLIENT_GAME_PLAYER,
                 {
-                    'player': md5(avatar.name),
-                    'color': avatar.color
+                    player: md5(avatar.name),
+                    color: avatar.color,
+                    game: tracker.uniqId,
+                    client: clientTracker.uniqId
                 },
-                {
-                    'game': tracker.uniqId,
-                    'client': clientTracker.uniqId
-                },
+                {},
                 {}
             );
         }
@@ -209,7 +208,7 @@ Inspector.prototype.onGameEnd = function(data)
  */
 Inspector.prototype.onGameFPS = function(data)
 {
-    this.client.writePoint(this.GAME_FPS, data.fps, {'game': data.tracker.uniqId}, {});
+    this.client.writePoint(this.GAME_FPS, data.fps, {game: data.tracker.uniqId}, {});
 };
 
 /**

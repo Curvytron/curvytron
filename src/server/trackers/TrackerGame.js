@@ -103,9 +103,9 @@ GameTracker.prototype.getValues = function()
 {
     var data = Tracker.prototype.getValues.call(this);
 
-    data['size']     = this.size;
-    data['rounds']   = this.rounds;
-    data['finished'] = this.finished;
+    data.size     = this.size;
+    data.rounds   = this.rounds;
+    data.finished = this.finished;
 
     return data;
 };
