@@ -168,12 +168,16 @@ Inspector.prototype.onGameNew = function(data)
             this.client.writePoint(
                 this.CLIENT_GAME_PLAYER,
                 {
-                    player: md5(avatar.name),
                     color: avatar.color,
+                    player: md5(avatar.name),
                     game: tracker.uniqId,
                     client: clientTracker.uniqId
                 },
-                {},
+                {
+                    player: md5(avatar.name),
+                    game: tracker.uniqId,
+                    client: clientTracker.uniqId
+                },
                 {}
             );
         }
