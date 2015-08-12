@@ -45,7 +45,8 @@ Tracker.prototype.getDuration = function()
 Tracker.prototype.getValues = function()
 {
     return {
-        'duration': this.getDuration()
+        'mesured_duration': this.getDuration(),
+        'id': this.uniqId
     };
 };
 
@@ -56,7 +57,5 @@ Tracker.prototype.getValues = function()
  */
 Tracker.prototype.getTags = function()
 {
-    return {
-        'id': this.uniqId
-    };
+    return {};
 };
