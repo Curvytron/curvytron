@@ -139,11 +139,13 @@ gulp.task('copy-stress-test', function() {
 });
 
 gulp.task('watch', ['dev'], function () {
-    gulp.watch('src/**/*.js', ['jshint', 'server', 'front-full']);
+    gulp.watch('src/shared/**/*.js', ['jshint', 'server', 'front-full']);
+    gulp.watch('src/client/**/*.js', ['jshint', 'front-full']);
+    gulp.watch('src/server/**/*.js', ['jshint', 'server']);
     gulp.watch('src/client/views/*/*.html', ['views']);
     gulp.watch('src/client/views/*.html', ['ga']);
     gulp.watch('src/client/stressTest.js', ['copy-stress-test']);
-    gulp.watch('src/**/*.scss', ['sass-full']);
+    gulp.watch('src/sass/**/*.scss', ['sass-full']);
 });
 
 gulp.task('default', ['jshint', 'server', 'front-expose', 'ga', 'views', 'front-min', 'sass-min']);

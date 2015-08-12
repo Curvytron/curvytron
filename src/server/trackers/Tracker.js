@@ -42,10 +42,21 @@ Tracker.prototype.getDuration = function()
  *
  * @return {Object}
  */
-Tracker.prototype.serialize = function()
+Tracker.prototype.getValues = function()
 {
     return {
-        id: this.uniqId,
-        duration: this.getDuration()
+        'duration': this.getDuration()
+    };
+};
+
+/**
+ * Get tags
+ *
+ * @return {Object}
+ */
+Tracker.prototype.getTags = function()
+{
+    return {
+        'id': this.uniqId
     };
 };

@@ -99,13 +99,13 @@ GameTracker.prototype.destroy = function()
 /**
  * @inheritDoc
  */
-GameTracker.prototype.serialize = function()
+GameTracker.prototype.getValues = function()
 {
-    var data = Tracker.prototype.serialize.call(this);
+    var data = Tracker.prototype.getValues.call(this);
 
-    data.size     = this.size;
-    data.rounds   = this.rounds;
-    data.finished = this.finished;
+    data['size']     = this.size;
+    data['rounds']   = this.rounds;
+    data['finished'] = this.finished;
 
     return data;
 };
