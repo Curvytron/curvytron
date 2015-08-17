@@ -14,7 +14,7 @@ var server = new Server({ port: config.port });
 
 if (config.inspector.enabled) {
     try {
-        new Inspector(server, config.inspector);
+      new Inspector(server, config.inspector);
     } catch (error) {
         console.error('Inspector error:', error);
     }

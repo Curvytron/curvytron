@@ -55,7 +55,7 @@
                 <p>You must wait for the game to finish before you can play.</p>
             </div>
             <div class="waiting" ng-if="!spectating && !game.isReady()" ng-controller="WaitingController">
-                <p>Waiting for players...{{ true ? 'lol' : 'lul' }}</p>
+                <p>Waiting for players...</p>
                 <ul>
                     <li ng-repeat="avatar in list track by avatar.id">
                         <span style="color: {{ ::avatar.player.color }}">{{ ::avatar.name }}</span>

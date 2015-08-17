@@ -39,9 +39,9 @@ RoomTracker.prototype.destroy = function()
 /**
  * @inheritDoc
  */
-RoomTracker.prototype.serialize = function()
+RoomTracker.prototype.getValues = function()
 {
-    var data = Tracker.prototype.serialize.call(this);
+    var data = Tracker.prototype.getValues.call(this);
 
     data.games = this.games;
 
