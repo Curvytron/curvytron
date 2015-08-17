@@ -19,8 +19,8 @@ function ChatController($scope, chat)
     this.$scope.currentMessage = this.chat.message;
     this.$scope.submitTalk     = this.chat.talk;
 
-    this.chat.on('message', this.requestDigestScope);
-    this.chat.on('filtered', this.requestDigestScope);
+    this.chat.on('message', this.digestScope);
+    this.chat.on('filtered', this.digestScope);
 }
 
 ChatController.prototype = Object.create(AbstractController.prototype);
