@@ -225,7 +225,7 @@ GameController.prototype.getSpectateMessage = function()
         this.spectateMessage.innerHTML += '<p>You must wait for the game to finish before you can play.</p>';
     }
 
-    return this.spectateMessage
+    return this.spectateMessage;
 };
 
 /**
