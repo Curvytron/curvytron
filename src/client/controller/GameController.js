@@ -14,16 +14,17 @@ function GameController($scope, $routeParams, $location, client, repository, cha
 
     document.body.classList.add('game-mode');
 
-    this.$location    = $location;
-    this.client       = client;
-    this.repository   = repository;
-    this.radio        = radio;
-    this.chat         = chat;
-    this.sound        = sound;
-    this.room         = null;
-    this.game         = null;
-    this.assetsLoaded = false;
-    this.setup        = false;
+    this.$location       = $location;
+    this.client          = client;
+    this.repository      = repository;
+    this.radio           = radio;
+    this.chat            = chat;
+    this.sound           = sound;
+    this.room            = null;
+    this.game            = null;
+    this.assetsLoaded    = false;
+    this.setup           = false;
+    this.spectateMessage = null;
 
     // Binding
     this.checkReady   = this.checkReady.bind(this);
@@ -160,7 +161,7 @@ GameController.prototype.onMove = function(e)
  */
 GameController.prototype.onSpectate = function(e)
 {
-    this.$scope.spectating = true;
+    document.getElementById('col-right').appendChild(this.getSpectateMessage());
     this.digestScope();
 };
 
@@ -208,6 +209,23 @@ GameController.prototype.onUnload = function(e)
 GameController.prototype.needConfirmation = function()
 {
     return !this.$scope.spectating && this.game.started;
+};
+
+/**
+ * Get spectate message
+ *
+ * @return {Element}
+ */
+GameController.prototype.getSpectateMessage = function()
+{
+    if (!this.spectateMessage) {
+        this.spectateMessage           = document.createElement('div');
+        this.spectateMessage.className = 'spectating';
+        this.spectateMessage.innerHTML = '<h2><i class="icon-viewer"></i> You are in spectator mode</h2>';
+        this.spectateMessage.innerHTML += '<p>You must wait for the game to finish before you can play.</p>';
+    }
+
+    return this.spectateMessage
 };
 
 /**
