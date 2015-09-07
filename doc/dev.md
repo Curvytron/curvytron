@@ -17,7 +17,7 @@ Launch gulp watch task with:
 ## Stress test
 
 The stress test creates a room, adds 150 players in it and set them ready so the game launch.
-Tu use it, open your console an run:
+To use it, open your console an run:
 
 ```js
 var stressTest = document.createElement('script');
