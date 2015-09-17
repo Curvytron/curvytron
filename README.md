@@ -6,6 +6,7 @@ A web multiplayer Tron game like with curves
 ## Installation
 
 * [Get your local Curvytron server in 1 minute!](doc/installation.md)
+* [...or launch a Docker container with the game!](doc/docker.md)
 
 ---
 
