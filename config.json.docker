@@ -1,0 +1,11 @@
+{
+    "port": 8080,
+    "googleAnalyticsId": null,
+    "inspector": {
+        "enabled": false,
+        "host": "localhost",
+        "username": "curvytron",
+        "password": "curvytron",
+        "database": "curvytron"
+    }
+}
