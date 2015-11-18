@@ -12,7 +12,12 @@ function SocketClient()
 
     var Socket = window.MozWebSocket || window.WebSocket;
 
-    BaseSocketClient.call(this, new Socket('ws://' + document.location.host + document.location.pathname, ['websocket']));
+    var protocol = 'ws://';
+    if(location.protocol === 'https:') {
+        protocol = 'wss://';
+    }
+
+    BaseSocketClient.call(this, new Socket(protocol + document.location.host + document.location.pathname, ['websocket']));
 
     this.socket.addEventListener('open', this.onOpen);
     this.socket.addEventListener('error', this.onError);
