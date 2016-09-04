@@ -14,8 +14,10 @@ function Game(room)
     this.roundWinner  = null;
     this.gameWinner   = null;
     this.deathInFrame = false;
+    this.frameRequest = false;
 
     this.onPoint = this.onPoint.bind(this);
+    this.onReady = this.onReady.bind(this);
 
     var avatar, i;
 
@@ -23,11 +25,50 @@ function Game(room)
         avatar = this.avatars.items[i];
         avatar.clear();
         avatar.on('point', this.onPoint);
+        avatar.on('ready', this.onReady);
     }
 }
 
 Game.prototype = Object.create(BaseGame.prototype);
 Game.prototype.constructor = Game;
+
+/**
+ * Get new frame
+ */
+Game.prototype.newFrame = function()
+{
+    this.frameRequest = true;
+};
+
+/**
+ * Animation loop
+ */
+Game.prototype.loop = function()
+{
+    this.newFrame();
+
+    var step = BaseGame.prototype.framerate;
+
+    this.rendered += step;
+
+    this.onFrame(step);
+    this.fps.onFrame();
+};
+
+/**
+ * On bot ready
+ */
+Game.prototype.onReady = function()
+{
+    if (this.frameRequest) {
+        const waiting = this.avatars.filter(function () { return !this.ready; }).items;
+
+        if (!waiting.length) {
+            this.frameRequest = false;
+            setTimeout(this.loop, 0);
+        }
+    }
+};
 
 /**
  * Update

@@ -33,6 +33,7 @@ function GameController($scope, $routeParams, $location, client, repository, cha
     this.onUnload     = this.onUnload.bind(this);
     this.onExit       = this.onExit.bind(this);
     this.onFirstRound = this.onFirstRound.bind(this);
+    this.setBotReady  = this.setBotReady.bind(this);
     this.backToRoom   = this.backToRoom.bind(this);
 
     // Hydrate scope:
@@ -110,6 +111,8 @@ GameController.prototype.loadGame = function(game)
         }
     }
 
+    setInterval(this.setBotReady.bind(this), 16);
+
     this.radio.setActive(true);
 
     // Hydrate scope:
@@ -154,6 +157,14 @@ GameController.prototype.onFirstRound = function(e)
 GameController.prototype.onMove = function(e)
 {
     this.client.addEvent('player:move', {avatar: e.detail.avatar.id, move: e.detail.move ? e.detail.move : 0});
+};
+
+/**
+ * Set bot ready
+ */
+GameController.prototype.setBotReady = function()
+{
+    this.client.addEvent('bot:ready');
 };
 
 /**
@@ -229,6 +240,16 @@ GameController.prototype.getSpectateMessage = function()
 };
 
 /**
+ * Get local avatars
+ *
+ * @return {Array}
+ */
+GameController.prototype.getLocalAvatars = function()
+{
+    return this.game.avatars.filter(function () { return this.input; }).items;
+};
+
+/**
  * Close game
  */
 GameController.prototype.close = function()
@@ -236,7 +257,7 @@ GameController.prototype.close = function()
     if (this.game) {
         this.detachEvents();
 
-        var avatars = this.game.avatars.filter(function () { return this.input; }).items;
+        var avatars = this.getLocalAvatars();
 
         for (var i = avatars.length - 1; i >= 0; i--) {
             avatars[i].input.off('move', this.onMove);

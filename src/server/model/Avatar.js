@@ -8,6 +8,7 @@ function Avatar(player)
     BaseAvatar.call(this, player);
 
     this.bodyCount    = 0;
+    this.ready        = false;
     this.body         = new AvatarBody(this.x, this.y, this);
     this.printManager = new PrintManager(this);
 }
@@ -23,6 +24,7 @@ Avatar.prototype.constructor = Avatar;
 Avatar.prototype.update = function(step)
 {
     if (this.alive) {
+        this.ready = false;
         this.updateAngle(step);
         this.updatePosition(step);
 
@@ -146,6 +148,19 @@ Avatar.prototype.setColor = function(color)
 {
     this.color = color;
     this.emit('property', {avatar: this, property: 'color', value: this.color});
+};
+
+/**
+ * Set bot ready
+ *
+ * @param {Boolean} ready
+ */
+Avatar.prototype.setReady = function()
+{
+    if (!this.ready) {
+        this.ready = true;
+        this.emit('ready', this);
+    }
 };
 
 /**

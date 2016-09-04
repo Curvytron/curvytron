@@ -17,6 +17,7 @@ function GameController(game)
     this.onPosition    = this.onPosition.bind(this);
     this.onAngle       = this.onAngle.bind(this);
     this.onPoint       = this.onPoint.bind(this);
+    this.onBotReady    = this.onBotReady.bind(this);
     this.onScore       = this.onScore.bind(this);
     this.onRoundScore  = this.onRoundScore.bind(this);
     this.onProperty    = this.onProperty.bind(this);
@@ -33,7 +34,8 @@ function GameController(game)
 
     this.callbacks = {
         onReady: function () { controller.onReady(this); },
-        onMove: function (data) { controller.onMove(this, data); }
+        onMove: function (data) { controller.onMove(this, data); },
+        onBotReady: function () { controller.onBotReady(this); }
     };
 
     this.loadGame();
@@ -144,6 +146,7 @@ GameController.prototype.attachEvents = function(client)
     client.on('ready', this.callbacks.onReady);
 
     if (!client.players.isEmpty()) {
+        client.on('bot:ready', this.callbacks.onBotReady);
         client.on('player:move', this.callbacks.onMove);
     }
 
@@ -173,6 +176,7 @@ GameController.prototype.detachEvents = function(client)
     client.removeListener('ready', this.callbacks.onReady);
 
     if (!client.players.isEmpty()) {
+        client.removeListener('bot:ready', this.callbacks.onBotReady);
         client.removeListener('player:move', this.callbacks.onMove);
     }
 
@@ -317,6 +321,19 @@ GameController.prototype.onMove = function(client, data)
 
     if (player && player.avatar) {
         player.avatar.updateAngularVelocity(data.move);
+    }
+};
+
+/**
+ * On bot ready
+ *
+ * @param {SocketClient} client
+ * @param {Number} move
+ */
+GameController.prototype.onBotReady = function(client)
+{
+    for (var i = client.players.items.length - 1; i >= 0; i--) {
+        client.players.items[i].avatar.setReady();
     }
 };
 
