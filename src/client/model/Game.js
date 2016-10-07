@@ -84,7 +84,11 @@ Game.prototype.onFrame = function(step)
  */
 Game.prototype.onRoundNew = function()
 {
+    if (this.loser) {
+      this.avatars.remove(this.loser);
+    }
     BaseGame.prototype.onRoundNew.call(this);
+    this.loser = null;
     this.repaint();
 };
 
@@ -303,6 +307,9 @@ Game.prototype.clearBackground = function()
 Game.prototype.onDie = function(event)
 {
     this.animations.push(new Explode(event.detail, this.effect));
+    if (!this.loser){
+      this.loser = event.detail;
+    }
 };
 
 /**

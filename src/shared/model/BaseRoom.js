@@ -34,7 +34,7 @@ BaseRoom.prototype.maxLength = 25;
  *
  * @type {Number}
  */
-BaseRoom.prototype.launchTime = 5000;
+BaseRoom.prototype.launchTime = 0;
 
 /**
  * Add player
