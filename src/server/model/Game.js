@@ -130,7 +130,7 @@ Game.prototype.isWon = function()
     if (this.avatars.count() > 1 && present <= 1) { return true; }
 
     var maxScore = this.maxScore,
-        players = this.avatars.filter(function () { return this.present/* && this.score >= maxScore*/; });
+        players = this.avatars.filter(function () { return this.present; });
 
     if (players.count() === 0) {
         return null;
@@ -147,7 +147,6 @@ Game.prototype.isWon = function()
     }
 
     return null;
-//    return players.items[0].score === players.items[1].score ? null : players.getFirst();
 };
 
 /**
@@ -250,16 +249,15 @@ Game.prototype.onRoundNew = function()
 
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
-       var avatar = this.avatars.items[i];
+       avatar = this.avatars.items[i];
        if (this.loser != null && avatar.id == this.loser.id) {
           this.avatars.remove(avatar);
-          this.emit('loser', this.loser.id);
           break;
        }
     }
 
     for (i = this.avatars.items.length - 1; i >= 0; i--) {
-        var avatar = this.avatars.items[i];
+        avatar = this.avatars.items[i];
         if (avatar.present) {
             position = this.world.getRandomPosition(avatar.radius, this.spawnMargin);
             avatar.setPosition(position[0], position[1]);

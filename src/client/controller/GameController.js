@@ -115,6 +115,7 @@ GameController.prototype.loadGame = function(game)
     // Hydrate scope:
     this.$scope.game    = this.game;
     this.$scope.avatars = this.game.avatars.items;
+    this.$scope.finalList = this.game.finalList.items;
 
     this.attachEvents();
 

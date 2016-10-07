@@ -85,7 +85,7 @@
                             </button>
                             <table class="table table-hover recap">
                                 <tbody>
-                                    <tr ng-repeat="avatar in ::avatars track by avatar.id">
+                                    <tr ng-repeat="avatar in ::finalList track by avatar.id">
                                         <td class="rank">{{ ::($index+1) }}</td>
                                         <td class="name"><span style="color: {{ ::avatar.player.color }}">{{ ::avatar.name }}</span></td>
                                         <td class="points"><strong>{{ ::avatar.score }}</strong> points</td>
