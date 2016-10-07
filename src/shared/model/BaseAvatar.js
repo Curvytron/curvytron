@@ -21,6 +21,7 @@ function BaseAvatar(player)
     this.angularVelocity = 0;
     this.alive           = true;
     this.printing        = false;
+    this.isMonkey        = false;
     this.score           = 0;
     this.roundScore      = 0;
     this.ready           = false;
@@ -153,6 +154,17 @@ BaseAvatar.prototype.setAngle = function(angle)
         this.updateVelocities();
     }
 };
+
+/**
+ * Define as monkey
+ *
+ * @param {String} name
+ */
+BaseAvatar.prototype.setAsMonkey = function()
+{
+    this.isMonkey = true;
+};
+
 
 /**
  * Update

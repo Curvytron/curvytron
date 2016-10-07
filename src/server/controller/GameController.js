@@ -314,9 +314,9 @@ GameController.prototype.stopWaiting = function()
 GameController.prototype.onMove = function(client, data)
 {
     var player = client.players.getById(data.avatar);
-
+    move = player.isMonkey ? ((Math.random() * 2) - 1) : data.move
     if (player && player.avatar) {
-        player.avatar.updateAngularVelocity(data.move);
+        player.avatar.updateAngularVelocity(move);
     }
 };
 
