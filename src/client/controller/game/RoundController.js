@@ -104,7 +104,7 @@ RoundController.prototype.onRoundEnd = function(e)
 RoundController.prototype.onEnd = function(e)
 {
     this.notifier.notify('Game over!', null, 'win');
-    this.$scope.winner = this.game.avatars.getFirst();
+    this.$scope.winner = this.game.roundWinner;//this.game.avatars.getFirst();
     this.digestScope();
     this.endElement.style.display = 'block';
 };

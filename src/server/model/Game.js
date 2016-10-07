@@ -140,10 +140,10 @@ Game.prototype.isWon = function()
         return players.getFirst();
     }
 
-    this.sortAvatars(players);
+    //this.sortAvatars(players);
 
     if (this.avatars.count() == 2) {
-      return players.getFirst();
+      return this.roundWinner;
     }
 
     return null;
