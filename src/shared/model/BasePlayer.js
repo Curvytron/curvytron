@@ -15,6 +15,7 @@ function BasePlayer(client, name, color, ready)
     this.ready  = typeof(ready) !== 'undefined' && ready;
     this.id     = null;
     this.avatar = null;
+    this.isMonkey = false;
 }
 
 BasePlayer.prototype = Object.create(EventEmitter.prototype);
@@ -43,6 +44,18 @@ BasePlayer.prototype.setName = function(name)
 {
     this.name = name;
 };
+
+
+/**
+ * Define as monkey
+ *
+ * @param {String} name
+ */
+BasePlayer.prototype.setAsMonkey = function()
+{
+    this.isMonkey = true;
+};
+
 
 /**
  * Set name
@@ -89,6 +102,9 @@ BasePlayer.prototype.getAvatar = function()
 {
     if (!this.avatar) {
         this.avatar = new Avatar(this);
+        if (this.isMonkey) {
+          this.avatar.setAsMonkey();
+        }
     }
 
     return this.avatar;

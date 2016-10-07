@@ -11,6 +11,7 @@ function Game(room)
 
     this.onResize = this.onResize.bind(this);
     this.onDie    = this.onDie.bind(this);
+    this.finalList = new Collection([], 'id');
 
     window.addEventListener('error', this.stop);
     window.addEventListener('resize', this.onResize);
@@ -84,7 +85,12 @@ Game.prototype.onFrame = function(step)
  */
 Game.prototype.onRoundNew = function()
 {
+    if (this.loser) {
+      this.avatars.remove(this.loser);
+      this.finalList.add(this.loser);
+    }
     BaseGame.prototype.onRoundNew.call(this);
+    this.loser = null;
     this.repaint();
 };
 
@@ -303,6 +309,9 @@ Game.prototype.clearBackground = function()
 Game.prototype.onDie = function(event)
 {
     this.animations.push(new Explode(event.detail, this.effect));
+    if (!this.loser){
+      this.loser = event.detail;
+    }
 };
 
 /**

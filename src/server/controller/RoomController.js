@@ -421,6 +421,11 @@ RoomController.prototype.onPlayerAdd = function(client, data, callback)
         this.emit('player:add', { room: this.room, player: player});
         callback({success: true});
         this.nominateRoomMaster();
+
+        if (client.id !== player.id) {
+            player.setAsMonkey();
+        }
+
     } else {
         return callback({success: false, error: 'Could not add player.'});
     }
