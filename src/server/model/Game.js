@@ -130,7 +130,7 @@ Game.prototype.isWon = function()
     if (this.avatars.count() > 1 && present <= 1) { return true; }
 
     var maxScore = this.maxScore,
-        players = this.avatars.filter(function () { return this.present && this.score >= maxScore; });
+        players = this.avatars.filter(function () { return this.present/* && this.score >= maxScore*/; });
 
     if (players.count() === 0) {
         return null;
@@ -142,7 +142,12 @@ Game.prototype.isWon = function()
 
     this.sortAvatars(players);
 
-    return players.items[0].score === players.items[1].score ? null : players.getFirst();
+    if (this.avatars.count() == 2) {
+      return players.getFirst();
+    }
+
+    return null;
+//    return players.items[0].score === players.items[1].score ? null : players.getFirst();
 };
 
 /**
