@@ -1,7 +1,8 @@
 ## Prerequisite
 
-Curvytron runs on [node.js >= v0.10](https://nodejs.org/).
-You need to install node on the machine that will run the Curvytron server.
+Curvytron runs on [Node.js >= v0.10](https://nodejs.org/).
+
+You only need [Node.js](https://nodejs.org/) installed to run a Curvytron server.
 
 ## Installation
 
@@ -25,5 +26,4 @@ __Build the game__
 
 ## Play
 
-Go to [http://localhost:8080/](http://localhost:8080/)
-Join a room, choose a player name and play!
+Now you can go to [http://localhost:8080/](http://localhost:8080/), join a room, choose a player name and play!
