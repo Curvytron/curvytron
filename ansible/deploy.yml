@@ -1,0 +1,6 @@
+---
+
+- hosts: deploy
+  any_errors_fatal: true
+  roles:
+    - manala.deploy

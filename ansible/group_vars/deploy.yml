@@ -1,0 +1,30 @@
+---
+
+#######
+# Dir #
+#######
+
+manala_deploy_dir: /srv/app/curvytron
+
+############
+# Releases #
+############
+
+manala_deploy_releases: 5
+
+############
+# Strategy #
+############
+
+manala_deploy_strategy: git
+
+manala_deploy_strategy_git_repo:    git@github.com:Curvytron/curvytron.git
+manala_deploy_strategy_git_version: master
+
+#########
+# Tasks #
+#########
+
+manala_deploy_tasks:
+  - make: install@production
+  - make: build@production

@@ -1,0 +1,103 @@
+---
+
+app_options:
+
+  nodejs_version: '6'
+
+app_patterns:
+
+  ########
+  # Motd #
+  ########
+
+  motd_template: template/empty.j2
+  motd_message:  Curvytron
+
+  #######
+  # Apt #
+  #######
+
+  apt_packages:
+    - g++
+
+  ###############
+  # Environment #
+  ###############
+
+  environment_variables:
+    - NODE_ENV : "{{ env }}"
+
+  #######
+  # Npm #
+  #######
+
+  npm_packages:
+    - package: bower
+      version: 1.8.8
+    - package: gulp
+      version: 4
+    - package: node-inspector
+      version: 1.1.2
+
+  ##############
+  # Supervisor #
+  ##############
+
+  supervisor_configs:
+    - file:     app_gulp.conf
+      template: configs/program.{{ env }}.j2
+      config:
+        - gulp:
+          - command:         gulp watch
+          - directory:       "{{ _app_dir }}"
+          - user:            "app"
+          - autorestart:     true
+          - stdout_logfile:  "{{ app.log_dir }}/gulp.log"
+          - redirect_stderr: true
+    - file:     app_server.conf
+      template: configs/program.{{ env }}.j2
+      config:
+        - server:
+          - command:         node bin/server.js
+          - directory:       "{{ _app_dir }}"
+          - user:            "app"
+          - autorestart:     true
+          - stdout_logfile:  "{{ app.log_dir }}/server.log"
+          - redirect_stderr: true
+
+  #########
+  # Nginx #
+  #########
+
+  nginx_configs:
+    # Gzip
+    - file:     app_gzip
+      template: configs/app_gzip.{{ env }}.j2
+
+    # Game
+    - file: "client.{{ app.host }}.conf"
+      config:
+        - server:
+          - server_name: "{{ app.host }}.dev"
+          - root:        "{{ app.dir }}/web"
+          - access_log:  "{{ app.log_dir }}/client.access.log"
+          - error_log:   "{{ app.log_dir }}/client.error.log"
+          - include:     conf.d/app_gzip
+          - charset:     "UTF-8"
+          - location /: []
+
+    # Server
+    - file: "server.{{ app.host }}.conf"
+      config:
+        - server:
+          - server_name: "ws.{{ app.host }}.dev"
+          - access_log:  "{{ app.log_dir }}/server.access.log"
+          - error_log:   "{{ app.log_dir }}/server.error.log"
+          - location /:
+            - proxy_pass:         "http://127.0.0.1:8080"
+            - proxy_http_version: "1.1"
+            - proxy_set_header:   "Upgrade $http_upgrade"
+            - proxy_set_header:   'Connection "upgrade"'
+            - proxy_set_header:   "Host $host"
+            - proxy_set_header:   "X-Real-IP $remote_addr"
+            - proxy_set_header:   "X-Forwarded-For $proxy_add_x_forwarded_for"

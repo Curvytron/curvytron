@@ -1,0 +1,17 @@
+---
+
+- hosts: app
+  vars:
+    # App
+    app: "{{ manala_skeleton_options.app }}"
+    # Manala
+    manala_skeleton_name: elao_app_php
+    manala_skeleton_env:  "{{ env }}"
+    manala_skeleton_options_hashes:
+      - app_options
+      - app_(\w*)_options
+    manala_skeleton_patterns_hashes:
+      - app_patterns
+      - app_(\w*)_patterns
+  roles:
+    - manala.skeleton

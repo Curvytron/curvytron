@@ -1,0 +1,4 @@
+production ansible_ssh_host=games-01.elao.prod.elao.run ansible_ssh_user=app
+
+[deploy_production]
+production

@@ -1,0 +1,12 @@
+production-us ansible_ssh_host=us-west-1a.lazerdrive.io ansible_ssh_user=app
+production-eu ansible_ssh_host=games-01.elao.prod.elao.run ansible_ssh_user=app
+
+[deploy_production_us]
+production-us
+
+[deploy_production_eu]
+production-eu
+
+[deploy:children]
+deploy_production_us
+deploy_production_eu

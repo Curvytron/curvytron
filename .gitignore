@@ -8,3 +8,10 @@ bin/*
 stats/*
 config.json
 *.sublime-*
+
+# Vagrant
+/.vagrant/
+
+# Ansible
+ansible.cfg
+/ansible/roles/*.*/
