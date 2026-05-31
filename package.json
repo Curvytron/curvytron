@@ -34,12 +34,15 @@
     "influx": "^4.0.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "angular": "^1.8.3",
     "angular-bootstrap-colorpicker": "^3.0.8",
     "angular-cookies": "^1.8.3",
     "angular-route": "^1.8.3",
     "createjs-soundjs": "^0.6.2",
+    "eslint": "^10.4.1",
     "gamepad.js": "^1.0.5",
+    "globals": "^17.6.0",
     "key-mapper.js": "^0.1.2",
     "option-resolver.js": "^1.1.0",
     "sass": "^1.86.3",
@@ -48,8 +51,8 @@
     "vite": "^6.2.5"
   },
   "optionalDependencies": {
-    "usage": "^0.7.0",
-    "MD5": "^1.3.0"
+    "MD5": "^1.3.0",
+    "usage": "^0.7.0"
   },
   "scripts": {
     "build:server": "node scripts/build-server.js",
@@ -62,6 +65,8 @@
     "watch:client": "node --watch-path=./src/client --watch-path=./src/shared scripts/build-client.js",
     "watch:server": "node --watch-path=./src/server --watch-path=./src/shared scripts/build-server.js",
     "watch:css": "sass --watch src/sass/style.scss:web/css/style.css --silence-deprecation=import,color-functions,global-builtin,slash-div",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "start": "node bin/curvytron.cjs"
   }
 }

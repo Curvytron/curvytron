@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
-export default defineConfig(({ mode, isSsrBuild }) => ({
+export default defineConfig(({ mode }) => ({
     plugins: [
         {
             // soundjs-0.6.2 uses `this.createjs` at the top level of its factory,
