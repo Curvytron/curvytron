@@ -9,6 +9,7 @@
     "html5",
     "devops"
   ],
+  "type": "module",
   "homepage": "https://github.com/Elao/curvytron",
   "repository": {
     "type": "git",
@@ -27,31 +28,40 @@
       "homepage": "http://thomas-jarrand.com"
     }
   ],
-  "devDependencies": {
-    "gulp": "^3.8.*",
-    "gulp-concat": "^2.4.*",
-    "gulp-header": "^1.0.*",
-    "gulp-html-minifier": "^0.1.*",
-    "gulp-jshint": "^1.6.*",
-    "gulp-minify-css": "~0.3.*",
-    "gulp-plumber": "^0.5.*",
-    "gulp-rename": "^1.2.*",
-    "gulp-replace": "^0.5.*",
-    "gulp-sass": "^0.7.*",
-    "gulp-uglify": "^0.3.*",
-    "gulp-util": "^2.2.*",
-    "gulp-wrap": "^0.11.0"
-  },
   "dependencies": {
     "express": "^4.13.3",
     "faye-websocket": "^0.10.0",
     "influx": "^4.0.1"
+  },
+  "devDependencies": {
+    "angular": "^1.8.3",
+    "angular-bootstrap-colorpicker": "^3.0.8",
+    "angular-cookies": "^1.8.3",
+    "angular-route": "^1.8.3",
+    "createjs-soundjs": "^0.6.2",
+    "gamepad.js": "^1.0.5",
+    "key-mapper.js": "^0.1.2",
+    "option-resolver.js": "^1.1.0",
+    "sass": "^1.86.3",
+    "tom32i-asset-loader.js": "^2.0.0",
+    "tom32i-event-emitter.js": "^2.0.5",
+    "vite": "^6.2.5"
   },
   "optionalDependencies": {
     "usage": "^0.7.0",
     "MD5": "^1.3.0"
   },
   "scripts": {
-    "install": "bower install"
+    "build:server": "node scripts/build-server.js",
+    "build:vendor": "vite build",
+    "build:client": "node scripts/build-client.js",
+    "build:css": "sass src/sass/style.scss web/css/style.css --style=compressed --no-source-map --silence-deprecation=import,color-functions,global-builtin,slash-div",
+    "build:views": "node scripts/copy-views.js",
+    "build:html": "node scripts/build-html.js",
+    "build": "npm run build:server && npm run build:vendor && npm run build:client -- --minify && npm run build:css && npm run build:views && npm run build:html",
+    "watch:client": "node --watch-path=./src/client --watch-path=./src/shared scripts/build-client.js",
+    "watch:server": "node --watch-path=./src/server --watch-path=./src/shared scripts/build-server.js",
+    "watch:css": "sass --watch src/sass/style.scss:web/css/style.css --silence-deprecation=import,color-functions,global-builtin,slash-div",
+    "start": "node bin/curvytron.cjs"
   }
 }
