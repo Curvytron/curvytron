@@ -16,6 +16,9 @@
     "url": "https://github.com/Elao/curvytron"
   },
   "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
   "contributors": [
     {
       "name": "Johan Dufour",
