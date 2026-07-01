@@ -41,7 +41,10 @@ function Inspector (server, config)
     this.client.writePoint(this.CLIENTS, this.server.clients.count(), {}, {});
     this.client.writePoint(this.ROOMS, this.server.roomRepository.rooms.count(), {}, {});
 
-    this.logInterval = setInterval(this.onLog, this.logFrequency);
+    // `usage` is an optional native dependency; only poll CPU/memory when it loaded.
+    if (usage) {
+        this.logInterval = setInterval(this.onLog, this.logFrequency);
+    }
 }
 
 Inspector.prototype.DEPLOY             = 'deploy';
@@ -231,7 +234,9 @@ Inspector.prototype.collectGameTrackerData = function(tracker)
  */
 Inspector.prototype.onLog = function()
 {
-    usage.lookup(process.pid, this.logUsage);
+    if (usage) {
+        usage.lookup(process.pid, this.logUsage);
+    }
 };
 
 /**

@@ -34,13 +34,6 @@ export default defineConfig(({ mode }) => ({
                 format: 'iife',
                 entryFileNames: 'js/dependencies.js',
             },
-            // onwarn(warning, warn) {
-            //     // Socket and angular are runtime globals, not missing imports
-            //     if (warning.code === 'MISSING_GLOBAL_NAME') return;
-            //     // Vendor files (soundjs, key-mapper) use top-level `this` expecting window
-            //     if (warning.code === 'THIS_IS_UNDEFINED') return;
-            //     warn(warning);
-            // },
         },
         minify: mode === 'production' ? 'esbuild' : false,
     },
