@@ -1,9 +1,14 @@
 {
     "port": 8020,
-    "googleAnalyticsId": null,
+    "curvytron2": null,
+    "umami": {
+        "src": null,
+        "websiteId": null
+    },
     "inspector": {
         "enabled": false,
         "host": "localhost",
+        "port": 8086,
         "username": "curvytron",
         "password": "curvytron",
         "database": "curvytron"
