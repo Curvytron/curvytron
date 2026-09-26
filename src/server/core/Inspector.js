@@ -9,6 +9,7 @@ function Inspector (server, config)
     this.server = server;
     this.client = influx({
         host: config.host,
+        port: config.port,
         username: config.username,
         password: config.password,
         database: config.database

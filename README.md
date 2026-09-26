@@ -3,6 +3,8 @@ Curvytron
 
 A web multiplayer Tron game like with curves
 
+> **Curvytron 2 is out!** Play the sequel at [curvytron2.com](https://curvytron2.com).
+
 ## Installation
 
 * [Get your local Curvytron server in 1 minute!](doc/installation.md)

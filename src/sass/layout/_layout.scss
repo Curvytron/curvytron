@@ -56,7 +56,7 @@ header {
     z-index: 10;
     position: relative;
 
-    &, &:visited {
+    &, &:visited, h1 {
       line-height: 46px;
       font-family: $base-font-family;
       font-weight: 400;
@@ -79,6 +79,7 @@ header {
     }
 
     .brand {
+      margin: 0;
       display: block;
     }
   }
