@@ -14,7 +14,7 @@ function loadConfig() {
     for (const file of ['config.json', 'config.json.sample']) {
         try {
             return JSON.parse(readFileSync(join(root, file), 'utf8'));
-        } catch (error) {
+        } catch {
             // Try the next candidate.
         }
     }
