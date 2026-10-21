@@ -1,6 +1,6 @@
 ## Prerequisite
 
-Curvytron runs on [node.js >= v22](https://nodejs.org/) (the build uses `fs.globSync`, `node --watch-path` and Vite).
+Curvytron runs on [node.js >= v24](https://nodejs.org/), the version the production server runs.
 You need to install node on the machine that will run the Curvytron server.
 
 ## Installation
