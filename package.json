@@ -33,8 +33,7 @@
   ],
   "dependencies": {
     "express": "^4.13.3",
-    "faye-websocket": "^0.10.0",
-    "influx": "^4.0.1"
+    "faye-websocket": "^0.10.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

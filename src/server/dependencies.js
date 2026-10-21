@@ -3,8 +3,7 @@ var EventEmitter = require('events').EventEmitter,
     http = require('http'),
     express = require('express'),
     md5,
-    usage,
-    influx;
+    usage;
 
 try {
     md5 = require('MD5');
@@ -16,10 +15,4 @@ try {
     usage = require('usage');
 } catch (error) {
     usage = false;
-}
-
-try {
-    influx = require('influx');
-} catch (error) {
-    influx = false;
 }
