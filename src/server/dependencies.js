@@ -2,24 +2,16 @@ var EventEmitter = require('events').EventEmitter,
     WebSocket = require('faye-websocket'),
     http = require('http'),
     express = require('express'),
-    md5,
-    usage,
-    influx;
+    crypto = require('crypto'),
+    usage;
 
-try {
-    md5 = require('MD5');
-} catch (error) {
-    md5 = false;
+function md5(value)
+{
+    return crypto.createHash('md5').update(String(value)).digest('hex');
 }
 
 try {
     usage = require('usage');
 } catch (error) {
     usage = false;
-}
-
-try {
-    influx = require('influx');
-} catch (error) {
-    influx = false;
 }

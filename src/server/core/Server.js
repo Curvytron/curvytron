@@ -44,7 +44,7 @@ Server.prototype.authorizationHandler = function(request, socket, head)
     }
 
     var websocket = new WebSocket(request, socket, head, ['websocket'], {ping: 30}),
-        ip = request.headers['x-real-ip'] || request.connection.remoteAddress;
+        ip = request.headers['x-real-ip'] || request.socket.remoteAddress;
 
     return this.onSocketConnection(websocket, ip);
 };

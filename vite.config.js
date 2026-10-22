@@ -5,8 +5,8 @@ export default defineConfig(({ mode }) => ({
     plugins: [
         {
             // soundjs-0.6.2 uses `this.createjs` at the top level of its factory,
-            // expecting `this` to be `window`. Rollup replaces top-level module `this`
-            // with `undefined`, causing a crash. Fix it before Rollup sees it.
+            // expecting `this` to be `window`. Rolldown replaces top-level module `this`
+            // with `undefined`, causing a crash. Fix it before Rolldown sees it.
             name: 'fix-legacy-this',
             transform(code, id) {
                 if (id.includes('soundjs')) {
@@ -17,25 +17,25 @@ export default defineConfig(({ mode }) => ({
     ],
     resolve: {
         alias: {
-            '@client': resolve(__dirname, './src/client'),
-            '@server': resolve(__dirname, './src/server'),
-            '@shared': resolve(__dirname, './src/shared'),
-            '@vendor': resolve(__dirname, './src/vendor'),
-            '@sass': resolve(__dirname, './src/sass'),
+            '@client': resolve(import.meta.dirname, './src/client'),
+            '@server': resolve(import.meta.dirname, './src/server'),
+            '@shared': resolve(import.meta.dirname, './src/shared'),
+            '@vendor': resolve(import.meta.dirname, './src/vendor'),
+            '@sass': resolve(import.meta.dirname, './src/sass'),
         },
     },
     build: {
-        outDir: resolve(__dirname, 'web'),
+        outDir: resolve(import.meta.dirname, 'web'),
         emptyOutDir: false,
         sourcemap: mode !== 'production',
-        rollupOptions: {
-            input: resolve(__dirname, 'src/client/vendor.js'),
+        rolldownOptions: {
+            input: resolve(import.meta.dirname, 'src/client/vendor.js'),
             output: {
                 format: 'iife',
                 entryFileNames: 'js/dependencies.js',
             },
         },
-        minify: mode === 'production' ? 'esbuild' : false,
+        minify: mode === 'production',
     },
     css: {
         preprocessorOptions: {
