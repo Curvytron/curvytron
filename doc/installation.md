@@ -3,6 +3,8 @@
 Curvytron runs on [node.js >= v24](https://nodejs.org/), the version the production server runs.
 You need to install node on the machine that will run the Curvytron server.
 
+Alternatively, you could also [run Curvytron on Docker](doc/docker.md).
+
 ## Installation
 
 __Clone the repository__
